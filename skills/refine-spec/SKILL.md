@@ -1,0 +1,233 @@
+---
+name: refine-spec
+description: Refine a request into an approved-ready spec before any code is written. Use whenever someone asks for the app in this repository to be built, changed, added to, fixed, or improved — including small-sounding asks ("just add a button", "can it also…"), picking up a GitHub issue, or acting on feedback. Interrogates the request against the persona and workflows, works out the real job and the end value, then writes the Gherkin rules and the numbered change spec. Never implements.
+---
+
+# Refine the request into a spec
+
+A request is not a spec. Someone hands you a **solution** — "add a clear-all
+button" — and buried under it is a **job** — "the list gets cluttered and
+clearing it one at a time is tedious enough that I stop bothering." The solution
+they proposed is one answer to that job, and often not the best one.
+
+Your work here is to find the job, check it against who the product is for, and
+write the spec. **Not to build anything.** No `src/` edits in this skill, ever.
+
+## Before anything else, read
+
+- `specs/setup/README.md` — **this repository's bindings.** The commands that
+  gate a commit, the thresholds, where each layer lives, and anything else the
+  method leaves to the repo. The method is portable; the commands are not. Never
+  assume one.
+- `specs/personas/` — who the product is for, and who it is explicitly not for
+- `specs/workflows/README.md` — the bounded attempts those people make, and the
+  map saying which of them carry the value
+- `specs/journeys/` — the arc across months, and the seams between workflows
+  where neither one is at fault
+- `specs/spec.md` — product boundaries, the storage contract, and the vocabulary
+- `specs/features/` — what is already specced, so you do not contradict or
+  duplicate a live Rule
+- the GitHub issue, if there is one (`gh issue view <n>`)
+
+Do not skip this because the request seems obvious. The obvious-seeming ones are
+where a spec quietly gets written for the wrong person.
+
+## 1. Find the job
+
+Separate what was asked from what is wanted.
+
+- **The literal ask.** Their words, kept intact.
+- **The job behind it.** What they were trying to accomplish, stated with no
+  reference to any solution. If you cannot write this without naming a UI
+  element, you have not found it yet.
+- **The trigger.** What happened right before they wanted this. Jobs have
+  moments; a job with no moment is usually a preference.
+- **What they do today instead.** The workaround is the strongest evidence you
+  have about how much this actually costs them.
+
+Then ask whether the proposed solution is the best answer to that job. Say so if
+it is not — with the alternative, not just the objection. A cheaper change that
+serves the job better is the most valuable thing this skill produces.
+
+## 2. Place it on the map
+
+- **Which persona?** If it only pays off for someone the persona files rule out
+  — and a persona file worth having rules somebody out in as many words — it is
+  not for the person this is built for. That does
+  not kill it — but the spec must argue for the new persona explicitly instead of
+  smuggling them in.
+- **Which workflow, and where in it?** Name the step. A change that touches no
+  workflow in `specs/workflows/` is either serving something undocumented (add or
+  edit a workflow as part of the change) or serving nobody.
+
+  **Or it holds everywhere rather than in one attempt.** The always-promises —
+  the handful of things that must be true in every workflow at once — are prose
+  in `specs/spec.md` under *What it must always be*. A feature asserting one
+  still names the workflow it sits in — there is no second kind of tag.
+
+  **Or it honestly serves neither**, which a technical change often does. That is
+  a documented case, not an escape hatch — see
+  [`process.md`](../../method/process.md#a-technical-change-that-serves-no-workflow-is-correct-not-a-gap),
+  *"A technical change that serves no workflow is correct, not a gap"*. Say so out loud in *Who this is for*; do not file it under
+  a workflow to fill the box.
+
+  Whatever it is, the traceability gate will check it: every feature must name a
+  live workflow, every workflow must be claimed by a feature and walked by a
+  test, every persona must be named by a workflow or tagged `@retired`. The
+  command that runs it is in `specs/setup/README.md`.
+- **Did that just change `specs/workflows/` or `specs/personas/`?** Then stop treating it
+  as part of this spec. Those two say what the product *is* and who it is *for*;
+  a button is downstream of them, and the edit you just made is the larger of the
+  two changes on the table however small the diff looks. It gets confirmed on its
+  own, before the spec is — see the hand-back.
+
+  **If it is bigger than a line, it is not this skill's work at all.** Re-cutting
+  the workflows is `refine-workflows`; adding, amending
+  or retiring a persona is `refine-personas`; a journey that no longer matches
+  what is under it is `refine-journeys`. Each is its own change and its own
+  version — hand it over, and come back to this spec once it has landed.
+- **Does it make the attempt that carries the value shorter or longer?** Adding
+  a step to the workflow somebody makes daily, to serve a once-a-year need, is
+  the single most common bad trade here.
+- **Does it collide with a product boundary?** The things this product has
+  decided not to be are listed in `specs/spec.md`. If it collides with one, say
+  so plainly and stop for a decision — a boundary is moved on purpose or not at
+  all.
+
+## 3. Work out the end value
+
+State what is true for them afterwards that is not true now, from their side of
+the screen. Then the harder half: **how would we know it worked?** Something
+observable — a workflow that got shorter, a mistake that stopped happening, a
+reason to distrust the app that went away.
+
+If you cannot name that, the change is decoration. Say so before writing it.
+
+## 4. Ask what you cannot answer
+
+Ask only where a different answer produces a *different spec*. Everything else,
+decide yourself and record the assumption in the spec.
+
+Batch the questions — one round, three or four at most, each with your
+recommendation attached. Do not interview.
+
+Good: "When a container is deleted, should the things inside go with it or move
+somewhere else? I lean toward going with it — the container is the unit somebody
+chose, and rehoming them quietly puts things where nobody asked for them."
+
+Bad: "What color should the button be?"
+
+These are asked **before** the spec is written, while a different answer would
+still change what gets written. Once it is written, there is nothing left to
+choose between — so never fold "do you approve?" into this round, and never ask
+it as a multiple choice of its own. See the hand-back.
+
+## 5. Shrink it
+
+The step must be small enough to be one screenshot's worth of change.
+
+- What is the smallest version that delivers the end value? Spec that.
+- What did you consider and drop? That goes in *What we are not doing* — the
+  dropped alternatives are what stop this being relitigated next month.
+- Does it split cleanly into two changes? Then it is two change specs, and only
+  the first one is written now.
+
+## 6. Write the spec
+
+**Gherkin rules** in `specs/features/<area>/`, following `specs/README.md`:
+
+- One component or behaviour per file, small. Add a new `.feature` file rather
+  than growing one past its soft limits (120 lines, 6 rules).
+- Every Feature gets `@feature:<id>`, every Rule gets `@rule:<id>`, unique
+  repo-wide and stable — tests will point at those ids forever.
+- Tag every new Rule `@planned`. It is not built yet. The tag comes off in the
+  implementing change, not here.
+- Every Rule needs at least one `Example:`. Write the examples in the persona's
+  own terms, using the vocabulary `specs/spec.md` sets down — never a generic
+  stand-in like "item", "entry" or "record" where the repo has a real word, and
+  never a word the repo has deliberately retired. A vocabulary is a decision;
+  the examples are where it is either kept or quietly dropped.
+- Changing existing behaviour? Edit the Rule in place and keep its id. A reworded
+  Rule is the same Rule; a new id orphans every test pointing at it.
+
+**The change spec** at `specs/changes/NNNN-<slug>.md`, from
+[`templates/change.md`](../../templates/change.md), numbered one past the highest
+existing. The template carries placeholders where the repo differs — the persona
+by name, the always-promise most at risk, the storage contract. Fill them from
+the repo you are standing in; a spec that ships with an angle bracket in it was
+not written, it was pasted. Fill in
+*Who this is for*, *The job behind the request*, *Why now*, and *The end value*
+properly — those four sections are the whole point of this skill, and a spec
+that has them filled with restated feature description has failed.
+
+**Prose specs.** If this changes a decision or adds vocabulary, update
+`specs/spec.md`, the area `spec.md`, or the workflow's own `.feature` in the same
+pass. A prose
+spec that contradicts a live feature file is worse than one that says nothing.
+
+## 7. Check and hand back
+
+Run this repository's traceability check — the command is in
+`specs/setup/README.md`.
+
+It must stay green — new `@planned` rules are exempt from needing tests, so a
+failure here means a real mistake: a duplicate id, a rule with no example, or a
+`@planned` tag you forgot.
+
+Then commit the spec on its own — `spec 0004: <title>`, specs commit separately
+from implementations.
+
+### Hand back a link, not a summary
+
+The spec is the artefact, and it was just written to be read. End with clickable
+paths: Claude Code turns `path:line` into a link, so give the change spec first
+and every feature file touched beneath it.
+
+```
+specs/changes/0005-<slug>.md:1
+specs/features/<area>/<file>.feature:12
+```
+
+Above the links, keep it to a short paragraph of what the **file will not tell
+them**:
+
+- the job you found, and how it differed from what was asked;
+- anything you assumed rather than blocked on;
+- anything you dropped that they would expect to find.
+
+Persona, workflow, end value and scope are all *in* the spec under their own
+headings. Repeating them in chat gives the reader two versions to reconcile, and
+the one in the terminal is the one that goes stale.
+
+### If `specs/workflows/` or `specs/personas/` changed, confirm that first
+
+**Separately, and before the spec's own approval.** These edits never arrive on
+their own — they ride inside a spec nominally about something else, and a single
+"approved" covers both, with the larger half being the one nobody was looking at.
+
+Show it by itself:
+
+- the diff, or the paragraph as it now reads;
+- one line on what it changes about who this is for, or what they do;
+- what that newly allows in the product, or newly rules out.
+
+Then ask for that alone — one plain line, same as below, never a multiple choice.
+Only once it is confirmed does the spec's own approval get asked for. **If the
+reader reviews one thing in this round, it is this**, and the two questions must
+not be merged into one for tidiness.
+
+A rewrite is not the only way this fires. Adding a workflow, retiring one,
+adding a persona, amending `spec.md`'s always-list, or amending a
+persona boundary all count. Adding a `@workflow:` tag to a feature does not — the
+gate checks that one, and it is a claim about the feature rather than about the
+workflow.
+
+### Ask for approval in one plain line
+
+**Never as a multiple-choice question.** Approval is not a fork that needs
+options drawn for it, and writing the spec's contents into option descriptions
+duplicates the very file it is asking them to open. One sentence — "Approve and
+I'll build it" — then nothing.
+
+**Then stop.** The spec needs approval before it is built. Implementing without
+it breaks the one rule the whole method rests on.

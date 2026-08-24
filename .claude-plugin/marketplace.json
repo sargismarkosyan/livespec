@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "livespec",
+  "description": "Spec-driven development that keeps the code as the source of truth, and the spec as where the context lives.",
+  "owner": {
+    "name": "Sargis Markosyan",
+    "url": "https://github.com/sargismarkosyan"
+  },
+  "plugins": [
+    {
+      "name": "livespec",
+      "description": "The loop: feedback into researched issues, requests into specs, one small change per version, a moving picture on every pull request. Gherkin rules with permanent ids, traced both ways.",
+      "source": "./",
+      "category": "workflow"
+    }
+  ]
+}
