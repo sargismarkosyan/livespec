@@ -73,7 +73,7 @@ python3 .github/scripts/verify.py                 # everything that can pass her
 claude plugin validate . --strict                 # marketplace manifest
 claude plugin validate ./.claude-plugin/plugin.json --strict
 claude plugin validate ./skills --strict
-claude plugin eval . --ablation with-without --judge-model sonnet   # maintainer step
+claude plugin eval . --ablation with-without --judge-model sonnet --allow-tools Write Edit   # maintainer step
 ```
 
 The last one **does not run**: `claude plugin eval` is gated behind early access

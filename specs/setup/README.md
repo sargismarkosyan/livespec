@@ -32,7 +32,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
 | **Eval-suite gate** | `.github/scripts/evalsuite.py [root]` |
-| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture, breaks it 23 ways |
+| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture, breaks it 24 ways |
 | **Repository checks** | `.github/scripts/checks.py` — manifests, skill frontmatter, always-on budget, link and payload checks |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader both gates use |
@@ -103,8 +103,14 @@ and a fresh session.
 So the maintainer step, when it unblocks:
 
 ```
-claude plugin eval . --ablation with-without --judge-model sonnet
+claude plugin eval . --ablation with-without --judge-model sonnet --allow-tools Write Edit
 ```
+
+**`--allow-tools` is an operator grant.** `Write`, `Edit`, `Bash`, `WebFetch`,
+`WebSearch` and `mcp__*` are refused unless the person running the suite grants
+them, whatever a case's own `allowed_tools` says — so a grader checking what the
+agent created is inert without it. `evalsuite.py` fails when the invocation
+documented in `evals/README.md` does not grant what the cases ask for.
 
 Until then the gate proves a case **exists, claims a live rule, and can fail**.
 It does not prove it passes, and no output from `verify.py` should be read as
@@ -114,7 +120,7 @@ saying it does.
 
 Run on **2026-08-24** by `python3 .github/scripts/inject.py`, which is part of
 `verify.py` and therefore of every CI run — so this record is re-made rather than
-remembered. **23 of 23 faults produced the expected result.**
+remembered. **24 of 24 faults produced the expected result.**
 
 | Injected fault | Expected | Result |
 |---|---|---|
@@ -139,6 +145,7 @@ remembered. **23 of 23 faults produced the expected result.**
 | the last should-not-fire case removed | fails | ✔ |
 | a skill held by no case | fails | ✔ |
 | the documented invocation loses its baseline | fails | ✔ |
+| a gated tool a case asks for is never granted | fails | ✔ |
 | an llm grader with an empty rubric | fails | ✔ |
 | every case removed | fails | ✔ |
 

@@ -7,7 +7,7 @@ checkable by reading the files. This suite is how a change to a skill is held
 against it.
 
 ```
-claude plugin eval . --ablation with-without --judge-model sonnet
+claude plugin eval . --ablation with-without --judge-model sonnet --allow-tools Write Edit
 ```
 
 > **Not yet piloted, and currently unrunnable.** `claude plugin eval` is
@@ -81,7 +81,18 @@ These are not negotiable when the suite is edited:
   measurement;
 - **`--judge-model sonnet` or larger**, and never the model under test — a small
   judge misses exactly the nuance these cases turn on, and the agent's own model
-  prefers its own output.
+  prefers its own output;
+- **`--allow-tools` grants every gated tool the cases ask for.** `Write`, `Edit`,
+  `Bash`, `WebFetch`, `WebSearch` and `mcp__*` are refused unless the person
+  running the suite grants them, whatever a case's own `allowed_tools` says. Run
+  without the grant and a case that *could* have edited a file never gets the
+  chance — so a grader asserting it edited nothing passes without proving
+  anything, in both arms. `evalsuite.py` checks this one rather than trusting it.
+
+**No case grants `Bash`.** These cases are about filing issues and writing specs,
+`gh` is authenticated wherever the suite runs, and a case that files a real
+GitHub issue while being graded is not a test. If a case ever needs a shell, it
+needs a `case.yaml` scaffold and a sandbox first.
 
 The first five of those are checked by the gates in `.github/scripts/` —
 `evalsuite.py` for the suite's shape, `trace.py` for what a case claims — and
@@ -100,7 +111,7 @@ of that grader would still catch a real regression.
 Pilot before trusting a full run:
 
 ```
-claude plugin eval . --runs 1 --ablation with-without --no-publish
+claude plugin eval . --runs 1 --ablation with-without --no-publish --allow-tools Write Edit
 ```
 
 Then, in the newest `evals/results/*/aggregate-result.json`:

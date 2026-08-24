@@ -65,10 +65,12 @@ def cases(root: Path) -> list[dict]:
         if not sources:
             continue
         tags: list[str] = []
+        allowed_tools: list[str] = []
         runs: int | None = None
         for source in sources:
             fields, _ = frontmatter(source)
             tags += tag_values(fields.get("tags", ""))
+            allowed_tools += tag_values(fields.get("allowed_tools", ""))
             if fields.get("runs", "").strip().isdigit():
                 runs = int(fields["runs"].strip())
         graders = []
@@ -83,6 +85,7 @@ def cases(root: Path) -> list[dict]:
                 "tags": tags,
                 # The CLI's default when a case does not say. Stated here rather
                 # than assumed, because the floor is a minimum on the real value.
+                "allowed_tools": allowed_tools,
                 "runs": 3 if runs is None else runs,
                 "graders": graders,
                 "claims": {

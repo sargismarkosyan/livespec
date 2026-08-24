@@ -26,7 +26,7 @@ back.
   `.github/scripts/verify.py` is the one command, and it runs `checks.py`,
   `trace.py` (traceability, both directions, over `tags:` on eval cases),
   `evalsuite.py` (every skill held by a case, every case able to fail) and
-  `inject.py` — which breaks both gates **23 ways** in a temporary fixture and
+  `inject.py` — which breaks both gates **24 ways** in a temporary fixture and
   checks each one fires. CI runs that same one command.
 - Added two eval cases, so every skill is now held by one:
   `08-fix-it-while-recording` (`record-clip` files what it noticed instead of

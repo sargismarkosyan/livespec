@@ -17,6 +17,7 @@ Run: python3 .github/scripts/evalsuite.py [root]
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -36,6 +37,13 @@ OUTCOME_TYPES = {"llm", "regex", "file_exists", "baseline", "tool_order"}
 # The invocation the suite is meaningless without. A score with no baseline is
 # not a measurement, and the agent's own model prefers its own output.
 REQUIRED_INVOCATION = ["--ablation with-without", "--judge-model"]
+
+# `--allow-tools` is an operator grant: these are refused whatever a case's own
+# `allowed_tools` says. A case that lists one it is never granted runs without
+# it — and a grader asserting "no file under src/ was created" then passes
+# because the agent could not create anything at all. That grader is not
+# strict, it is inert, and it reads as green in both arms.
+GATED_TOOLS = {"Bash", "Write", "Edit", "WebFetch", "WebSearch"}
 
 failures: list[str] = []
 notes: list[str] = []
@@ -107,6 +115,22 @@ else:
     for required in REQUIRED_INVOCATION:
         if required not in text:
             fail("evals/README.md", f"no longer names {required!r}; the floor says the suite is run with it")
+
+    needed = sorted({tool for case in suite for tool in case["allowed_tools"] if tool in GATED_TOOLS})
+    for line in text.splitlines():
+        line = line.strip()
+        if not line.startswith("claude plugin eval"):
+            continue
+        granted = re.split(r"\s--", line + " --")
+        grant = next((part for part in granted if part.startswith("allow-tools")), "")
+        missing = [tool for tool in needed if tool not in grant.split()]
+        if missing:
+            fail(
+                "evals/README.md",
+                f"the documented invocation `{line}` never grants {', '.join(missing)}, which case "
+                f"`allowed_tools` ask for. Graders that check what the agent created cannot fail "
+                f"when it was never able to create anything.",
+            )
 
 for skill, holders in sorted(covered.items()):
     held = ", ".join(holders) if holders else "— nothing"

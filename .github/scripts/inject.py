@@ -58,9 +58,11 @@ FIXTURE: dict[str, str] = {
     ),
     "evals/README.md": (
         "# The eval suite\n\n"
-        "```\nclaude plugin eval . --ablation with-without --judge-model sonnet\n```\n"
+        "```\nclaude plugin eval . --ablation with-without --judge-model sonnet --allow-tools Write\n```\n"
     ),
-    "evals/case-rule/prompt.md": "---\ntags: [skill:refine-spec, rule:one]\nruns: 3\n---\nDo the thing.\n",
+    "evals/case-rule/prompt.md": (
+        "---\ntags: [skill:refine-spec, rule:one]\nallowed_tools: [Skill, Write]\nruns: 3\n---\nDo the thing.\n"
+    ),
     "evals/case-rule/graders/outcome.md": GRADER,
     "evals/case-walk/prompt.md": "---\ntags: [skill:refine-spec, workflow:read-it]\nruns: 3\n---\nWalk it.\n",
     "evals/case-walk/graders/outcome.md": GRADER,
@@ -146,6 +148,8 @@ FAULTS = [
      lambda r: write(r, "skills/orphan/SKILL.md", "---\nname: orphan\ndescription: x\n---\n"), "fails", "held by no eval case"),
     ("the documented invocation loses its baseline", SUITE,
      lambda r: edit(r, "evals/README.md", "--ablation with-without ", ""), "fails", "no longer names"),
+    ("a gated tool a case asks for is never granted", SUITE,
+     lambda r: edit(r, "evals/README.md", " --allow-tools Write", ""), "fails", "never grants"),
     ("an llm grader with an empty rubric", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: llm\nweight: 1\n---\n"),
      "fails", "will pass on anything"),
