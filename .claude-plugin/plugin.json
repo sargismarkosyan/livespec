@@ -1,7 +1,7 @@
 {
   "name": "livespec",
-  "version": "0.1.0",
-  "description": "Spec-driven development where the code stays the source of truth. Six skills for the loop — feedback into researched issues, requests into specs, one small change per version, each with a moving picture.",
+  "version": "0.2.0",
+  "description": "Spec-driven development where the code stays the source of truth. Seven skills for the loop \u2014 set the process up in any repository, turn feedback into researched issues and requests into specs, one small change per version, each with a moving picture.",
   "author": {
     "name": "Sargis Markosyan",
     "url": "https://github.com/sargismarkosyan"

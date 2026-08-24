@@ -19,9 +19,12 @@ cannot quietly stop being true.
 /plugin install livespec@livespec
 ```
 
+Wiring it into a repository rather than a machine, updating it, and developing
+against a local checkout are all in [method/README.md](method/README.md).
+
 ## What you get
 
-Six skills, and the discipline they enforce.
+Seven skills, and the discipline they enforce.
 
 | Skill | What it does |
 |---|---|
@@ -31,10 +34,12 @@ Six skills, and the discipline they enforce.
 | `refine-personas` | Adds, amends or retires who it is for — and refuses a persona invented to make a wanted feature legal. |
 | `refine-journeys` | Keeps the arc over time honest, and holds the seams that belong to no single workflow. |
 | `record-clip` | Records the animated GIF a version ships with: the app being *used*, in a real browser. |
+| `setup` | Installs all of the above into a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, and writes its bindings file and CLAUDE.md. |
 
 Plus [the method](method/) — the loop, the repository conventions, what the gates
-have to mean, and how to write a test that earns its keep — and
-[templates](templates/) for a change spec, a persona, a journey and a workflow.
+have to mean, how to write a test that earns its keep, and what a repository's
+CLAUDE.md must contain — and [templates](templates/) for a change spec, a
+persona, a journey and a workflow.
 
 ## The shape of it
 
