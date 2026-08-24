@@ -201,21 +201,26 @@ command. Renaming a job silently un-requires the check.
 - **`docs/feedback/`.** Issues here are filed from reading, not from using an
   app, so there are no screenshots to attach or to `git rm` on close.
 
-## Why `CLAUDE.md` is not at the root
+## Why one validation is not `--strict`
 
-This repository is a **plugin root and a project root at once**. A `CLAUDE.md` at
-a plugin's root is not loaded as context for anyone who installs the plugin, so
-`claude plugin validate ./.claude-plugin/plugin.json --strict` warns about it and
-CI — which treats warnings as errors — fails.
+`CLAUDE.md` is at the repository root, where a project's CLAUDE.md belongs and
+where every consuming repository will have it. This root is also a **plugin
+root**, and `claude plugin validate ./.claude-plugin/plugin.json` warns about
+that:
 
-The project context therefore lives at [`.claude/CLAUDE.md`](../../.claude/CLAUDE.md),
-which Claude Code always loads for this project and which the validator has no
-opinion about. **A consuming repository is not a plugin root and puts its
-`CLAUDE.md` at the root, exactly as [`claude-md.md`](../../method/claude-md.md)
-says.** This is a binding, not a change to the method.
+```
+❯ root: CLAUDE.md at the plugin root is not loaded as project context.
+```
 
-Nothing extra guards it: put a `CLAUDE.md` back at the root and the `plugin
-validate` job fails on the next pull request.
+The warning is right for a consumer — nobody installing livespec gets that file
+as context — and wrong here, where it is project context for people working in
+this repository. `--strict` turns warnings into errors, so that one call runs
+without it. **The other two validations keep `--strict`**, and the job still
+fails on any warning that is not this exact one; the workflow greps for it by
+name rather than trusting that nothing else will ever warn.
+
+Trading one narrowed flag for a conventionally placed `CLAUDE.md` is the better
+side of that deal: this repository should look like the repositories it sets up.
 
 ## Running the plugin on itself
 

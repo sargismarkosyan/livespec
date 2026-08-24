@@ -35,7 +35,17 @@ jobs:
         run: npm install -g @anthropic-ai/claude-code
       - name: Validate the marketplace manifest
         run: claude plugin validate . --strict
+      # --strict is dropped here alone. It treats warnings as errors, and this
+      # repository is a plugin root that deliberately keeps its project CLAUDE.md
+      # at the root — where `plugin validate` warns, correctly for a consumer and
+      # wrongly for us. Any *other* warning still fails the job.
       - name: Validate the plugin manifest
-        run: claude plugin validate ./.claude-plugin/plugin.json --strict
+        run: |
+          out=$(claude plugin validate ./.claude-plugin/plugin.json 2>&1) || { echo "$out"; exit 1; }
+          echo "$out"
+          if echo "$out" | grep -F '❯' | grep -vq 'CLAUDE.md at the plugin root'; then
+            echo "::error::unexpected warning from plugin validate"
+            exit 1
+          fi
       - name: Validate the skills
         run: claude plugin validate ./skills --strict

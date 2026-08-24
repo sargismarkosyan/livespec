@@ -11,29 +11,29 @@ and no picture to record.
 The human uses the plugin in other repositories, reports what they found, and
 approves specs. Read that split into everything below.
 
-**This repository is its own plugin.** The method in [`method/`](../method/README.md)
-and the skills in [`skills/`](../skills/) are not reference material to consult when
+**This repository is its own plugin.** The method in [`method/`](method/README.md)
+and the skills in [`skills/`](skills/) are not reference material to consult when
 stuck — they are the rules this repository is held to, and reading them is not
 optional. Do not restate them here.
 
 **The line:** could this sentence survive a repository with pytest and a Makefile?
 If yes it belongs in `method/`. If it names a command, a threshold, a filename or
-a language, it belongs in [`specs/setup/README.md`](../specs/setup/README.md).
+a language, it belongs in [`specs/setup/README.md`](specs/setup/README.md).
 Getting this wrong is how two copies of a method start disagreeing.
 
 ## Where to look
 
 | | |
 |---|---|
-| [specs/setup/README.md](../specs/setup/README.md) | **The bindings.** Every command, threshold and path. Read before assuming any of them |
-| [specs/spec.md](../specs/spec.md) | What livespec is, the vocabulary, and the promises that belong to no workflow |
-| [specs/README.md](../specs/README.md) | How the spec layers fit, and which are deliberately empty |
-| [specs/personas/](../specs/personas/README.md) | Who it is for. Empty — `refine-personas` fills it, and it is the next thing to run |
-| [specs/workflows/](../specs/workflows/README.md) | The bounded attempts. Empty until the personas exist |
-| [specs/journeys/](../specs/journeys/README.md) | The arc of adopting it. Empty |
-| [CONTRIBUTING.md](../CONTRIBUTING.md) | What is component and what is payload, where a change goes, the release step |
-| [evals/README.md](../evals/README.md) | The cases, the floor they may not drop below, and why Δ is the only number |
-| [method/gates.md](../method/gates.md) | What the gates have to mean |
+| [specs/setup/README.md](specs/setup/README.md) | **The bindings.** Every command, threshold and path. Read before assuming any of them |
+| [specs/spec.md](specs/spec.md) | What livespec is, the vocabulary, and the promises that belong to no workflow |
+| [specs/README.md](specs/README.md) | How the spec layers fit, and which are deliberately empty |
+| [specs/personas/](specs/personas/README.md) | Who it is for. Empty — `refine-personas` fills it, and it is the next thing to run |
+| [specs/workflows/](specs/workflows/README.md) | The bounded attempts. Empty until the personas exist |
+| [specs/journeys/](specs/journeys/README.md) | The arc of adopting it. Empty |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | What is component and what is payload, where a change goes, the release step |
+| [evals/README.md](evals/README.md) | The cases, the floor they may not drop below, and why Δ is the only number |
+| [method/gates.md](method/gates.md) | What the gates have to mean |
 
 ## The loop
 
@@ -50,7 +50,7 @@ Getting this wrong is how two copies of a method start disagreeing.
 
 ## Rules that get broken here
 
-The full set is in [method/process.md](../method/process.md). These are the ones
+The full set is in [method/process.md](method/process.md). These are the ones
 this repository actually loses:
 
 - **The `description` is the expensive field.** It loads in every session.
@@ -71,7 +71,7 @@ this repository actually loses:
 ```sh
 python3 .github/scripts/verify.py                 # everything that can pass here
 claude plugin validate . --strict                 # marketplace manifest
-claude plugin validate ./.claude-plugin/plugin.json --strict
+claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
 claude plugin validate ./skills --strict
 claude plugin eval . --ablation with-without --judge-model sonnet --allow-tools Write Edit   # maintainer step
 ```
@@ -91,8 +91,6 @@ evals/<NN-case>/         one prompt, its graders, and the tags saying what it ho
 specs/                   this repository's own spec layer
 .github/scripts/         the gates. verify.py is the one command
 .claude-plugin/          plugin.json is the authority on version; marketplace.json must not restate it
-.claude/CLAUDE.md        this file. It is here rather than at the root because the root is a
-                         plugin root, and `plugin validate --strict` warns on a CLAUDE.md there
 ```
 
 ## Where it lives
