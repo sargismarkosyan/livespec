@@ -32,7 +32,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
 | **Eval-suite gate** | `.github/scripts/evalsuite.py [root]` |
-| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture, breaks it 24 ways |
+| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture, breaks it 23 ways |
 | **Repository checks** | `.github/scripts/checks.py` — manifests, skill frontmatter, always-on budget, link and payload checks |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader both gates use |
@@ -64,14 +64,14 @@ runs: 3
 | `workflow:<id>` | this case walks that workflow end to end | `trace.py` — a workflow nothing walks fails |
 | `should-not-fire` | this case asserts nothing fires | `evalsuite.py` — the suite must always keep at least one |
 
-**Every case must claim a rule or a workflow**, unless it is `should-not-fire`
-(which cannot verify a rule by asserting nothing happened) or grandfathered.
+**A case is not required to claim a rule.** The spec layer is empty, so there is
+nothing to claim yet, and the direction that carries the value —
+`rule → case` — needs no exemption to work: it has nothing to fail on today and
+arms itself the moment the first rule lands. What is enforced is that a claim
+*resolves*: a case naming a rule or workflow that does not exist fails.
 
-**Grandfathered cases** are the nine that predate this spec layer, listed in
-`GRANDFATHERED` in [`caselib.py`](../../.github/scripts/caselib.py). **The list
-may only shrink** — a case leaves it when a rule it answers to gets written.
-Nothing is ever added: a pull request that grows the list is claiming a new case
-predates today, which is false, and the diff makes that visible.
+What stops a case being filler is the eval-suite gate, not a claim: every case
+carries `skill:<name>` and at least one outcome grader.
 
 **Unverified against the runner.** `claude plugin eval` will not start on this
 account (below), so the `tags:` keys have never been round-tripped through it. If
@@ -114,13 +114,12 @@ saying it does.
 
 Run on **2026-08-24** by `python3 .github/scripts/inject.py`, which is part of
 `verify.py` and therefore of every CI run — so this record is re-made rather than
-remembered. **24 of 24 faults produced the expected result.**
+remembered. **23 of 23 faults produced the expected result.**
 
 | Injected fault | Expected | Result |
 |---|---|---|
 | live rule with no case | fails | ✔ |
 | case claims a rule that does not exist | fails | ✔ |
-| case claims neither a rule nor a workflow | fails | ✔ |
 | `@planned` rule that has a case | fails | ✔ |
 | feature naming no workflow | fails | ✔ |
 | feature naming a workflow that does not exist | fails | ✔ |

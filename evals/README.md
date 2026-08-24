@@ -73,8 +73,9 @@ These are not negotiable when the suite is edited:
 - **`runs: 3` minimum**, because a single run of an LLM grader is noise;
 - **every skill is held by at least one case.** A skill nothing holds costs
   context in every session and cannot be changed safely;
-- **every case says what it holds**, in `tags:` — `skill:<name>`, and `rule:<id>`
-  or `workflow:<id>` once the rule it answers to exists. The contract is in
+- **every case says which skill it holds**, in `tags:` — `skill:<name>`. A case
+  may also carry `rule:<id>` or `workflow:<id>` once the rule it answers to
+  exists, and a claim that names nothing fails. The contract is in
   [`specs/setup/README.md`](../specs/setup/README.md);
 - **`--ablation with-without` stays**, because a score without a baseline is not a
   measurement;

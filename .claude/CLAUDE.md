@@ -63,8 +63,6 @@ this repository actually loses:
   changelog entry ride in the same commit as the change.
 - **Rule, workflow and persona ids are permanent.** Renaming one orphans every
   case pointing at it, in every consuming repository at once.
-- **The grandfathered case list may only shrink.** Growing it claims a new case
-  predates today, which is false.
 - **A payload file nothing links fails CI.** It ships to every user unread.
 - **Every commit green.** `verify.py` before committing, always.
 

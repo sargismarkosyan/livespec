@@ -101,8 +101,6 @@ FAULTS = [
      lambda r: drop(r, "evals/case-rule"), "fails", "no eval case claims it"),
     ("case claims a rule that does not exist", TRACE,
      lambda r: edit(r, "evals/case-rule/prompt.md", "rule:one", "rule:nope"), "fails", "does not exist"),
-    ("case claims neither a rule nor a workflow", TRACE,
-     lambda r: edit(r, "evals/case-rule/prompt.md", ", rule:one", ""), "fails", "claims neither"),
     ("@planned rule that has a case", TRACE,
      lambda r: edit(r, "specs/features/core/core.feature", "@rule:one", "@rule:one @planned"), "fails", "should have come off"),
     ("feature naming no workflow", TRACE,

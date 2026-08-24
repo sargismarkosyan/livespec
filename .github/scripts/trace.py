@@ -255,17 +255,13 @@ for doc in features:
 
 for case in suite:
     where = f"evals/{case['name']}"
-    claims_something = case["claims"]["rules"] or case["claims"]["workflows"]
     if case["negative"]:
         if case["claims"]["rules"]:
             warn(where, "is a should-not-fire case that claims a rule; a case asserting nothing fires cannot verify one")
         continue
-    if not claims_something and not case["grandfathered"]:
-        fail(
-            where,
-            "claims neither a rule nor a workflow. Add tags: [rule:<id>] for the rule it exists for, "
-            "or tags: [workflow:<id>] if it walks a workflow.",
-        )
+    # A case that claims nothing is not a failure. `rule -> case` already fails a
+    # rule nothing verifies, and that direction needs no list of exempt names to
+    # work while the spec layer is still empty.
     for value in case["claims"]["rules"]:
         if value not in live_rules and value not in planned_rules:
             fail(where, f"claims @rule:{value}, which does not exist. Rule ids are permanent; this is usually a typo or a rename.")
@@ -330,11 +326,7 @@ if workflow_index:
             print(f"      {served}")
 
 cases_claiming = sum(1 for c in suite if c["claims"]["rules"] or c["claims"]["workflows"])
-grandfathered = sum(1 for c in suite if c["grandfathered"])
-notes.append(
-    f"{len(suite)} eval case(s): {cases_claiming} claiming, "
-    f"{grandfathered} grandfathered (predate the spec layer; the list may only shrink)"
-)
+notes.append(f"{len(suite)} eval case(s), {cases_claiming} claiming a rule or a workflow")
 
 for note in notes:
     print(f"  {note}")

@@ -18,26 +18,6 @@ from pathlib import Path
 # CLI merges them, and so do we — tags from either count as claimed.
 CASE_FILES = ("case.yaml", "prompt.md")
 
-# Cases that predate this repository's spec layer, exempt from having to claim a
-# rule. Section 7 of the setup skill: existing tests do not get retrofitted with
-# references to rules that do not exist yet.
-#
-# **This list may only shrink.** A case leaves it when a rule it answers to gets
-# written; nothing is ever added. A pull request that grows it is claiming its
-# new case predates today, which is false, and the diff makes that visible.
-GRANDFATHERED = {
-    "01-solution-shaped-request",
-    "02-feedback-from-use",
-    "03-persona-to-fit-feature",
-    "04-workflow-for-orphan",
-    "05-future-state-journey",
-    "06-neg-commit-message",
-    "07-neg-gherkin-question",
-    "08-fix-it-while-recording",
-    "09-neg-setup-not-self-started",
-}
-
-
 def frontmatter(path: Path) -> tuple[dict[str, str], str]:
     """Read a leading --- block. Returns (fields, body).
 
@@ -111,7 +91,6 @@ def cases(root: Path) -> list[dict]:
                     "skills": [t.split(":", 1)[1] for t in tags if t.startswith("skill:")],
                 },
                 "negative": "should-not-fire" in tags,
-                "grandfathered": directory.name in GRANDFATHERED,
             }
         )
     return found
