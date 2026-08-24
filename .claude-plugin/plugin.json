@@ -1,9 +1,23 @@
 {
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "livespec",
-  "version": "0.2.0",
-  "description": "Spec-driven development where the code stays the source of truth. Seven skills for the loop \u2014 set the process up in any repository, turn feedback into researched issues and requests into specs, one small change per version, each with a moving picture.",
+  "version": "0.3.0",
+  "description": "Spec-driven development where the code stays the source of truth. Seven skills for the loop — set the process up in any repository, turn feedback into researched issues and requests into specs, one small change per version, each with a moving picture.",
   "author": {
     "name": "Sargis Markosyan",
     "url": "https://github.com/sargismarkosyan"
+  },
+  "homepage": "https://github.com/sargismarkosyan/livespec",
+  "repository": "https://github.com/sargismarkosyan/livespec",
+  "license": "MIT",
+  "keywords": [
+    "spec-driven-development",
+    "gherkin",
+    "traceability",
+    "specifications",
+    "workflow"
+  ],
+  "experimental": {
+    "evals": "./evals"
   }
 }

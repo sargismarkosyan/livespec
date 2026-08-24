@@ -99,3 +99,13 @@ Twenty-eight versions of one small app, built entirely by AI, one spec at a time
 with a human using it and reporting what they found:
 **[todo-change](https://github.com/sargismarkosyan/todo-change)** — the reference
 implementation, and the series of pictures it produced.
+
+## Working on it
+
+[CONTRIBUTING.md](CONTRIBUTING.md) — what is a component and what is payload,
+where a change belongs, and the release step. [evals/](evals/README.md) — the
+seven cases that hold the judgment the skills exist for, measured as uplift over
+running without them. [CHANGELOG.md](CHANGELOG.md) — and why the version bump is
+not optional.
+
+MIT licensed.

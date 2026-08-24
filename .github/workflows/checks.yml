@@ -1,0 +1,39 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  repository:
+    name: repository checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check the repository against itself
+        run: python3 .github/scripts/checks.py
+
+  manifests:
+    name: plugin validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # `plugin validate` is an offline schema check — it needs no credentials.
+      - name: Install the Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Validate the marketplace manifest
+        run: claude plugin validate . --strict
+      - name: Validate the plugin manifest
+        run: claude plugin validate ./.claude-plugin/plugin.json --strict
+      - name: Validate the skills
+        run: claude plugin validate ./skills --strict
