@@ -1,4 +1,5 @@
 ---
+tags: [should-not-fire]
 max_turns: 10
 timeout_seconds: 180
 allowed_tools: [Skill, Read, Glob, Grep]

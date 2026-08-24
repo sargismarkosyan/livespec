@@ -1,0 +1,8 @@
+{
+  "extraKnownMarketplaces": {
+    "livespec": {
+      "source": { "source": "directory", "path": "." }
+    }
+  },
+  "enabledPlugins": { "livespec@livespec": true }
+}

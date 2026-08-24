@@ -5,6 +5,42 @@ without bumping it and nobody receives the change — `/plugin update` sees the
 same string and keeps the cached copy. So: one entry here per version, and the
 bump lands in the same commit as the change it describes.
 
+## 0.6.0 — 2026-08-24
+
+**livespec now runs its own process.** `/livespec:setup` was applied to this
+repository, with one substitution that runs through all of it: where the method
+says *test*, this repository means **eval case** — the product is judgment, and
+the only way to hold judgment is to run it against a prompt and grade what came
+back.
+
+- Added `specs/` — the product spec and its vocabulary, the bindings in
+  `specs/setup/README.md`, and the persona, workflow and journey layers. Those
+  three are deliberately empty: `refine-personas` fills the first, and everything
+  else is downstream of it. No behaviour that already existed was retroactively
+  specced.
+- Added `CLAUDE.md`, and `.claude/settings.json` declaring the marketplace as a
+  **directory source pointing at this checkout** rather than at GitHub — pointing
+  it at the published copy would load one version of the method while you edit
+  another, inside the repository that exists to stop exactly that.
+- Added the gates, in Python 3 with no dependencies:
+  `.github/scripts/verify.py` is the one command, and it runs `checks.py`,
+  `trace.py` (traceability, both directions, over `tags:` on eval cases),
+  `evalsuite.py` (every skill held by a case, every case able to fail) and
+  `inject.py` — which breaks both gates **24 ways** in a temporary fixture and
+  checks each one fires. CI runs that same one command.
+- Added two eval cases, so every skill is now held by one:
+  `08-fix-it-while-recording` (`record-clip` files what it noticed instead of
+  fixing it, and ships a clip rather than a still) and
+  `09-neg-setup-not-self-started` (`setup` never starts itself, however ready a
+  repository looks). The seven existing cases carry `tags:` saying what they hold
+  and are grandfathered from claiming a rule — that list may only shrink.
+- `main` is protected: pull request required, both checks required by job name,
+  strict, applies to admins, no force pushes or deletion. The settings are
+  recorded in the bindings, because branch protection is the one gate that cannot
+  be reviewed in a diff.
+- **No skill changed.** The always-on cost is unmoved at 3170 characters across
+  six model-invocable skills.
+
 ## 0.5.0 — 2026-08-24
 
 - Added `templates/feature.feature` — the Gherkin layer `refine-spec` writes, with

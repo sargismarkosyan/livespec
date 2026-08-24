@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+
+# Eval runs write here. Results are a measurement of one moment, not a record
+# the repository keeps — what a run concluded goes in the change spec.
+evals/results/

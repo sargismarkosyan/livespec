@@ -1,4 +1,5 @@
 ---
+tags: [skill:feedback]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit, Bash]

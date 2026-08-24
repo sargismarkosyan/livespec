@@ -65,6 +65,17 @@ belongs there, so a new file lands in the right place without an argument.
 - **Anything aspirational.** A rule nobody follows teaches an agent that the file
   is decorative, and it will then discount the rules that are real.
 
+## Where it goes
+
+The repository root, in every ordinary repository.
+
+**The exception is a repository that is itself a plugin root** — one with a
+`.claude-plugin/` directory. A `CLAUDE.md` there is not loaded as context for
+anyone who installs the plugin, and `claude plugin validate --strict` says so; the
+file belongs at `.claude/CLAUDE.md`, which Claude Code always loads for that
+project. Record the reason in `specs/setup/`, because the next person to read the
+root will wonder where it went.
+
 ## Length
 
 **One screen of scroll, and about a hundred lines.** If it is longer, something
