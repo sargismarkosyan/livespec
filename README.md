@@ -39,7 +39,7 @@ Seven skills, and the discipline they enforce.
 Plus [the method](method/) — the loop, the repository conventions, what the gates
 have to mean, how to write a test that earns its keep, and what a repository's
 CLAUDE.md must contain — and [templates](templates/) for a change spec, a
-persona, a journey and a workflow.
+persona, a journey, a workflow and a feature.
 
 ## The shape of it
 

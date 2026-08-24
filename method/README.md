@@ -11,8 +11,8 @@ The part of this that does not change between repositories.
 | [claude-md.md](claude-md.md) | What a repository's CLAUDE.md must contain, and what must stay out of it. |
 
 Alongside them: [the seven skills](../skills/) that run the loop,
-[templates](../templates/) for a change spec, a persona, a journey and a
-workflow, and [`setup`](../skills/setup/SKILL.md) — the skill that installs all
+[templates](../templates/) for a change spec, a persona, a journey, a workflow
+and a feature, and [`setup`](../skills/setup/SKILL.md) — the skill that installs all
 of it into a repository.
 
 **Nothing here names a command, a threshold, a filename or a language.** Those

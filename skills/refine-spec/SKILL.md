@@ -134,7 +134,9 @@ The step must be small enough to be one screenshot's worth of change.
 
 ## 6. Write the spec
 
-**Gherkin rules** in `specs/features/<area>/`, following `specs/README.md`:
+**Gherkin rules** in `specs/features/<area>/`, from
+[`templates/feature.feature`](../../templates/feature.feature), following
+`specs/README.md`:
 
 - One component or behaviour per file, small. Add a new `.feature` file rather
   than growing one past its soft limits (120 lines, 6 rules).

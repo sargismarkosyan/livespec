@@ -5,6 +5,14 @@ without bumping it and nobody receives the change — `/plugin update` sees the
 same string and keeps the cached copy. So: one entry here per version, and the
 bump lands in the same commit as the change it describes.
 
+## 0.5.0 — 2026-08-24
+
+- Added `templates/feature.feature` — the Gherkin layer `refine-spec` writes, with
+  the id system on the page: permanent `@feature:`/`@rule:` ids, `@workflow:` and
+  why no `@persona:` or `@journey:` belongs on a feature, `@planned` and when the
+  tag comes off, and the rule for what must still be true when it goes wrong.
+- `refine-spec` names it, the way the other skills name theirs.
+
 ## 0.4.0 — 2026-08-24
 
 - `setup` is now **user-invoked only** (`disable-model-invocation: true`). Claude
