@@ -28,7 +28,9 @@ exists:
 The distinction matters because it is the context budget:
 
 - **Every session pays** for each skill's `name` and `description`, whether or
-  not anything fires. Currently ~3.7 KB across seven skills.
+  not anything fires — currently ~3.2 KB across the six model-invocable skills.
+  A skill marked `disable-model-invocation: true` costs nothing until invoked;
+  its description is not in context at all.
 - A skill's **body** loads only when that skill fires.
 - **Payload** loads only when a body sends the agent to it — which is why a
   `method/` or `templates/` file that nothing links is dead weight in every
@@ -59,6 +61,13 @@ with pytest and a Makefile? If not, it is a binding, not the method.
 - **Every `refine-*` skill has a "the one thing this skill refuses" section.**
   That refusal is the skill's actual value. If you edit one, `evals/` has a case
   holding it; if you add one, add the case.
+- **A skill with side effects the human should time is user-invoked only.**
+  `setup` carries `disable-model-invocation: true`, which takes its description
+  out of context entirely — Claude cannot see it to consider it, and it runs only
+  when someone types `/livespec:setup`. It writes `CLAUDE.md` and wires a
+  repository's gates; that is not a decision an agent makes because a repo looked
+  ready for it. `USER_INVOKED_ONLY` in `.github/scripts/checks.py` holds the list,
+  and CI fails if the flag goes missing.
 - **Skills never implement.** `feedback` files, `refine-*` specs, `record-clip`
   records. None of them touch `src/`. A change that relaxes this is a change to
   what livespec is, and needs to be argued as one.

@@ -21,6 +21,13 @@ ROOT = Path(__file__).resolve().parents[2]
 DESCRIPTION_MAX = 1024
 ALWAYS_ON_BUDGET_CHARS = 5000
 
+# Skills the human invokes and the model may not. `disable-model-invocation: true`
+# takes the description out of context entirely, so Claude cannot see the skill to
+# consider it — it runs only on an explicit /livespec:<name>. `setup` writes
+# CLAUDE.md and wires a repository's gates; that is not a decision an agent makes
+# because a repo looked ready for it.
+USER_INVOKED_ONLY = {"setup"}
+
 NUMBER_WORDS = {
     1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
     7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve",
@@ -106,6 +113,8 @@ if not skill_files:
     fail("skills/", "no SKILL.md found")
 
 always_on_chars = 0
+always_on_skills = 0
+seen = set()
 for skill in skill_files:
     where = rel(skill)
     fields = frontmatter(skill)
@@ -114,24 +123,44 @@ for skill in skill_files:
         continue
     name = fields.get("name", "")
     description = fields.get("description", "")
+    seen.add(skill.parent.name)
     if name != skill.parent.name:
         fail(where, f"frontmatter name {name!r} does not match its directory {skill.parent.name!r}")
     if not description:
         fail(where, "no description; it is the only thing the model sees before firing")
     elif len(description) > DESCRIPTION_MAX:
         fail(where, f"description is {len(description)} chars (max {DESCRIPTION_MAX})")
-    always_on_chars += len(name) + len(description)
+
+    user_only = fields.get("disable-model-invocation", "").lower() == "true"
+    if skill.parent.name in USER_INVOKED_ONLY and not user_only:
+        fail(
+            where,
+            "must carry 'disable-model-invocation: true'. Without it the model can "
+            "fire this skill on its own; it is meant to run only when a human types "
+            f"/livespec:{skill.parent.name}.",
+        )
+    if not user_only:
+        # A user-invoked-only skill costs nothing until it is invoked: its
+        # description is not in context at all. Note that `claude plugin details`
+        # still bills it as always-on — that estimator does not model the flag.
+        # Verified by asking a loaded session which skills it can invoke.
+        always_on_chars += len(name) + len(description)
+        always_on_skills += 1
+
+for missing in sorted(USER_INVOKED_ONLY - seen):
+    fail("skills/", f"USER_INVOKED_ONLY names {missing!r}, which is not a skill here")
 
 if always_on_chars > ALWAYS_ON_BUDGET_CHARS:
     fail(
         "skills/",
-        f"always-on cost is {always_on_chars} chars across {len(skill_files)} skills "
+        f"always-on cost is {always_on_chars} chars across {always_on_skills} skills "
         f"(budget {ALWAYS_ON_BUDGET_CHARS}). Every session pays this whether or not a skill fires.",
     )
 else:
     notes.append(
-        f"always-on cost: {always_on_chars} chars across {len(skill_files)} skills "
-        f"(budget {ALWAYS_ON_BUDGET_CHARS})"
+        f"always-on cost: {always_on_chars} chars across {always_on_skills} model-invocable "
+        f"skills (budget {ALWAYS_ON_BUDGET_CHARS}); "
+        f"{len(skill_files) - always_on_skills} user-invoked-only, costing nothing until invoked"
     )
 
 # --- 3. the skill count is stated consistently ------------------------------

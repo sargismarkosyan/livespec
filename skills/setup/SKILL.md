@@ -1,6 +1,7 @@
 ---
 name: setup
 description: Set this process up in a repository — read what is already there, wire the two gates in that project's own language, write specs/setup/README.md as its bindings, and write CLAUDE.md. Use when adopting livespec in a new or existing repository, when asked to initialise the specs, wire the traceability gate, "set up the process here", or when a repo has the plugin enabled but no specs/setup/README.md for the skills to read. Interviews for what only the human knows, proves every gate fires before handing back, and never writes application code.
+disable-model-invocation: true
 ---
 
 # Set the process up here
