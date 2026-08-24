@@ -133,7 +133,10 @@ of a method start disagreeing — the thing this plugin exists to stop.
 ## Releasing
 
 The `version` in `plugin.json` pins every install. Push without bumping it and
-**nobody gets the change**.
+**nobody gets the change** — `/plugin update` compares that string and keeps the
+cached copy. CI enforces this: `version_gate.py` fails a pull request that
+touches `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` without
+moving `version` and adding the matching `CHANGELOG.md` entry.
 
 1. Bump `version` in `.claude-plugin/plugin.json`. Never set `version` in the
    marketplace entry too — `plugin.json` silently wins, so the second one can

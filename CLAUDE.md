@@ -60,7 +60,9 @@ this repository actually loses:
 - **No dependency may be added to the gates.** Python 3 standard library only —
   CI installs nothing to run them.
 - **Push without bumping `version` and nobody gets the change.** The bump and the
-  changelog entry ride in the same commit as the change.
+  changelog entry ride in the same commit as the change. CI fails a pull request
+  that changes what ships without moving it — you cannot forget, but you do still
+  have to do it.
 - **Rule, workflow and persona ids are permanent.** Renaming one orphans every
   case pointing at it, in every consuming repository at once.
 - **A payload file nothing links fails CI.** It ships to every user unread.

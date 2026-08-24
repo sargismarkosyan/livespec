@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The version gate diffs against the base branch.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -21,6 +24,11 @@ jobs:
       # than anybody can reproduce is how a required check stops being trusted.
       - name: Verify
         run: python3 .github/scripts/verify.py
+      # A property of a pull request, not of a tree — which is why it is not part
+      # of verify.py, and why it only runs here.
+      - name: Version gate
+        if: github.event_name == 'pull_request'
+        run: python3 .github/scripts/version_gate.py origin/${{ github.base_ref }}
 
   manifests:
     name: plugin validate
