@@ -10,7 +10,7 @@ The part of this that does not change between repositories.
 | [testing.md](testing.md) | Behaviour tests, unit tests, and why a flaky one is worse than none. |
 | [claude-md.md](claude-md.md) | What a repository's CLAUDE.md must contain, and what must stay out of it. |
 
-Alongside them: [the six skills](../skills/) that run the loop,
+Alongside them: [the seven skills](../skills/) that run the loop,
 [templates](../templates/) for a change spec, a persona, a journey and a
 workflow, and [`setup`](../skills/setup/SKILL.md) — the skill that installs all
 of it into a repository.

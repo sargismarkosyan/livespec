@@ -171,7 +171,8 @@ the change lands, the change is not finished.
 
 ## 6. Write it, check, hand back
 
-The persona file and `personas/README.md`, then a numbered change spec at
+The persona file, from [`templates/persona.md`](../../templates/persona.md),
+and `personas/README.md`, then a numbered change spec at
 `specs/changes/NNNN-<slug>.md` from
 [`templates/change.md`](../../templates/change.md), one past the highest. *Who
 this is for* in that spec is, for once, literally the subject.

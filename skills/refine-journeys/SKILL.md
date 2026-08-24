@@ -166,8 +166,10 @@ One journey per change. Re-cutting the workflows a journey describes is the
 workflows skill's job and a different version — those land first, because this
 file is downstream of them.
 
-The journey file, then a numbered change spec from the template. Run the
-traceability gate; it must be green. Commit the spec on its own.
+The journey file, from [`templates/journey.md`](../../templates/journey.md),
+then a numbered change spec at `specs/changes/NNNN-<slug>.md` from
+[`templates/change.md`](../../templates/change.md), one past the highest. Run
+the traceability gate; it must be green. Commit the spec on its own.
 
 **Show the journey diff by itself, first** — the arc as it now reads, one line on
 what it changes about how the attempts connect, and what that newly explains or
