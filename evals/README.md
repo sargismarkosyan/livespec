@@ -25,8 +25,9 @@ python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow
 >
 > What CI enforces is the structure: `python3 .github/scripts/verify.py`
 > fails if a skill is held by no case, if a case is graded only by what fired, if
-> `runs` drops below three, if the last should-not-fire case is deleted, or if the
-> invocation below loses its baseline. That proves a case exists and **can** fail.
+> `runs` drops below three, if the last should-not-fire case is deleted, if the
+> invocation below loses its baseline — and, since the board, if a measurement's
+> inputs changed without a re-run. That proves a case exists and **can** fail.
 > It never proves one passes, and no green run should be read as saying so.
 
 ## The number that matters is Δ, not the score

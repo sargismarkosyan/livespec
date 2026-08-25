@@ -30,7 +30,7 @@ Getting this wrong is how two copies of a method start disagreeing.
 | [specs/README.md](specs/README.md) | How the spec layers fit, and which are deliberately empty |
 | [specs/personas/](specs/personas/README.md) | Who it is for. One, and the reason the gates fail rather than warn: they do not read the docs |
 | [specs/workflows/](specs/workflows/README.md) | The bounded attempts. One, live since 0008; three more are real and uninterviewed |
-| [specs/features/](specs/features/) | The enforced contract. Six live rules under `setup/`, each claimed by an eval case |
+| [specs/features/](specs/features/) | The enforced contract. The live rules, each claimed by an eval case |
 | [specs/journeys/](specs/journeys/README.md) | The arc of adopting it, and the seams no attempt can hold. Where the value it has not reached is written down |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | What is component and what is payload, where a change goes, the release step |
 | [evals/README.md](evals/README.md) | The cases, the floor they may not drop below, and why Δ is the only number |
@@ -72,6 +72,11 @@ this repository actually loses:
 - **Rule, workflow and persona ids are permanent.** Renaming one orphans every
   case pointing at it, in every consuming repository at once.
 - **A payload file nothing links fails CI.** It ships to every user unread.
+- **A measurement does not outlive what it measured.** Editing a skill, a rule
+  or an eval case stales its entries in `evals/board.json`, and `verify.py`
+  fails until `evals/runner/run.py --changed` re-measures exactly those — real
+  sessions, real money, run locally before the commit. The score is never
+  gated; only its bookkeeping is.
 - **Every commit green.** `verify.py` before committing, always.
 
 ## Commands

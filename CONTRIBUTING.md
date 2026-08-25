@@ -120,10 +120,13 @@ a temporary fixture, and 9 against the release inputs, which are pure functions
 over a label list and a pull request body — and checks each one fires. What each binding means is in
 [`specs/setup/README.md`](specs/setup/README.md).
 
-If you changed a skill's judgment or its description, also run the evals — see
-[`evals/README.md`](evals/README.md). They cost money per session, so this is a
-maintainer step rather than a CI gate: `evals/runner/run.py` runs the suite on
-promptfoo, since the native `claude plugin eval` is gated behind early access.
+If you changed a skill, a rule or an eval case, the evals are no longer
+optional: their entries on `evals/board.json` go stale and `verify.py` fails
+until `evals/runner/run.py --changed` re-measures exactly what moved — see
+[`evals/README.md`](evals/README.md). Running them stays a maintainer step
+(they cost money per session; CI checks the bookkeeping, never runs a case):
+the runner drives promptfoo, since the native `claude plugin eval` is gated
+behind early access.
 
 ### Developing against a local checkout
 
