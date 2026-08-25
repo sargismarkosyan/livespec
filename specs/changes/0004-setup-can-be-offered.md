@@ -15,8 +15,7 @@ spec-driven tooling and rejected something about it; this is the minute before
 they have any of it, and it is the one minute where livespec's entire visible
 surface is six skill descriptions.
 
-**Unlike spec 0003 ([#18](https://github.com/sargismarkosyan/livespec/issues/18)),
-this one does name a workflow —
+**Unlike [`0003`](0003-main-releases-itself.md), this one does name a workflow —
 once there is one to name.** Adopting the process into a repository is an attempt
 made *with* the plugin, in the adopter's own repository, which is exactly what
 [workflows/](../workflows/README.md) says the layer holds. It is also where
@@ -126,8 +125,7 @@ what happens today.
 **Owed for the reason [0002](0002-setup-finishes-what-it-names.md) records**, and
 narrowly: `trace.py` fails a feature naming no live `@workflow:`, and
 [workflows/](../workflows/README.md) is empty. Unlike
-spec 0003 ([#18](https://github.com/sargismarkosyan/livespec/issues/18)) this one
-is blocked on nothing but
+[`0003`](0003-main-releases-itself.md) this one is blocked on nothing but
 [#14](https://github.com/sargismarkosyan/livespec/issues/14) — the workflow it
 will name is the adoption attempt itself. The three ids are **reserved by this
 spec and permanent from here**.
