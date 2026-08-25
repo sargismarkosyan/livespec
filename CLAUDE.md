@@ -28,9 +28,9 @@ Getting this wrong is how two copies of a method start disagreeing.
 | [specs/setup/README.md](specs/setup/README.md) | **The bindings.** Every command, threshold and path. Read before assuming any of them |
 | [specs/spec.md](specs/spec.md) | What livespec is, the vocabulary, and the promises that belong to no workflow |
 | [specs/README.md](specs/README.md) | How the spec layers fit, and which are deliberately empty |
-| [specs/personas/](specs/personas/README.md) | Who it is for. Empty — `refine-personas` fills it, and it is the next thing to run |
-| [specs/workflows/](specs/workflows/README.md) | The bounded attempts. Empty until the personas exist |
-| [specs/journeys/](specs/journeys/README.md) | The arc of adopting it. Empty |
+| [specs/personas/](specs/personas/README.md) | Who it is for. One, and the reason the gates fail rather than warn: they do not read the docs |
+| [specs/workflows/](specs/workflows/README.md) | The bounded attempts. One, `@planned`; three more are real and uninterviewed |
+| [specs/journeys/](specs/journeys/README.md) | The arc of adopting it, and the seams no attempt can hold. Where the value it has not reached is written down |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | What is component and what is payload, where a change goes, the release step |
 | [evals/README.md](evals/README.md) | The cases, the floor they may not drop below, and why Δ is the only number |
 | [method/gates.md](method/gates.md) | What the gates have to mean |
