@@ -114,6 +114,14 @@ installs and pays for nothing. The maintainer step that runs them, since
 python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold
 ```
 
+**It refuses unless the maintainer approves that run.** `--i-approve-the-cost`
+is required and deliberately absent from every command quoted here, so copying
+one refuses rather than spends; `evalsuite.py` fails the build if the refusal
+is removed. Six sessions per case plus judge calls bill the maintainer's
+account and draw down its session limit — three runs in one sitting exhausted
+it outright on 2026-08-25. A stale board entry is a reason to stop and ask,
+never a licence to run.
+
 It compiles the case folders into a promptfoo config (pinned `promptfoo@0.122.0`,
 run via `npx` — node is a maintainer-machine prerequisite, never CI's), drives
 each arm through `claude -p` (`--plugin-dir` present or absent is the ablation),

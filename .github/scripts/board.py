@@ -36,8 +36,12 @@ AS_JSON = "--json" in sys.argv
 args = [a for a in sys.argv[1:] if a != "--json"]
 ROOT = Path(args[0]).resolve() if args else Path(__file__).resolve().parents[2]
 
+# Quoted without the runner's approval flag on purpose: a stale entry is a
+# reason to ask the maintainer for a run, never a licence to start one, and a
+# command that spends money should not be copy-pasteable out of a gate's output.
 HEAL = ("python3 evals/runner/run.py --changed --ablation with-without "
-        "--judge-model sonnet --allow-tools Write Edit --scaffold")
+        "--judge-model sonnet --allow-tools Write Edit --scaffold\n"
+        "      (spends real money — the maintainer adds --i-approve-the-cost, nobody else)")
 
 failures: list[str] = []
 warnings: list[str] = []

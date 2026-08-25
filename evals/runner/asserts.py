@@ -29,6 +29,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(os.environ["LIVESPEC_ROOT"]) / ".github" / "scripts"))
@@ -100,13 +101,22 @@ def _judge(rubric: str, content: str) -> dict:
         "claude", "-p", "--model", os.environ.get("LIVESPEC_JUDGE_MODEL", "sonnet"),
         "--max-turns", "1", "--no-session-persistence", "--json-schema", VERDICT_SCHEMA,
     ]
-    try:
-        proc = subprocess.run(command, input=prompt, capture_output=True, text=True, timeout=180)
-        verdict = json.loads(proc.stdout.strip())
-        return {"pass": bool(verdict["pass"]), "score": 1.0 if verdict["pass"] else 0.0,
-                "reason": str(verdict.get("reason", ""))[:800]}
-    except Exception as err:  # a broken judge is a harness failure, shown as one
-        return {"pass": False, "score": 0.0, "reason": f"judge error: {err}"}
+    # Retried: a judge that returns nothing once is a transient harness wobble,
+    # and scoring it 0 would pollute one arm's number with a non-verdict. Only
+    # after three attempts is the failure shown as one — legible in the
+    # calibration read, never mistaken for the agent failing the rubric.
+    last: Exception | None = None
+    for attempt in range(3):
+        if attempt:
+            time.sleep(5)
+        try:
+            proc = subprocess.run(command, input=prompt, capture_output=True, text=True, timeout=180)
+            verdict = json.loads(proc.stdout.strip())
+            return {"pass": bool(verdict["pass"]), "score": 1.0 if verdict["pass"] else 0.0,
+                    "reason": str(verdict.get("reason", ""))[:800]}
+        except Exception as err:
+            last = err
+    return {"pass": False, "score": 0.0, "reason": f"judge error after 3 attempts: {last}"}
 
 
 def get_assert(output, context):

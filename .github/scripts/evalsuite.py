@@ -115,6 +115,18 @@ for skill, holders in sorted(covered.items()):
             "holds cannot be changed safely. Tag a case with skill:" + skill + ".",
         )
 
+# The runner spends the maintainer's money and the account's session budget.
+# The guard that makes it refuse an unapproved run is load-bearing rather than
+# a courtesy, so removing it is a gate failure like any other.
+runner = ROOT / "evals" / "runner" / "run.py"
+if runner.exists() and "--i-approve-the-cost" not in runner.read_text():
+    fail(
+        "evals/runner/run.py",
+        "no longer refuses an unapproved run. Every run spends real money and real session budget; "
+        "the maintainer approves each one specifically, and nothing — not CI, not a stale board "
+        "entry, not the --changed heal — may start one without --i-approve-the-cost.",
+    )
+
 readme = ROOT / "evals" / "README.md"
 if not readme.exists():
     fail("evals/README.md", "is missing; it is where the floor is written down")
