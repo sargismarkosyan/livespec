@@ -40,7 +40,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Repository checks** | `.github/scripts/checks.py` — manifests, skill frontmatter, always-on budget, link and payload checks |
 | **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. No coverage section: there is no coverage gate here, and *What has no gate* says why |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. `evals/results/` is ignored and gitignored |
-| **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader both gates use |
+| **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
 | **Always-on budget** | 5000 chars across model-invocable skills; currently 3801 across 7 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
 | **What proves a rule** | **graded cases.** There is no application code to call — the product is judgment, so behaviour is run against a prompt and scored. The full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md); [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of |
 | **How a case names its rule** | `tags: [rule:<id>]` in the case's frontmatter, read by `caselib.py`. **Not** a `rule()` helper — there is no test runner here to wrap |
@@ -166,7 +166,7 @@ that gap is the thing a later `setup` run offers to close.
 | journey → workflow | automated | `trace.py` |
 | workflow → journey | automated | `trace.py`, as a **warning** — where an attempt sits in the arc is a judgment |
 | structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` |
-| both gates verified to fire | automated | `inject.py` — 34 faults (25 against a fixture, 9 against the release inputs), re-run by every `verify.py` |
+| both gates verified to fire | automated | `inject.py` — 37 faults (28 against a fixture, 9 against the release inputs), re-run by every `verify.py` |
 | coverage — lines, branches, functions | **not applicable** | there is no application code to measure; the eval-suite gate stands in its place, and *What has no gate* above says what that misses |
 | a journey looked at since the workflows under it moved | **not applicable** | a git question, and CI checks out one commit — it would pass forever while looking enforced |
 | features piled up under a workflow since its file was last edited | **not applicable** | same, and `gates.md` leaves both out for that reason |
