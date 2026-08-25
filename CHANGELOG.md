@@ -12,6 +12,16 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.17.0 — 2026-08-25
+
+**Two skills claimed the same sentence and nothing said which one won.** `feedback` took *"an 'I wish it did X'"*; `refine-spec` took *"can it also…"* — one utterance with two spellings, split arbitrarily across the two fields every session pays for whether or not either skill fires. Both descriptions now name the destination they own, and the fork is the one the person already made before they opened their mouth: **reporting or wishing is captured into the tracker; an instruction becomes a change.** The axis is intent, not kind — a bug can be either and so can a feature, which is the half both descriptions were sorting on wrongly.
+
+**`feedback` stops requiring that the app have been used.** It opened *"Turn a human testing session into well-researched issues"* and gated itself on the report arriving *"from having actually used it"* — untrue of a skill somebody reaches for to capture any work request. A wish for something that does not exist yet has nothing to reproduce, and had to arrive dressed as a bug to get tracked at all. The body's opening paragraph said the same thing and moved with it.
+
+**The boundary was already decided everywhere except where it was needed.** `spec.md`'s `never-implements` promise states it — *"`feedback` files, `refine-*` specs, `record-clip` records"* — `CLAUDE.md` states it as steps 2 and 3 of the loop, and both skill bodies state it in their first paragraph. The only two files that did not state it were the two that get read before anything else.
+
+Paid for the way `context-budget` requires rather than absorbed: `an-instruction-to-build-is-not-filed-instead` ships as a should-not-fire case, and the always-on cost went **3801 → 3800**.
+
 ## 0.16.0 — 2026-08-25
 
 `method/graded-cases.md` carries what specs 0012 and 0013 learned about running a graded suite honestly, for repositories whose product is judgment rather than code: hermetic sessions, and why a leaked environment reads as a product defect; the two-arm ablation as the only honest score for context that loads everywhere, with firing reported and never scored; a judge held to a fixed shape and kept away from its own kind of work; freshness gated while the score never is, and the run itself refusing to start unasked; and a run's evidence staying local while its summary is committed.
