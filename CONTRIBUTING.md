@@ -82,8 +82,9 @@ Costs every session, forever. Bring:
 
 1. a `description` that says when to fire and — as the existing ones do — when
    not to;
-2. at least one fire case and confirmation that the two should-not-fire cases in
-   `evals/` still pass;
+2. at least one case tagged `skill:<name>`, and confirmation that the three
+   should-not-fire cases in `evals/` still pass. **This one is a gate, not
+   advice** — `evalsuite.py` fails on a skill no case holds;
 3. a row in `README.md`'s table (CI checks the count against `skills/`).
 
 ### Adding to `method/` or `templates/`
@@ -94,14 +95,24 @@ at fails CI, because it ships to every user unread.
 ## Before you open a pull request
 
 ```bash
-python3 .github/scripts/checks.py     # what only this repo knows about itself
+python3 .github/scripts/verify.py     # the one command: both gates, and proof they fire
 claude plugin validate . --strict     # marketplace manifest
-claude plugin validate ./.claude-plugin/plugin.json --strict
+claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
 claude plugin validate ./skills --strict
 ```
 
-CI runs all four. `checks.py` needs nothing but Python 3; `plugin validate` is an
-offline schema check and needs no credentials.
+CI runs all four, and `verify.py` is what the required check runs. It needs
+nothing but Python 3 — no dependency may be added to the gates, because CI
+installs nothing to run them. `plugin validate` is an offline schema check and
+needs no credentials.
+
+`verify.py` runs four things: [`checks.py`](.github/scripts/checks.py) (what only
+this repository knows about itself), [`trace.py`](.github/scripts/trace.py)
+(traceability, both directions), [`evalsuite.py`](.github/scripts/evalsuite.py)
+(every skill held by a case, every case able to fail), and
+[`inject.py`](.github/scripts/inject.py), which breaks both gates 24 ways in a
+temporary fixture and checks each one fires. What each binding means is in
+[`specs/setup/README.md`](specs/setup/README.md).
 
 If you changed a skill's judgment or its description, also run the evals — see
 [`evals/README.md`](evals/README.md). They cost money and `claude plugin eval` is
@@ -122,7 +133,10 @@ of a method start disagreeing — the thing this plugin exists to stop.
 ## Releasing
 
 The `version` in `plugin.json` pins every install. Push without bumping it and
-**nobody gets the change**.
+**nobody gets the change** — `/plugin update` compares that string and keeps the
+cached copy. CI enforces this: `version_gate.py` fails a pull request that
+touches `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` without
+moving `version` and adding the matching `CHANGELOG.md` entry.
 
 1. Bump `version` in `.claude-plugin/plugin.json`. Never set `version` in the
    marketplace entry too — `plugin.json` silently wins, so the second one can

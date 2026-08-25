@@ -65,6 +65,19 @@ belongs there, so a new file lands in the right place without an argument.
 - **Anything aspirational.** A rule nobody follows teaches an agent that the file
   is decorative, and it will then discount the rules that are real.
 
+## Where it goes
+
+The repository root. `.claude/CLAUDE.md` is also always loaded and is a legitimate
+place for it, but the root is where a person looks and where every other
+repository keeps it — and being findable by a human is most of why the file is
+written in prose rather than configuration.
+
+**One repository in a hundred will hit a tool that objects**: a repository that
+is itself a plugin root gets a warning from `claude plugin validate`, because a
+CLAUDE.md there is not shipped as context to anyone installing the plugin. That
+is a reason to narrow the tool's strictness, not to move the file — and the
+reason belongs in `specs/setup/` either way, because the next person will wonder.
+
 ## Length
 
 **One screen of scroll, and about a hundred lines.** If it is longer, something

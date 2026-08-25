@@ -1,7 +1,8 @@
 ---
+tags: [skill:feedback]
 max_turns: 25
 timeout_seconds: 600
-allowed_tools: [Skill, Read, Glob, Grep, Write, Edit, Bash]
+allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---
 I was using the app just now. I hit delete on a task and it just vanished — I

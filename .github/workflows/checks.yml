@@ -14,11 +14,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The version gate diffs against the base branch.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Check the repository against itself
-        run: python3 .github/scripts/checks.py
+      # One command, the same one a person runs locally. A longer list in CI
+      # than anybody can reproduce is how a required check stops being trusted.
+      - name: Verify
+        run: python3 .github/scripts/verify.py
+      # A property of a pull request, not of a tree — which is why it is not part
+      # of verify.py, and why it only runs here.
+      - name: Version gate
+        if: github.event_name == 'pull_request'
+        run: python3 .github/scripts/version_gate.py origin/${{ github.base_ref }}
 
   manifests:
     name: plugin validate
@@ -33,7 +43,17 @@ jobs:
         run: npm install -g @anthropic-ai/claude-code
       - name: Validate the marketplace manifest
         run: claude plugin validate . --strict
+      # --strict is dropped here alone. It treats warnings as errors, and this
+      # repository is a plugin root that deliberately keeps its project CLAUDE.md
+      # at the root — where `plugin validate` warns, correctly for a consumer and
+      # wrongly for us. Any *other* warning still fails the job.
       - name: Validate the plugin manifest
-        run: claude plugin validate ./.claude-plugin/plugin.json --strict
+        run: |
+          out=$(claude plugin validate ./.claude-plugin/plugin.json 2>&1) || { echo "$out"; exit 1; }
+          echo "$out"
+          if echo "$out" | grep -F '❯' | grep -vq 'CLAUDE.md at the plugin root'; then
+            echo "::error::unexpected warning from plugin validate"
+            exit 1
+          fi
       - name: Validate the skills
         run: claude plugin validate ./skills --strict

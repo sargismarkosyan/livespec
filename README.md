@@ -104,8 +104,13 @@ implementation, and the series of pictures it produced.
 
 [CONTRIBUTING.md](CONTRIBUTING.md) — what is a component and what is payload,
 where a change belongs, and the release step. [evals/](evals/README.md) — the
-seven cases that hold the judgment the skills exist for, measured as uplift over
+nine cases that hold the judgment the skills exist for, measured as uplift over
 running without them. [CHANGELOG.md](CHANGELOG.md) — and why the version bump is
 not optional.
+
+livespec runs its own process: [specs/](specs/README.md) is this repository's
+spec layer, [specs/setup/README.md](specs/setup/README.md) its bindings, and
+`python3 .github/scripts/verify.py` the one command that means everything
+passes — including breaking both gates on purpose to prove they still fire.
 
 MIT licensed.
