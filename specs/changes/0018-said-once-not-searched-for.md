@@ -175,11 +175,13 @@ leaves behind is listed in [spec.md](../spec.md#what-a-version-leaves-behind).
 ## Risks
 
 - **The measured instance is partly the rig, and that has to be said first.**
-  The failing session had no Bash because
-  [case 15](../../evals/15-tracker-is-not-the-assumed-one/prompt.md) grants
-  `[Skill, Read, Glob, Grep, Write, Edit]`. Ren has Bash. So *"the tool cannot be
-  run from here"* was manufactured by the run, and a fair reader can say the
-  −0.17 measures the harness. **The counter is inside the same run:** five other
+  The failing session had no Bash, and not by accident:
+  [`evals/README.md`](../../evals/README.md) makes *"no case grants `Bash`"* a
+  floor of the suite, so **every** case runs unable to reach any tracker. Ren has
+  Bash. So *"the tool cannot be run from here"* is manufactured by the rig, in
+  all six `feedback` cases at once, and a fair reader can say the −0.17 measures
+  the harness. The new case inherits the same floor deliberately rather than
+  arguing its way around it. **The counter is inside the same run:** five other
   sessions hit the identical wall and handed the work over anyway. The wall was
   equal; the response was not, and that difference is the skill's. The condition
   is also real outside the rig — a machine with no `glab` installed is the

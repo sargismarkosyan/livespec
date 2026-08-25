@@ -1,7 +1,7 @@
 @feature:reach-absent-means @workflow:adopt-the-process
 Feature: What a skill does when a step cannot be taken here
 
-  @rule:an-unreachable-step-is-said-not-searched-for @planned
+  @rule:an-unreachable-step-is-said-not-searched-for
   Rule: What a step needs and cannot get here is said once, rather than searched for until the session is spent
 
     Example: the tool the bindings name cannot be run from this session
@@ -17,7 +17,7 @@ Feature: What a skill does when a step cannot be taken here
       Then it says in one line that the repository records none
       And it does not hunt through the tree for a file nobody ever wrote
 
-  @rule:what-did-not-need-it-is-still-handed-over @planned
+  @rule:what-did-not-need-it-is-still-handed-over
   Rule: A step that cannot be finished here does not take the work before it down with it
 
     Example: the researched body outlives the tool that cannot file it

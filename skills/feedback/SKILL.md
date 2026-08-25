@@ -40,11 +40,22 @@ there is a defect in this skill rather than caution.
 command that files there. **Do not assume it is GitHub.** Where the bindings say
 nothing, work it out from what the repository already shows — `git remote get-url
 origin` names the host — and **say what you worked out** before you rely on it.
-Where there is no tracker at all, say so and stop; there is nowhere to file.
+Where there is no tracker at all, say so — and still hand over the issue body you
+wrote, so the finding survives having nowhere to go.
 
 Every command in the steps below is written in the common case, GitHub through
 `gh`. **They are examples of the shape, not the tool.** Substitute what the
 bindings name.
+
+**When a step will not go through here, say it once and hand over the rest.** The
+bindings may name a tool this session cannot run, or the repository may record no
+bindings at all. Either is ordinary. Name what is missing in a line, then finish
+everything that did not depend on it — the investigation, the issue body, and the
+exact command for somebody who can run it. Do not spend the session looking for
+another way through; the rule and its reasoning are in
+[`process.md`](../../method/process.md#a-step-you-cannot-take-here-is-said-once-not-searched-for).
+This narrows nothing in step 3: looking for the **cause** is the job, looking for
+a **way to run an unavailable step** is not.
 
 If the repository the session is in *is* this plugin's repository, all of the
 above still applies and gives the same answer. Nothing here requires the two to

@@ -136,3 +136,35 @@ blank, because the gate cannot tell them apart and the map is what goes stale.
 When unsure, write the spec. The cost of an unnecessary small spec is a few
 minutes. The cost of undocumented behaviour change is that the series stops
 explaining itself.
+
+### A step you cannot take here is said once, not searched for
+
+The repository in front of you is usually not fully set up. The tool a step needs
+is not installed, the file it was told to read was never written, the path in
+somebody's report points at nothing. That is the ordinary condition rather than
+the exception, and it has a failure mode of its own: the session goes into
+looking for the missing thing and ends with the whole budget spent and nothing
+written down.
+
+**Say it once, and hand over the rest.** Two halves, and the second is the one
+that gets dropped:
+
+- **Name what is not there, in a line, where the person will see it.** Not after
+  a search — instead of one. Looking twice for a file nobody ever wrote is not
+  diligence; it is the same answer bought twice.
+- **Finish everything that did not depend on it.** A step that cannot be taken
+  here does not take the work before it down with it. What was investigated is
+  still worth writing out, and what could not be run is still worth handing over
+  as the exact thing to run. Somebody holding that finishes in a minute.
+  Somebody handed an empty session finishes not at all.
+
+**Stopping is not the same as handing over**, and an instruction to stop that
+does not say what to hand over will be read as permission to stop with nothing.
+Where a step is genuinely impossible — there is nowhere to file it, there is
+nothing to record it in — that is a result, not a dead end. Report it with the
+work attached.
+
+**This is not a licence to investigate less.** Looking for the *cause* of what
+somebody reported is the most valuable thing any of these skills does, and it
+ends when it has an answer. What this rules out is looking for a *way to perform
+a step that is not available here*, which ends when the session does.
