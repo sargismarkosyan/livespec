@@ -1,12 +1,43 @@
 # The bounded attempts
 
-**Empty.** [`refine-workflows`](../../skills/refine-workflows/SKILL.md) fills it,
-after the personas exist — a workflow names the persona it is for, and the gate
-fails a workflow that names nobody.
+| Workflow | Trigger | Ends when |
+|---|---|---|
+| [`adopt-the-process`](adopt-the-process.feature) | the repository has outgrown what anybody can re-explain to a fresh session | the next change's pull request carries what the version leaves behind, and the pipeline refuses it until the specs move with it |
+
+**One, and it is `@planned`.** No feature implements it and no eval case walks it
+yet, which is exactly what the tag is for — the gate fails a live workflow in
+either state. It also names no `@journey:`, which is a warning rather than an
+error, and [`refine-journeys`](../../skills/refine-journeys/SKILL.md) is what
+clears it.
 
 One file per workflow, `.feature`, `@workflow:<id> @persona:<id> @journey:<id>`
 on the first line, no `Rule:` anywhere in it, and the shape is in
 [the template](../../templates/workflow.feature).
+
+## Reading this as a map
+
+This paragraph is evaluative and the [journeys](../journeys/README.md) are
+descriptive; they are not the same document and must not collapse into one.
+
+**Every other attempt is downstream of this one, which is the argument for
+keeping it short rather than thorough.** Adoption is the only workflow here that
+somebody performs once per repository — everything else they do, they do
+repeatedly and forever afterwards. So a step added here is paid once and a step
+added anywhere else is paid daily, and the trade almost always runs the wrong
+way: **a change that lengthens adoption has to name which later attempt it
+shortens in exchange, or it is buying nothing.**
+
+The corollary is the one worth guarding. The attempt ends at the *first change
+after* the install, not at the install — so making setup itself feel finished
+sooner, while leaving the layers empty behind it, does not shorten this workflow.
+It moves the cost somewhere nothing measures.
+
+## Three more attempts, not written yet
+
+Filing what they found; getting a request specced and approved; taking a version
+through review. All three are real and all three have happened many times over
+in `todo-change` — but none of them has had its own occasion interviewed, and a
+workflow cut from a guess has to be cut twice. Each gets its own change.
 
 ## What walks a workflow here
 
