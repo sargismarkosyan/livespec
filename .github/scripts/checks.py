@@ -23,10 +23,20 @@ ALWAYS_ON_BUDGET_CHARS = 5000
 
 # Skills the human invokes and the model may not. `disable-model-invocation: true`
 # takes the description out of context entirely, so Claude cannot see the skill to
-# consider it — it runs only on an explicit /livespec:<name>. `setup` writes
-# CLAUDE.md and wires a repository's gates; that is not a decision an agent makes
-# because a repo looked ready for it.
-USER_INVOKED_ONLY = {"setup"}
+# consider it — it runs only on an explicit /livespec:<name>.
+#
+# **Empty**, since the change that made `setup` model-invocable (issue #19).
+# `setup` held the flag from 0.4.0 for a reason that was right — it writes
+# CLAUDE.md and wires a repository's gates, which is not a decision an agent makes
+# because a repo looked ready for it — by a mechanism that was not: a skill
+# nothing can see is a skill nothing can offer, so in the one repository setup
+# exists for, the agent invented a process rather than naming the command. The
+# restraint moved into the skill body, where it can be graded.
+#
+# The list stays, and the check below runs **both ways**, so the flag cannot come
+# back — and the always-on arithmetic cannot change under it — without a
+# deliberate edit here.
+USER_INVOKED_ONLY: set[str] = set()
 
 NUMBER_WORDS = {
     1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
@@ -132,6 +142,14 @@ for skill in skill_files:
         fail(where, f"description is {len(description)} chars (max {DESCRIPTION_MAX})")
 
     user_only = fields.get("disable-model-invocation", "").lower() == "true"
+    if user_only and skill.parent.name not in USER_INVOKED_ONLY:
+        fail(
+            where,
+            "carries 'disable-model-invocation: true' but is not in USER_INVOKED_ONLY. "
+            "That flag takes the description out of context entirely — the model "
+            "cannot fire the skill, and cannot name it either. It is a decision, "
+            "not a default: make it in checks.py or not at all.",
+        )
     if skill.parent.name in USER_INVOKED_ONLY and not user_only:
         fail(
             where,
@@ -157,10 +175,15 @@ if always_on_chars > ALWAYS_ON_BUDGET_CHARS:
         f"(budget {ALWAYS_ON_BUDGET_CHARS}). Every session pays this whether or not a skill fires.",
     )
 else:
+    hidden = len(skill_files) - always_on_skills
+    tail = (
+        f"; {hidden} user-invoked-only, costing nothing until invoked"
+        if hidden
+        else "; every skill is model-invocable"
+    )
     notes.append(
         f"always-on cost: {always_on_chars} chars across {always_on_skills} model-invocable "
-        f"skills (budget {ALWAYS_ON_BUDGET_CHARS}); "
-        f"{len(skill_files) - always_on_skills} user-invoked-only, costing nothing until invoked"
+        f"skills (budget {ALWAYS_ON_BUDGET_CHARS}){tail}"
     )
 
 # --- 3. the skill count is stated consistently ------------------------------

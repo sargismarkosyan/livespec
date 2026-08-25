@@ -34,7 +34,7 @@ Seven skills, and the discipline they enforce.
 | `refine-personas` | Adds, amends or retires who it is for — and refuses a persona invented to make a wanted feature legal. |
 | `refine-journeys` | Keeps the arc over time honest, and holds the seams that belong to no single workflow. |
 | `record-clip` | Records the animated GIF a version ships with: the app being *used*, in a real browser. |
-| `setup` | **You run this one** — `/livespec:setup`. Installs all of the above into a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, writes its bindings file and CLAUDE.md, and then runs the persona, workflow and journey interviews rather than leaving you a list of them. It is the only skill Claude cannot start on its own. |
+| `setup` | **Start here** — `/livespec:setup`, or ask for the process and let Claude reach it. Installs all of the above into a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, writes its bindings file and CLAUDE.md, and then runs the persona, workflow and journey interviews rather than leaving you a list of them. Whichever way it starts, it says what it will write and waits before writing any of it. |
 
 Plus [the method](method/) — the loop, the repository conventions, what the gates
 have to mean, how to write a test that earns its keep, and what a repository's
@@ -104,7 +104,7 @@ implementation, and the series of pictures it produced.
 
 [CONTRIBUTING.md](CONTRIBUTING.md) — what is a component and what is payload,
 where a change belongs, and the two things a pull request owes the release.
-[evals/](evals/README.md) — the nine cases that hold the judgment the skills
+[evals/](evals/README.md) — the eleven cases that hold the judgment the skills
 exist for, measured as uplift over running without them.
 [CHANGELOG.md](CHANGELOG.md) — written on merge rather than by hand, because
 `main` is what every install updates from.

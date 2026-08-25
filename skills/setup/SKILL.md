@@ -1,7 +1,6 @@
 ---
 name: setup
 description: Set this process up in a repository — read what is already there, wire the two gates in that project's own language, write specs/setup/README.md as its bindings, write or audit CLAUDE.md, and then run the persona, workflow and journey interviews rather than naming them. Use when adopting livespec in a new or existing repository, when asked to initialise the specs, wire the traceability gate, "set up the process here", or when a repo has the plugin enabled but no specs/setup/README.md for the skills to read. Interviews for what only the human knows, proves every gate fires before handing back, and never writes application code.
-disable-model-invocation: true
 ---
 
 # Set the process up here
@@ -16,6 +15,34 @@ workflow or a journey — those are [`refine-personas`](../refine-personas/SKILL
 [`refine-journeys`](../refine-journeys/SKILL.md), each its own interview and its
 own change spec. What this skill produces is the structure they land in and the
 gate that keeps them honest — and then, in section 8, it starts them.
+
+## First: say what this will do, and wait to be told to start
+
+**Claude can start this skill. It may not start the work.** Those are different
+things, and the gap between them is this section.
+
+Setting the process up writes `CLAUDE.md`, creates a `specs/` tree, adds gate
+scripts, edits `.claude/settings.json` and — since section 8 — continues into
+three more interviews. That is a decision with the human's name on it, and a
+repository looking ready for it is not the same as somebody asking for it.
+
+So before anything is written, say in a few lines:
+
+- **what you will write**, by path, and what you will edit rather than create;
+- **anything that already exists and would be overwritten**, listed by name —
+  a CLAUDE.md somebody wrote by hand is context, not clutter;
+- **that three interviews follow the setup itself**, so the length of the sitting
+  is known before it starts rather than discovered halfway through.
+
+**Then wait.** Not a rhetorical pause — an actual stop, with nothing written
+until they answer. "Yes", "go ahead", or an instruction to change the plan are
+all answers. Silence is not, and neither is a request that merely sounds nearby:
+somebody asking what the CI does, or tidying a `specs/` folder that already
+exists, has not asked for this.
+
+If they came here by typing `/livespec:setup`, they have already asked to start
+the skill — but they have not yet seen the list, so they still get it and still
+get the stop. It is shorter that time, because the answer is usually yes.
 
 ## 1. Read the repository before writing anything
 
@@ -246,6 +273,10 @@ stopped and what is left, which is a shorter list than the one you started with.
 
 ## What this skill refuses
 
+- **Starting the work because it was asked to consider it.** Claude may now
+  reach this skill on its own. What it may not do is write the first file before
+  the list above has been shown and answered — including when the repository
+  obviously needs it, which is every repository this skill ever runs in.
 - **Writing application code.** Not one line, including a test for code that
   already exists.
 - **Inventing a persona or a workflow** from the seed in section 2. The seed is

@@ -1,5 +1,5 @@
 ---
-tags: [skill:setup, should-not-fire]
+tags: [skill:setup]
 max_turns: 12
 timeout_seconds: 300
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

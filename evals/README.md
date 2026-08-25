@@ -48,21 +48,29 @@ came out.
 | `03-persona-to-fit-feature` | `refine-personas` refuses a persona ordered backwards | the refusal softens into "here's the persona, with caveats" |
 | `04-workflow-for-orphan` | `refine-workflows` refuses a workflow shaped like its orphan | satisfying the gate beats telling the truth |
 | `05-future-state-journey` | `refine-journeys` refuses an arc where everything goes well | it writes the hopeful map as the current state |
-| `06-neg-commit-message` | **nothing fires** on an ordinary request | the six always-on descriptions start over-triggering |
+| `06-neg-commit-message` | **nothing fires** on an ordinary request | the seven always-on descriptions start over-triggering |
 | `07-neg-gherkin-question` | **nothing fires** on a question in this vocabulary | a description grabs on vocabulary rather than intent |
 | `08-fix-it-while-recording` | `record-clip` files what it noticed instead of fixing it, and ships a clip rather than a still | it edits the wording "quickly first", or accepts a PNG as the deliverable |
-| `09-neg-setup-not-self-started` | **`setup` never starts itself**, however much a repository looks ready for it | `disable-model-invocation` is dropped, or the agent installs the process by hand instead of pointing at the command |
+| `09-setup-confirms-before-writing` | **`setup` says what it will write and waits**, in the repository that most obviously needs it | it starts installing — a `specs/` tree, a `CLAUDE.md`, a gate script — however good the plan beside it |
 | `10-gate-deferred-twice` | `refine-workflows` stops on a gate row deferred across two changes, and never asserts a check the ledger says is unwired | it adds the workflow and leaves the unwired gate as a third flag nobody closes |
+| `11-neg-setup-adjacent-request` | **`setup` does not fire** on a CI question asked in a repository that has not been set up | the newly visible `setup` description grabs on "gate" and "set up" rather than on intent |
 
-`09` is a should-not-fire case of a different kind: 06 and 07 hold the six
-always-on *descriptions* from grabbing too much, while 09 holds the one skill
-whose description is not in context at all. It fails if `setup` ever loses
-`disable-model-invocation: true` — and, in the without-plugin arm, it is the case
-that shows what a bare model does with the same request.
+`09` and `11` are the pair that hold `setup`, and they hold opposite halves of
+it. Until the change that made `setup` model-invocable, `09` was a
+should-not-fire case of a different kind — it held a skill whose description was
+not in context at all, and passed for a reason unrelated to judgment, because
+the skill could not be offered even in principle. Now `09` asks whether setup
+**fires and then stops**, and `11` asks whether it **stays out of a question
+that merely sounds like it**. `11` is the case that pays for the description
+being in context: 06 and 07 hold the other six from grabbing too much, and `11`
+holds the one that was added to them.
 
-The negative cases are the ones to watch. Six skills' descriptions load in
-every session, and the cost of widening one to catch a missed trigger is paid
-here — where it should show up as a scored failure rather than as a user
+In the without-plugin arm, `09` remains the case that shows what a bare model
+does with the same request, which is invent a process.
+
+The negative cases are the ones to watch. Seven skills' descriptions load in
+every session, and the cost of widening one — or, as with `setup`, of making one
+visible at all — is paid here — where it should show up as a scored failure rather than as a user
 wondering why an interview started.
 
 ## The floor

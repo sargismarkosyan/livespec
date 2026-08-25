@@ -147,9 +147,11 @@ version leaves behind is listed in [spec.md](../spec.md#what-a-version-leaves-be
   literal `/livespec:setup` in the prompt — and `claude plugin eval` is gated
   behind early access, so whether the runner accepts that cannot be checked. A
   case nobody can confirm is drivable is worse than an honest gap.
-  [`09-neg-setup-not-self-started`](../../evals/09-neg-setup-not-self-started/prompt.md)
-  stays setup's only case. **A driven-setup case is the first thing to write when
-  the runner unblocks.**
+  `09-neg-setup-not-self-started` — since renamed to
+  [`09-setup-confirms-before-writing`](../../evals/09-setup-confirms-before-writing/prompt.md)
+  by [`0004`](0004-setup-can-be-offered.md), which is also the change that wrote
+  the driven-setup case below — stays setup's only case. **A driven-setup case is
+  the first thing to write when the runner unblocks.**
 
 ## Acceptance checks
 

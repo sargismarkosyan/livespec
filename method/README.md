@@ -34,9 +34,10 @@ plugin from it. `/plugin` on its own opens the browser if you would rather click
 
 **To check it took**, start a session and look at the skill names: they arrive
 prefixed, as `livespec:refine-spec`, `livespec:feedback`, `livespec:setup` and so
-on. `setup` is the only one Claude will never start by itself — type
-`/livespec:setup` when you want it. A bare `refine-spec` with no prefix means a local copy in `.claude/skills/`
-is shadowing the plugin.
+on. Any of them can be typed directly — `/livespec:setup` is the usual way to
+start the install — and Claude can also reach `setup` itself, in which case it
+says what it would write and waits rather than starting. A bare `refine-spec`
+with no prefix means a local copy in `.claude/skills/` is shadowing the plugin.
 
 ### Wire it into the repository instead of the machine
 
