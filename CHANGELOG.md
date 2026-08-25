@@ -12,6 +12,12 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.16.0 — 2026-08-25
+
+`method/graded-cases.md` carries what specs 0012 and 0013 learned about running a graded suite honestly, for repositories whose product is judgment rather than code: hermetic sessions, and why a leaked environment reads as a product defect; the two-arm ablation as the only honest score for context that loads everywhere, with firing reported and never scored; a judge held to a fixed shape and kept away from its own kind of work; freshness gated while the score never is, and the run itself refusing to start unasked; and a run's evidence staying local while its summary is committed.
+
+Written command-free — no runner, no threshold, no file name — so it survives a repository whose runner is not this one's. It is linked from `testing.md`'s fork, where a sitting decides which kind of suite it has, and listed in the method index.
+
 ## 0.15.0 — 2026-08-25
 
 The adoption sitting now ends by using the pipeline it wired. `setup` commits the change specs its interviews produced, opens one pull request, and reports what came back — whether the required check ran and what it said, and whether the pull-request report arrived. Where it cannot — no remote, no CI, no permission — it says so plainly and marks those ledger rows *unobserved* instead of asserting them.
