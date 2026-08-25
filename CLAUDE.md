@@ -77,6 +77,14 @@ this repository actually loses:
   fails until `evals/runner/run.py --changed` re-measures exactly those — real
   sessions, real money, run locally before the commit. The score is never
   gated; only its bookkeeping is.
+- **The suite never runs unasked.** Every run bills the maintainer's account
+  and draws down its session limit — about $1.80 for one case, ~$4 for the
+  suite, and three runs in one sitting have exhausted it outright. `run.py`
+  refuses without `--i-approve-the-cost`, `evalsuite.py` fails if that refusal
+  is removed, and **the flag is the maintainer's signature, not yours**: a
+  stale board entry is a reason to stop and ask, never a licence to spend. Say
+  which cases are stale and what it will cost, then wait. The commit and the
+  pull request can be finished with a gap where the numbers go.
 - **Every commit green.** `verify.py` before committing, always.
 
 ## Commands
@@ -89,7 +97,8 @@ claude plugin validate ./skills --strict
 python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold  # maintainer step
 ```
 
-The last one **costs money per session and never runs in CI** — it drives real
+The last one refuses unless the maintainer adds `--i-approve-the-cost`, per the
+rule above. It **costs money per session and never runs in CI** — it drives real
 `claude -p` sessions through promptfoo, because the native `claude plugin eval`
 is gated behind early access on this account. The gates hold the eval suite
 structurally — see the bindings, and do not read a green `verify.py` as saying

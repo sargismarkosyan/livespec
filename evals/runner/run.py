@@ -48,6 +48,37 @@ from caselib import cases, frontmatter, measurement_inputs  # noqa: E402
 
 PROMPTFOO = "promptfoo@0.122.0"  # pinned: a floating runner makes every delta a comparison across two runners
 
+# --- the cost gate ------------------------------------------------------------
+#
+# This runner spends the maintainer's money and the account's session budget:
+# six real sessions plus judge calls per case, roughly $1.80 for one case at
+# `runs: 3` and about $4 for the full suite — and three runs in one sitting
+# once exhausted the account outright (429, mid-measurement, five sessions
+# lost). Nothing may start it on its own initiative: not CI, not a stale board
+# entry, not the `--changed` heal the board gate prints.
+#
+# So the default is refusal. The flag below is the maintainer's signature on
+# one specific run, and an agent adding it without having been told to, in
+# this conversation, for this run, has forged it.
+APPROVAL_FLAG = "--i-approve-the-cost"
+
+REFUSAL = f"""✘ this run spends real money, and nobody approved it.
+
+  Six sessions plus judge calls per case — about $1.80 for one case at
+  runs: 3, ~$4 for the whole suite, drawn from the maintainer's account and
+  its session limit. A stale board entry is not an approval. A --changed
+  heal is not an approval. A green plan is not an approval.
+
+  If you are an agent: do not add {APPROVAL_FLAG} on your own
+  initiative. Stop here, tell the maintainer which cases are stale and what
+  the run will cost, and add the flag only after they have said yes to this
+  specific run. Everything else — the commit, the pull request, the body with
+  a gap where the numbers go — can be finished without it.
+
+  Approved by the maintainer, just now, for this run?
+      {APPROVAL_FLAG}
+"""
+
 # Mirrors GATED_TOOLS in .github/scripts/evalsuite.py — the operator grant the
 # native CLI enforces, enforced here the same way.
 GATED = {"Bash", "Write", "Edit", "WebFetch", "WebSearch"}
@@ -210,7 +241,14 @@ def main() -> int:
     parser.add_argument("--runs", type=int, help="override every case's runs: (pilots; the floor for a real measurement is 3)")
     parser.add_argument("--model", default="", help="session model for both arms (default: the account's default)")
     parser.add_argument("--max-concurrency", type=int, default=2)
+    parser.add_argument(APPROVAL_FLAG, action="store_true", dest="approved",
+                        help="the maintainer's approval for this one run. Required — without it this "
+                             "refuses. Never add it on an agent's own initiative")
     args = parser.parse_args()
+
+    if not args.approved:
+        print(REFUSAL, file=sys.stderr)
+        return 2
 
     if not shutil.which("npx"):
         print("✘ npx not found — the runner needs node (a maintainer-machine prerequisite, never CI's)", file=sys.stderr)
@@ -248,6 +286,12 @@ def main() -> int:
     config_path.write_text(json.dumps(config, indent=1))
 
     env = os.environ.copy()
+    # promptfoo kills a python worker at REQUEST_TIMEOUT_MS (default 300s),
+    # which sits *under* a case's own timeout_seconds and killed a session
+    # mid-measurement on the first 600s case. The worker holds one session,
+    # so its budget is the longest case's, plus the scaffold and read-out.
+    worker_ms = 1000 * (max(int(t["vars"]["timeout_seconds"]) for t in config["tests"]) + 180)
+    env.setdefault("REQUEST_TIMEOUT_MS", str(worker_ms))
     env.update({
         "LIVESPEC_ROOT": str(ROOT),
         "LIVESPEC_RUN_DIR": str(run_dir),

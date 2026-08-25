@@ -1,0 +1,6 @@
+# The workspace this case runs in. The prompt asserts a repository — bindings
+# naming a self-hosted GitLab, a remote pointing there — and the first full
+# run proved that without one, the case measures the hunt for those files
+# rather than the judgment (#40). The screenshot the prompt names is
+# deliberately NOT laid down: saying so plainly is part of what is graded.
+scaffold_script: scaffold.sh

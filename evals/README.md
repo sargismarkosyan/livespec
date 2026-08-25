@@ -10,6 +10,20 @@ against it.
 python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold
 ```
 
+> **This refuses to run, and that is the design.** Every run drives six real
+> `claude -p` sessions per case plus judge calls — about $1.80 for one case at
+> `runs: 3`, ~$4 for the suite — billed to the maintainer's account and drawn
+> from its session limit, which three runs in one sitting have exhausted
+> outright. `run.py` exits 2 unless `--i-approve-the-cost` is passed, and
+> `evalsuite.py` fails the build if that refusal is ever removed.
+>
+> **The flag is the maintainer's signature on one specific run.** An agent
+> must not add it on its own initiative — not for a stale board entry, not for
+> the `--changed` heal the board gate prints, not to finish a task. The
+> commands quoted throughout this file are deliberately written without it, so
+> that copying one refuses rather than spends. When a measurement is needed,
+> stop, name the stale cases and the cost, and wait for a yes.
+
 > **Runs on promptfoo, not yet calibrated.** The native runner for this case
 > format — `claude plugin eval` — is gated per organisation during early access
 > and has never started on this account, so since
@@ -238,5 +252,8 @@ first run (#38), so since then the runner executes scaffolds:
 
 Convert cases as their runs demand it, never all at once: a fixture is one more
 thing to keep true, and a case that discriminates without one is cheaper to
-trust. `15` is the named next candidate (#40) — its first measurement was the
-bare model beating the plugin in an empty workspace.
+trust. `01` and `15` are converted — both flagged by the first full run, `15`
+(#40) as the bare model beating the plugin in an empty workspace. `15`'s
+fixture is also the one that shows what a scaffold may leave out on purpose:
+the screenshot its prompt names does not exist, because saying so plainly is
+part of what the case grades.
