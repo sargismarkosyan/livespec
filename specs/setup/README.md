@@ -121,7 +121,7 @@ saying it does.
 
 ## Gate wiring
 
-**Reconciled against livespec 0.7.0 on 2026-08-25.** One row per gate named in
+**Reconciled against livespec 0.9.0 on 2026-08-25.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
@@ -155,7 +155,7 @@ thing in this table that is not a gate at all.
 
 ## The fault injection record
 
-Run on **2026-08-24** by `python3 .github/scripts/inject.py`, which is part of
+Run on **2026-08-25** by `python3 .github/scripts/inject.py`, which is part of
 `verify.py` and therefore of every CI run — so this record is re-made rather than
 remembered. **31 of 31 faults produced the expected result.**
 
