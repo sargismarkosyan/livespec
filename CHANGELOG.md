@@ -12,6 +12,21 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.14.2 — 2026-08-25
+
+**The method stops justifying `CLAUDE.md` by a reader who is not opening it.**
+`claude-md.md` gave *"being findable by a human is most of why the file is
+written in prose rather than configuration"* as the reason for both the file's
+location and its form — while the persona layer says READMEs, docs and comments
+are for the agent and what a person actually reads is the spec layer. The claim
+is narrowed to what the evidence supports: the agent is the reader you can count
+on, the human is occasional, and in a repository with a spec layer that is what
+they open instead. Root placement keeps the convention argument that never
+needed a human reader, the prose form gets the reason that survives — what the
+file carries is judgment to apply, not settings to parse — and the hundred-line
+budget is unchanged, now resting on the per-request context cost the page
+already stated rather than on attention span.
+
 ## 0.14.1 — 2026-08-25
 
 A local checkout is registered per machine rather than declared in a committed project file: a marketplace name is machine-wide, and a directory source in `.claude/settings.json` repoints it for every repository belonging to whoever clones it.
