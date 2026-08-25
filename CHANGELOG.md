@@ -12,6 +12,16 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.13.0 — 2026-08-25
+
+**`setup` asks a fifth thing, and it is the one both gates rest on:** what proves a rule is true here, and how does a test say which rule it is answering? It was being decided silently. #4 is what that already cost — a nine-name `GRANDFATHERED` list hardcoded in a gate, which existed because a mapping arrived without anybody deciding it applied.
+
+**`method/testing.md` stops assuming every repository has an app.** It opened with `tests/behaviour/`, `tests/unit/` and a `rule()` helper wrapping calls to functions — false for the repository that ships it. It now documents two answers, and says which is weaker rather than offering a menu: a graded case is slow, costs money every run, is scored by a model, and proves that judgment held on one prompt rather than that a function is correct. Where there is code to call, calling it is the better answer.
+
+**The rule binding is part of the gate, not a convenience.** A rule id typed into a test name is a string nothing checks — it drifts, it can name a rule that does not exist, and it cannot be renamed from the spec. `setup` now leaves behind a helper that throws *where the test is written*. Where the answer is graded cases it points at `claude plugin eval init` instead of hand-rolling a case format next to a generator that produces one.
+
+**Coverage is taken twice.** The gated number over everything; a second pass over the rule-bound tests alone, which says how much of the product the specification actually reaches. It goes in the report and never into a threshold — gated, it turns rules into a way of moving a number. It also makes the unit-test exemption legible for the first time: unit tests raise the gated figure and not this one.
+
 ## 0.12.0 — 2026-08-25
 
 **`gates.md` has described a pull-request report since before the spec layer existed, and nothing produced one.** It does now. Every pull request gets a comment saying what the change did to the spec layer — personas, journeys, workflows, feature files, live and planned rules, and the eval suite's shape — as `main` versus this branch, with the delta column that is the actual point. A total is trivia to somebody deciding whether to merge; `+1` is not.
