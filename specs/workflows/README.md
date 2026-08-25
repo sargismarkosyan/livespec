@@ -4,11 +4,19 @@
 |---|---|---|
 | [`adopt-the-process`](adopt-the-process.feature) | the repository has outgrown what anybody can re-explain to a fresh session | the next change's pull request carries what the version leaves behind, and the pipeline refuses it until the specs move with it |
 
-**One, and it is `@planned`.** No feature implements it and no eval case walks it
-yet, which is exactly what the tag is for — the gate fails a live workflow in
-either state. It also names no `@journey:`, which is a warning rather than an
-error, and [`refine-journeys`](../../skills/refine-journeys/SKILL.md) is what
-clears it.
+**One, and it is live.** `@planned` came off in
+[`0008`](../changes/0008-the-gate-gets-something-to-hold.md): two feature files
+under [`features/setup/`](../features/setup/) claim it and
+[`12-setup-drives-the-sitting`](../../evals/12-setup-drives-the-sitting/prompt.md)
+walks it. It names its arc,
+[`trusting-the-spec-again`](../journeys/trusting-the-spec-again.md), attached by
+[`0007`](../changes/0007-trusting-the-spec-again.md).
+
+**What walks it is the sitting, not the whole attempt.** The attempt ends at a
+pull request in somebody's repository days later, and no eval case reaches that.
+The tag says walked; one leg is. That gap is the strongest evidence this workflow
+was cut too long, and it is written here rather than left for somebody to
+discover from a green run.
 
 One file per workflow, `.feature`, `@workflow:<id> @persona:<id> @journey:<id>`
 on the first line, no `Rule:` anywhere in it, and the shape is in

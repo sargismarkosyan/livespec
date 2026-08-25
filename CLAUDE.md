@@ -29,7 +29,8 @@ Getting this wrong is how two copies of a method start disagreeing.
 | [specs/spec.md](specs/spec.md) | What livespec is, the vocabulary, and the promises that belong to no workflow |
 | [specs/README.md](specs/README.md) | How the spec layers fit, and which are deliberately empty |
 | [specs/personas/](specs/personas/README.md) | Who it is for. One, and the reason the gates fail rather than warn: they do not read the docs |
-| [specs/workflows/](specs/workflows/README.md) | The bounded attempts. One, `@planned`; three more are real and uninterviewed |
+| [specs/workflows/](specs/workflows/README.md) | The bounded attempts. One, live since 0008; three more are real and uninterviewed |
+| [specs/features/](specs/features/) | The enforced contract. Six live rules under `setup/`, each claimed by an eval case |
 | [specs/journeys/](specs/journeys/README.md) | The arc of adopting it, and the seams no attempt can hold. Where the value it has not reached is written down |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | What is component and what is payload, where a change goes, the release step |
 | [evals/README.md](evals/README.md) | The cases, the floor they may not drop below, and why Δ is the only number |
@@ -43,9 +44,10 @@ Getting this wrong is how two copies of a method start disagreeing.
 4. The human approves the spec, or asks for changes.
 5. Implement: drop `@planned`, write the eval case that claims the rule, get
    `verify.py` green, commit.
-6. Open the pull request, carrying the two things the pipeline cannot work out:
-   one `patch`/`minor`/`major` label, and a `## Changelog` section in the body
-   that becomes the entry verbatim. **Do not touch `version` or `CHANGELOG.md`.**
+6. Open the pull request, carrying what the pipeline cannot work out: one
+   `patch`/`minor`/`major` label, a `## Changelog` section in the body that
+   becomes the entry verbatim, and — if a `.feature` moved — the Gherkin it
+   moved, quoted or pinned. **Do not touch `version` or `CHANGELOG.md`.**
 7. Both required checks must pass; `main` is protected. Merging releases:
    `release.yml` writes the bump, the entry, the tag and the GitHub Release.
 8. Close the issue with what was asked, what shipped, and why they differ.
@@ -63,8 +65,9 @@ this repository actually loses:
   CI installs nothing to run them.
 - **Merging is releasing.** `main` is production: the marketplace takes no ref,
   so `/plugin update` reads `version` off this branch. The pipeline moves it —
-  what you owe is the label and the `## Changelog` section, and CI fails a pull
-  request that ships something without them. Editing `version` or `CHANGELOG.md`
+  what you owe is the label, the `## Changelog` section, and the Gherkin block
+  when a `.feature` moved. CI fails a pull request that ships or re-promises
+  without them. Editing `version` or `CHANGELOG.md`
   by hand now fights the release job rather than helping it.
 - **Rule, workflow and persona ids are permanent.** Renaming one orphans every
   case pointing at it, in every consuming repository at once.

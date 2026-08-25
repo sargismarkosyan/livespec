@@ -32,7 +32,21 @@ HEADING = "## Changelog"
 # in a rubric is how a rule gets switched off.
 SHIPPING = ("skills/", "method/", "templates/", "tools/", ".claude-plugin/")
 
+# What the repository promises. A change here moves the contract rather than the
+# code, and the contract is the thing a reviewer is actually deciding about — so
+# it belongs in the body, not in a file somebody has to check the branch out to
+# read. This is a different question from `SHIPPING` and is asked separately: a
+# spec can move without anything shipping, and usually does.
+SPEC_SURFACE = ("specs/features/", "specs/workflows/")
+
 VERSION = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
+
+# Either form #21 allows: the Gherkin quoted inline, or linked at a commit. A
+# branch link is deliberately not accepted — branches are deleted on merge and
+# the evidence goes with them, which is the same rot the moving picture's raw
+# URL rule already avoids.
+GHERKIN_FENCE = re.compile(r"```+[ \t]*gherkin[ \t]*\r?\n(.*?)```", re.DOTALL | re.IGNORECASE)
+PINNED_GHERKIN = re.compile(r"https?://\S+/(?:blob|raw)/[0-9a-f]{40}/\S+\.feature", re.IGNORECASE)
 
 
 class ReleaseInputError(Exception):
@@ -42,6 +56,53 @@ class ReleaseInputError(Exception):
 def ships(paths: Iterable[str]) -> list[str]:
     """The subset of `paths` that reaches a user."""
     return [path for path in paths if path.startswith(SHIPPING)]
+
+
+def moves_spec(paths: Iterable[str]) -> list[str]:
+    """The subset of `paths` that changes what the repository promises.
+
+    A changed `.feature` and nothing else. The layer READMEs live under the same
+    directories and are prose about the specs rather than the specs — demanding
+    a Gherkin block for a fixed typo in one is how a gate teaches people to paste
+    an empty fence.
+    """
+    return [
+        path for path in paths
+        if path.startswith(SPEC_SURFACE) and path.endswith(".feature")
+    ]
+
+
+def extract_gherkin(body: str | None) -> str:
+    """The Gherkin a spec-moving pull request carries in its body.
+
+    A rule is not a diff. Somebody deciding whether to merge a changed promise
+    should be able to read the promise, and a link to a file on a branch is the
+    thing that reads fine today and is gone the week after the branch is.
+
+    Quoted inline in a ```gherkin fence, or linked at a 40-character SHA. What
+    this cannot check is whether the block is the *right* Gherkin; what it stops
+    is the body that says nothing at all.
+    """
+    text = (body or "").replace("\r\n", "\n")
+
+    fences = GHERKIN_FENCE.findall(text)
+    if fences:
+        if not any(block.strip() for block in fences):
+            raise ReleaseInputError(
+                "the ```gherkin block is empty. A fence with nothing in it is the "
+                "same silence as no block at all, one step better hidden."
+            )
+        return next(block.strip() for block in fences if block.strip())
+
+    pinned = PINNED_GHERKIN.search(text)
+    if pinned:
+        return pinned.group(0)
+
+    raise ReleaseInputError(
+        "this change moves the spec and the body carries no Gherkin. Quote the "
+        "Rule and its Examples in a ```gherkin fence, or link the file at the "
+        "commit SHA — a branch link rots the week the branch is deleted."
+    )
 
 
 def select_increment(labels: Iterable[str]) -> str:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail a pull request that ships something without saying how to release it.
+"""Fail a pull request that ships or re-promises something silently.
 
 `main` is production: the marketplace sources this plugin at `./`, no install or
 update command takes a ref, and `/plugin update` compares the `version` string on
@@ -8,15 +8,20 @@ reaches **nobody**, silently, with a green build.
 
 `release.py` moves that version on merge, which means nothing here has to be
 typed by hand any more. What still cannot be automated is the part only the
-author knows: **how big the change is**, and **what to say about it**. This gate
-checks that both are present while there is still somebody to ask.
+author knows: **how big the change is**, **what to say about it**, and **what the
+promise now says**. This gate checks they are present while there is still
+somebody to ask.
 
-    before            now
-    ────────────────  ──────────────────────────────────────
-    version unmoved   no release label, or two
-    no entry          no `## Changelog` section in the body
+    if the change      it must carry
+    ─────────────────  ──────────────────────────────────────
+    ships              exactly one release label
+    ships              a `## Changelog` section in the body
+    moves the spec     the Gherkin it moved, quoted or pinned
 
-Same guarantee — nothing that ships can merge silently — one step earlier.
+The triggers are separate. A spec moves without anything shipping far more often
+than not, and a wording fix in a skill ships without touching a promise.
+
+Same guarantee — nothing merges silently — one step earlier.
 
 This is a property of a pull request rather than of a tree, which is why it is
 not part of `verify.py`: that command has to mean the same thing on a laptop with
@@ -34,7 +39,14 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from releaselib import ReleaseInputError, extract_entry, select_increment, ships  # noqa: E402
+from releaselib import (  # noqa: E402
+    ReleaseInputError,
+    extract_entry,
+    extract_gherkin,
+    moves_spec,
+    select_increment,
+    ships,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE = sys.argv[1] if len(sys.argv) > 1 else "origin/main"
@@ -59,9 +71,10 @@ def pull_request() -> dict | None:
 
 changed = [line for line in git("diff", "--name-only", f"{BASE}...HEAD").splitlines() if line]
 shipping = ships(changed)
+moving = moves_spec(changed)
 
-if not shipping:
-    print(f"✔ release inputs: nothing that ships changed against {BASE}")
+if not shipping and not moving:
+    print(f"✔ release inputs: nothing that ships or moves the spec changed against {BASE}")
     raise SystemExit(0)
 
 request = pull_request()
@@ -70,50 +83,66 @@ if request is None:
     # a verdict from its absence would make this command mean two different
     # things depending on where it ran.
     print(
-        f"• {len(shipping)} file(s) that ship changed against {BASE}, but there is no\n"
-        f"  pull-request payload here, so the release inputs were not checked.\n"
-        f"  This gate runs on pull requests in CI; see specs/setup/README.md."
+        f"• {len(shipping)} file(s) that ship and {len(moving)} that move the spec "
+        f"changed against\n"
+        f"  {BASE}, but there is no pull-request payload here, so the body was not\n"
+        f"  checked. This gate runs on pull requests in CI; see specs/setup/README.md."
     )
     raise SystemExit(0)
 
+body = request.get("body")
 labels = [label.get("name", "") for label in request.get("labels", [])]
 problems: list[str] = []
+increment = entry = gherkin = None
 
-try:
-    increment = select_increment(labels)
-except ReleaseInputError as error:
-    increment = None
-    problems.append(str(error))
+# The two questions are asked separately because they have different triggers. A
+# spec usually moves without anything shipping, and a wording fix in a skill
+# ships without moving a promise.
+if shipping:
+    try:
+        increment = select_increment(labels)
+    except ReleaseInputError as error:
+        problems.append(str(error))
+    try:
+        entry = extract_entry(body)
+    except ReleaseInputError as error:
+        problems.append(str(error))
 
-try:
-    entry = extract_entry(request.get("body"))
-except ReleaseInputError as error:
-    entry = None
-    problems.append(str(error))
+if moving:
+    try:
+        gherkin = extract_gherkin(body)
+    except ReleaseInputError as error:
+        problems.append(str(error))
 
 if problems:
-    print(
-        f"\n✘ {len(shipping)} file(s) that ship changed, and this pull request "
-        f"cannot be released:\n",
-        file=sys.stderr,
-    )
-    for path in shipping[:10]:
-        print(f"    {path}", file=sys.stderr)
-    if len(shipping) > 10:
-        print(f"    … and {len(shipping) - 10} more", file=sys.stderr)
-    print(file=sys.stderr)
+    print("\n✘ this pull request cannot merge as it stands:\n", file=sys.stderr)
+    for label, paths in (("ship", shipping), ("move the spec", moving)):
+        if not paths:
+            continue
+        print(f"  {len(paths)} file(s) that {label}:", file=sys.stderr)
+        for path in paths[:6]:
+            print(f"    {path}", file=sys.stderr)
+        if len(paths) > 6:
+            print(f"    … and {len(paths) - 6} more", file=sys.stderr)
+        print(file=sys.stderr)
     for problem in problems:
         print(f"  ✘ {problem}\n", file=sys.stderr)
     print(
-        "  Merging is releasing here — `main` is what every install updates from.\n"
-        "  These two are the only parts of a release nobody but you can supply.",
+        "  Merging is releasing here — `main` is what every install updates from,\n"
+        "  and a changed promise nobody can read is a promise nobody reviewed.\n"
+        "  These are the parts of a change nobody but you can supply.",
         file=sys.stderr,
     )
     raise SystemExit(1)
 
-first = entry.split("\n", 1)[0]
-preview = first if len(first) <= 60 else first[:57] + "…"
-print(
-    f"✔ release inputs: {increment} bump, {len(entry.splitlines())} line(s) of entry "
-    f"({preview!r}), for {len(shipping)} shipping file(s)"
-)
+said: list[str] = []
+if shipping:
+    first = entry.split("\n", 1)[0]
+    preview = first if len(first) <= 60 else first[:57] + "…"
+    said.append(
+        f"{increment} bump, {len(entry.splitlines())} line(s) of entry ({preview!r}), "
+        f"for {len(shipping)} shipping file(s)"
+    )
+if moving:
+    said.append(f"{len(gherkin.splitlines())} line(s) of Gherkin for {len(moving)} spec file(s)")
+print(f"✔ release inputs: {'; '.join(said)}")

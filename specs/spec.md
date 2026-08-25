@@ -45,7 +45,8 @@ There is no build output and no database. What a version writes down, and where:
 
 - **the pull request description** — this repository's deliverable for a version,
   and now also its **source**. There is no app to record, so there is no moving
-  picture; see [setup/README.md](setup/README.md).
+  picture; what stands in its place is the Gherkin a change moved, quoted in the
+  body and checked by the gate. See [setup/README.md](setup/README.md).
 - **`.claude-plugin/plugin.json`** — the `version` field, which pins every
   install. A change merged without moving it reaches nobody.
 - **`CHANGELOG.md`** — one entry per version.

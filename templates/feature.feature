@@ -60,6 +60,11 @@ Feature: <What this component does — the thing, not the change that added it>
 
     # The rule most worth writing, and the one most often missing. A feature file
     # whose every rule is a happy path has specced the demo.
+    #
+    # Add @refusal when the promise is that *nothing* happens — the product
+    # staying out of something it was not asked for. Only a test asserting
+    # absence can verify one, and the tag is what tells the gate that such a test
+    # is the right kind rather than a mistagged one.
 
     Example: <the failure, named for what survives it>
       Given <state>

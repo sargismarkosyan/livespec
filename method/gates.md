@@ -32,8 +32,9 @@ for. It fails on any of:
 | a `@planned` rule that *does* have a test | The tag should have come off in the change that made it true. |
 
 It should **warn without failing** when a unit test claims a rule — it probably
-belongs with the behaviour tests — and when a feature file grows past the repo's
-soft size limits.
+belongs with the behaviour tests — when a test that asserts nothing happened
+claims a rule not tagged `@refusal`, and when a feature file grows past the
+repo's soft size limits.
 
 The output worth having is a per-feature matrix — traced, untraced, planned —
 followed by a count. It is worth reading even when green.
@@ -104,6 +105,12 @@ Feature: <what this component does>
 - `@planned` marks a rule that is specced but not built. Specs land before code,
   so this is the normal state of a new rule, and dropping the tag is part of the
   change that makes it true.
+- **`@refusal` marks a rule whose promise is that nothing happens** — the product
+  staying out of something it was not asked for. Such a rule is verified by a
+  test asserting absence and by nothing else, so the tag is what stops the gate
+  reporting its only honest test as the wrong kind. Without it the choice is a
+  permanent warning or a `@planned` tag on built behaviour, and both teach the
+  reader to stop believing a tag.
 - `@workflow:<id>` on every feature, saying what it serves. It may repeat: one
   feature can serve two workflows.
 - `@persona:<id>` and `@journey:<id>` on every workflow. **Not on features** —
@@ -193,6 +200,7 @@ each one in turn and read the message it produces:
 | behaviour test outside a `rule()` block | fails |
 | behaviour file with no `rule()` at all | fails |
 | `@planned` rule that has a test | fails |
+| a refusal test claiming a rule that is not `@refusal` | warns, does not fail |
 | feature naming no workflow | fails |
 | feature naming a workflow that does not exist | fails |
 | workflow claimed by no feature | fails |

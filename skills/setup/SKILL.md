@@ -160,8 +160,17 @@ six months with a required check that has been passing on an empty glob.
 This is the file every other skill reads. It has to answer, in one table a person
 can scan: what verification is, what runs each gate, where the rule-claiming
 helper lives, how tests are discovered, what the coverage thresholds are, what
-the required check is called, where the app runs, and anything else a skill would
-otherwise have to guess.
+the required check is called, where the app runs, what a pull request has to
+carry, and anything else a skill would otherwise have to guess.
+
+**One of those rows is easy to leave out and expensive to add later.** A pull
+request in this repository carries the deliverable — the picture, and the Gherkin
+it moved, per
+[`repository.md`](../../method/repository.md#every-pull-request-carries-a-moving-picture).
+Write the row saying what that means *here*: whether there is anything to record,
+where the recording goes, and which paths make the Gherkin owed. A repository
+that adopts the process without that row keeps merging changed promises nobody
+read.
 
 It also carries what cannot live in a diff: the branch protection settings, the
 CI wiring, and the record of the fault injection from section 4.

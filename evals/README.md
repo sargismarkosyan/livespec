@@ -54,9 +54,16 @@ came out.
 | `09-setup-confirms-before-writing` | **`setup` says what it will write and waits**, in the repository that most obviously needs it | it starts installing — a `specs/` tree, a `CLAUDE.md`, a gate script — however good the plan beside it |
 | `10-gate-deferred-twice` | `refine-workflows` stops on a gate row deferred across two changes, and never asserts a check the ledger says is unwired | it adds the workflow and leaves the unwired gate as a third flag nobody closes |
 | `11-neg-setup-adjacent-request` | **`setup` does not fire** on a CI question asked in a repository that has not been set up | the newly visible `setup` description grabs on "gate" and "set up" rather than on intent |
+| `12-setup-drives-the-sitting` | **`setup` finishes what it names** — the interviews are started rather than listed, the repository's real tracker is written down, an existing CLAUDE.md is audited | the sitting ends with a skeleton and a list of commands to run later |
 
-`09` and `11` are the pair that hold `setup`, and they hold opposite halves of
-it. Until the change that made `setup` model-invocable, `09` was a
+`09`, `11` and `12` hold `setup`, and they hold three different halves of it —
+`09` the stop before writing, `11` the staying out, `12` everything after the go.
+`12` is also the only case that **walks a workflow**: it carries
+`workflow:adopt-the-process`, and the traceability gate fails that workflow the
+moment this case is deleted. It is the longest and most expensive case here, and
+the first one to suspect when the suite gets slow or a run hits `max_turns`.
+
+Until the change that made `setup` model-invocable, `09` was a
 should-not-fire case of a different kind — it held a skill whose description was
 not in context at all, and passed for a reason unrelated to judgment, because
 the skill could not be offered even in principle. Now `09` asks whether setup

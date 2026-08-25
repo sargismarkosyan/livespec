@@ -146,7 +146,7 @@ to `main` it bumps `version`, writes the `CHANGELOG.md` entry, commits, tags wit
 `claude plugin tag --push`, and opens the GitHub Release.
 
 So there is nothing to do at release time. What you owe is at pull request time,
-and it is the two things a machine cannot work out:
+and it is the things a machine cannot work out:
 
 1. **One label** — `patch`, `minor` or `major`. Not two, and not none: a default
    would be a guess about how big somebody else's change was, made by the one
@@ -155,9 +155,16 @@ and it is the two things a machine cannot work out:
    heading, down to the next `##`, becomes the entry verbatim. The pull request
    description is already this repository's deliverable for a version, so this is
    the prose you were writing anyway rather than a second copy of it.
+3. **The Gherkin, if you moved any** — a ` ```gherkin ` block quoting the Rule
+   and its Examples, or a link to the `.feature` pinned at a commit SHA rather
+   than at the branch. Only when the change touches a `.feature`; a layer README
+   is prose about the specs and does not count.
 
-`version_gate.py` fails a pull request that touches `skills/`, `method/`,
-`templates/`, `tools/` or `.claude-plugin/` without both. **Do not edit
+The first two are owed by a change that **ships** — `skills/`, `method/`,
+`templates/`, `tools/`, `.claude-plugin/`. The third is owed by a change that
+**moves a promise**, which is a different question with a different answer: most
+spec changes ship nothing, and most shipping changes move no promise.
+`version_gate.py` asks them separately and fails on either. **Do not edit
 `version` or `CHANGELOG.md` in a feature branch** — the release job writes both,
 and a hand-written bump collides with it. Never set `version` in the marketplace
 entry either; `plugin.json` silently wins, so the second one can only go stale,
