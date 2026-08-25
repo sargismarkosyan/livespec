@@ -1,4 +1,4 @@
-@workflow:adopt-the-process @persona:agent-accelerated-owner @planned
+@workflow:adopt-the-process @persona:agent-accelerated-owner @journey:trusting-the-spec-again @planned
 Feature: Adopt the process
 
   When a repository has grown to where regressions arrive out of changes whose
