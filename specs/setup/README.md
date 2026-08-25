@@ -382,8 +382,94 @@ Pointing it at `sargismarkosyan/livespec` would load the *published* skills whil
 you are editing the working tree — two copies of the method disagreeing inside
 the repository whose whole purpose is to stop that.
 
-**To check it took**, start a session and look at the skill names: they arrive as
-`livespec:refine-spec`, `livespec:feedback` and so on. If they do not appear, the
-relative `path` did not resolve from where the session started; run
-`/plugin marketplace add .` from the repository root and say so here, because
-then the committed declaration is not doing the job it claims to.
+### What loads here, and how that was established
+
+[#6](https://github.com/sargismarkosyan/livespec/issues/6) was filed because the
+paragraph that used to stand here described a behaviour **nobody had ever run**.
+It has been run now — 2026-08-25, Claude Code 2.1.245 — and what it found is
+below, because a binding that cannot say how it knows is the defect that issue
+was about.
+
+**The method.** Put a skill in `skills/` that exists in no published version, so
+the working tree is the only copy that can produce it, and ask a session which
+skills it can see:
+
+```sh
+claude -p "List the exact names of every skill available to you, one per line, no commentary." --model haiku
+```
+
+**The copy that loads in this repository is the working tree.** The session
+listed the seven skills *and* the marker. That is the claim this section always
+made, and it is now an observation.
+
+**The declaration above is not what makes that true.** Run from a copy of this
+repository at a different path — its own `.claude/settings.json`, its own
+marker — the same session still returned *this* checkout's marker. Resolution
+went through the machine-wide marketplace registry
+(`~/.claude/plugins/known_marketplaces.json`), where `livespec` points at
+`/home/sargis/Projects/livespec`, and not through the project file at all.
+
+### The three mechanics that follow
+
+- **A marketplace is named by its own `marketplace.json`, and the name is
+  machine-wide.** `claude plugin marketplace add <dir>` registers a directory
+  under the `name` its manifest declares, whatever the directory is called —
+  verified with a throwaway copy whose manifest said `livespec-probe`. Claude
+  Code registers one marketplace per name per user, and
+  [adding a second under the same name replaces the first](https://code.claude.com/docs/en/plugin-marketplaces).
+- **A project's `extraKnownMarketplaces` applies only after the folder is
+  trusted**, and never in a `claude -p` session — headless runs registered
+  nothing.
+- **An `enabledPlugins` id whose marketplace is not registered is skipped in
+  silence.** Not a warning, not an error; a `--debug` line, and no skills:
+
+  ```
+  [DEBUG] Skipping orphaned enabledPlugins entry livespec@livespec-local: marketplace not registered
+  ```
+
+### Why the rename in #6 is not the fix it looked like
+
+That issue chose to rename the project marketplace to `livespec-local` so it
+could not collide. Renaming the key in `.claude/settings.json` and enabling
+`livespec@livespec-local` **loads no livespec skills at all** — the debug line
+above is from exactly that configuration. The name is not the key's to choose:
+it comes from `.claude-plugin/marketplace.json`, which says `livespec` because
+that is what the published marketplace is called and what every consumer's
+`/plugin install livespec@livespec` names. A second manifest under a local
+directory cannot stand in for it either — a marketplace may not source a plugin
+outside its own root, which `claude plugin validate` refuses:
+
+```
+❯ plugins[0].source: Path contains "..": ./../..
+```
+
+So the collision is not a naming mistake here. It is the product's model — one
+marketplace per name per machine — meeting a repository that is both the
+published marketplace and a checkout of it.
+
+### What this costs, and the check that shows it
+
+**Opening this repository moves `livespec` for every repository on the machine.**
+Once the checkout is registered under that name, every other project enabling
+`livespec@livespec` gets the working tree, on whatever half-finished skill edit
+is sitting in it — the reference repository too, if it enables the plugin that
+way. That is the live hazard #6 found, and nothing in this repository fixes it;
+it is a fact about where marketplace names live.
+
+`/plugin marketplace list` says which copy is current. One line under `livespec`,
+and it is one of these two:
+
+```
+  Source: Directory (/home/sargis/Projects/livespec)   the working tree
+  Source: GitHub (sargismarkosyan/livespec)            the published plugin
+```
+
+`/plugin marketplace add sargismarkosyan/livespec` puts it back to the published
+copy for every repository at once, and `/plugin marketplace add .` from this root
+takes it again. **Neither is per-project, and the skill names cannot tell you
+which one you are on** — they are `livespec:refine-spec` either way. Only the
+marker method above, or that list, can.
+
+If a session here shows no `livespec:` skills at all, the marketplace is not
+registered on this machine: `/plugin marketplace add .` from the repository root
+registers it, with the machine-wide cost stated above.

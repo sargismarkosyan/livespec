@@ -56,7 +56,10 @@ repository gets the process on their first session. In `.claude/settings.json`:
 ```
 
 That is what [`setup`](../skills/setup/SKILL.md) writes on its way out, and it is
-the only livespec-shaped file the method asks a repository to carry.
+the only livespec-shaped file the method asks a repository to carry. It takes
+effect once a person trusts the folder — until then the file is inert and they
+have no skills, which is worth saying to whoever reports that their first session
+looked ordinary.
 
 ### Updating
 
@@ -83,6 +86,17 @@ is live in the next session with no publish step:
 ```
 /plugin marketplace add ~/Projects/livespec
 ```
+
+**That name is machine-wide, and there is one of it.** A marketplace is named by
+its own `marketplace.json` rather than by the directory you point at, so the
+checkout registers as `livespec` — the name the published one already has — and
+registering the second replaces the first. Every repository on the machine that
+enables `livespec@livespec` moves with it: they are all running your working tree
+now, including the ones you are not editing. `/plugin marketplace list` says
+which copy is current (`Directory` or `GitHub`); the skill names do not, because
+they are `livespec:refine-spec` either way.
+`/plugin marketplace add sargismarkosyan/livespec` puts every repository back to
+the published copy.
 
 Iterate there, and push when something settles. The alternative — editing the
 skills in `.claude/skills/` of whatever repo you are in — is how two copies of a
