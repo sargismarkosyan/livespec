@@ -53,3 +53,4 @@ frames = kept
 print(f"{out} — {len(frames)} frames, {out.stat().st_size // 1024} KB")
 
 # Touched by a throwaway pull request testing the release-input gate. Not for merging.
+# A second touch, to re-trigger the gate now that the label is on.
