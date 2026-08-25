@@ -12,6 +12,12 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.15.0 — 2026-08-25
+
+The adoption sitting now ends by using the pipeline it wired. `setup` commits the change specs its interviews produced, opens one pull request, and reports what came back — whether the required check ran and what it said, and whether the pull-request report arrived. Where it cannot — no remote, no CI, no permission — it says so plainly and marks those ledger rows *unobserved* instead of asserting them.
+
+The gate wiring ledger gains that fourth reading. **Wired is not run:** a row earns *automated* the first time somebody watches it do its job, and reads *unobserved* until then. A gate broken against the injection table during a sitting is proven as a gate, not as this repository's pipeline.
+
 ## 0.14.2 — 2026-08-25
 
 **The method stops justifying `CLAUDE.md` by a reader who is not opening it.**
