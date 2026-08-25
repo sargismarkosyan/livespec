@@ -20,6 +20,7 @@ Run: python3 .github/scripts/inject.py
 
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 import sys
@@ -29,6 +30,7 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parent
 TRACE = SCRIPTS / "trace.py"
 SUITE = SCRIPTS / "evalsuite.py"
+BOARD = SCRIPTS / "board.py"
 REPORT = SCRIPTS / "report.py"
 
 GRADER = """---
@@ -87,6 +89,25 @@ def build(root: Path) -> None:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)
+    # The board is generated rather than written literally: its entries carry
+    # the measurement-inputs hash of the fixture as built, so the stale fault
+    # below is one edit away and the unbroken fixture is fully measured.
+    entries = {
+        case["name"]: {
+            "delta": 0.5, "with": 1.0, "without": 0.5, "runs": 3,
+            "at": "2026-08-25", "sha": "0000000", "cost": 0.1,
+            "inputs": measurement_inputs(case, root),
+        }
+        for case in cases(root)
+    }
+    (root / "evals" / "board.json").write_text(json.dumps({"format": 1, "cases": entries}, indent=1))
+
+
+def drop_board_entry(root: Path, name: str) -> None:
+    path = root / "evals" / "board.json"
+    data = json.loads(path.read_text())
+    del data["cases"][name]
+    path.write_text(json.dumps(data, indent=1))
 
 
 def edit(root: Path, relative: str, old: str, new: str) -> None:
@@ -117,6 +138,7 @@ def drop(root: Path, relative: str) -> None:
 # versions without ever being known to fire.
 
 sys.path.insert(0, str(SCRIPTS))
+from caselib import cases, measurement_inputs  # noqa: E402
 from releaselib import (  # noqa: E402
     ReleaseInputError,
     bump_manifest,
@@ -264,6 +286,12 @@ FAULTS = [
      lambda r: edit(r, "evals/README.md", "--ablation with-without ", ""), "fails", "no longer names"),
     ("a gated tool a case asks for is never granted", SUITE,
      lambda r: edit(r, "evals/README.md", " --allow-tools Write", ""), "fails", "never grants"),
+    ("a measurement whose inputs moved on", BOARD,
+     lambda r: edit(r, "evals/case-rule/prompt.md", "Do the thing.", "Do the other thing."), "fails", "changed since"),
+    ("a measurement whose rule was reworded", BOARD,
+     lambda r: edit(r, "specs/features/core/core.feature", "the thing is there", "the thing is elsewhere"), "fails", "changed since"),
+    ("a case the board has never measured", BOARD,
+     lambda r: drop_board_entry(r, "case-walk"), "warns", "never measured"),
     ("an llm grader with an empty rubric", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: llm\nweight: 1\n---\n"),
      "fails", "will pass on anything"),

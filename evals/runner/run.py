@@ -38,7 +38,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / ".github" / "scripts"))
-from caselib import cases, frontmatter  # noqa: E402
+from caselib import cases, frontmatter, measurement_inputs  # noqa: E402
 
 PROMPTFOO = "promptfoo@0.122.0"  # pinned: a floating runner makes every delta a comparison across two runners
 
@@ -95,43 +95,94 @@ def compile_config(suite: list[dict], repeat: int, granted: set[str]) -> dict:
     }
 
 
-def summarise(results_path: Path) -> None:
+BOARD = ROOT / "evals" / "board.json"
+
+
+def load_board() -> dict:
+    try:
+        return json.loads(BOARD.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {"format": 1, "cases": {}}
+
+
+def collect(results_path: Path) -> tuple[dict, dict, int]:
+    """Per-case scores, costs and fired-counts out of a promptfoo results file."""
     rows = json.load(results_path.open())["results"]["results"]
-    scores: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
-    fired: dict[str, list[bool]] = defaultdict(list)
-    errors: dict[str, int] = defaultdict(int)
-    cost = 0.0
+    stats: dict[str, dict] = defaultdict(lambda: {
+        "with": [], "without": [], "cost": 0.0, "fired": [], "errors": 0,
+    })
     for row in rows:
         name = (row.get("vars") or {}).get("case") or (row.get("description") or "?")
         arm = ((row.get("provider") or {}).get("label")) or "?"
         response = row.get("response") or {}
-        cost += float(response.get("cost") or 0)
+        stats[name]["cost"] += float(response.get("cost") or 0)
         grading = row.get("gradingResult") or {}
         if row.get("error") and not grading.get("componentResults"):
             # a genuine harness error — promptfoo also mirrors a failed judge's
             # reason into `error`, and that is a measurement, not an error
-            errors[name] += 1
+            stats[name]["errors"] += 1
             continue
-        scores[name][arm].append(float(grading.get("score") or 0))
+        key = "with" if arm == "with-plugin" else "without"
+        stats[name][key].append(float(grading.get("score") or 0))
         for component in grading.get("componentResults") or []:
             reason = component.get("reason") or ""
-            if arm == "with-plugin" and reason.startswith("plugin-fired indicator"):
-                fired[name].append("indicator: fired" in reason)
+            if key == "with" and reason.startswith("plugin-fired indicator"):
+                stats[name]["fired"].append("indicator: fired" in reason)
+    cost = sum(s["cost"] for s in stats.values())
+    return stats, {n: s for n, s in stats.items() if s["with"] and s["without"]}, len(rows)
 
+
+def mean(values: list[float]) -> float:
+    return sum(values) / len(values)
+
+
+def print_summary(stats: dict, sessions: int) -> None:
     print(f"\n  {'case':<34} {'with':>5} {'w/out':>6} {'Δ':>6}   fired")
     total = []
-    for name in sorted(scores):
-        with_arm = scores[name].get("with-plugin") or [0.0]
-        without = scores[name].get("without-plugin") or [0.0]
-        delta = sum(with_arm) / len(with_arm) - sum(without) / len(without)
+    for name in sorted(n for n in stats if stats[n]["with"] or stats[n]["without"]):
+        with_arm = stats[name]["with"] or [0.0]
+        without = stats[name]["without"] or [0.0]
+        delta = mean(with_arm) - mean(without)
         total.append(delta)
-        flame = f"{sum(fired[name])}/{len(fired[name])}" if fired.get(name) else "—"
-        print(f"  {name:<34} {sum(with_arm)/len(with_arm):>5.2f} {sum(without)/len(without):>6.2f} {delta:>+6.2f}   {flame}")
-    for name, count in sorted(errors.items()):
-        print(f"  ✘ {name}: {count} session(s) errored — see the run's sessions/ directory")
+        flame = f"{sum(stats[name]['fired'])}/{len(stats[name]['fired'])}" if stats[name]["fired"] else "—"
+        print(f"  {name:<34} {mean(with_arm):>5.2f} {mean(without):>6.2f} {delta:>+6.2f}   {flame}")
+    for name in sorted(n for n in stats if stats[n]["errors"]):
+        print(f"  ✘ {name}: {stats[name]['errors']} session(s) errored — see the run's sessions/ directory")
     if total:
-        print(f"\n  suite Δ {sum(total)/len(total):+.2f} over {len(total)} case(s), {len(rows)} session(s), ${cost:.2f}")
+        cost = sum(s["cost"] for s in stats.values())
+        print(f"\n  suite Δ {mean(total):+.2f} over {len(total)} case(s), {sessions} session(s), ${cost:.2f}")
     print("  No number from here is calibrated until every verdict has been read — evals/README.md.")
+
+
+def record(measured: dict, suite: list[dict]) -> None:
+    """Update the board with what this run measured — and only that.
+
+    An entry carries the number, its provenance, and a hash of what it was a
+    measurement of; the board gate fails the entry when those inputs move on.
+    A case whose sessions all errored is not recorded — a non-measurement is
+    not a measurement of zero.
+    """
+    board = load_board()
+    by_name = {case["name"]: case for case in suite}
+    try:
+        sha = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"],
+                             capture_output=True, text=True).stdout.strip() or "unknown"
+    except OSError:
+        sha = "unknown"
+    for name, s in measured.items():
+        board["cases"][name] = {
+            "delta": round(mean(s["with"]) - mean(s["without"]), 2),
+            "with": round(mean(s["with"]), 2),
+            "without": round(mean(s["without"]), 2),
+            "runs": min(len(s["with"]), len(s["without"])),
+            "at": time.strftime("%Y-%m-%d"),
+            "sha": sha,
+            "cost": round(s["cost"], 2),
+            "inputs": measurement_inputs(by_name[name], ROOT),
+        }
+    board["cases"] = dict(sorted(board["cases"].items()))
+    BOARD.write_text(json.dumps(board, indent=1) + "\n")
+    print(f"  board updated: {len(measured)} entr{'y' if len(measured) == 1 else 'ies'} — evals/board.json")
 
 
 def main() -> int:
@@ -141,6 +192,9 @@ def main() -> int:
     parser.add_argument("--judge-model", required=True, help="judge for llm graders; sonnet or larger, never the model under test")
     parser.add_argument("--allow-tools", nargs="*", default=[], help="operator grant for gated tools cases may ask for")
     parser.add_argument("--case", action="append", help="run only this case (repeatable)")
+    parser.add_argument("--changed", action="store_true",
+                        help="run only the cases the board holds no fresh measurement for — "
+                             "a changed rule, case or skill, or no entry at all")
     parser.add_argument("--runs", type=int, help="override every case's runs: (pilots; the floor for a real measurement is 3)")
     parser.add_argument("--model", default="", help="session model for both arms (default: the account's default)")
     parser.add_argument("--max-concurrency", type=int, default=2)
@@ -150,6 +204,10 @@ def main() -> int:
         print("✘ npx not found — the runner needs node (a maintainer-machine prerequisite, never CI's)", file=sys.stderr)
         return 1
 
+    if args.changed and args.case:
+        print("✘ --changed picks its own cases; drop --case or drop --changed", file=sys.stderr)
+        return 1
+
     suite = cases(ROOT)
     if args.case:
         suite = [c for c in suite if c["name"] in set(args.case)]
@@ -157,6 +215,14 @@ def main() -> int:
         if missing:
             print(f"✘ no such case: {', '.join(sorted(missing))}", file=sys.stderr)
             return 1
+    if args.changed:
+        entries = load_board().get("cases", {})
+        suite = [c for c in suite
+                 if entries.get(c["name"], {}).get("inputs") != measurement_inputs(c, ROOT)]
+        if not suite:
+            print("✔ board is current — nothing has changed since its measurements")
+            return 0
+        print(f"  --changed: {len(suite)} case(s) without a fresh measurement")
     if not suite:
         print("✘ no cases selected", file=sys.stderr)
         return 1
@@ -188,7 +254,9 @@ def main() -> int:
     if not results_path.exists():
         print("✘ promptfoo produced no results — harness failure, nothing was measured", file=sys.stderr)
         return 1
-    summarise(results_path)
+    stats, measured, sessions = collect(results_path)
+    print_summary(stats, sessions)
+    record(measured, suite)
     return 0
 
 
