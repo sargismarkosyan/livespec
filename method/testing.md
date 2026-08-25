@@ -16,7 +16,9 @@ rule it exists for through the repository's own binding helper.
 a set of instructions an agent reads, a prompt, a policy. There is no function to
 call. Behaviour is proved by running the thing against a situation and grading
 what came out, and a case names the rule it answers to the way its runner
-supports.
+supports. **If that is the answer here, [graded-cases.md](graded-cases.md) is the
+rest of it** — what it takes to run such a suite without measuring the wrong
+thing, read before the first run rather than after the first confusing one.
 
 **These are not equals, and a repository choosing the second should know why.** A
 graded case is slow, costs money every time it runs, and is scored by a model
