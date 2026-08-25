@@ -323,6 +323,18 @@ on push to `main` and on every pull request:
 - **`plugin validate`** — Node 22, installs `@anthropic-ai/claude-code` from npm
   and runs the three offline schema validations.
 
+**The pull-request trigger names its types**, which a workflow rarely needs to
+do: `opened, synchronize, reopened, labeled, unlabeled, edited`. The first three
+are the default; the last three are there because the release-input gate reads
+the label and the body out of the **event payload**, and a payload is a snapshot
+of the moment the event fired. Without them, a label added at creation is not in
+the snapshot the check reads, the check fails asking for a label that is visibly
+on the pull request, and adding or re-adding one re-runs nothing. Re-running the
+job replays the same payload and fails identically — the only route to green was
+an unrelated commit. Anything a gate here reads off the pull request rather than
+off the tree has to be in this list, or the gate has a failure state nothing can
+clear.
+
 [`release.yml`](../../.github/workflows/release.yml) is a **third workflow and
 not a required check** — it runs after the merge, on push to `main`, and there is
 nothing left to gate by then. It is serialised by a `concurrency: release` group,
