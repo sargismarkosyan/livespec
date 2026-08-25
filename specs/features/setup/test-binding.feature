@@ -1,7 +1,7 @@
 @feature:setup-test-binding @workflow:adopt-the-process
 Feature: How a test claims a rule in this repository
 
-  @rule:setup-asks-how-a-test-claims-a-rule @planned
+  @rule:setup-asks-how-a-test-claims-a-rule
   Rule: What a behaviour test is here is answered by the human, not assumed
 
     Example: the repository has no application code to call
@@ -16,7 +16,7 @@ Feature: How a test claims a rule in this repository
       Then what it already has is what gets recommended
       And a second way of testing is not introduced alongside it
 
-  @rule:setup-scaffolds-the-rule-binding @planned
+  @rule:setup-scaffolds-the-rule-binding
   Rule: The sitting leaves behind the thing a test uses to name its rule
 
     Example: the answer was an ordinary test suite
@@ -31,7 +31,7 @@ Feature: How a test claims a rule in this repository
       Then the tool that already builds such a suite is what was used
       And no case format was invented for this repository
 
-  @rule:the-spec-bound-measure-is-reported-never-gated @planned
+  @rule:the-spec-bound-measure-is-reported-never-gated
   Rule: What the rule-bound tests reach on their own is reported apart from the gated number
 
     Example: the rule-bound tests reach less than the whole suite does

@@ -1,6 +1,6 @@
 # Spec 0011: how a test claims a rule
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#5](https://github.com/sargismarkosyan/livespec/issues/5) findings
   3 and 4, and [#13](https://github.com/sargismarkosyan/livespec/issues/13) in
   full, taken together at the human's direction.

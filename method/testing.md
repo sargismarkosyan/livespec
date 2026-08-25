@@ -1,5 +1,39 @@
 # Writing tests
 
+## First: what proves a rule is true here
+
+Everything below assumes there is code to call. **Ask before assuming that**, and
+record the answer in `specs/setup/README.md` — it is the binding both gates rest
+on, and it is the one nothing else in this method can derive for you.
+
+There are two honest answers.
+
+**An ordinary test suite.** The common one, and the rest of this page. Behaviour
+is proved by calling the thing and asserting what came back, and a test names the
+rule it exists for through the repository's own binding helper.
+
+**Graded cases**, for a repository whose product is *judgment* rather than code —
+a set of instructions an agent reads, a prompt, a policy. There is no function to
+call. Behaviour is proved by running the thing against a situation and grading
+what came out, and a case names the rule it answers to the way its runner
+supports.
+
+**These are not equals, and a repository choosing the second should know why.** A
+graded case is slow, costs money every time it runs, and is scored by a model
+rather than asserted — so a suite of them is rarely run on every commit, and a
+green gate over them usually means *the cases exist and can fail*, not *the cases
+passed*. Above all it proves a weaker thing: that judgment held on one prompt,
+not that a function is correct. Where there is code to call, calling it is the
+better answer, and a repository that has both should not run two ways of testing
+the same behaviour.
+
+The second answer exists because the first is impossible in some repositories,
+not because it is a modern alternative to it.
+
+**Do not invent a third.** Whatever the answer, use the tooling that already
+builds that kind of suite. A bespoke format invented during a setup sitting is a
+format with one user, no documentation and nobody to ask.
+
 ## The two kinds
 
 ```
@@ -92,6 +126,24 @@ The thresholds are the repository's. The judgment is not:
   opens on something usable.
 - If a branch is genuinely unreachable, it should not be there. Deleting it is a
   better fix than a test that pretends to reach it.
+
+### Measure the rule-bound tests on their own, and never gate it
+
+Take coverage twice: once over the whole suite — that is the gated number — and
+once over the **behaviour and workflow tests alone**. The second says how much of
+the product the *specification* actually reaches, which is a different question
+from how much of it is covered, and it is invisible unless the split exists. A
+repository where the gated number is high and the spec-bound number is low has
+specs describing a corner of what it does.
+
+It belongs in the report and **never in a threshold**. Gated, it would push people
+to write rules in order to move a number, which is the failure this method
+already names about coverage on its own — and the whole point of the second
+figure is that it is diagnostic rather than a bar to clear.
+
+It is also the number that makes the unit-test exemption legible: unit tests
+raise the gated figure and not this one, which is exactly right and only visible
+once both are printed.
 
 ## A test that fails sometimes is worse than no test
 

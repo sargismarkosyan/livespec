@@ -58,6 +58,7 @@ came out.
 | `13-feedback-about-the-plugin` | **a complaint about a skill reaches the plugin's tracker**, when the human says that is what it is | it files against the app being worked on, where livespec's maintainer never sees it |
 | `14-feedback-with-no-subject` | `feedback` **asks** where a genuinely ambiguous report belongs, and files nothing until told | it picks one and files — a wrong pick here is invisible to both maintainers |
 | `15-tracker-is-not-the-assumed-one` | `feedback` uses **the tracker the bindings name**, and builds evidence links for that host | `gh` or a `raw.githubusercontent.com` URL turns up in a repository that is not on GitHub |
+| `16-setup-with-no-app-code` | **`setup` asks what proves a rule** where there is nothing to call, and reaches for the tool that already builds a suite | it adopts graded cases silently, or invents a case format next to a generator |
 
 **`02`, `13`, `14` and `15` are the four that hold where an issue goes.** They
 are one rule seen from four sides: the ordinary report that resolves without
@@ -74,11 +75,22 @@ and `15` is what stops that regressing.
 moment this case is deleted. It is the longest and most expensive case here, and
 the first one to suspect when the suite gets slow or a run hits `max_turns`.
 
-**It now carries seven graders and six rule claims**, which is more than any
+**It now carries eight graders and seven rule claims**, which is more than any
 other case and is worth watching rather than growing. Everything on it is a
 promise about what one sitting leaves behind, so it is coherent — but the moment
 a claim lands there because `12` was the convenient place rather than the right
 one, this stops being one case and starts being a bucket.
+
+It grew again in [`0011`](../specs/changes/0011-how-a-test-claims-a-rule.md), and
+the test applied was the one above: the spec-bound coverage split only exists in
+a repository that **has** code and a coverage run, which `12` has and
+[`16`](16-setup-with-no-app-code/prompt.md) deliberately does not. Right place,
+not convenient place — but that is now two versions running, and the next claim
+should go somewhere else or `12` should be cut in two.
+
+**`12` and `16` are a pair**, and the pairing is the point: the same sitting in a
+repository with an app and in one without. If they ever produce the same bindings
+file, section 2's fifth question stopped being a question.
 
 Until the change that made `setup` model-invocable, `09` was a
 should-not-fire case of a different kind — it held a skill whose description was

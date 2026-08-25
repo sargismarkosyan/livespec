@@ -1,5 +1,5 @@
 ---
-tags: [skill:setup, workflow:adopt-the-process, rule:setup-continues-into-the-layers, rule:setup-finds-where-issues-go, rule:setup-audits-an-existing-claude-md, rule:setup-wires-the-pull-request-report, rule:the-report-cannot-fail-the-build, rule:the-report-says-what-moved]
+tags: [skill:setup, workflow:adopt-the-process, rule:setup-continues-into-the-layers, rule:setup-finds-where-issues-go, rule:setup-audits-an-existing-claude-md, rule:setup-wires-the-pull-request-report, rule:the-report-cannot-fail-the-build, rule:the-report-says-what-moved, rule:the-spec-bound-measure-is-reported-never-gated]
 max_turns: 40
 timeout_seconds: 900
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
