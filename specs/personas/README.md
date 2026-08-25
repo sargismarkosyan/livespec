@@ -1,9 +1,14 @@
 # Who this is for
 
-**Empty.** [`refine-personas`](../../skills/refine-personas/SKILL.md) fills it,
-in its own conversation, and it is the next thing to run — every other layer is
-downstream of this one, and a workflow written for nobody has to be written
-twice.
+| Persona | Trying to get done | State |
+|---|---|---|
+| [`agent-accelerated-owner`](agent-accelerated-owner.md) | Ren — keeping several repositories moving faster than they can be read | `@retired`, for one version |
+
+**The one persona is tagged `@retired` on purpose, and that is not a shelf.** The
+tag's single honest use is a persona no workflow names *yet*: `trace.py` fails a
+live persona nobody does anything as, and `specs/workflows/` is still empty.
+[`refine-workflows`](../../skills/refine-workflows/SKILL.md) drops it, in its own
+change. **Until it does, this version is not finished.**
 
 One file per persona, `@persona:<id>` on the first line, and the rules for what
 goes in one are in [the template](../../templates/persona.md).
@@ -24,6 +29,15 @@ one is a decision rather than a description: they have **tried** spec-driven
 tooling and rejected something specific about it; the thing they fear is
 **decay**, not absence; and the reason is **scale**, which means the pain arrives
 later than the decision does.
+
+**Spent in [`0005`](../changes/0005-the-first-persona.md), and kept here as the
+thing that was tested.** Two of the three survived contact: decay is real and is
+worse than the seed says — the person cannot read their way to noticing it — and
+scale is real, with contributors expected and not yet arrived. The first did not.
+What was rejected is not the spec being the source of everything; it is
+**under-inference**, the agent failing to derive what the repository already
+says. Expanding this paragraph a second time is how a layer grows a person
+nobody met.
 
 ## Two rules that are this repository's own
 
