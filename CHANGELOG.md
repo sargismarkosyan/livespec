@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.14.1 — 2026-08-25
+
+A local checkout is registered per machine rather than declared in a committed project file: a marketplace name is machine-wide, and a directory source in `.claude/settings.json` repoints it for every repository belonging to whoever clones it.
+
 ## 0.14.0 — 2026-08-25
 
 The eval suite runs for the first time: `evals/runner/run.py` drives every case
