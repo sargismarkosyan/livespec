@@ -204,29 +204,75 @@ The injector was itself checked by making one fault a no-op: it reported the row
 as not firing and exited 1. A fault table that cannot fail is worth as little as
 a gate that cannot.
 
-## Branch protection
+## Branch protection, and the one credential that bypasses it
 
-Applied **2026-08-24** and read back from the API. This is the one gate that does
-not live in the repository, so this table is the only record of a setting
-somebody could quietly change.
+Migrated from classic branch protection to a **repository ruleset** on
+**2026-08-25**, and read back from the API. This is the one gate that does not
+live in the repository, so this table is the only record of a setting somebody
+could quietly change.
+
+**Why it moved.** Classic protection with `enforce_admins` on a *personal*
+repository has no bypass list at all — its push allowlist is organisation-only —
+so nothing could push to `main`, the owner's own token included. That was correct
+while releases were typed by hand and fatal once
+[`release.yml`](../../.github/workflows/release.yml) had to write the version.
+Rulesets support `bypass_actors` on personal repositories; classic protection
+does not, and the two stack, so the classic rule had to go rather than be
+relaxed. The ruleset was created first and the classic protection deleted second:
+`main` was never unprotected.
+
+Ruleset **21391215**, `main is production`, targeting `~DEFAULT_BRANCH`,
+enforcement `active`.
 
 | Setting | Value |
 |---|---|
 | Pull request required | yes |
 | Required approvals | **0** — GitHub does not let anyone approve their own pull request, and there is one contributor. Zero still forces every change through a pull request and both checks |
-| Required checks | `repository checks`, `plugin validate` |
+| Required checks | `repository checks`, `plugin validate`, both matched to the GitHub Actions app (`integration_id` 15368) |
 | Strict (up to date with `main`) | yes |
-| Applies to admins | yes — the owner has no bypass |
-| Force pushes | blocked |
+| Applies to admins | yes — no role, team or user is on the bypass list |
+| Force pushes | blocked (`non_fast_forward`) |
 | Deletion | blocked |
 | Conversation resolution required | yes |
 | Dismiss stale reviews | yes |
+| **Bypass** | one entry: `actor_type: DeployKey`, `bypass_mode: always` |
+
+**The credential.** One write-enabled deploy key, titled `livespec release`
+(id 161238524, ed25519, added 2026-08-25). Its private half is the repository
+secret `RELEASE_DEPLOY_KEY`, read only by the release job, which hands it to
+`actions/checkout` as `ssh-key`. A deploy key is the narrowest credential that
+can do this job: it reaches this repository and nothing else, it is not tied to
+anybody's account, and it does not expire — so unlike a token it cannot stop the
+pipeline on a date nobody wrote down.
+
+**The caveat worth knowing before adding a second one.** `DeployKey` bypass takes
+no `actor_id`: it means *any* write-enabled deploy key on this repository, not
+this one. There is exactly one today. **Adding another write deploy key silently
+grants it the right to push to `main`** — so a new deploy key is a decision about
+branch protection, and read-only is the default to reach for.
+
+**The built-in `GITHUB_TOKEN` cannot bypass**, even though the GitHub Actions app
+is what reports the required checks. That is documented behaviour and it is why
+this key exists at all; granting the workflow `contents: write` is not a
+substitute.
 
 Read it back with:
 
 ```sh
-gh api repos/sargismarkosyan/livespec/branches/main/protection
+gh api repos/sargismarkosyan/livespec/rules/branches/main   # what applies
+gh api repos/sargismarkosyan/livespec/rulesets/21391215     # the rules and the bypass
+gh api repos/sargismarkosyan/livespec/keys                  # the deploy key
 ```
+
+`gh api repos/sargismarkosyan/livespec/branches/main/protection` now returns
+**404 Branch not protected**, and that is expected: it reports classic protection
+only. `repos/.../branches/main` still reports `protected: true`.
+
+## Release labels
+
+`patch`, `minor` and `major`, created 2026-08-25. Exactly one goes on every pull
+request that changes what ships; `version_gate.py` fails on none or on two, and
+`release.py` reads the one that is there.
 
 ## CI
 
