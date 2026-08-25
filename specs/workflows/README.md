@@ -12,11 +12,16 @@ walks it. It names its arc,
 [`trusting-the-spec-again`](../journeys/trusting-the-spec-again.md), attached by
 [`0007`](../changes/0007-trusting-the-spec-again.md).
 
-**What walks it is the sitting, not the whole attempt.** The attempt ends at a
-pull request in somebody's repository days later, and no eval case reaches that.
-The tag says walked; one leg is. That gap is the strongest evidence this workflow
-was cut too long, and it is written here rather than left for somebody to
-discover from a green run.
+**What walks it is the sitting — and since
+[`0015`](../changes/0015-the-sitting-uses-the-pipeline.md) the sitting ends where
+the attempt does**, at a pull request in that repository, opened before the
+hand-back rather than days later. What no case reaches is the pipeline's answer
+to it: no eval workspace has a live remote or CI. So
+[`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature)
+stays `@planned` while its instruction ships, and what is held instead is the
+honest account of what could not be watched. The tag says walked; the last leg is
+watched by the adopter and by nobody here. That is written down rather than left
+for somebody to discover from a green run.
 
 One file per workflow, `.feature`, `@workflow:<id> @persona:<id> @journey:<id>`
 on the first line, no `Rule:` anywhere in it, and the shape is in

@@ -45,7 +45,11 @@ Gaps where neither side is at fault.
 - **Nothing says whether the install took.** The sitting ends green, and whether
   the process actually holds is not knowable until a change later. Neither the
   sitting nor the change is at fault; the evidence simply does not exist yet at
-  the moment somebody wants it.
+  the moment somebody wants it. **Narrowed by
+  [`0015`](../changes/0015-the-sitting-uses-the-pipeline.md)**, which ends the
+  sitting by landing its own specs as a pull request — so the wiring is watched
+  once, by the person who installed it. What still arrives a change later is
+  whether it goes on holding.
 - **The checks can say the spec is incomplete. They cannot say it stopped being
   true.** A missing test, an attempt nothing implements, a dangling reference —
   all caught. A description that still fits the shape and no longer describes
@@ -63,14 +67,17 @@ Gaps where neither side is at fault.
 
 | Opportunity | What answers it today | How we would know it worked |
 |---|---|---|
-| Knowing the install took | **nothing yet** | The sitting ends with something demonstrated rather than something asserted |
+| Knowing the install took | the sitting's own pull request, and the ledger rows reading *unobserved* | Coming out of a sitting able to say which wiring was watched working and which only exists |
 | Incompleteness caught, untruth missed | the checks, but only for shape | A spec that no longer describes what was meant stops reading as green |
 | A return that is safe to trust | **nothing yet** | Coming back cold and acting immediately stops being a gamble that happened to pay |
 | A workaround outliving its reason | **nothing yet** | Local patches disappear when the thing they worked around is fixed |
 
-**Three "nothing yet" rows, and two of them are the same moment** — the point
-where somebody comes back and believes what they read. That moment is the entire
-claim of this product, and nothing in it currently reaches that far.
+**Two "nothing yet" rows left, and they are the same moment** — the point where
+somebody comes back and believes what they read. That moment is the entire claim
+of this product, and nothing in it currently reaches that far. The row above them
+moved because the sitting stopped asserting the thing it could have shown; these
+two have no equivalent step to borrow, because nobody is in the room when they
+fail.
 
 ## What this file does not know
 

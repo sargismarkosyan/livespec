@@ -195,6 +195,17 @@ nothing in it that is not one.
 | **automated** | it runs, and the row names the command that runs it |
 | **not applicable** | it cannot apply here, and the row says why. A decision, not a gap |
 | **deferred** | it applies and is unbuilt — since which change, and why |
+| **unobserved** | it is wired, and nothing has yet watched it run. The row names the command anyway |
+
+**Wired is not run, and the ledger is the only place that can tell them apart.**
+A gate configured in a sitting and a gate that has refused something read
+identically from the tree — both are a command in a file. So a row earns
+*automated* the first time somebody watches it do its job, and reads
+*unobserved* until then. That is not a deferral: there is nothing left to build,
+and the row is a claim waiting on evidence rather than work waiting on somebody.
+It is also the one row that closes itself — the first refusal makes it
+*automated*, and a row still reading *unobserved* long after the repository
+started merging changes is saying the gate has never once had an opinion.
 
 **The tree is the authority on what applies; the ledger only says what is
 wired.** A row reading *not applicable — no personas exist* in a repository that
