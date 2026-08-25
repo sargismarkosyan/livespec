@@ -1,13 +1,14 @@
 ---
 name: feedback
-description: Turn a human testing session into well-researched issues. Use whenever the user reports something about the app they are building from having actually used it — a bug, something confusing, something missing, an "I wish it did X", or a screenshot with a complaint attached. Triggers on "feedback", "report this", "log an issue", "this is broken", "found a bug", or a pasted screenshot of the app. Investigates the code before filing, and does not fix anything.
+description: Capture what somebody found or wants about the app they are building, as well-researched issues in that repository's tracker — a bug, something confusing, something missing, an "I wish it did X" or "can it also…", or a screenshot with a complaint. Triggers on "feedback", "report this", "log an issue", "track this", "found a bug". Reporting or wishing lands here; an instruction to build now is refine-spec. Investigates the code before filing; never fixes or specs.
 ---
 
 # Feedback → a tracked issue
 
-The human is the only person who actually *uses* this app. This skill exists so
-that nothing they noticed gets lost between their chat message and the issue
-tracker.
+The human is the only person who actually *uses* this app, and the only one who
+knows what it still needs. This skill exists so that nothing they found or
+wanted gets lost between their chat message and the issue tracker — a wish for
+something that does not exist yet counts, and has nothing to reproduce.
 
 Your job is to **listen, investigate, and file**. Not to fix. Resist every urge
 to open an editor — a fix without a spec breaks the process in `CLAUDE.md`.
