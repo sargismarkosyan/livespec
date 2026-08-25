@@ -69,7 +69,7 @@ FIXTURE: dict[str, str] = {
     ),
     "evals/README.md": (
         "# The eval suite\n\n"
-        "```\nclaude plugin eval . --ablation with-without --judge-model sonnet --allow-tools Write\n```\n"
+        "```\npython3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write\n```\n"
     ),
     "evals/case-rule/prompt.md": (
         "---\ntags: [skill:refine-spec, rule:one]\nallowed_tools: [Skill, Write]\nruns: 3\n---\nDo the thing.\n"

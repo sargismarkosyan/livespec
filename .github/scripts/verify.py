@@ -9,9 +9,9 @@
 CI runs this same command. A longer list in CI than a person can run locally is
 how a required check turns into something nobody can reproduce.
 
-It does not run the eval cases themselves: `claude plugin eval` is gated behind
-early access and refuses to start here. That half is a maintainer step, and
-specs/setup/README.md says so rather than letting this command imply otherwise.
+It does not run the eval cases themselves: they cost money per session, and
+running them is a maintainer step — evals/runner/run.py — never this command's.
+specs/setup/README.md says so rather than letting a green run imply otherwise.
 
 Run: python3 .github/scripts/verify.py
 """

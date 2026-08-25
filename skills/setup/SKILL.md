@@ -163,6 +163,11 @@ uses to name its rule.
   non-interactive path. **Point at the tool and read what it produces — do not
   describe its output from memory, and do not hand-roll a case format.** A
   bespoke layout invented in a sitting has one user and no documentation.
+  **And run the tool before the sitting recommends it.** Where it is gated or
+  absent — `plugin eval` is behind early access on some accounts, and livespec's
+  own suite hit exactly this — set up a platform that already runs graded
+  suites (promptfoo is one) and keep the cases in the format the repository's
+  gates read, so the native runner arriving later is a bonus, not a migration.
 
 **Coverage** is whatever the language already has. Lines, branches and functions
 if the tool reports all three; the thresholds are the ones agreed in section 2.

@@ -11,7 +11,8 @@ one for graded cases in a Claude Code plugin — or, where it cannot run the too
 names it and says what it would produce rather than substituting a layout of its
 own. Reading what the tool actually writes before describing it is a strong pass.
 
-PASS also if it stops and asks, having found the tool unavailable.
+PASS also if, finding the tool gated or absent, it sets up a platform that
+already runs graded suites rather than a format of its own — or stops and asks.
 
 FAIL if it hand-rolls a case format — inventing directory names, a frontmatter
 schema or a grader layout from scratch — while a tool that produces one exists.

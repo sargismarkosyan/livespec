@@ -115,14 +115,15 @@ needs no credentials.
 this repository knows about itself), [`trace.py`](.github/scripts/trace.py)
 (traceability, both directions), [`evalsuite.py`](.github/scripts/evalsuite.py)
 (every skill held by a case, every case able to fail), and
-[`inject.py`](.github/scripts/inject.py), which breaks every gate 31 ways — 24 in
-a temporary fixture, and 7 against the release inputs, which are pure functions
+[`inject.py`](.github/scripts/inject.py), which breaks every gate 34 ways — 25 in
+a temporary fixture, and 9 against the release inputs, which are pure functions
 over a label list and a pull request body — and checks each one fires. What each binding means is in
 [`specs/setup/README.md`](specs/setup/README.md).
 
 If you changed a skill's judgment or its description, also run the evals — see
-[`evals/README.md`](evals/README.md). They cost money and `claude plugin eval` is
-in early access, so this is a maintainer step rather than a CI gate.
+[`evals/README.md`](evals/README.md). They cost money per session, so this is a
+maintainer step rather than a CI gate: `evals/runner/run.py` runs the suite on
+promptfoo, since the native `claude plugin eval` is gated behind early access.
 
 ### Developing against a local checkout
 

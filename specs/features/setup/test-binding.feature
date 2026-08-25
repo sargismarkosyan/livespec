@@ -31,6 +31,12 @@ Feature: How a test claims a rule in this repository
       Then the tool that already builds such a suite is what was used
       And no case format was invented for this repository
 
+    Example: the answer was graded cases and the native tool will not start
+      Given the tool that builds such suites is gated or absent where the suite must run
+      When the sitting ends
+      Then a platform that can actually run is what was set up
+      And the cases stay written in the format the repository's gates read
+
   @rule:the-spec-bound-measure-is-reported-never-gated
   Rule: What the rule-bound tests reach on their own is reported apart from the gated number
 
