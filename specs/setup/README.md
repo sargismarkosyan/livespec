@@ -117,6 +117,40 @@ Until then the gate proves a case **exists, claims a live rule, and can fail**.
 It does not prove it passes, and no output from `verify.py` should be read as
 saying it does.
 
+## Gate wiring
+
+**Reconciled against livespec 0.7.0 on 2026-08-25.** One row per gate named in
+[`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
+ones that are not wired, which is the half a repository otherwise forgets. This
+repository *is* the plugin, so the stamp above is the version in the same commit
+as the method it was reconciled against; anywhere else the two move apart, and
+that gap is the thing a later `setup` run offers to close.
+
+| Gate | State | Wired by, or why not |
+|---|---|---|
+| rule → case | automated | `trace.py` — a live rule no case claims fails |
+| case → rule | automated | `trace.py` — a case claiming an id that does not exist fails |
+| feature → workflow | automated | `trace.py` |
+| workflow → feature | automated | `trace.py` |
+| workflow → case (walked end to end) | automated | `trace.py` |
+| workflow → persona | automated | `trace.py`, live personas only — a `@retired` one does not count |
+| persona → workflow | automated | `trace.py` |
+| journey → workflow | automated | `trace.py` |
+| workflow → journey | automated | `trace.py`, as a **warning** — where an attempt sits in the arc is a judgment |
+| structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` |
+| both gates verified to fire | automated | `inject.py` — 24 faults, re-run by every `verify.py` |
+| coverage — lines, branches, functions | **not applicable** | there is no application code to measure; the eval-suite gate stands in its place, and *What has no gate* above says what that misses |
+| a journey looked at since the workflows under it moved | **not applicable** | a git question, and CI checks out one commit — it would pass forever while looking enforced |
+| features piled up under a workflow since its file was last edited | **not applicable** | same, and `gates.md` leaves both out for that reason |
+
+**No row is deferred**, so nothing here is on the two-change clock. Every
+automated row was wired by the `setup` run in 0.6.0 and predates this ledger,
+which is why none of them carries a change number.
+
+The pull-request report in `gates.md` has no row on purpose: it is declared there
+as *not a gate*, it cannot fail a build, and a row for it would be the first
+thing in this table that is not a gate at all.
+
 ## The fault injection record
 
 Run on **2026-08-24** by `python3 .github/scripts/inject.py`, which is part of

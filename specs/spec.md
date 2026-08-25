@@ -56,6 +56,14 @@ There is no build output and no database. What a version writes down, and where:
 consuming repository. Where a change here would read badly against old commits
 there, the change says so in its own spec.
 
+What a consuming repository *does* record is **setup-level**: the gate wiring
+ledger in its `specs/setup/README.md` carries the plugin version that wiring was
+last reconciled against. That is a fact about the process installed there, not
+about any commit — no commit gains provenance, and the ledger answers *what was
+this last checked against*, never *which version wrote this line*. The two are
+named apart here because a stamp on a repository reads, at a glance, like a stamp
+on its history.
+
 ## The promises that belong to no single workflow
 
 Standing commitments. A change spec that serves one of these rather than a
