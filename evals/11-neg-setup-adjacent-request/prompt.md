@@ -1,5 +1,5 @@
 ---
-tags: [skill:setup, should-not-fire]
+tags: [skill:setup, should-not-fire, rule:setup-ignores-an-adjacent-request]
 max_turns: 10
 timeout_seconds: 180
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

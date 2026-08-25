@@ -1,6 +1,6 @@
 # Spec 0008: the gate gets something to hold
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#21](https://github.com/sargismarkosyan/livespec/issues/21), and the
   rule debt [`0002`](0002-setup-finishes-what-it-names.md) and
   [`0004`](0004-setup-can-be-offered.md) each reserved and could not pay.
@@ -170,7 +170,7 @@ Feature: Reaching setup, and setup knowing it was not the thing asked for
       Then it names the files it would write, and the interviews that follow it
       And nothing has been written
 
-  @rule:setup-ignores-an-adjacent-request
+  @rule:setup-ignores-an-adjacent-request @refusal
   Rule: A request that only sounds like setup gets the answer it asked for
 
     Example: a question about the checks already there
@@ -305,10 +305,11 @@ item 2 is where it becomes a fact about this repository.
   `scaffold_script` and the documented invocation gains `--scaffold`, which is
   a change to what `evalsuite.py` checks and is called out here so it is not a
   surprise.
-- **A body-text gate is satisfied by a fence with nothing in it.** Item 3 can
-  check that a Gherkin block is present, never that it is the right one. Same
-  weakness the `## Changelog` check already carries and the same answer: it stops
-  the silent case, which is a body that says nothing at all.
+- **A body-text gate is satisfied by a fence with the wrong thing in it.** Item 3
+  refuses an absent block and an empty one; what it cannot check is whether the
+  Gherkin quoted is the Gherkin that moved. Same weakness the `## Changelog`
+  check already carries and the same answer: it stops the silent case, which is a
+  body that says nothing at all.
 - **`ids-are-permanent` is spent six times in one version.** Every id was
   published in an approved spec already, so the promise was made in 0.8.0 and
   0.9.0 rather than here — but this is the change that makes them load-bearing in
@@ -325,8 +326,11 @@ item 2 is where it becomes a fact about this repository.
 2. Open a pull request that edits a file under `specs/features/` and put nothing
    about it in the body. CI fails, and the message names the Gherkin block rather
    than the changelog.
-3. Add the block. CI passes. Then delete the fence's contents and confirm it
-   still passes — that is the known hole in *Risks*, checked rather than assumed.
+3. Add the block. CI passes. Then empty the fence and confirm it **fails** — the
+   implementation went one notch stricter than this spec promised, and an empty
+   fence is refused rather than accepted. The hole *Risks* names is the one left:
+   a fence with the wrong Gherkin in it still passes, and only a reader catches
+   that.
 4. Read the six `Rule:` lines once looking only for interface detail — a
    command, a filename, a flag. Any rule that would need rewording when the
    skill's wording changed is written at the wrong altitude and will rot.

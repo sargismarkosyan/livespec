@@ -32,8 +32,9 @@ wherever the method says *test*, this repository means **eval case**:
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
 | **Eval-suite gate** | `.github/scripts/evalsuite.py [root]` |
-| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks it 24 ways, then breaks the release inputs 7 more |
+| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks it 25 ways, then breaks the release inputs 9 more |
 | **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body |
+| **Spec-surface check** | the same gate, asked separately. Fails a change to a `.feature` under `specs/features/` or `specs/workflows/` whose body carries no ` ```gherkin ` block and no link to a `.feature` pinned at a 40-character SHA. A layer README is not a `.feature` and does not trigger it |
 | **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, runs `verify.py`, commits, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
 | **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate and the release job share, and pure, so `inject.py` can break it |
 | **Repository checks** | `.github/scripts/checks.py` — manifests, skill frontmatter, always-on budget, link and payload checks |
@@ -45,7 +46,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Where the app runs** | nowhere. There is no app |
 | **Deliverable of a version** | the pull request description. No moving picture — see *What does not apply* |
 | **Manifest validation** | `claude plugin validate . --strict`, `./.claude-plugin/plugin.json`, `./skills` — offline, no credentials |
-| **What a contributor owes a release** | one `patch`/`minor`/`major` label on the pull request, and a `## Changelog` section in its body. Nothing else — `version` and `CHANGELOG.md` are written by the pipeline and must not be edited in a branch |
+| **What a contributor owes a release** | one `patch`/`minor`/`major` label on the pull request, and a `## Changelog` section in its body — plus the Gherkin block when the change moves a `.feature`. Nothing else — `version` and `CHANGELOG.md` are written by the pipeline and must not be edited in a branch |
 
 ## The tag contract
 
@@ -64,14 +65,16 @@ runs: 3
 |---|---|---|
 | `skill:<name>` | this case holds that skill's judgment | `evalsuite.py` — a skill no case names fails the gate |
 | `rule:<id>` | this case is the answer to that Gherkin rule | `trace.py`, both directions |
+| `rule:<id>` on a `should-not-fire` case | only legitimate where the rule is tagged `@refusal` | `trace.py` — otherwise a warning, because a case asserting nothing fires cannot verify a rule that promises a behaviour |
 | `workflow:<id>` | this case walks that workflow end to end | `trace.py` — a workflow nothing walks fails |
 | `should-not-fire` | this case asserts nothing fires | `evalsuite.py` — the suite must always keep at least one |
 
-**A case is not required to claim a rule.** The spec layer is empty, so there is
-nothing to claim yet, and the direction that carries the value —
-`rule → case` — needs no exemption to work: it has nothing to fail on today and
-arms itself the moment the first rule lands. What is enforced is that a claim
-*resolves*: a case naming a rule or workflow that does not exist fails.
+**A case is not required to claim a rule**, and six now do. The direction that
+carries the value — `rule → case` — needed no exemption to work: it had nothing
+to fail on while the layer was empty and armed itself the moment the first rules
+landed in [`0008`](../changes/0008-the-gate-gets-something-to-hold.md). What is
+enforced besides is that a claim *resolves*: a case naming a rule or workflow
+that does not exist fails, on a should-not-fire case as much as any other.
 
 What stops a case being filler is the eval-suite gate, not a claim: every case
 carries `skill:<name>` and at least one outcome grader.
@@ -140,7 +143,7 @@ that gap is the thing a later `setup` run offers to close.
 | journey → workflow | automated | `trace.py` |
 | workflow → journey | automated | `trace.py`, as a **warning** — where an attempt sits in the arc is a judgment |
 | structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` |
-| both gates verified to fire | automated | `inject.py` — 31 faults (24 against a fixture, 7 against the release inputs), re-run by every `verify.py` |
+| both gates verified to fire | automated | `inject.py` — 34 faults (25 against a fixture, 9 against the release inputs), re-run by every `verify.py` |
 | coverage — lines, branches, functions | **not applicable** | there is no application code to measure; the eval-suite gate stands in its place, and *What has no gate* above says what that misses |
 | a journey looked at since the workflows under it moved | **not applicable** | a git question, and CI checks out one commit — it would pass forever while looking enforced |
 | features piled up under a workflow since its file was last edited | **not applicable** | same, and `gates.md` leaves both out for that reason |
@@ -157,13 +160,13 @@ thing in this table that is not a gate at all.
 
 Run on **2026-08-25** by `python3 .github/scripts/inject.py`, which is part of
 `verify.py` and therefore of every CI run — so this record is re-made rather than
-remembered. **31 of 31 faults produced the expected result.**
+remembered. **34 of 34 faults produced the expected result.**
 
 | Injected fault | Expected | Result |
 |---|---|---|
 | live rule with no case | fails | ✔ |
 | case claims a rule that does not exist | fails | ✔ |
-| `@planned` rule that has a case | fails | ✔ |
+| @planned rule that has a case | fails | ✔ |
 | feature naming no workflow | fails | ✔ |
 | feature naming a workflow that does not exist | fails | ✔ |
 | workflow claimed by no feature | fails | ✔ |
@@ -176,6 +179,7 @@ remembered. **31 of 31 faults produced the expected result.**
 | duplicate rule id | fails | ✔ |
 | rule with no example | fails | ✔ |
 | example outside any rule | fails | ✔ |
+| refusal rule losing the tag that makes its case legitimate | **warns, does not fail** | ✔ |
 | workflow naming no journey | **warns, does not fail** | ✔ |
 | case graded only by what fired | fails | ✔ |
 | case run fewer times than the floor | fails | ✔ |
@@ -192,8 +196,10 @@ remembered. **31 of 31 faults produced the expected result.**
 | a version that already has an entry | fails | ✔ |
 | a manifest with no version field | fails | ✔ |
 | a version that is not major.minor.patch | fails | ✔ |
+| spec-moving change whose body carries no gherkin | fails | ✔ |
+| a gherkin block with nothing in it | fails | ✔ |
 
-The last seven need no fixture. `releaselib.py` is pure — a label list and a pull
+The last nine need no fixture. `releaselib.py` is pure — a label list and a pull
 request body in, a decision out — which is the whole reason it is a module rather
 than two copies of a regex. The gate it replaced was **not** injectable and
 shipped for three versions without ever being known to fire; that was the

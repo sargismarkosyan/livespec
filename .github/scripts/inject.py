@@ -58,7 +58,13 @@ FIXTURE: dict[str, str] = {
         "    Example: it shows the thing\n"
         "      Given a list\n"
         "      When they look\n"
-        "      Then the thing is there\n"
+        "      Then the thing is there\n\n"
+        "  @rule:two @refusal\n"
+        "  Rule: nothing happens when nobody asked\n\n"
+        "    Example: it stays out of the way\n"
+        "      Given a list\n"
+        "      When they ask about something else\n"
+        "      Then nothing has been added\n"
     ),
     "evals/README.md": (
         "# The eval suite\n\n"
@@ -70,7 +76,7 @@ FIXTURE: dict[str, str] = {
     "evals/case-rule/graders/outcome.md": GRADER,
     "evals/case-walk/prompt.md": "---\ntags: [skill:refine-spec, workflow:read-it]\nruns: 3\n---\nWalk it.\n",
     "evals/case-walk/graders/outcome.md": GRADER,
-    "evals/case-neg/prompt.md": "---\ntags: [should-not-fire]\nruns: 3\n---\nWrite me a commit message.\n",
+    "evals/case-neg/prompt.md": "---\ntags: [should-not-fire, rule:two]\nruns: 3\n---\nWrite me a commit message.\n",
     "evals/case-neg/graders/outcome.md": GRADER,
 }
 
@@ -114,12 +120,17 @@ from releaselib import (  # noqa: E402
     ReleaseInputError,
     bump_manifest,
     extract_entry,
+    extract_gherkin,
+    moves_spec,
     next_version,
     prepend_entry,
     select_increment,
 )
 
-GOOD_BODY = "Intro.\n\n## Changelog\n\nBody of the entry.\n\n## Notes\n\nnot part of it"
+GOOD_BODY = (
+    "Intro.\n\n## Changelog\n\nBody of the entry.\n\n## Notes\n\nnot part of it\n\n"
+    "```gherkin\n  Rule: it holds\n```\n"
+)
 
 # (name, what to try, a phrase the refusal must contain)
 RELEASE_FAULTS = [
@@ -138,6 +149,10 @@ RELEASE_FAULTS = [
      lambda: bump_manifest('{"name": "livespec"}', "0.9.0"), "no `version` field"),
     ("a version that is not major.minor.patch",
      lambda: next_version("0.8", "minor"), "not major.minor.patch"),
+    ("spec-moving change whose body carries no gherkin",
+     lambda: extract_gherkin("Intro.\n\n## Changelog\n\nBody."), "carries no Gherkin"),
+    ("a gherkin block with nothing in it",
+     lambda: extract_gherkin("Intro.\n\n```gherkin\n\n```\n"), "gherkin block is empty"),
 ]
 
 
@@ -150,6 +165,13 @@ def release_control() -> None:
     log = prepend_entry("# Changelog\n\nhead\n\n## 0.8.0 — x\n\nold\n", "0.9.0", "2026-01-01", "Body.")
     assert log.index("## 0.9.0") < log.index("## 0.8.0"), "the new entry is not on top"
     assert "Body." in log, "the entry did not survive into the changelog"
+    assert extract_gherkin(GOOD_BODY) == "Rule: it holds", "the quoted Gherkin is not read"
+    assert extract_gherkin(
+        "see https://x.test/o/r/blob/" + "a" * 40 + "/specs/features/a.feature"
+    ).endswith(".feature"), "a pinned Gherkin link is not accepted"
+    assert moves_spec(["specs/workflows/README.md", "specs/features/a.feature"]) == [
+        "specs/features/a.feature"
+    ], "the spec surface is not what triggers the Gherkin check"
 
 
 # (name, gate, mutation, expected outcome, a phrase the message must contain)
@@ -190,6 +212,9 @@ FAULTS = [
      lambda r: edit(r, "specs/features/core/core.feature", "Feature: The core of it\n",
                     "Feature: The core of it\n\n  Example: loose\n    Given a\n    When b\n    Then c\n"),
      "fails", "outside any Rule:"),
+    ("refusal rule losing the tag that makes its case legitimate", TRACE,
+     lambda r: edit(r, "specs/features/core/core.feature", "@rule:two @refusal", "@rule:two"),
+     "warns", "promises a behaviour"),
     ("workflow naming no journey", TRACE,
      lambda r: edit(r, "specs/workflows/read-it.feature", " @journey:arc", ""), "warns", "names no @journey:"),
     ("case graded only by what fired", SUITE,

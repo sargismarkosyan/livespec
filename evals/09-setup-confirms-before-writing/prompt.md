@@ -1,5 +1,5 @@
 ---
-tags: [skill:setup]
+tags: [skill:setup, rule:setup-can-be-offered, rule:setup-confirms-before-writing]
 max_turns: 12
 timeout_seconds: 300
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

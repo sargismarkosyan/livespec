@@ -2,7 +2,8 @@
 """Gate 1 — traceability, both directions.
 
     rule      ->  eval case     every live rule is claimed by a case
-    case      ->  rule          every case names what it exists for
+    case      ->  rule          every case names what it exists for, and a
+                                should-not-fire case claims only @refusal rules
     feature   ->  workflow      every feature says what it serves
     workflow  ->  feature/case/persona/journey
 
@@ -31,7 +32,7 @@ from caselib import cases  # noqa: E402
 ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[2]
 
 NS_TAG = re.compile(r"@(feature|rule|workflow|persona|journey):([A-Za-z0-9][A-Za-z0-9._-]*)")
-FLAG = re.compile(r"@(planned|retired)\b")
+FLAG = re.compile(r"@(planned|retired|refusal)\b")
 
 # Soft limits: small per-component files are the point, and a hard cap on them
 # is not. Past these, add a file rather than grow one.
@@ -104,6 +105,7 @@ def parse_gherkin(path: Path) -> dict:
                 "id": (ids.get("rule") or [None])[0],
                 "name": name,
                 "planned": "planned" in flags,
+                "refusal": "refusal" in flags,
                 "examples": 0,
                 "line": number,
             }
@@ -256,8 +258,22 @@ for doc in features:
 for case in suite:
     where = f"evals/{case['name']}"
     if case["negative"]:
-        if case["claims"]["rules"]:
-            warn(where, "is a should-not-fire case that claims a rule; a case asserting nothing fires cannot verify one")
+        # A case asserting nothing fires cannot verify a rule that promises a
+        # behaviour — but a rule whose whole promise is that nothing happens is
+        # verified by exactly this and nothing else. `@refusal` is what tells
+        # them apart, and without it the only honest options were a permanent
+        # warning or a @planned tag on built behaviour.
+        for value in case["claims"]["rules"]:
+            entry = live_rules.get(value) or planned_rules.get(value)
+            if entry is None:
+                fail(where, f"claims @rule:{value}, which does not exist. Rule ids are permanent; this is usually a typo or a rename.")
+            elif not entry["rule"]["refusal"]:
+                warn(
+                    where,
+                    f"is a should-not-fire case and claims @rule:{value}, which promises a behaviour; "
+                    "a case asserting nothing fires cannot verify one. Tag the rule @refusal if its "
+                    "promise is that nothing happens.",
+                )
         continue
     # A case that claims nothing is not a failure. `rule -> case` already fails a
     # rule nothing verifies, and that direction needs no list of exempt names to

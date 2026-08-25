@@ -107,6 +107,27 @@ whole reason this is the format.
 A change with nothing to see — tooling, a doc, a refactor — says so in a line
 instead. That is the only exemption, and "it is hard to record" is not it.
 
+### And the Gherkin it moved
+
+**A pull request that changes a promise quotes the promise.** When a change adds
+or alters a `.feature`, a workflow walk or the walkthrough test behind one, the
+body carries the Rule and its Examples — quoted inline, or linked at the commit
+SHA rather than at the branch, for the reason the raw URL above exists.
+
+The picture shows what the version does. This shows what it now *claims*, which
+is the half a reviewer is actually deciding about and the half that outlives the
+release. A diff answers neither: it shows a promise changing without showing what
+it changed into, and it is somewhere the reviewer is not.
+
+Conditional, like the picture and for the same reason: a change touching no spec
+surface says nothing. Ceremony applied to every pull request is ceremony that
+gets skipped on the one that needed it.
+
+**Both halves are gate-checkable and should be gated**, because a convention that
+depends on the author remembering it is a convention that decays in the direction
+of silence. What a gate can prove is that the block is *there*; whether it is the
+right Gherkin is a reading, and the reading is what review is for.
+
 ## Commits
 
 One change spec, one commit. Message format:
