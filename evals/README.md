@@ -7,7 +7,7 @@ checkable by reading the files. This suite is how a change to a skill is held
 against it.
 
 ```
-python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold
 ```
 
 > **Runs on promptfoo, not yet calibrated.** The native runner for this case
@@ -160,7 +160,7 @@ of that grader would still catch a real regression.
 Pilot before trusting a full run:
 
 ```
-python3 evals/runner/run.py --runs 1 --ablation with-without --judge-model sonnet --allow-tools Write Edit
+python3 evals/runner/run.py --runs 1 --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold
 ```
 
 Then, against the run directory it prints (`evals/results/<stamp>/`):
@@ -194,7 +194,7 @@ and the board gate — `.github/scripts/board.py`, run by `verify.py` — fails 
 build naming the cases and the one command that heals them:
 
 ```
-python3 evals/runner/run.py --changed --ablation with-without --judge-model sonnet --allow-tools Write Edit
+python3 evals/runner/run.py --changed --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold
 ```
 
 `--changed` selects exactly the cases without a fresh measurement — a reworded
@@ -213,11 +213,30 @@ re-runs the suite and the row must say so rather than look current.
 
 ## When a case needs a repository
 
-These cases are deliberately self-contained — the situation is in the prompt, and
-the graded judgment does not depend on a `specs/` tree existing. If a case starts
-failing because the agent spends its turns hunting for `specs/setup/README.md`
-rather than answering, that is the signal to convert it to a `case.yaml` with a
-`scaffold_script` that lays down a minimal fixture — native-runner features the
-gates already read (`caselib.py` merges `case.yaml` tags) but
-[`evals/runner/`](runner/run.py) does not yet execute. The first case to need a
-scaffold extends the runner in the same change, or waits for the native one.
+Most cases are deliberately self-contained — the situation is in the prompt, and
+the graded judgment does not depend on a `specs/` tree existing. The signal that
+one has outgrown that is exact: the agent spends its turns hunting for
+`specs/setup/README.md` rather than answering. `01` fired it on the suite's very
+first run (#38), so since then the runner executes scaffolds:
+
+- the case gains a `case.yaml` beside its `prompt.md`, naming a
+  `scaffold_script:` — a bash script in the case directory, in the native
+  format the gates already read (`caselib.py` merges the two files' fields);
+- `run.py --scaffold` runs that script in the session's fresh workspace before
+  `claude -p` starts, **in both arms alike** — an arm handed a different
+  repository would make Δ a comparison of two different questions;
+- the flag is opt-in, exactly as the native runner's: a scaffold is
+  author-supplied bash running as the operator, so it runs only on case files
+  they trust. Run without it and the runner warns per scaffolded case rather
+  than silently measuring the stall — and `evalsuite.py` fails if a scaffolded
+  suite's documented invocation here ever drops the flag, or if a declared
+  script does not exist;
+- the `files` a grader sees are what the session wrote — anything the scaffold
+  laid down is excluded unless the session changed it, which is what lets a
+  fixture carry a `src/` tree that *arms* `no-source-edits` instead of tripping
+  it in both arms.
+
+Convert cases as their runs demand it, never all at once: a fixture is one more
+thing to keep true, and a case that discriminates without one is cheaper to
+trust. `15` is the named next candidate (#40) — its first measurement was the
+bare model beating the plugin in an empty workspace.

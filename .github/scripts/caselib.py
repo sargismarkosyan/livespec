@@ -19,24 +19,15 @@ from pathlib import Path
 # CLI merges them, and so do we — tags from either count as claimed.
 CASE_FILES = ("case.yaml", "prompt.md")
 
-def frontmatter(path: Path) -> tuple[dict[str, str], str]:
-    """Read a leading --- block. Returns (fields, body).
+def _flat_fields(lines: list[str]) -> dict[str, str]:
+    """A flat key: value reader, which is all a case file or a grader has.
 
-    A flat key: value reader, which is all a prompt.md or a grader has. List
-    values arrive either inline (`tags: [a, b]`) or as following `- ` lines;
-    both come back as the raw string for `tag_values` to split.
+    List values arrive either inline (`tags: [a, b]`) or as following `- `
+    lines; both come back as the raw string for `tag_values` to split.
     """
-    text = path.read_text()
-    lines = text.splitlines()
-    if not lines or lines[0].strip() != "---":
-        return {}, text
-    try:
-        end = lines.index("---", 1)
-    except ValueError:
-        return {}, text
     fields: dict[str, str] = {}
     key = None
-    for line in lines[1:end]:
+    for line in lines:
         match = re.match(r"^([A-Za-z][\w-]*):\s*(.*)$", line)
         if match:
             key = match.group(1)
@@ -45,7 +36,28 @@ def frontmatter(path: Path) -> tuple[dict[str, str], str]:
             fields[key] += " " + line.strip().lstrip("- ").strip()
         elif key and line.startswith((" ", "\t")):
             fields[key] += " " + line.strip()
-    return fields, "\n".join(lines[end + 1 :])
+    return fields
+
+
+def frontmatter(path: Path) -> tuple[dict[str, str], str]:
+    """Read a leading --- block. Returns (fields, body)."""
+    text = path.read_text()
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return {}, text
+    try:
+        end = lines.index("---", 1)
+    except ValueError:
+        return {}, text
+    return _flat_fields(lines[1:end]), "\n".join(lines[end + 1 :])
+
+
+def fields_of(source: Path) -> dict[str, str]:
+    """The fields of one case source: a prompt.md keeps them fenced in
+    frontmatter; a case.yaml is nothing but fields, so the whole file reads."""
+    if source.suffix in (".yaml", ".yml"):
+        return _flat_fields(source.read_text().splitlines())
+    return frontmatter(source)[0]
 
 
 def tag_values(raw: str) -> list[str]:
@@ -68,12 +80,15 @@ def cases(root: Path) -> list[dict]:
         tags: list[str] = []
         allowed_tools: list[str] = []
         runs: int | None = None
+        scaffold: Path | None = None
         for source in sources:
-            fields, _ = frontmatter(source)
+            fields = fields_of(source)
             tags += tag_values(fields.get("tags", ""))
             allowed_tools += tag_values(fields.get("allowed_tools", ""))
             if fields.get("runs", "").strip().isdigit():
                 runs = int(fields["runs"].strip())
+            if fields.get("scaffold_script", "").strip():
+                scaffold = directory / fields["scaffold_script"].strip()
         graders = []
         for grader in sorted((directory / "graders").glob("*.md")):
             fields, body = frontmatter(grader)
@@ -88,6 +103,7 @@ def cases(root: Path) -> list[dict]:
                 # than assumed, because the floor is a minimum on the real value.
                 "allowed_tools": allowed_tools,
                 "runs": 3 if runs is None else runs,
+                "scaffold": scaffold,
                 "graders": graders,
                 "claims": {
                     "rules": [t.split(":", 1)[1] for t in tags if t.startswith("rule:")],

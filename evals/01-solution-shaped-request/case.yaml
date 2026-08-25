@@ -1,0 +1,5 @@
+# The workspace this case runs in. prompt.md carries the ask; this carries the
+# repository it lands in — the suite's first run proved an empty directory
+# measures the stall, not the judgment (#38). Read by caselib.py, run by
+# `run.py --scaffold`.
+scaffold_script: scaffold.sh

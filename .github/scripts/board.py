@@ -37,7 +37,7 @@ args = [a for a in sys.argv[1:] if a != "--json"]
 ROOT = Path(args[0]).resolve() if args else Path(__file__).resolve().parents[2]
 
 HEAL = ("python3 evals/runner/run.py --changed --ablation with-without "
-        "--judge-model sonnet --allow-tools Write Edit")
+        "--judge-model sonnet --allow-tools Write Edit --scaffold")
 
 failures: list[str] = []
 warnings: list[str] = []

@@ -12,8 +12,8 @@ Three kinds, matching what the suite contains:
   through `claude -p --json-schema`, which returns `{pass, reason}` and nothing
   else. `focus: full_transcript` sends a digest of the whole session;
   `last_message` sends the final text.
-- `regex` — over the files the session created (`target: files`), the only
-  target in use.
+- `regex` — over the files the session wrote (`target: files`), the only
+  target in use. A scaffold's fixture is excluded before the list reaches here.
 - `tool_used` — with `max:` set it is a scored should-not-fire assertion, which
   can only ever cost the plugin arm points. With `min:` alone it is the
   plugin-fired indicator from the ablation contract: reported, weight zero,
@@ -130,7 +130,7 @@ def get_assert(output, context):
         wanted = fields.get("match", "contains") != "not_contains"
         ok = bool(hits) if wanted else not hits
         return {"pass": ok, "score": 1.0 if ok else 0.0,
-                "reason": f"{len(hits)} of {len(files)} created file(s) match" + (f": {hits[:5]}" if hits else "")}
+                "reason": f"{len(hits)} of {len(files)} session-written file(s) match" + (f": {hits[:5]}" if hits else "")}
 
     if kind == "tool_used":
         tools = json.loads(Path(metadata["tools"]).read_text()) if metadata.get("tools") else []
