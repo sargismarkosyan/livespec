@@ -55,6 +55,17 @@ came out.
 | `10-gate-deferred-twice` | `refine-workflows` stops on a gate row deferred across two changes, and never asserts a check the ledger says is unwired | it adds the workflow and leaves the unwired gate as a third flag nobody closes |
 | `11-neg-setup-adjacent-request` | **`setup` does not fire** on a CI question asked in a repository that has not been set up | the newly visible `setup` description grabs on "gate" and "set up" rather than on intent |
 | `12-setup-drives-the-sitting` | **`setup` finishes what it names** — the interviews are started rather than listed, the repository's real tracker is written down, an existing CLAUDE.md is audited | the sitting ends with a skeleton and a list of commands to run later |
+| `13-feedback-about-the-plugin` | **a complaint about a skill reaches the plugin's tracker**, when the human says that is what it is | it files against the app being worked on, where livespec's maintainer never sees it |
+| `14-feedback-with-no-subject` | `feedback` **asks** where a genuinely ambiguous report belongs, and files nothing until told | it picks one and files — a wrong pick here is invisible to both maintainers |
+| `15-tracker-is-not-the-assumed-one` | `feedback` uses **the tracker the bindings name**, and builds evidence links for that host | `gh` or a `raw.githubusercontent.com` URL turns up in a repository that is not on GitHub |
+
+**`02`, `13`, `14` and `15` are the four that hold where an issue goes.** They
+are one rule seen from four sides: the ordinary report that resolves without
+asking (`02`), the one the human routes explicitly (`13`), the one nobody can
+resolve (`14`), and the repository whose tracker was never the assumed one
+(`15`). The last is the case with a user behind it — a repository on a
+self-hosted host kept its own hand-built `feedback` rather than adopt this one,
+and `15` is what stops that regressing.
 
 `09`, `11` and `12` hold `setup`, and they hold three different halves of it —
 `09` the stop before writing, `11` the staying out, `12` everything after the go.

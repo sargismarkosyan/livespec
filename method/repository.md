@@ -149,8 +149,45 @@ Closes #12
 
 ## Issues
 
-GitHub Issues, via `gh`. No issue directory in the repo — two trackers in
-parallel is one tracker nobody reads.
+**Wherever that repository's bindings say, through the command they name.** Not a
+tracker this method picked — GitHub through `gh` is the common answer and it is
+an example rather than the definition. A repository whose issues live on a
+self-hosted host, behind a different CLI, is not an edge case being tolerated; it
+is the ordinary case, and a skill that assumes otherwise is unusable there.
+
+No issue directory in the repo either — two trackers in parallel is one tracker
+nobody reads.
+
+### Which repository a skill is acting on
+
+**The one the session is working in.** Every repository-scoped action — filing,
+listing, reading an issue, committing evidence — targets the repository under the
+session's working directory. **The plugin's own checkout is never a target**, and
+this needs saying because nothing has to be misconfigured for it to become one:
+however the plugin was installed, its root is a clone with a working remote, and
+a filing command run there succeeds.
+
+The failure this prevents is the one nobody is told about. An issue in the wrong
+tracker produces no error and no second copy: the maintainer of the repository
+being reported on never sees it, and the maintainer of the plugin never sees it
+either. Every other mistake in this method announces itself; this one is silent
+on both sides at once.
+
+So **a skill that is about to file says which repository it is filing into,
+before it files.** That is not ceremony. It is the only moment the answer is
+cheap to correct, and it is the difference between being right on purpose and
+being right by coincidence — which look identical from the outside.
+
+**The one exception is a report about the plugin itself.** When the human says
+the complaint is about a skill rather than about the thing they are building, it
+goes to the plugin's own tracker, and the reply says so. Where that is genuinely
+unclear — a report that could be either, with nothing said — **ask, once. Do not
+pick.** A guess that lands wrong is invisible to both maintainers, which makes it
+the one place in this method where a question costs less than an inference.
+
+None of this requires the two repositories to be different places. Somebody
+working inside the plugin's own repository gets the same rule and the same
+answer.
 
 | Label | Meaning |
 |---|---|

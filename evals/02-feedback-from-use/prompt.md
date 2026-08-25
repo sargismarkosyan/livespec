@@ -1,5 +1,5 @@
 ---
-tags: [skill:feedback]
+tags: [skill:feedback, rule:skills-act-on-the-session-repository, rule:the-target-is-named-before-filing]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

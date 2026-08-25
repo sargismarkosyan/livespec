@@ -1,6 +1,6 @@
 ---
 name: refine-spec
-description: Refine a request into an approved-ready spec before any code is written. Use whenever someone asks for the app in this repository to be built, changed, added to, fixed, or improved — including small-sounding asks ("just add a button", "can it also…"), picking up a GitHub issue, or acting on feedback. Interrogates the request against the persona and workflows, works out the real job and the end value, then writes the Gherkin rules and the numbered change spec. Never implements.
+description: Refine a request into an approved-ready spec before any code is written. Use whenever someone asks for the app they are building to be built, changed, added to, fixed, or improved — including small-sounding asks ("just add a button", "can it also…"), picking up a tracked issue, or acting on feedback. Interrogates the request against the persona and workflows, works out the real job and the end value, then writes the Gherkin rules and the numbered change spec. Never implements.
 ---
 
 # Refine the request into a spec
@@ -27,7 +27,9 @@ write the spec. **Not to build anything.** No `src/` edits in this skill, ever.
 - `specs/spec.md` — product boundaries, the storage contract, and the vocabulary
 - `specs/features/` — what is already specced, so you do not contradict or
   duplicate a live Rule
-- the GitHub issue, if there is one (`gh issue view <n>`)
+- the issue, if there is one — in **that repository's** tracker, which
+  `specs/setup/README.md` names. "Pick up issue 7" can mean two issues that both
+  exist, one of them in this plugin's own tracker; resolve which before reading it
 
 Do not skip this because the request seems obvious. The obvious-seeming ones are
 where a spec quietly gets written for the wrong person.

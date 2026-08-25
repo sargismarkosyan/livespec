@@ -163,6 +163,14 @@ helper lives, how tests are discovered, what the coverage thresholds are, what
 the required check is called, where the app runs, what a pull request has to
 carry, and anything else a skill would otherwise have to guess.
 
+**The tracker row is not optional and is not cosmetic.** Section 1 already found
+how issues are filed here; this is where that answer becomes something a skill
+can read — the host, and the command that files there. Without it every skill
+falls back to guessing, and a guess that lands in the wrong tracker is invisible
+to everybody: no error, no second copy, and nobody told. Write the row even when
+the answer is the obvious one, and write *"there is no tracker"* when there is
+none rather than leaving it blank.
+
 **One of those rows is easy to leave out and expensive to add later.** A pull
 request in this repository carries the deliverable — the picture, and the Gherkin
 it moved, per

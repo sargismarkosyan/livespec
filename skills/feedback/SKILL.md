@@ -1,9 +1,9 @@
 ---
 name: feedback
-description: Turn a human testing session into well-researched GitHub issues. Use whenever the user reports something about the app in this repository from having actually used it — a bug, something confusing, something missing, an "I wish it did X", or a screenshot with a complaint attached. Triggers on "feedback", "report this", "log an issue", "this is broken", "found a bug", or a pasted screenshot of the app. Investigates the code before filing, and does not fix anything.
+description: Turn a human testing session into well-researched issues. Use whenever the user reports something about the app they are building from having actually used it — a bug, something confusing, something missing, an "I wish it did X", or a screenshot with a complaint attached. Triggers on "feedback", "report this", "log an issue", "this is broken", "found a bug", or a pasted screenshot of the app. Investigates the code before filing, and does not fix anything.
 ---
 
-# Feedback → GitHub issue
+# Feedback → a tracked issue
 
 The human is the only person who actually *uses* this app. This skill exists so
 that nothing they noticed gets lost between their chat message and the issue
@@ -11,6 +11,43 @@ tracker.
 
 Your job is to **listen, investigate, and file**. Not to fix. Resist every urge
 to open an editor — a fix without a spec breaks the process in `CLAUDE.md`.
+
+## 0. Settle where this is going, before anything else
+
+Two questions, both answered before you investigate and **both stated in your
+reply before you file**. They take one line each and they are the difference
+between an issue somebody reads and an issue nobody ever sees.
+
+**Which repository.** The one the session is working in — never this plugin's own
+checkout, which is a clone with a working remote and will happily accept an issue
+nobody is looking for. Resolve it rather than assume it, and say what you
+resolved.
+
+**The exception, and the only place this plugin names itself:** when the human
+says the complaint is about a *skill* — the plugin misbehaved, an interview asked
+the wrong thing — it goes to the plugin's own tracker instead, and your reply
+says that is where it went.
+
+**When you cannot tell, ask.** A report that could be about either, with nothing
+said either way, is the one case worth a question: batch it with the questions in
+step 1 and file nothing until it is answered. Everywhere else, infer and state
+what you inferred. This is not a licence to ask on every report — a complaint
+about the app somebody is standing in resolves without a question, and asking
+there is a defect in this skill rather than caution.
+
+**Which tracker.** Read it from `specs/setup/README.md` — the host and the
+command that files there. **Do not assume it is GitHub.** Where the bindings say
+nothing, work it out from what the repository already shows — `git remote get-url
+origin` names the host — and **say what you worked out** before you rely on it.
+Where there is no tracker at all, say so and stop; there is nowhere to file.
+
+Every command in the steps below is written in the common case, GitHub through
+`gh`. **They are examples of the shape, not the tool.** Substitute what the
+bindings name.
+
+If the repository the session is in *is* this plugin's repository, all of the
+above still applies and gives the same answer. Nothing here requires the two to
+be different places.
 
 ## 1. Take the feedback apart
 
@@ -43,9 +80,11 @@ A screenshot is evidence; get it into the issue if you can.
 - **If the user gives a file path** (or drags a file in and you can see a path):
   copy it into the repo as
   `docs/feedback/<issue-slug>-<n>.png`, then commit and push it. In the issue
-  body, embed it with the raw URL:
-  `![description](https://raw.githubusercontent.com/<owner>/<repo>/main/docs/feedback/<file>)`
-  — `gh repo view --json nameWithOwner` if you are not sure of the slug.
+  body, embed it with a raw URL **on the host this repository actually lives on**
+  — the one step 0 resolved. On GitHub that is
+  `![description](https://raw.githubusercontent.com/<owner>/<repo>/main/docs/feedback/<file>)`;
+  elsewhere it is that host's equivalent, and a `raw.githubusercontent.com` link
+  in an issue on another host is a broken image with a confident URL.
   The file is temporary: it gets `git rm`'d when the issue closes, which is why
   the written description below is the part that has to survive.
 - **If the image was pasted straight into chat**, you can see it but you cannot
@@ -136,15 +175,20 @@ gap is legible in the issue list rather than buried in the body.
 
 ## 4. Check for duplicates
 
-`gh issue list --state all --limit 100` before creating anything. If it already
-exists, add a comment with the new evidence instead of filing again, and tell
-the user that is what you did.
+List what the tracker already holds before creating anything — on GitHub,
+`gh issue list --state all --limit 100`. If it already exists, add a comment with
+the new evidence instead of filing again, and tell the user that is what you did.
 
 ## 5. File it
 
 ```sh
 gh issue create --title "<title>" --label "<labels>" --body-file <path>
 ```
+
+**Name the repository you are filing into, in your reply, before you run this.**
+Not afterwards in the confirmation — before, while a wrong answer still costs one
+word to fix. Right by coincidence and right on purpose look identical once the
+issue exists.
 
 Write the body to a scratch file and pass `--body-file` — bodies have newlines
 and backticks and will not survive being inlined.
