@@ -12,6 +12,18 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.11.0 — 2026-08-25
+
+**A skill now knows which repository it is acting on, and which tracker that repository actually uses.** The rule is one portable passage in `method/repository.md` rather than a patch to `feedback`, because #12's report said "same for all other skills": every repository-scoped action targets the repository under the session's working directory, and the plugin's own checkout is never a target. That needed saying — however the plugin was installed, its root is a clone with a working remote, and a filing command run there succeeds.
+
+**The skill says where it is filing before it files.** A misrouted issue is the one failure in this method that produces no error and no second copy: the maintainer being reported on never sees it, and the plugin's maintainer never sees it either. Naming the target is the only moment that answer is cheap to correct, and it is the difference between being right on purpose and being right by coincidence — which look identical afterwards.
+
+**The tracker is a binding, not an assumption.** `specs/setup/README.md` names the host and the command; `setup` writes that row and `feedback` reads it. No `glab` code path ships — livespec deciding what somebody else's tracker is would be the same mistake one level up. Evidence links follow the host too: a `raw.githubusercontent.com` URL in an issue on another host is a broken image with a confident URL.
+
+**One exception, and one question.** A report the human says is about a skill goes to the plugin's tracker. A report that could be either, with nothing said, is asked about once and filed nowhere until answered — the one place in this method where a question costs less than an inference.
+
+Always-on cost **3809 → 3801**. The saving came from deleting a claim rather than trimming prose: a description should not assert where issues go, since that is a binding, and two skills asserted it.
+
 ## 0.10.0 — 2026-08-25
 
 **The spec layer gets its first enforced rules, and the gate over them starts being able to fail.** Six rule ids reserved as *owed* by 0.8.0 and 0.9.0 land live under `specs/features/setup/`, each claimed by an eval case. `adopt-the-process` drops `@planned` and is walked by a new case, `12-setup-drives-the-sitting` — the driven-setup case 0.8.0 called the first thing to write when the eval runner unblocks.
