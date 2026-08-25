@@ -28,9 +28,10 @@ exists:
 The distinction matters because it is the context budget:
 
 - **Every session pays** for each skill's `name` and `description`, whether or
-  not anything fires — currently ~3.2 KB across the six model-invocable skills.
-  A skill marked `disable-model-invocation: true` costs nothing until invoked;
-  its description is not in context at all.
+  not anything fires — currently ~3.8 KB across all seven skills. A skill marked
+  `disable-model-invocation: true` would cost nothing until invoked, because its
+  description is not in context at all; **none carries the flag**, and `checks.py`
+  fails one that starts to.
 - A skill's **body** loads only when that skill fires.
 - **Payload** loads only when a body sends the agent to it — which is why a
   `method/` or `templates/` file that nothing links is dead weight in every
@@ -61,13 +62,17 @@ with pytest and a Makefile? If not, it is a binding, not the method.
 - **Every `refine-*` skill has a "the one thing this skill refuses" section.**
   That refusal is the skill's actual value. If you edit one, `evals/` has a case
   holding it; if you add one, add the case.
-- **A skill with side effects the human should time is user-invoked only.**
-  `setup` carries `disable-model-invocation: true`, which takes its description
-  out of context entirely — Claude cannot see it to consider it, and it runs only
-  when someone types `/livespec:setup`. It writes `CLAUDE.md` and wires a
-  repository's gates; that is not a decision an agent makes because a repo looked
-  ready for it. `USER_INVOKED_ONLY` in `.github/scripts/checks.py` holds the list,
-  and CI fails if the flag goes missing.
+- **A skill with side effects the human should time asks, rather than hides.**
+  `setup` carried `disable-model-invocation: true` from 0.4.0 for a reason that
+  was right — it writes `CLAUDE.md` and wires a repository's gates, which is not
+  a decision an agent makes because a repo looked ready for it. The mechanism was
+  not: a skill nothing can see is a skill nothing can **offer**, so in the one
+  repository setup exists for, the agent invented a process instead of naming the
+  command. The restraint now lives in the skill body, where a case can grade it —
+  `setup` states what it will write and stops. `USER_INVOKED_ONLY` in
+  `.github/scripts/checks.py` is empty, and its check runs **both ways**: a skill
+  carrying the flag without being listed there fails, so it cannot come back
+  quietly.
 - **Skills never implement.** `feedback` files, `refine-*` specs, `record-clip`
   records. None of them touch `src/`. A change that relaxes this is a change to
   what livespec is, and needs to be argued as one.

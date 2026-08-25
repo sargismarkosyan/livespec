@@ -39,7 +39,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Repository checks** | `.github/scripts/checks.py` — manifests, skill frontmatter, always-on budget, link and payload checks |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader both gates use |
-| **Always-on budget** | 5000 chars across model-invocable skills; currently 3170 across 6 |
+| **Always-on budget** | 5000 chars across model-invocable skills; currently 3809 across 7 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
 | **Coverage thresholds** | none — see below |
 | **Required checks** | `repository checks` and `plugin validate` — the `name:` of each job in `.github/workflows/checks.yml` |
 | **Where the app runs** | nowhere. There is no app |

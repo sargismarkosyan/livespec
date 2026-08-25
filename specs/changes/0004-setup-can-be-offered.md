@@ -1,6 +1,6 @@
 # Spec 0004: setup can be offered
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#19](https://github.com/sargismarkosyan/livespec/issues/19)
 
 ## Who this is for
@@ -63,7 +63,7 @@ setup, cannot mention setup, and cannot know setup exists. What it does instead
 is the thing livespec is against: invent a process on the spot.
 
 **One eval case is unpassable as written because of this.**
-[`09-neg-setup-not-self-started`](../../evals/09-neg-setup-not-self-started/prompt.md)
+[`09-neg-setup-not-self-started`](../../evals/09-setup-confirms-before-writing/prompt.md)
 puts the agent in that exact repository and its `hands-it-back` grader passes on
 *"points at the command the person types to start it — `/livespec:setup`"*. The
 agent is graded on naming a command it has been given no way to know. Its
