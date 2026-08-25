@@ -5,6 +5,41 @@ without bumping it and nobody receives the change — `/plugin update` sees the
 same string and keeps the cached copy. So: one entry here per version, and the
 bump lands in the same commit as the change it describes.
 
+## 0.8.0 — 2026-08-25
+
+**`setup` finishes what it names.** Three places where it marked a step done
+because the step had been *named* — reported from a run against an occupied
+repository ([#9](https://github.com/sargismarkosyan/livespec/issues/9)), and
+specced as
+[`0002`](specs/changes/0002-setup-finishes-what-it-names.md).
+
+- **Section 8 continues into the layers instead of pointing at them.** The
+  sitting says three interviews follow, then runs `refine-personas`,
+  `refine-workflows` and `refine-journeys` in that order. **The sittings are
+  chained; the approvals are not** — each skill still runs its own interview,
+  writes its own numbered change spec and takes its own confirmation, which is
+  what `process.md` requires of a change to the personas or the workflows. Any
+  "stop" ends the chain, and the hand-back then says what is left.
+- **Section 1 goes looking for how issues are filed** — a tracker, a
+  `CONTRIBUTING.md` line, an issue template, a `/feedback` skill of the repo's
+  own. It is the answer to requirement #10 of `claude-md.md`, and it was the one
+  requirement nothing in the skill ever produced.
+- **Section 6 audits an existing CLAUDE.md rather than counting it.** All ten
+  requirements, each marked met, missing or stale, said out loud before anything
+  is edited. A file being there stops meaning the step is done.
+- `setup` gains one refusal: **it does not answer the interviews it starts.**
+- **Unheld by an eval case, on purpose.** `setup` is user-invoked-only, so a fire
+  case would need a literal `/livespec:setup` prompt and `claude plugin eval` is
+  still gated — a case nobody can confirm is drivable is worse than an honest
+  gap. `09-neg-setup-not-self-started` stays setup's only case, and the spec says
+  a driven-setup case is the first thing to write when the runner unblocks.
+- The Gherkin for this change is **owed, not omitted**: a feature naming no live
+  `@workflow:` fails the traceability gate and `specs/workflows/` is empty
+  ([#14](https://github.com/sargismarkosyan/livespec/issues/14)). The three rule
+  ids are reserved in the change spec and the feature file follows.
+- The always-on cost is unmoved at 3170 characters: `setup` is user-invoked-only,
+  so its description is not in context at all.
+
 ## 0.7.0 — 2026-08-25
 
 **A repository can now say which of its gates are actually wired.** `setup`

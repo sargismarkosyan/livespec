@@ -12,13 +12,12 @@ only way to hold judgment is to run it against a prompt and grade what came back
 | [journeys/](journeys/README.md) | The arc of adopting it, and the seams | [`refine-journeys`](../skills/refine-journeys/SKILL.md) |
 | [workflows/](workflows/README.md) | The bounded attempts somebody makes with it | [`refine-workflows`](../skills/refine-workflows/SKILL.md) |
 | `features/` | Gherkin — the enforced contract. Does not exist yet | [`refine-spec`](../skills/refine-spec/SKILL.md) |
-| `changes/` | One numbered change spec per version. Does not exist yet | [`refine-spec`](../skills/refine-spec/SKILL.md) |
+| [changes/](changes/) | One numbered change spec per version | [`refine-spec`](../skills/refine-spec/SKILL.md) |
 | [setup/README.md](setup/README.md) | The bindings — every command, threshold and path that is this repository's rather than the method's | already written |
 
-**Three of those directories are missing on purpose.** A directory is created
-when something goes in it. A tree of empty folders reads as a process that was
-installed and never run, and the gate cannot tell an empty layer from a broken
-one.
+**`features/` is missing on purpose.** A directory is created when something
+goes in it. A tree of empty folders reads as a process that was installed and
+never run, and the gate cannot tell an empty layer from a broken one.
 
 ## Where the method stops and this repository starts
 
@@ -38,5 +37,7 @@ Nothing here describes behaviour that already exists. The seven skills, the
 method documents and the nine eval cases predate this layer and were not
 retroactively specced — [`setup`](../skills/setup/SKILL.md) section 7 says why,
 and [setup/README.md](setup/README.md) records which cases are exempt from
-claiming a rule as a result. The first change spec will be `0001` and will
-describe the next change, not the history.
+claiming a rule as a result. Numbering starts at
+[`0001`](changes/0001-the-gate-wiring-ledger.md), and every spec in
+[changes/](changes/) describes a change still to come rather than one already
+made.

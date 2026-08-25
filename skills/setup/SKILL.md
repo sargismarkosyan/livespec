@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Set this process up in a repository — read what is already there, wire the two gates in that project's own language, write specs/setup/README.md as its bindings, and write CLAUDE.md. Use when adopting livespec in a new or existing repository, when asked to initialise the specs, wire the traceability gate, "set up the process here", or when a repo has the plugin enabled but no specs/setup/README.md for the skills to read. Interviews for what only the human knows, proves every gate fires before handing back, and never writes application code.
+description: Set this process up in a repository — read what is already there, wire the two gates in that project's own language, write specs/setup/README.md as its bindings, write or audit CLAUDE.md, and then run the persona, workflow and journey interviews rather than naming them. Use when adopting livespec in a new or existing repository, when asked to initialise the specs, wire the traceability gate, "set up the process here", or when a repo has the plugin enabled but no specs/setup/README.md for the skills to read. Interviews for what only the human knows, proves every gate fires before handing back, and never writes application code.
 disable-model-invocation: true
 ---
 
@@ -13,9 +13,9 @@ describes and the CLAUDE.md that points at both.
 **It writes no application code, ever.** And it does not invent a persona, a
 workflow or a journey — those are [`refine-personas`](../refine-personas/SKILL.md),
 [`refine-workflows`](../refine-workflows/SKILL.md) and
-[`refine-journeys`](../refine-journeys/SKILL.md), each its own conversation. What
-this skill produces is the structure they land in and the gate that keeps them
-honest.
+[`refine-journeys`](../refine-journeys/SKILL.md), each its own interview and its
+own change spec. What this skill produces is the structure they land in and the
+gate that keeps them honest — and then, in section 8, it starts them.
 
 ## 1. Read the repository before writing anything
 
@@ -30,6 +30,13 @@ Find out what is true, and say it back before you touch a file:
 - **Existing documentation** — a README, a CLAUDE.md, an ADR folder, a `docs/`
   tree. Some of it is already the context this process wants; it gets pointed at,
   not rewritten.
+- **How issues are filed here.** A tracker and the command that reaches it, a
+  `CONTRIBUTING.md` line, an issue template, a `/feedback` skill of their own.
+  This is the answer to requirement #10 of
+  [`claude-md.md`](../../method/claude-md.md), and **nothing else in this skill
+  will go looking for it** — every other requirement falls out of work you are
+  already doing, and that one does not. "There is no convention" is an answer;
+  it gets said out loud rather than left blank.
 - **Greenfield or occupied?** A repository with 40,000 lines already in it is a
   different job from an empty one, and section 7 is about the difference.
 
@@ -159,12 +166,26 @@ when the wiring actually moved; a ledger re-stamped for a run that changed
 nothing has learned to lie. Rows you cannot date honestly say **predates the
 ledger** rather than getting an invented change number.
 
-## 6. Write CLAUDE.md
+## 6. Write CLAUDE.md, or audit the one that is there
 
 Follow [`claude-md.md`](../../method/claude-md.md) — it says what has to be in
 it, what must stay out, and why. **It is a list of requirements, not a file to
 copy.** A CLAUDE.md assembled by filling in somebody else's blanks reads exactly
 like one, and the agent that has to trust it can tell.
+
+**A file that already exists does not make this step done.** It is context
+somebody wrote by hand — and it is also the file every agent trusts by default,
+so it gets read against the ten requirements rather than counted. Go through them
+in order and mark each **met**, **missing** or **stale**; a pointer to a path that
+moved is worse than no pointer. Say that list out loud before touching anything,
+then show the edit and make it.
+
+The ones an occupied repository's own file is usually missing, because nothing
+ever made anybody write them: **#2** (who writes what), **#4** (the line between
+the plugin and this repository), and **#10** (where issues go — which you found
+in section 1). **Do not hand back with #10 unwritten.** Every other requirement
+falls out of work this skill does anyway; that one is only there if you put it
+there.
 
 ## 7. An existing codebase does not get retroactive specs
 
@@ -182,22 +203,46 @@ The temptation is to spec what is already built. Do not.
 - The exception is a rule the codebase *already* breaks: that is not
   documentation, it is a bug, and it goes through `feedback` like any other.
 
-## 8. Enable the plugin, then hand back
+## 8. Enable the plugin, then keep going
 
 Declare the marketplace and enable the plugin in the repository's
 `.claude/settings.json`, so a fresh clone gets the process without a manual
 install.
 
-Then hand back, short:
+Then report, short:
 
 - the verification command, and the fact that it is green;
 - which faults you injected and that each one failed the way it should;
 - **which gates are not wired**, read off the ledger rather than remembered, and
   for each whether it is deferred or cannot apply here;
-- **what is still empty** — almost certainly the personas, the workflows and the
-  journeys — and which skill fills each;
-- **the one next thing**: run `refine-personas`, because every other layer is
-  downstream of it and a workflow written for nobody has to be written twice.
+- the requirement list from section 6, and anything in CLAUDE.md still missing;
+- **what is still empty** — the personas, the workflows and the journeys.
+
+### Then fill them, in the same sitting
+
+**Naming the next command is not handing over — it is stopping one step early.**
+A repository that ends here has a correct skeleton and a list somebody now has to
+remember, which is section 3's warning wearing a different hat.
+
+So say that three interviews follow, and run them in order:
+[`refine-personas`](../refine-personas/SKILL.md), then
+[`refine-workflows`](../refine-workflows/SKILL.md), then
+[`refine-journeys`](../refine-journeys/SKILL.md). The order is not a preference —
+a workflow written for nobody has to be written twice, and a journey over
+workflows that do not exist yet is a guess.
+
+**The sittings are chained. The approvals are not.** Each of those skills runs
+its own interview, writes its own numbered change spec, and gets its own
+confirmation before the next one starts. That separation is
+[process.md](../../method/process.md)'s rule about a change to the personas or
+the workflows, and a chain collecting three approvals in one breath has broken
+it rather than gone faster.
+
+**Stop the moment they say stop.** It is a long sitting, and "that is enough for
+today" is a complete answer. A skill in the chain that stops on its own — on a
+ledger row deferred twice, say — ends the chain there too, and that is the ledger
+working rather than the chain failing. Either way, hand back with where it
+stopped and what is left, which is a shorter list than the one you started with.
 
 ## What this skill refuses
 
@@ -206,6 +251,9 @@ Then hand back, short:
 - **Inventing a persona or a workflow** from the seed in section 2. The seed is
   an answer to "who is this for", not a design artifact, and treating it as one
   is how a product ends up built for somebody nobody ever met.
+- **Answering the interviews it starts.** Section 8 runs three skills; it does
+  not supply their replies. A chain that fills in the human's answers has
+  installed the process on top of a persona nobody chose.
 - **Adding a dependency** to make the process fit. If the gate needs a library,
   it is too big.
 - **Copying another repository's numbers.** A 95% threshold that came from
