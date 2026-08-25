@@ -1,7 +1,7 @@
 @feature:report-wiring @workflow:adopt-the-process
 Feature: The report a repository posts on its own pull requests
 
-  @rule:setup-wires-the-pull-request-report @planned
+  @rule:setup-wires-the-pull-request-report
   Rule: A repository comes out of the sitting posting a report on its pull requests
 
     Example: the sitting ends and the wiring is there
@@ -16,7 +16,7 @@ Feature: The report a repository posts on its own pull requests
       Then the hand-back says the report is not wired and why
       And nothing claims it was
 
-  @rule:the-report-cannot-fail-the-build @planned
+  @rule:the-report-cannot-fail-the-build
   Rule: The report never decides whether a change may merge
 
     Example: the report has nothing good to say
@@ -25,7 +25,7 @@ Feature: The report a repository posts on its own pull requests
       Then it says so
       And the change is not blocked by it having said so
 
-  @rule:the-report-says-what-moved @planned
+  @rule:the-report-says-what-moved
   Rule: The report describes the change, not only the state after it
 
     Example: a change that adds a rule

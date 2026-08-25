@@ -1,6 +1,6 @@
 # Spec 0010: the report the method already describes
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#30](https://github.com/sargismarkosyan/livespec/issues/30) and
   [#31](https://github.com/sargismarkosyan/livespec/issues/31), taken together at
   the human's direction.
@@ -125,6 +125,15 @@ which is why they are rules at all. **Livespec's own CI wiring gets none**, for
 the reason *Who this is for* gives.
 
 **Ledger:** no new row, deliberately. See item 4.
+
+**One addition beyond this spec, made during implementation and recorded rather
+than absorbed.** *Risks* names `always-green` as the promise this could break
+quietly, and nothing was holding it: `report.py` exiting non-zero would turn a
+build red however carefully the workflow was written. `inject.py` gains a
+**control** — not a fault, because there is nothing to break when the promise is
+that nothing breaks — asserting the report exits zero on every degenerate input.
+It was confirmed the way this repository confirms anything: by making `report.py`
+able to fail and watching the control report it.
 
 ## What we are not doing
 

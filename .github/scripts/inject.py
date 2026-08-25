@@ -29,6 +29,7 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parent
 TRACE = SCRIPTS / "trace.py"
 SUITE = SCRIPTS / "evalsuite.py"
+REPORT = SCRIPTS / "report.py"
 
 GRADER = """---
 type: llm
@@ -156,6 +157,39 @@ RELEASE_FAULTS = [
 ]
 
 
+def report_control() -> None:
+    """The report may never exit non-zero, whatever it is handed.
+
+    Not a fault table: there is nothing to break, because the whole promise is
+    that nothing breaks. `gates.md` declares the report **not a gate** and
+    `always-green` is what a report step going red would cost — so the check is
+    that every degenerate input still leaves a zero exit and something printable.
+    """
+    import tempfile as _tempfile
+
+    with _tempfile.TemporaryDirectory(prefix="livespec-report-") as workspace:
+        good = Path(workspace) / "good.json"
+        code, output = run(TRACE, SCRIPTS.parents[1], extra=["--json"])
+        assert code == 0, "the traceability gate did not produce JSON for the report"
+        good.write_text(output)
+        bad = Path(workspace) / "bad.json"
+        bad.write_text("not json at all")
+        missing = Path(workspace) / "absent.json"
+
+        for name, args in [
+            ("both readings", [str(good), str(good)]),
+            ("no base to compare against", [str(good), str(missing)]),
+            ("an unreadable base", [str(good), str(bad)]),
+            ("nothing readable at all", [str(bad)]),
+            ("no arguments", []),
+        ]:
+            result = subprocess.run(
+                [sys.executable, str(REPORT), *args], capture_output=True, text=True
+            )
+            assert result.returncode == 0, f"the report exited {result.returncode} on {name}"
+            assert result.stdout.strip(), f"the report printed nothing on {name}"
+
+
 def release_control() -> None:
     """The unbroken inputs, which must produce a release rather than a refusal."""
     assert select_increment(["bug", "minor"]) == "minor", "the one release label is not read"
@@ -239,8 +273,10 @@ FAULTS = [
 ]
 
 
-def run(gate: Path, root: Path) -> tuple[int, str]:
-    result = subprocess.run([sys.executable, str(gate), str(root)], capture_output=True, text=True)
+def run(gate: Path, root: Path, extra: list[str] | None = None) -> tuple[int, str]:
+    result = subprocess.run(
+        [sys.executable, str(gate), str(root), *(extra or [])], capture_output=True, text=True
+    )
     return result.returncode, result.stdout + result.stderr
 
 
@@ -269,6 +305,11 @@ def main() -> int:
             print(f"    {'✔' if ok else '✘'} {name:<48} {expected}")
             if not ok:
                 problems.append(f"{name}: expected it to {expected} naming {phrase!r}; exit {code}\n{output}")
+
+    try:
+        report_control()
+    except AssertionError as error:
+        problems.append(f"the report can fail a build: {error}")
 
     try:
         release_control()

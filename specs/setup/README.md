@@ -32,12 +32,13 @@ wherever the method says *test*, this repository means **eval case**:
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
 | **Eval-suite gate** | `.github/scripts/evalsuite.py [root]` |
-| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks it 25 ways, then breaks the release inputs 9 more |
+| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks it 25 ways, then breaks the release inputs 9 more. It also holds two **controls**: that the unbroken release inputs release, and that `report.py` exits zero on every degenerate input, which is what `always-green` rests on |
 | **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body |
 | **Spec-surface check** | the same gate, asked separately. Fails a change to a `.feature` under `specs/features/` or `specs/workflows/` whose body carries no ` ```gherkin ` block and no link to a `.feature` pinned at a 40-character SHA. A layer README is not a `.feature` and does not trigger it |
 | **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, runs `verify.py`, commits, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
 | **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate and the release job share, and pure, so `inject.py` can break it |
 | **Repository checks** | `.github/scripts/checks.py` — manifests, skill frontmatter, always-on budget, link and payload checks |
+| **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. No coverage section: there is no coverage gate here, and *What has no gate* says why |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader both gates use |
 | **Always-on budget** | 5000 chars across model-invocable skills; currently 3801 across 7 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
@@ -199,6 +200,8 @@ remembered. **34 of 34 faults produced the expected result.**
 | a version that is not major.minor.patch | fails | ✔ |
 | spec-moving change whose body carries no gherkin | fails | ✔ |
 | a gherkin block with nothing in it | fails | ✔ |
+
+**Two controls sit alongside the table and are not faults.** One checks the unbroken release inputs still release; the other checks the report cannot fail a build — there is nothing to break there, because the whole promise is that nothing breaks, so what is asserted is that every degenerate input still exits zero. It was confirmed by making `report.py` able to fail and watching the control report it.
 
 The last nine need no fixture. `releaselib.py` is pure — a label list and a pull
 request body in, a decision out — which is the whole reason it is a module rather

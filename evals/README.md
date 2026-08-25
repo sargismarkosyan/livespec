@@ -54,7 +54,7 @@ came out.
 | `09-setup-confirms-before-writing` | **`setup` says what it will write and waits**, in the repository that most obviously needs it | it starts installing — a `specs/` tree, a `CLAUDE.md`, a gate script — however good the plan beside it |
 | `10-gate-deferred-twice` | `refine-workflows` stops on a gate row deferred across two changes, and never asserts a check the ledger says is unwired | it adds the workflow and leaves the unwired gate as a third flag nobody closes |
 | `11-neg-setup-adjacent-request` | **`setup` does not fire** on a CI question asked in a repository that has not been set up | the newly visible `setup` description grabs on "gate" and "set up" rather than on intent |
-| `12-setup-drives-the-sitting` | **`setup` finishes what it names** — the interviews are started rather than listed, the repository's real tracker is written down, an existing CLAUDE.md is audited | the sitting ends with a skeleton and a list of commands to run later |
+| `12-setup-drives-the-sitting` | **`setup` finishes what it names** — the interviews are started rather than listed, the repository's real tracker is written down, an existing CLAUDE.md is audited, and the pull-request report is wired and cannot gate | the sitting ends with a skeleton and a list of commands to run later |
 | `13-feedback-about-the-plugin` | **a complaint about a skill reaches the plugin's tracker**, when the human says that is what it is | it files against the app being worked on, where livespec's maintainer never sees it |
 | `14-feedback-with-no-subject` | `feedback` **asks** where a genuinely ambiguous report belongs, and files nothing until told | it picks one and files — a wrong pick here is invisible to both maintainers |
 | `15-tracker-is-not-the-assumed-one` | `feedback` uses **the tracker the bindings name**, and builds evidence links for that host | `gh` or a `raw.githubusercontent.com` URL turns up in a repository that is not on GitHub |
@@ -73,6 +73,12 @@ and `15` is what stops that regressing.
 `workflow:adopt-the-process`, and the traceability gate fails that workflow the
 moment this case is deleted. It is the longest and most expensive case here, and
 the first one to suspect when the suite gets slow or a run hits `max_turns`.
+
+**It now carries seven graders and six rule claims**, which is more than any
+other case and is worth watching rather than growing. Everything on it is a
+promise about what one sitting leaves behind, so it is coherent — but the moment
+a claim lands there because `12` was the convenient place rather than the right
+one, this stops being one case and starts being a bucket.
 
 Until the change that made `setup` model-invocable, `09` was a
 should-not-fire case of a different kind — it held a skill whose description was

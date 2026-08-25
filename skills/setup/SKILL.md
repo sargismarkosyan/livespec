@@ -163,6 +163,16 @@ helper lives, how tests are discovered, what the coverage thresholds are, what
 the required check is called, where the app runs, what a pull request has to
 carry, and anything else a skill would otherwise have to guess.
 
+**Wire the report too, and say so when you cannot.**
+[`gates.md`](../../method/gates.md#the-report-is-not-a-gate) expects a repository
+to end up posting one on its pull requests: what the change did to the spec
+layer, read from the traceability gate's own output rather than worked out again,
+placed where somebody deciding whether to merge is already looking. It runs after
+both gates pass and **it must not be able to fail the build** — not on a missing
+token, not on its own errors. Where the repository's pull requests cannot carry a
+comment at all, the hand-back says the report is not wired and why; what it must
+never do is read as though it were.
+
 **The tracker row is not optional and is not cosmetic.** Section 1 already found
 how issues are filed here; this is where that answer becomes something a skill
 can read — the host, and the command that files there. Without it every skill

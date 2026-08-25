@@ -17,11 +17,17 @@ gated behind early access and does not run here. It proves the case exists,
 claims a live rule, and meets the floor. The judging half is a maintainer step,
 and the bindings say so rather than implying this covers it.
 
-Run: python3 .github/scripts/trace.py [root]
+Run: python3 .github/scripts/trace.py [root] [--json]
+
+`--json` prints the counts this gate already worked out, and nothing else. It
+exists so the pull-request report can describe the spec layer without parsing
+`specs/` a second time — `gates.md` is explicit that a report which re-derives
+what the gate proved is a second copy of the gate's logic waiting to drift.
 """
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -29,7 +35,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from caselib import cases  # noqa: E402
 
-ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[2]
+arguments = [a for a in sys.argv[1:] if a != "--json"]
+AS_JSON = "--json" in sys.argv
+ROOT = Path(arguments[0]).resolve() if arguments else Path(__file__).resolve().parents[2]
 
 NS_TAG = re.compile(r"@(feature|rule|workflow|persona|journey):([A-Za-z0-9][A-Za-z0-9._-]*)")
 FLAG = re.compile(r"@(planned|retired|refusal)\b")
@@ -319,7 +327,12 @@ for value, entry in sorted(personas.items()):
 
 # --- the map, generated, never typed ----------------------------------------
 
-if not features and not workflow_index and not personas:
+if AS_JSON:
+    # Nothing human goes to stdout in this mode: whoever asked for JSON is going
+    # to parse it, and a table printed above it is a parse error with a friendly
+    # face.
+    pass
+elif not features and not workflow_index and not personas:
     # An empty layer and a broken one look the same to a gate that reports a
     # percentage. This one says which it is.
     print("    the spec layer is empty — 0 features, 0 rules, 0 workflows. Nothing to trace yet;")
@@ -333,7 +346,7 @@ else:
     print(f"    {len(live_rules)} live rule(s), {len(planned_rules)} planned, "
           f"{len(claimed_rules)} claimed by {len(suite)} eval case(s)")
 
-if workflow_index:
+if workflow_index and not AS_JSON:
     print("\n  the map — every workflow, who it is for, what serves it")
     for value, entry in sorted(workflow_index.items()):
         who = ", ".join(entry["personas"]) or "nobody"
@@ -343,6 +356,32 @@ if workflow_index:
 
 cases_claiming = sum(1 for c in suite if c["claims"]["rules"] or c["claims"]["workflows"])
 notes.append(f"{len(suite)} eval case(s), {cases_claiming} claiming a rule or a workflow")
+
+if AS_JSON:
+    # One code path produces both readings. A second traversal for the report
+    # would be the drift `gates.md` names, arriving through the door marked
+    # "it is only a report".
+    print(json.dumps({
+        "personas": {
+            "live": sum(1 for p in personas.values() if not p["retired"]),
+            "retired": sum(1 for p in personas.values() if p["retired"]),
+        },
+        "journeys": len(journeys),
+        "workflows": {
+            "total": len(workflow_index),
+            "planned": sum(1 for w in workflow_index.values() if w["planned"]),
+        },
+        "features": len(features),
+        "rules": {"live": len(live_rules), "planned": len(planned_rules)},
+        "cases": {
+            "total": len(suite),
+            "claiming": cases_claiming,
+            "negative": sum(1 for c in suite if c["negative"]),
+        },
+        "failures": len(failures),
+        "warnings": len(warnings),
+    }, indent=2))
+    sys.exit(1 if failures else 0)
 
 for note in notes:
     print(f"  {note}")

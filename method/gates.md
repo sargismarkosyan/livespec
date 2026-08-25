@@ -150,7 +150,34 @@ have passed, so it only ever describes a green run.
 
 And it recomputes nothing. If the traceability gate passed, that *is* the proof
 every live rule has a test; a report that re-derives it is a second copy of the
-gate's logic waiting to drift out of sync.
+gate's logic waiting to drift out of sync. **So the gate has to be able to hand
+its numbers over** — whatever else it prints, there is a way to ask it for what
+it worked out. A gate that only speaks to humans forces the report to parse the
+tree again, and that is the drift arriving through the door marked *it is only a
+report*.
+
+**It reports what moved, not what exists.** A total is trivia to somebody
+deciding whether to merge: *12 live rules* tells them nothing about the change in
+front of them, and *+1* is the entire point. That means reading the base as well
+as the branch, and a repository that cannot do that has a report worth half of
+one.
+
+**It goes where the decision is made.** The numbers already exist — in a log,
+behind a command somebody could run. Being available is not the same as being
+read, and a report that requires anybody to go and look has not solved the
+problem it was built for.
+
+**A repository is expected to end up with one.** This is the paragraph that used
+to describe an artefact in the third person, as though it were something a
+repository might acquire. It is part of what gets wired, and its absence is a gap
+like any other — one that is easy to miss precisely because nothing fails when it
+is missing.
+
+**It never gates, including on its own failures.** A report step that goes red
+because it could not build a report is a gate nobody declared. If the token is
+missing, the base will not check out, or the tooling breaks, it says nothing and
+the build is unaffected. The honest cost of that: a report going missing is
+itself silent, and nobody is told.
 
 ## What is wired, and what is not
 
