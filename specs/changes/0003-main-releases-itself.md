@@ -156,7 +156,9 @@ not taken now.
 - **Not deciding how the traceability gate should treat a feature that belongs
   to no workflow.** That is the real blocker on the Gherkin above and it is a
   change to [`gates.md`](../../method/gates.md) — portable, method-level, and
-  bigger than this. It gets its own issue and its own version.
+  bigger than this. Filed as
+  [#20](https://github.com/sargismarkosyan/livespec/issues/20), with this spec as
+  its worked example; it gets its own version.
 - **Not backfilling tags for 0.1.0 through 0.8.0.** Those versions were not
   released that way, and inventing eight tags for commits nobody tagged is
   writing history rather than recording it.
