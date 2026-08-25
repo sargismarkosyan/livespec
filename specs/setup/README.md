@@ -140,7 +140,7 @@ that gap is the thing a later `setup` run offers to close.
 | journey → workflow | automated | `trace.py` |
 | workflow → journey | automated | `trace.py`, as a **warning** — where an attempt sits in the arc is a judgment |
 | structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` |
-| both gates verified to fire | automated | `inject.py` — 24 faults, re-run by every `verify.py` |
+| both gates verified to fire | automated | `inject.py` — 31 faults (24 against a fixture, 7 against the release inputs), re-run by every `verify.py` |
 | coverage — lines, branches, functions | **not applicable** | there is no application code to measure; the eval-suite gate stands in its place, and *What has no gate* above says what that misses |
 | a journey looked at since the workflows under it moved | **not applicable** | a git question, and CI checks out one commit — it would pass forever while looking enforced |
 | features piled up under a workflow since its file was last edited | **not applicable** | same, and `gates.md` leaves both out for that reason |
