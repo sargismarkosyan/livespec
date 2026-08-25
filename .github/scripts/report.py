@@ -11,11 +11,13 @@ of the gate's logic, correct on the day it was written and drifting after.
 What it reports is **what moved**, not what exists. "12 live rules" tells a
 reviewer nothing about the change in front of them; "+1" is the whole point.
 
-    python3 .github/scripts/report.py <branch.json> [base.json]
+    python3 .github/scripts/report.py <branch.json> [base.json] [branch-board.json] [base-board.json]
 
-Both files are `trace.py --json` output — the branch's, and the base ref's.
-Without the second it prints the totals and says the comparison was unavailable,
-which is honest and still worth reading.
+The first two files are `trace.py --json` output — the branch's, and the base
+ref's. Without the second it prints the totals and says the comparison was
+unavailable, which is honest and still worth reading. The last two are
+`board.py --json` — the eval board's counts; missing, the board section is
+skipped rather than guessed.
 
 Nothing here may exit non-zero for any reason. See `always-green` in
 specs/spec.md: a report that can fail a build is a gate nobody declared.
@@ -30,7 +32,7 @@ from pathlib import Path
 FOOTER = (
     "<sub>Posted by `.github/scripts/report.py`. Reporting only — it cannot fail "
     "a build, and it recomputes nothing: every number here comes from "
-    "`trace.py --json`.</sub>"
+    "`trace.py --json` and `board.py --json`.</sub>"
 )
 
 # (heading, [(label, path-into-the-json)]). The order is the order somebody
@@ -76,10 +78,35 @@ def table(rows: list[tuple[str, tuple[str, ...]]], base: dict | None, head: dict
     return out
 
 
-def build(head: dict, base: dict | None) -> str:
+BOARD_ROWS = [
+    ("Measured, still fresh", ("measured",)),
+    ("Stale — inputs changed since", ("stale",)),
+    ("Never measured", ("never",)),
+]
+
+
+def board_section(head: dict | None, base: dict | None) -> list[str]:
+    # The eval board's counts. A measurement is rarely re-run on a pull
+    # request, so the mean is dated rather than dressed up as current.
+    if not isinstance(head, dict):
+        return []
+    lines = ["## The eval board", ""] + table(BOARD_ROWS, base, head) + [""]
+    mean = head.get("mean_delta")
+    if isinstance(mean, (int, float)):
+        dated = f" (as of {head['as_of']})" if head.get("as_of") else ""
+        was = base.get("mean_delta") if isinstance(base, dict) else None
+        versus = f", was {was:+.2f} on `main`" if isinstance(was, (int, float)) else ""
+        lines += [f"Mean Δ over the fresh measurements: **{mean:+.2f}**{dated}{versus}.", ""]
+    else:
+        lines += ["No fresh measurement to average yet.", ""]
+    return lines
+
+
+def build(head: dict, base: dict | None, board_head: dict | None = None, board_base: dict | None = None) -> str:
     lines: list[str] = []
     for heading, rows in SECTIONS:
         lines += [f"## {heading}", ""] + table(rows, base, head) + [""]
+    lines += board_section(board_head, board_base)
 
     planned = dig(head, ("rules", "planned")) or 0
     if planned:
@@ -101,14 +128,15 @@ def main() -> int:
     except Exception as error:  # noqa: BLE001 — see the module docstring
         print(f"<!-- report: no numbers for this branch ({error}) -->")
         return 0
-    base = None
-    if len(sys.argv) > 2:
+    optional = []
+    for index in (2, 3, 4):
         try:
-            base = json.loads(Path(sys.argv[2]).read_text())
-        except Exception:  # noqa: BLE001 — a missing base is a blank column, not a failure
-            base = None
+            optional.append(json.loads(Path(sys.argv[index]).read_text()))
+        except Exception:  # noqa: BLE001 — a missing input is a blank column, not a failure
+            optional.append(None)
+    base, board_head, board_base = optional
     try:
-        print(build(head, base))
+        print(build(head, base, board_head, board_base))
     except Exception as error:  # noqa: BLE001
         print(f"<!-- report: could not be built ({error}) -->")
     return 0

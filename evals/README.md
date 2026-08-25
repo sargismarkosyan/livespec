@@ -176,8 +176,39 @@ Then, against the run directory it prints (`evals/results/<stamp>/`):
 
 Cost: the summary line prints what the pilot's sessions actually cost; a full
 suite is roughly that × 3. Sessions, transcripts and created files stay under
-the run directory, which is ignored — a run is a measurement of one moment, and
-what it concluded goes in the change spec.
+the run directory, which is ignored — the evidence is local and reproducible.
+What survives a run is its summary, on the board.
+
+## The board
+
+[`evals/board.json`](board.json) — committed — holds, per case, what the last
+run measured: `delta`, both arms, `runs`, when, at what commit, what it cost,
+and an `inputs` hash of what the number was a measurement *of* — the case's own
+files, the text of every rule it claims, and the body of every skill it holds.
+`run.py` updates the entries for whatever it ran, automatically; a `--case`
+smoke updates one row, and its `runs` field says how much weight it deserves.
+
+Change any of those inputs and the hash stops matching: the entry is **stale**,
+and the board gate — `.github/scripts/board.py`, run by `verify.py` — fails the
+build naming the cases and the one command that heals them:
+
+```
+python3 evals/runner/run.py --changed --ablation with-without --judge-model sonnet --allow-tools Write Edit
+```
+
+`--changed` selects exactly the cases without a fresh measurement — a reworded
+rule re-measures the cases that claim it, never all sixteen. A case with no
+entry at all only **warns**: that is the bootstrap state, and the warning list
+is the first pilot's to-do list.
+
+**The score is never gated.** A Δ of zero ships; a stale Δ does not. What the
+gate enforces is that a number still describes the files it claims to — gating
+the number itself would turn the suite into something to be optimised at, which
+is the same failure this repository already refuses for coverage.
+
+The pull-request report carries the board's counts — measured, stale, never —
+and the mean Δ over the fresh entries, dated, because a pull request rarely
+re-runs the suite and the row must say so rather than look current.
 
 ## When a case needs a repository
 

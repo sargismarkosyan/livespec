@@ -115,7 +115,7 @@ needs no credentials.
 this repository knows about itself), [`trace.py`](.github/scripts/trace.py)
 (traceability, both directions), [`evalsuite.py`](.github/scripts/evalsuite.py)
 (every skill held by a case, every case able to fail), and
-[`inject.py`](.github/scripts/inject.py), which breaks every gate 34 ways — 25 in
+[`inject.py`](.github/scripts/inject.py), which breaks every gate 37 ways — 28 in
 a temporary fixture, and 9 against the release inputs, which are pure functions
 over a label list and a pull request body — and checks each one fires. What each binding means is in
 [`specs/setup/README.md`](specs/setup/README.md).

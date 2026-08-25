@@ -1,0 +1,165 @@
+{
+ "format": 1,
+ "cases": {
+  "01-solution-shaped-request": {
+   "delta": 0.5,
+   "with": 1.0,
+   "without": 0.5,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.19,
+   "inputs": "92ccceee8627f1fd"
+  },
+  "02-feedback-from-use": {
+   "delta": 0.0,
+   "with": 0.75,
+   "without": 0.75,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.19,
+   "inputs": "11686a4850c37ed4"
+  },
+  "03-persona-to-fit-feature": {
+   "delta": 0.0,
+   "with": 0.5,
+   "without": 0.5,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.17,
+   "inputs": "17fac8ff29a624f9"
+  },
+  "04-workflow-for-orphan": {
+   "delta": 0.5,
+   "with": 1.0,
+   "without": 0.5,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.17,
+   "inputs": "3e9f82308c2b7d76"
+  },
+  "05-future-state-journey": {
+   "delta": 1.0,
+   "with": 1.0,
+   "without": 0.0,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.19,
+   "inputs": "61e8c97147b866f2"
+  },
+  "06-neg-commit-message": {
+   "delta": 0.0,
+   "with": 1.0,
+   "without": 1.0,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.08,
+   "inputs": "8b44f3985e4f27f2"
+  },
+  "07-neg-gherkin-question": {
+   "delta": 0.0,
+   "with": 1.0,
+   "without": 1.0,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.1,
+   "inputs": "ab261f7893e98621"
+  },
+  "08-fix-it-while-recording": {
+   "delta": 0.33,
+   "with": 0.67,
+   "without": 0.33,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.55,
+   "inputs": "20c5eab40e46e568"
+  },
+  "09-setup-confirms-before-writing": {
+   "delta": 0.5,
+   "with": 1.0,
+   "without": 0.5,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.34,
+   "inputs": "ac07a068bc2dc00b"
+  },
+  "10-gate-deferred-twice": {
+   "delta": 0.0,
+   "with": 0.5,
+   "without": 0.5,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.24,
+   "inputs": "17b87655118851ea"
+  },
+  "11-neg-setup-adjacent-request": {
+   "delta": 0.0,
+   "with": 1.0,
+   "without": 1.0,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.12,
+   "inputs": "dd11f375153ec024"
+  },
+  "12-setup-drives-the-sitting": {
+   "delta": 0.14,
+   "with": 0.43,
+   "without": 0.29,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.18,
+   "inputs": "d1b69d2f56c23b13"
+  },
+  "13-feedback-about-the-plugin": {
+   "delta": 0.0,
+   "with": 1.0,
+   "without": 1.0,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.54,
+   "inputs": "05f5316ae5930a3a"
+  },
+  "14-feedback-with-no-subject": {
+   "delta": 1.0,
+   "with": 1.0,
+   "without": 0.0,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.16,
+   "inputs": "a2d6566def4ea6e6"
+  },
+  "15-tracker-is-not-the-assumed-one": {
+   "delta": -1.0,
+   "with": 0.0,
+   "without": 1.0,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.24,
+   "inputs": "e15ae1d961556628"
+  },
+  "16-setup-with-no-app-code": {
+   "delta": 1.0,
+   "with": 1.0,
+   "without": 0.0,
+   "runs": 1,
+   "at": "2026-08-25",
+   "sha": "43a3810",
+   "cost": 0.28,
+   "inputs": "e9376125f5138891"
+  }
+ }
+}

@@ -10,6 +10,7 @@ Not a gate itself. It reports what it finds and leaves the judging to the caller
 
 from __future__ import annotations
 
+import hashlib
 import re
 from pathlib import Path
 
@@ -97,3 +98,52 @@ def cases(root: Path) -> list[dict]:
             }
         )
     return found
+
+
+def rule_text(root: Path, rule_id: str) -> str:
+    """The block of one rule: from its @rule: tag line to the next rule's.
+
+    Sliced from the feature file rather than parsed, because what a measurement
+    covers is the *text* — a reworded example is a changed rule even when the
+    structure is identical.
+    """
+    for feature in sorted((root / "specs" / "features").rglob("*.feature")):
+        lines = feature.read_text().splitlines()
+        start = None
+        for index, line in enumerate(lines):
+            if start is None:
+                if re.search(rf"@rule:{re.escape(rule_id)}\b", line):
+                    start = index
+            elif re.match(r"\s*@rule:", line):
+                return "\n".join(lines[start:index])
+        if start is not None:
+            return "\n".join(lines[start:])
+    return ""
+
+
+def measurement_inputs(case: dict, root: Path) -> str:
+    """Hash of what a measurement of this case measures.
+
+    Three things go in: the case's own files, the text of every rule it
+    claims, and the body of every skill it holds. When any of them moves, a
+    number measured before the move describes something that no longer exists.
+    Content-addressed — bytes only, never timestamps or git metadata — so two
+    machines agree about staleness.
+
+    Shared between the runner (which records it) and the board gate (which
+    checks it) for the same reason this reader is shared: so the two cannot
+    disagree about what a measurement is.
+    """
+    digest = hashlib.sha256()
+    for path in sorted(p for p in case["dir"].rglob("*") if p.is_file()):
+        digest.update(str(path.relative_to(case["dir"])).encode())
+        digest.update(path.read_bytes())
+    for rule in sorted(case["claims"]["rules"]):
+        digest.update(f"rule:{rule}".encode())
+        digest.update(rule_text(root, rule).encode())
+    for skill in sorted(case["claims"]["skills"]):
+        digest.update(f"skill:{skill}".encode())
+        skill_md = root / "skills" / skill / "SKILL.md"
+        if skill_md.exists():
+            digest.update(skill_md.read_bytes())
+    return digest.hexdigest()[:16]

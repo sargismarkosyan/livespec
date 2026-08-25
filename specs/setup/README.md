@@ -135,6 +135,16 @@ not prove it passes, and no output from `verify.py` should be read as saying it
 does — that is what running the suite is for, and no number from a run is
 trusted before the calibration pass `evals/README.md` describes.
 
+**What survives a run is the board.** `evals/board.json`, committed, one entry
+per case: the last measurement and a hash of its inputs — the case's files, the
+rules it claims, the skills it holds, computed in `caselib.py` so the runner
+and the gate cannot disagree. `board.py` (gate 5, in `verify.py`) **fails** a
+case whose inputs changed after its measurement and **warns** on one never
+measured; `run.py --changed` re-runs exactly the stale set. The score is never
+gated — only its bookkeeping. The pull-request report reads the counts from
+`board.py --json`, which always exits 0: in that mode it is a hand-over, not a
+gate.
+
 ## Gate wiring
 
 **Reconciled against livespec 0.9.0 on 2026-08-25.** One row per gate named in

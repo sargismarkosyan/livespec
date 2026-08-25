@@ -4,6 +4,7 @@
     repository checks      what only this repo knows about itself (checks.py)
     traceability           gate 1: rules <-> eval cases, features -> workflows
     eval suite             gate 2: every skill held, every case able to fail
+    measurement board      gate 5: no eval number outlives the files it measured
     gate fault injection   every gate broken on purpose, to prove they fire
 
 CI runs this same command. A longer list in CI than a person can run locally is
@@ -30,6 +31,7 @@ GATES = [
     ("repository checks", "checks.py"),
     ("traceability", "trace.py"),
     ("eval suite", "evalsuite.py"),
+    ("measurement board", "board.py"),
     ("gate fault injection", "inject.py"),
 ]
 
