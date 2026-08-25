@@ -12,6 +12,16 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.10.0 — 2026-08-25
+
+**The spec layer gets its first enforced rules, and the gate over them starts being able to fail.** Six rule ids reserved as *owed* by 0.8.0 and 0.9.0 land live under `specs/features/setup/`, each claimed by an eval case. `adopt-the-process` drops `@planned` and is walked by a new case, `12-setup-drives-the-sitting` — the driven-setup case 0.8.0 called the first thing to write when the eval runner unblocks.
+
+**A pull request that moves a `.feature` now has to carry the Gherkin it moved**, quoted in a ` ```gherkin ` fence or linked at a commit SHA rather than at the branch. This repository has no app and therefore no moving picture, so the quoted promise is what stands in its place. `version_gate.py` asks it separately from the release inputs — most spec changes ship nothing and most shipping changes move no promise — and refuses both an absent block and an empty one. Adopting repositories get the convention written into their bindings by `setup`.
+
+**`@refusal` is new.** A rule whose promise is that *nothing happens* can only be verified by a case asserting nothing fired, and the traceability gate used to warn about exactly that pairing on principle. The warning was right about rules that promise a behaviour and wrong about rules that promise restraint; without the distinction the only options were a permanent warning or a `@planned` tag on behaviour that already shipped, and both teach a reader to stop believing a tag.
+
+Fault injection goes 31 → 34.
+
 ## 0.9.0 — 2026-08-25
 
 **`setup` can be offered.** It could always be typed — `/livespec:setup`
