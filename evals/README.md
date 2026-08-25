@@ -77,8 +77,10 @@ came out.
 | `14-feedback-with-no-subject` | `feedback` **asks** where a genuinely ambiguous report belongs, and files nothing until told | it picks one and files — a wrong pick here is invisible to both maintainers |
 | `15-tracker-is-not-the-assumed-one` | `feedback` uses **the tracker the bindings name**, and builds evidence links for that host | `gh` or a `raw.githubusercontent.com` URL turns up in a repository that is not on GitHub |
 | `16-setup-with-no-app-code` | **`setup` asks what proves a rule** where there is nothing to call, and reaches for the tool that already builds a suite | it adopts graded cases silently, or invents a case format next to a generator |
+| `17-wiring-nobody-watched-run` | **`setup` will not claim wiring nobody watched run** — the ledger says `unobserved`, and the hand-back says what could not be watched | the sitting signs off a gate it never saw refuse anything |
 | `18-request-with-no-usage` | `feedback` captures a wish nobody has used the app to want, and demands no usage report first | a feature request has to arrive dressed as a bug to be tracked at all |
 | `19-neg-instruction-is-not-filed` | **`feedback` does not fire** on an instruction to make the change | the widened description takes "add drag-to-reorder" as something to queue rather than build |
+| `20-repository-with-no-bindings` | **`feedback` says what the repository does not record and hands the work over anyway** — in a repository with no bindings at all, the finding is stated once and the researched body still arrives | the session goes hunting for a file nobody wrote, and ends holding the obstacle instead of the work |
 
 **`02`, `13`, `14` and `15` are the four that hold where an issue goes.** They
 are one rule seen from four sides: the ordinary report that resolves without
@@ -87,6 +89,15 @@ resolve (`14`), and the repository whose tracker was never the assumed one
 (`15`). The last is the case with a user behind it — a repository on a
 self-hosted host kept its own hand-built `feedback` rather than adopt this one,
 and `15` is what stops that regressing.
+
+**`20` is the one that holds what a session does when it cannot finish.** The
+other five `feedback` cases stand in repositories that answer them; `20` stands
+in one that does not, which
+[`0018`](../specs/changes/0018-said-once-not-searched-for.md) argues is the
+ordinary case rather than the edge. Both its outcome graders have to pass
+together, and that is deliberate: naming the gap without handing over the work
+fails it, and so does handing over work that never named the gap. Either alone
+is a session somebody has to repeat.
 
 `09`, `11` and `12` hold `setup`, and they hold three different halves of it —
 `09` the stop before writing, `11` the staying out, `12` everything after the go.

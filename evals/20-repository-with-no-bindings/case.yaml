@@ -1,0 +1,7 @@
+# The workspace this case runs in: a real repository that is only half set up.
+# There is an app, a git remote and a spec layer that was started — and there is
+# **no `specs/setup/README.md`**, so nothing here records a tracker, a command
+# or a path. That absence is the whole case. It is the sparse repository #40
+# says still bites once a fixture has made the tracker cases fair, and no other
+# case in the suite is one.
+scaffold_script: scaffold.sh

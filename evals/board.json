@@ -12,14 +12,14 @@
    "inputs": "7b2509cf60357f5b"
   },
   "02-feedback-from-use": {
-   "delta": 0.17,
-   "with": 0.92,
+   "delta": 0.0,
+   "with": 0.75,
    "without": 0.75,
-   "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 0.47,
-   "inputs": "4d741f84b2403bf1"
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "1ed586d",
+   "cost": 0.14,
+   "inputs": "510419f9d56cfea2"
   },
   "03-persona-to-fit-feature": {
    "delta": 0.0,
@@ -122,34 +122,34 @@
    "inputs": "d4387db3d5e973cf"
   },
   "13-feedback-about-the-plugin": {
-   "delta": 1.0,
-   "with": 1.0,
+   "delta": 0.0,
+   "with": 0.0,
    "without": 0.0,
-   "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 2.33,
-   "inputs": "fc119800a6ff4cad"
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "1ed586d",
+   "cost": 0.59,
+   "inputs": "7689f0f4684f9efa"
   },
   "14-feedback-with-no-subject": {
    "delta": 0.0,
    "with": 0.0,
    "without": 0.0,
-   "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 0.43,
-   "inputs": "9a173b2ee13ae333"
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "1ed586d",
+   "cost": 0.14,
+   "inputs": "5742cdc5d36a0fdc"
   },
   "15-tracker-is-not-the-assumed-one": {
-   "delta": -0.17,
-   "with": 0.83,
+   "delta": 0.0,
+   "with": 1.0,
    "without": 1.0,
-   "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 3.09,
-   "inputs": "2b967df9f9e57650"
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "1ed586d",
+   "cost": 0.54,
+   "inputs": "d87147d6b97bba6d"
   },
   "16-setup-with-no-app-code": {
    "delta": 1.0,
@@ -172,24 +172,34 @@
    "inputs": "8df961d6960a0b59"
   },
   "18-request-with-no-usage": {
-   "delta": 0.33,
-   "with": 0.5,
-   "without": 0.17,
-   "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 0.44,
-   "inputs": "8e26735abb2b5dc0"
+   "delta": 0.0,
+   "with": 1.0,
+   "without": 1.0,
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "1ed586d",
+   "cost": 0.17,
+   "inputs": "599d2b74de907673"
   },
   "19-neg-instruction-is-not-filed": {
    "delta": 0.0,
    "with": 1.0,
    "without": 1.0,
-   "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 0.57,
-   "inputs": "4e72ea8f119bc8b2"
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "1ed586d",
+   "cost": 0.16,
+   "inputs": "a3ebd78003501945"
+  },
+  "20-repository-with-no-bindings": {
+   "delta": 0.5,
+   "with": 1.0,
+   "without": 0.5,
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "1ed586d",
+   "cost": 0.39,
+   "inputs": "05fd5e6f3808e625"
   }
  }
 }
