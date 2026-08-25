@@ -12,6 +12,19 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.14.0 — 2026-08-25
+
+The eval suite runs for the first time: `evals/runner/run.py` drives every case
+through `claude -p` with the plugin loaded and without, on promptfoo, with a
+sonnet judge — the native `claude plugin eval` stays gated behind early access,
+and the cases stay in its format. `setup` now tells a repository to run the
+suite-building tool before recommending it, and to fall back to a platform
+that runs when the native one is gated.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+https://claude.ai/code/session_01K7PZza3xFoTVuPyb2Hwks9
+
 ## 0.13.0 — 2026-08-25
 
 **`setup` asks a fifth thing, and it is the one both gates rest on:** what proves a rule is true here, and how does a test say which rule it is answering? It was being decided silently. #4 is what that already cost — a nine-name `GRANDFATHERED` list hardcoded in a gate, which existed because a mapping arrived without anybody deciding it applied.
