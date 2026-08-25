@@ -12,6 +12,45 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.18.0 — 2026-08-25
+
+**A skill that cannot finish a step now says so once and hands the work over.**
+The repository in front of an agent is usually not fully set up — the tool a step
+needs is not installed, the file it was told to read was never written, the path
+in somebody's report points at nothing. That has a failure mode of its own, and
+it was measured: on `15-tracker-is-not-the-assumed-one` the plugin arm scored
+**below the bare model**, and the whole deficit was a single session that made 39
+tool calls, 15 of them searching for a shell it was never granted, and never
+delivered a reply at all. Five other sessions hit the same wall, wrote the issue
+body, said plainly what they could not run, and handed over the command.
+
+**`method/process.md` now carries the rule, and it has two halves.** Name what is
+not there, in a line, *instead of* searching for it — looking twice for a file
+nobody ever wrote is the same answer bought twice. Then finish everything that
+did not depend on it: a step that cannot be taken here does not take the work
+before it down with it. **Stopping is not the same as handing over**, and an
+instruction to stop that never says what to hand over reads as permission to stop
+with nothing.
+
+**`feedback` was licensing exactly that.** Its *"where there is no tracker at all,
+say so and stop"* now hands the researched body over too, so a finding survives
+having nowhere to go. A new paragraph wires the skill to the rule, and carries
+the one thing it must not be read as: this narrows nothing about investigating.
+Looking for the **cause** of what somebody reported ends when it has an answer;
+looking for a **way to run a step that is not available here** ends when the
+session does.
+
+A new eval case holds both rules in the repository that provoked them — a real
+app, a real remote, and no bindings file at all. Its two outcome graders have to
+pass together, because naming the gap without handing the work over and handing
+over work that never named the gap are both a session somebody has to repeat.
+
+No skill description changed; the always-on budget is unchanged at 3800 of 5000.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+https://claude.ai/code/session_017PFi1SRq6rF5zDarFxGvYa
+
 ## 0.17.0 — 2026-08-25
 
 **Two skills claimed the same sentence and nothing said which one won.** `feedback` took *"an 'I wish it did X'"*; `refine-spec` took *"can it also…"* — one utterance with two spellings, split arbitrarily across the two fields every session pays for whether or not either skill fires. Both descriptions now name the destination they own, and the fork is the one the person already made before they opened their mouth: **reporting or wishing is captured into the tracker; an instruction becomes a change.** The axis is intent, not kind — a bug can be either and so can a feature, which is the half both descriptions were sorting on wrongly.
