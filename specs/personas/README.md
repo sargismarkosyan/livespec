@@ -2,13 +2,12 @@
 
 | Persona | Trying to get done | State |
 |---|---|---|
-| [`agent-accelerated-owner`](agent-accelerated-owner.md) | Ren — keeping several repositories moving faster than they can be read | `@retired`, for one version |
+| [`agent-accelerated-owner`](agent-accelerated-owner.md) | Ren — keeping several repositories moving faster than they can be read | live; named by [`adopt-the-process`](../workflows/adopt-the-process.feature) |
 
-**The one persona is tagged `@retired` on purpose, and that is not a shelf.** The
-tag's single honest use is a persona no workflow names *yet*: `trace.py` fails a
-live persona nobody does anything as, and `specs/workflows/` is still empty.
-[`refine-workflows`](../../skills/refine-workflows/SKILL.md) drops it, in its own
-change. **Until it does, this version is not finished.**
+**The `@retired` tag came off in [`0006`](../changes/0006-adopt-the-process.md)**,
+the change that gave this persona a workflow to be named by. It was on for one
+version and for the one honest reason — `trace.py` fails a live persona nobody
+does anything as — and the transition is finished rather than shelved.
 
 One file per persona, `@persona:<id>` on the first line, and the rules for what
 goes in one are in [the template](../../templates/persona.md).

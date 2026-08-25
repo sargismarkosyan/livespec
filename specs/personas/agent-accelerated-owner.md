@@ -1,4 +1,4 @@
-@persona:agent-accelerated-owner @retired
+@persona:agent-accelerated-owner
 
 # Ren — keeping several repositories moving faster than they can be read
 
