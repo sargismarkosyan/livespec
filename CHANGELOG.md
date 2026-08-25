@@ -12,6 +12,20 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.12.0 — 2026-08-25
+
+**`gates.md` has described a pull-request report since before the spec layer existed, and nothing produced one.** It does now. Every pull request gets a comment saying what the change did to the spec layer — personas, journeys, workflows, feature files, live and planned rules, and the eval suite's shape — as `main` versus this branch, with the delta column that is the actual point. A total is trivia to somebody deciding whether to merge; `+1` is not.
+
+**It recomputes nothing.** `trace.py` grows `--json`, and the report reads that. `gates.md` was already explicit that a report re-deriving what the gate proved is a second copy of the gate's logic waiting to drift — so that page now also says the thing which makes the rule followable: a gate has to be able to hand its numbers over, or the report has no choice but to parse the tree again.
+
+**The delta runs the current gate against a worktree of the base**, that way round deliberately: it reports what the spec layer did, not what a change to the gate did.
+
+**It cannot fail a build, and that is now proven rather than intended.** Every report step is `continue-on-error`, and `inject.py` gains a control asserting `report.py` exits zero on every degenerate input — no arguments, unreadable JSON, a missing base. Not a fault entry, because there is nothing to break when the promise is that nothing breaks. It was confirmed by making `report.py` able to fail and watching the control catch it.
+
+**`setup` wires one in an adopting repository**, in that repository's own CI language, and says in the hand-back when it cannot rather than leaving the gap silent — the gap being easy to miss precisely because nothing fails when it is missing.
+
+No coverage section: there is no coverage gate here and the ledger records why, so a table of empty rows would teach every adopter that the report is mostly blanks.
+
 ## 0.11.0 — 2026-08-25
 
 **A skill now knows which repository it is acting on, and which tracker that repository actually uses.** The rule is one portable passage in `method/repository.md` rather than a patch to `feedback`, because #12's report said "same for all other skills": every repository-scoped action targets the repository under the session's working directory, and the plugin's own checkout is never a target. That needed saying — however the plugin was installed, its root is a clone with a working remote, and a filing command run there succeeds.
