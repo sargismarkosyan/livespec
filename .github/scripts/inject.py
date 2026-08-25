@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-"""Break both gates on purpose, one fault at a time, and check each one fires.
+"""Break every gate on purpose, one fault at a time, and check each one fires.
 
 A gate that has never failed is not known to be a gate. This builds a minimal
 green fixture in a temporary directory — one persona, one journey, one workflow,
 one feature, one rule, three eval cases — proves both gates pass on it, then
 applies each fault in the table below to a fresh copy and reads the message that
 comes back.
+
+The release gate needs no fixture: `releaselib` is pure, so its faults are a
+label list and a pull request body handed straight to the function that reads
+them.
 
 The fixture is synthetic on purpose. It has to keep proving the gates fire while
 this repository's own spec layer is still empty, and it must not go green again
@@ -95,6 +99,57 @@ def write(root: Path, relative: str, content: str) -> None:
 def drop(root: Path, relative: str) -> None:
     target = root / relative
     shutil.rmtree(target) if target.is_dir() else target.unlink()
+
+
+# --- the release gate ----------------------------------------------------------
+#
+# `version_gate.py` and `release.py` read a pull request's label and body through
+# `releaselib`, which is pure — no git, no network, no filesystem. That is the
+# whole reason it is a module rather than two copies of a regex: it can be broken
+# here. The gate this replaced was never injectable, and so shipped for three
+# versions without ever being known to fire.
+
+sys.path.insert(0, str(SCRIPTS))
+from releaselib import (  # noqa: E402
+    ReleaseInputError,
+    bump_manifest,
+    extract_entry,
+    next_version,
+    prepend_entry,
+    select_increment,
+)
+
+GOOD_BODY = "Intro.\n\n## Changelog\n\nBody of the entry.\n\n## Notes\n\nnot part of it"
+
+# (name, what to try, a phrase the refusal must contain)
+RELEASE_FAULTS = [
+    ("shipping change with no release label",
+     lambda: select_increment(["bug", "needs-spec"]), "no release label"),
+    ("two release labels at once",
+     lambda: select_increment(["minor", "patch"]), "nobody decided"),
+    ("pull request body with no changelog section",
+     lambda: extract_entry("Intro.\n\n## Notes\n\nnothing here"), "no `## Changelog` section"),
+    ("changelog section left empty",
+     lambda: extract_entry("## Changelog\n\n## Notes\n\ntext"), "is empty"),
+    ("a version that already has an entry",
+     lambda: prepend_entry("# Changelog\n\n## 0.9.0 — x\n\nold\n", "0.9.0", "2026-01-01", "e"),
+     "already has an entry"),
+    ("a manifest with no version field",
+     lambda: bump_manifest('{"name": "livespec"}', "0.9.0"), "no `version` field"),
+    ("a version that is not major.minor.patch",
+     lambda: next_version("0.8", "minor"), "not major.minor.patch"),
+]
+
+
+def release_control() -> None:
+    """The unbroken inputs, which must produce a release rather than a refusal."""
+    assert select_increment(["bug", "minor"]) == "minor", "the one release label is not read"
+    assert extract_entry(GOOD_BODY) == "Body of the entry.", "the entry is not taken verbatim"
+    assert next_version("0.8.0", "minor") == "0.9.0", "the increment does not apply"
+    assert '"version": "0.9.0"' in bump_manifest('{\n  "version": "0.8.0"\n}', "0.9.0")
+    log = prepend_entry("# Changelog\n\nhead\n\n## 0.8.0 — x\n\nold\n", "0.9.0", "2026-01-01", "Body.")
+    assert log.index("## 0.9.0") < log.index("## 0.8.0"), "the new entry is not on top"
+    assert "Body." in log, "the entry did not survive into the changelog"
 
 
 # (name, gate, mutation, expected outcome, a phrase the message must contain)
@@ -190,12 +245,30 @@ def main() -> int:
             if not ok:
                 problems.append(f"{name}: expected it to {expected} naming {phrase!r}; exit {code}\n{output}")
 
+    try:
+        release_control()
+    except AssertionError as error:
+        problems.append(f"the unbroken release inputs do not release: {error}")
+
+    for name, attempt, phrase in RELEASE_FAULTS:
+        try:
+            attempt()
+        except ReleaseInputError as refusal:
+            ok = phrase in str(refusal)
+            detail = str(refusal)
+        else:
+            ok, detail = False, "it was accepted"
+        print(f"    {'✔' if ok else '✘'} {name:<48} fails")
+        if not ok:
+            problems.append(f"{name}: expected a refusal naming {phrase!r}; got {detail}")
+
     if problems:
         print(f"\n{len(problems)} gate(s) did not fire as expected:\n", file=sys.stderr)
         for problem in problems:
             print(f"  ✘ {problem}\n", file=sys.stderr)
         return 1
-    print(f"✔ gate fault injection: {len(FAULTS)}/{len(FAULTS)} faults caught")
+    total = len(FAULTS) + len(RELEASE_FAULTS)
+    print(f"✔ gate fault injection: {total}/{total} faults caught")
     return 0
 
 

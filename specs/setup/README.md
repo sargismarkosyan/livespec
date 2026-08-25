@@ -32,8 +32,10 @@ wherever the method says *test*, this repository means **eval case**:
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
 | **Eval-suite gate** | `.github/scripts/evalsuite.py [root]` |
-| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture, breaks it 24 ways |
-| **Version gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that does not move `version` and add a `CHANGELOG.md` entry |
+| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks it 24 ways, then breaks the release inputs 7 more |
+| **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body |
+| **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, runs `verify.py`, commits, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
+| **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate and the release job share, and pure, so `inject.py` can break it |
 | **Repository checks** | `.github/scripts/checks.py` — manifests, skill frontmatter, always-on budget, link and payload checks |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader both gates use |
@@ -43,7 +45,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Where the app runs** | nowhere. There is no app |
 | **Deliverable of a version** | the pull request description. No moving picture — see *What does not apply* |
 | **Manifest validation** | `claude plugin validate . --strict`, `./.claude-plugin/plugin.json`, `./skills` — offline, no credentials |
-| **Release** | bump `version` in `.claude-plugin/plugin.json`, add a `CHANGELOG.md` entry in the same commit, `claude plugin tag --push` |
+| **What a contributor owes a release** | one `patch`/`minor`/`major` label on the pull request, and a `## Changelog` section in its body. Nothing else — `version` and `CHANGELOG.md` are written by the pipeline and must not be edited in a branch |
 
 ## The tag contract
 
@@ -155,7 +157,7 @@ thing in this table that is not a gate at all.
 
 Run on **2026-08-24** by `python3 .github/scripts/inject.py`, which is part of
 `verify.py` and therefore of every CI run — so this record is re-made rather than
-remembered. **24 of 24 faults produced the expected result.**
+remembered. **31 of 31 faults produced the expected result.**
 
 | Injected fault | Expected | Result |
 |---|---|---|
@@ -183,6 +185,20 @@ remembered. **24 of 24 faults produced the expected result.**
 | a gated tool a case asks for is never granted | fails | ✔ |
 | an llm grader with an empty rubric | fails | ✔ |
 | every case removed | fails | ✔ |
+| shipping change with no release label | fails | ✔ |
+| two release labels at once | fails | ✔ |
+| pull request body with no changelog section | fails | ✔ |
+| changelog section left empty | fails | ✔ |
+| a version that already has an entry | fails | ✔ |
+| a manifest with no version field | fails | ✔ |
+| a version that is not major.minor.patch | fails | ✔ |
+
+The last seven need no fixture. `releaselib.py` is pure — a label list and a pull
+request body in, a decision out — which is the whole reason it is a module rather
+than two copies of a regex. The gate it replaced was **not** injectable and
+shipped for three versions without ever being known to fire; that was the
+`gates-are-proven` debt spec
+[`0003`](../changes/0003-main-releases-itself.md) inherited and paid.
 
 The injector was itself checked by making one fault a no-op: it reported the row
 as not firing and exited 1. A fault table that cannot fail is worth as little as
@@ -217,9 +233,19 @@ gh api repos/sargismarkosyan/livespec/branches/main/protection
 [`.github/workflows/checks.yml`](../../.github/workflows/checks.yml), two jobs,
 on push to `main` and on every pull request:
 
-- **`repository checks`** — Python 3.12, runs `verify.py` and nothing else.
+- **`repository checks`** — Python 3.12, runs `verify.py`, then the
+  release-input gate on pull requests only.
 - **`plugin validate`** — Node 22, installs `@anthropic-ai/claude-code` from npm
   and runs the three offline schema validations.
+
+[`release.yml`](../../.github/workflows/release.yml) is a **third workflow and
+not a required check** — it runs after the merge, on push to `main`, and there is
+nothing left to gate by then. It is serialised by a `concurrency: release` group,
+because two jobs computing "the next version" from the same base is how two
+versions claim the same number. Its own push lands back on `main`; it skips a
+commit made under the release identity rather than using `[skip ci]`, which would
+also skip `repository checks` and leave the one commit nobody reviewed as the one
+commit nothing verified.
 
 The job `name:` is what branch protection matches, not the filename and not the
 command. Renaming a job silently un-requires the check.

@@ -1,6 +1,6 @@
 # Spec 0003: main releases itself
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#18](https://github.com/sargismarkosyan/livespec/issues/18)
 
 ## Who this is for

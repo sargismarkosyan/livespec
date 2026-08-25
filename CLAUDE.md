@@ -43,9 +43,11 @@ Getting this wrong is how two copies of a method start disagreeing.
 4. The human approves the spec, or asks for changes.
 5. Implement: drop `@planned`, write the eval case that claims the rule, get
    `verify.py` green, commit.
-6. Bump `version` in `.claude-plugin/plugin.json` and add the `CHANGELOG.md`
-   entry in the same commit.
-7. Open the pull request. Both required checks must pass; `main` is protected.
+6. Open the pull request, carrying the two things the pipeline cannot work out:
+   one `patch`/`minor`/`major` label, and a `## Changelog` section in the body
+   that becomes the entry verbatim. **Do not touch `version` or `CHANGELOG.md`.**
+7. Both required checks must pass; `main` is protected. Merging releases:
+   `release.yml` writes the bump, the entry, the tag and the GitHub Release.
 8. Close the issue with what was asked, what shipped, and why they differ.
 
 ## Rules that get broken here
@@ -59,10 +61,11 @@ this repository actually loses:
   records. None of them touch application code.
 - **No dependency may be added to the gates.** Python 3 standard library only —
   CI installs nothing to run them.
-- **Push without bumping `version` and nobody gets the change.** The bump and the
-  changelog entry ride in the same commit as the change. CI fails a pull request
-  that changes what ships without moving it — you cannot forget, but you do still
-  have to do it.
+- **Merging is releasing.** `main` is production: the marketplace takes no ref,
+  so `/plugin update` reads `version` off this branch. The pipeline moves it —
+  what you owe is the label and the `## Changelog` section, and CI fails a pull
+  request that ships something without them. Editing `version` or `CHANGELOG.md`
+  by hand now fights the release job rather than helping it.
 - **Rule, workflow and persona ids are permanent.** Renaming one orphans every
   case pointing at it, in every consuming repository at once.
 - **A payload file nothing links fails CI.** It ships to every user unread.
@@ -91,7 +94,8 @@ templates/               copied into a consuming repository's specs/
 tools/                   invoked from a skill body via $CLAUDE_PLUGIN_ROOT
 evals/<NN-case>/         one prompt, its graders, and the tags saying what it holds
 specs/                   this repository's own spec layer
-.github/scripts/         the gates. verify.py is the one command
+.github/scripts/         the gates. verify.py is the one command; release.py
+                         is the pipeline's, and runs on main rather than here
 .claude-plugin/          plugin.json is the authority on version; marketplace.json must not restate it
 ```
 

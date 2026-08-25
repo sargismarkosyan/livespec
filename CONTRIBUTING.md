@@ -110,8 +110,9 @@ needs no credentials.
 this repository knows about itself), [`trace.py`](.github/scripts/trace.py)
 (traceability, both directions), [`evalsuite.py`](.github/scripts/evalsuite.py)
 (every skill held by a case, every case able to fail), and
-[`inject.py`](.github/scripts/inject.py), which breaks both gates 24 ways in a
-temporary fixture and checks each one fires. What each binding means is in
+[`inject.py`](.github/scripts/inject.py), which breaks every gate 31 ways — 24 in
+a temporary fixture, and 7 against the release inputs, which are pure functions
+over a label list and a pull request body — and checks each one fires. What each binding means is in
 [`specs/setup/README.md`](specs/setup/README.md).
 
 If you changed a skill's judgment or its description, also run the evals — see
@@ -132,22 +133,34 @@ of a method start disagreeing — the thing this plugin exists to stop.
 
 ## Releasing
 
-The `version` in `plugin.json` pins every install. Push without bumping it and
-**nobody gets the change** — `/plugin update` compares that string and keeps the
-cached copy. CI enforces this: `version_gate.py` fails a pull request that
-touches `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` without
-moving `version` and adding the matching `CHANGELOG.md` entry.
+**`main` is production.** `marketplace.json` sources the plugin at `./` and no
+install or update command takes a ref, so `/plugin update` compares the `version`
+string on this branch and nowhere else. Merging *is* releasing, and
+[`release.yml`](.github/workflows/release.yml) makes that literal: on every merge
+to `main` it bumps `version`, writes the `CHANGELOG.md` entry, commits, tags with
+`claude plugin tag --push`, and opens the GitHub Release.
 
-1. Bump `version` in `.claude-plugin/plugin.json`. Never set `version` in the
-   marketplace entry too — `plugin.json` silently wins, so the second one can
-   only go stale. CI fails on it.
-2. Add a `CHANGELOG.md` entry in the same commit.
-3. `claude plugin tag --push` — creates `livespec--v<version>`, and refuses on a
-   dirty tree or when the manifests disagree.
+So there is nothing to do at release time. What you owe is at pull request time,
+and it is the two things a machine cannot work out:
 
-Semver, loosely: patch for wording that does not change what a skill does, minor
-for a changed judgment or a new skill, major for a change to the method that
-would read badly against old commits. Nothing records which version of the
+1. **One label** — `patch`, `minor` or `major`. Not two, and not none: a default
+   would be a guess about how big somebody else's change was, made by the one
+   participant who did not read it.
+2. **A `## Changelog` section in the pull request body.** Everything under that
+   heading, down to the next `##`, becomes the entry verbatim. The pull request
+   description is already this repository's deliverable for a version, so this is
+   the prose you were writing anyway rather than a second copy of it.
+
+`version_gate.py` fails a pull request that touches `skills/`, `method/`,
+`templates/`, `tools/` or `.claude-plugin/` without both. **Do not edit
+`version` or `CHANGELOG.md` in a feature branch** — the release job writes both,
+and a hand-written bump collides with it. Never set `version` in the marketplace
+entry either; `plugin.json` silently wins, so the second one can only go stale,
+and CI fails on it.
+
+The labels are semver, loosely: patch for wording that does not change what a
+skill does, minor for a changed judgment or a new skill, major for a change to
+the method that would read badly against old commits. Nothing records which version of the
 method built a given commit, so when a change to the method *would* read badly
 against them, say so in the change that makes it. The one version a consuming
 repository does keep is the stamp on its
