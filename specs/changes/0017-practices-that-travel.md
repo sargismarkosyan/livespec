@@ -134,6 +134,17 @@ prove it is *reached*. If a later sitting is observed taking the graded branch
 and never opening the page, the answer is a line in `setup` — paid for then,
 with a measurement, rather than assumed now.
 
+**Found while implementing, and it weakens acceptance check 4.** The
+payload-link gate does not hold this file. Its reachability check passes a
+payload path found anywhere in the repository's markdown — and the change spec
+you are reading names `method/graded-cases.md`, which satisfies it on its own.
+Since every new payload file arrives with a spec naming its path, that branch of
+the gate is effectively disarmed for exactly the case it was built for. Verified
+by removing both real links and re-running the check: it still passed. The links
+added by this change are real and resolve; what is not true is that a gate proved
+it. Worth its own issue, and out of scope here — a gate change needs a fault that
+makes it fire, per `gates-are-proven`.
+
 **Two copies of a method disagreeing** is the failure this repository exists to
 stop, and this change creates a second place where graded-suite practice is
 written down. The mitigation is the command-free rule: `evals/README.md` keeps
