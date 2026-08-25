@@ -1,7 +1,7 @@
 @feature:routing-repository @workflow:adopt-the-process
 Feature: Which repository a skill is acting on
 
-  @rule:skills-act-on-the-session-repository @planned
+  @rule:skills-act-on-the-session-repository
   Rule: Every repository-scoped action targets the repository the session is working in
 
     Example: the plugin's own checkout is on disk and is not the subject
@@ -17,7 +17,7 @@ Feature: Which repository a skill is acting on
       Then it acts on that repository
       And nothing about the rule requires the two to be different places
 
-  @rule:plugin-reports-reach-the-plugin @planned
+  @rule:plugin-reports-reach-the-plugin
   Rule: A report the human says is about the plugin goes to the plugin's tracker
 
     Example: the complaint is about a skill rather than the app
@@ -26,7 +26,7 @@ Feature: Which repository a skill is acting on
       Then what is filed reaches the plugin's tracker
       And the reply says that is where it went
 
-  @rule:an-unstated-subject-is-asked-about @planned
+  @rule:an-unstated-subject-is-asked-about
   Rule: Where the subject is genuinely undecided, it is asked about rather than picked
 
     Example: plugin behaviour reported without saying where it belongs
@@ -35,7 +35,7 @@ Feature: Which repository a skill is acting on
       Then it asks which one before filing
       And nothing has been filed in either place
 
-  @rule:the-target-is-named-before-filing @planned
+  @rule:the-target-is-named-before-filing
   Rule: The repository being filed into is named before anything is created
 
     Example: the target is stated where the human will see it

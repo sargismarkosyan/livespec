@@ -1,7 +1,7 @@
 @feature:routing-tracker @workflow:adopt-the-process
 Feature: Which tracker a repository actually uses
 
-  @rule:the-tracker-comes-from-the-bindings @planned
+  @rule:the-tracker-comes-from-the-bindings
   Rule: The tracker is read from the repository's bindings, never assumed
 
     Example: the tracker is not the one a skill would have guessed
@@ -16,7 +16,7 @@ Feature: Which tracker a repository actually uses
       Then the tracker is worked out from what the repository already shows
       And what was worked out is said before it is relied on
 
-  @rule:evidence-links-follow-the-tracker @planned
+  @rule:evidence-links-follow-the-tracker
   Rule: A link to evidence is built for the host the repository actually uses
 
     Example: a screenshot filed against a repository hosted elsewhere

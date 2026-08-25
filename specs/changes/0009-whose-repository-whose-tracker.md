@@ -1,6 +1,6 @@
 # Spec 0009: whose repository, whose tracker
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#12](https://github.com/sargismarkosyan/livespec/issues/12) and
   [#10](https://github.com/sargismarkosyan/livespec/issues/10), taken together at
   the human's direction. See *Risks* — they split cleanly and were not split.
@@ -131,8 +131,19 @@ it said exactly why they kept it, so that is a check somebody can actually run.
 8. **`refine-spec` resolves which tracker `gh issue view <n>` reads.** The same
    ambiguity in reverse: *"pick up issue 7"* can mean two issues that both exist.
 
-9. **`feedback`'s description loses "the app in this repository"** for wording
-   that does not invite the wrong answer.
+9. **The two descriptions carrying the defect lose it.** `feedback`'s said "the
+   app in this repository" and named GitHub as the destination; `refine-spec`'s
+   said the same phrase and "picking up a GitHub issue". Both are the always-on
+   field, so both are the one place the ambiguity is read in every session
+   whether or not the skill fires. `refine-spec` was not named in this spec
+   before implementation and is added here rather than left: it is the same
+   defect in the same field, and fixing one while shipping the other would leave
+   a contradiction in the two most expensive characters in the plugin.
+
+   **Both got shorter.** Dropping the tracker claim from `feedback`'s opening
+   line — a description should not assert where issues go, since that is a
+   binding — took the always-on cost to **3801**, below the 3809 it started at.
+   No should-not-fire case is owed, because nothing widened.
 
 **Rules added or changed** — the `@rule:` ids in `specs/features/`:
 
@@ -219,12 +230,11 @@ leaves behind is listed in [spec.md](../spec.md#what-a-version-leaves-behind).
   grants no `Bash` and *"a case that files a real GitHub issue while being graded
   is not a test"*, so nothing here can check where an issue actually landed. A
   case can read what the reply claimed. That constraint is what chose this shape.
-- **`context-budget` moves, and in the good direction.** `feedback`'s description
-  is the phrase that invites the wrong answer. Replacing "the app in this
-  repository" with wording that resolves it should not lengthen the field — and
-  if it does, the promise requires paying for it in `evals/` with a
-  should-not-fire case rather than on a hunch. The number is measured at
-  implementation, not estimated here.
+- **`context-budget` moved in the good direction, measured rather than hoped.**
+  3809 → **3801** across 7 skills. The saving came from deleting a claim rather
+  than from trimming prose: a description asserting the tracker was both wrong
+  and expensive, and two skills carried it. Had it grown, the promise required a
+  should-not-fire case rather than absorption; it did not, so none is owed.
 
 ## Acceptance checks
 
