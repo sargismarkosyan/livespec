@@ -6,9 +6,10 @@
 
 **One, and it is `@planned`.** No feature implements it and no eval case walks it
 yet, which is exactly what the tag is for — the gate fails a live workflow in
-either state. It also names no `@journey:`, which is a warning rather than an
-error, and [`refine-journeys`](../../skills/refine-journeys/SKILL.md) is what
-clears it.
+either state. It names its arc,
+[`trusting-the-spec-again`](../journeys/trusting-the-spec-again.md), which
+[`0007`](../changes/0007-trusting-the-spec-again.md) attached and which took the
+last warning out of the run.
 
 One file per workflow, `.feature`, `@workflow:<id> @persona:<id> @journey:<id>`
 on the first line, no `Rule:` anywhere in it, and the shape is in
