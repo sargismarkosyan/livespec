@@ -43,14 +43,21 @@ money to run, and they are graded by a model rather than asserted.
 
 There is no build output and no database. What a version writes down, and where:
 
+- **the pull request description** — this repository's deliverable for a version,
+  and now also its **source**. There is no app to record, so there is no moving
+  picture; see [setup/README.md](setup/README.md).
 - **`.claude-plugin/plugin.json`** — the `version` field, which pins every
-  install. Push without bumping it and nobody gets the change.
-- **`CHANGELOG.md`** — an entry in the same commit as the bump.
-- **a git tag** `livespec--v<version>`, made by `claude plugin tag --push`, which
-  refuses on a dirty tree or when the manifests disagree.
-- **the pull request description** — which is this repository's deliverable for a
-  version. There is no app to record, so there is no moving picture; see
-  [setup/README.md](setup/README.md).
+  install. A change merged without moving it reaches nobody.
+- **`CHANGELOG.md`** — one entry per version.
+- **a git tag** `livespec--v<version>`, and the GitHub Release that carries the
+  same entry.
+
+**The last three are written by the pipeline, not by hand.** `main` is
+production — the marketplace takes no ref, so `/plugin update` reads `version`
+off that branch — and merging is therefore releasing. On merge,
+`release.yml` derives the number from the pull request's `patch`/`minor`/`major`
+label and the entry from its `## Changelog` section, then writes all three.
+What a contributor leaves behind is the description; the rest follows from it.
 
 **Nothing records which version of the method built a given commit** in a
 consuming repository. Where a change here would read badly against old commits

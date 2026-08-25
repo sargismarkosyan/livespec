@@ -1,9 +1,16 @@
 # Changelog
 
-The `version` in `.claude-plugin/plugin.json` **pins** every install. Push
-without bumping it and nobody receives the change — `/plugin update` sees the
-same string and keeps the cached copy. So: one entry here per version, and the
-bump lands in the same commit as the change it describes.
+The `version` in `.claude-plugin/plugin.json` **pins** every install: a change
+merged without moving it reaches nobody, because `/plugin update` sees the same
+string and keeps the cached copy.
+
+**Entries below this line are written by the release pipeline**, not by hand.
+Each one is the `## Changelog` section of the pull request that shipped it,
+copied verbatim by [`release.py`](.github/scripts/release.py) on merge to `main`,
+under a heading it numbers from that pull request's `patch`/`minor`/`major`
+label. Editing this file in a feature branch fights that job; the place to write
+a version's entry is the pull request description, which is what this repository
+ships as a version's deliverable anyway.
 
 ## 0.8.0 — 2026-08-25
 

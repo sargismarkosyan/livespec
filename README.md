@@ -103,14 +103,16 @@ implementation, and the series of pictures it produced.
 ## Working on it
 
 [CONTRIBUTING.md](CONTRIBUTING.md) — what is a component and what is payload,
-where a change belongs, and the release step. [evals/](evals/README.md) — the
-nine cases that hold the judgment the skills exist for, measured as uplift over
-running without them. [CHANGELOG.md](CHANGELOG.md) — and why the version bump is
-not optional.
+where a change belongs, and the two things a pull request owes the release.
+[evals/](evals/README.md) — the nine cases that hold the judgment the skills
+exist for, measured as uplift over running without them.
+[CHANGELOG.md](CHANGELOG.md) — written on merge rather than by hand, because
+`main` is what every install updates from.
 
 livespec runs its own process: [specs/](specs/README.md) is this repository's
 spec layer, [specs/setup/README.md](specs/setup/README.md) its bindings, and
 `python3 .github/scripts/verify.py` the one command that means everything
-passes — including breaking both gates on purpose to prove they still fire.
+passes — including breaking every gate on purpose, 31 ways, to prove they still
+fire.
 
 MIT licensed.
