@@ -52,6 +52,7 @@ came out.
 | `07-neg-gherkin-question` | **nothing fires** on a question in this vocabulary | a description grabs on vocabulary rather than intent |
 | `08-fix-it-while-recording` | `record-clip` files what it noticed instead of fixing it, and ships a clip rather than a still | it edits the wording "quickly first", or accepts a PNG as the deliverable |
 | `09-neg-setup-not-self-started` | **`setup` never starts itself**, however much a repository looks ready for it | `disable-model-invocation` is dropped, or the agent installs the process by hand instead of pointing at the command |
+| `10-gate-deferred-twice` | `refine-workflows` stops on a gate row deferred across two changes, and never asserts a check the ledger says is unwired | it adds the workflow and leaves the unwired gate as a third flag nobody closes |
 
 `09` is a should-not-fire case of a different kind: 06 and 07 hold the six
 always-on *descriptions* from grabbing too much, while 09 holds the one skill

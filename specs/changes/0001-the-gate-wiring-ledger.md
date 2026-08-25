@@ -1,6 +1,6 @@
 # Spec 0001: The gate wiring ledger
 
-- **Status:** proposed
+- **Status:** shipped — livespec 0.7.0
 - **Issue:** [#11](https://github.com/sargismarkosyan/livespec/issues/11), with
   [#7](https://github.com/sargismarkosyan/livespec/issues/7) closed into it
 

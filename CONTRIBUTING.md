@@ -149,7 +149,11 @@ Semver, loosely: patch for wording that does not change what a skill does, minor
 for a changed judgment or a new skill, major for a change to the method that
 would read badly against old commits. Nothing records which version of the
 method built a given commit, so when a change to the method *would* read badly
-against them, say so in the change that makes it.
+against them, say so in the change that makes it. The one version a consuming
+repository does keep is the stamp on its
+[gate wiring ledger](method/gates.md#what-is-wired-and-what-is-not) — what its
+gates were last reconciled against, which is a fact about the process installed
+there rather than about any commit.
 
 ## What gets turned down
 

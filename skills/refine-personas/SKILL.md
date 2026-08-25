@@ -147,6 +147,23 @@ wearing a different hat.
 | every workflow names a live persona | error |
 | every persona is named by a workflow, or is `@retired` | error |
 
+**Both rows are claims about this repository, not about the method.** Check them
+against the gate wiring ledger in `specs/setup/README.md` before repeating them:
+`setup` wires what applies the day it runs, and on that day there were no
+personas — so the row over them may still read *not applicable* while you are
+about to make it applicable.
+
+- If it does, **the row is yours to move**, in this change: to *automated* if the
+  check lands with the persona, or to *deferred* with the change number and one
+  line on why not.
+- If it reads *not applicable — no personas exist* and persona files already do,
+  the ledger contradicts the tree. Say so, and do not restate the table above as
+  fact.
+- If it has read *deferred* since two changes ago, **stop and ask**: wire it, or
+  write it off as deliberately not automated, with the reason in the row. A third
+  change flagging the same gap is how a repository carries an unbuilt gate for a
+  year — the norm is in [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not).
+
 So the two edits this skill makes both land in the sibling skill's folder:
 
 - **Adding a persona** needs a workflow naming them, or `trace` goes red. That

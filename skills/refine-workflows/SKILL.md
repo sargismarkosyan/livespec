@@ -126,6 +126,15 @@ The template in the workflows folder carries this shape with the rules inline.
 | a journey naming a workflow that does not exist | error |
 | a workflow naming no journey | warning |
 
+**Six rows, and in a repository where the workflow layer arrived months after
+`setup` did, possibly none of them wired.** The gate wiring ledger in
+`specs/setup/README.md` is what says which — read it before repeating the table
+above as fact, move the rows this change makes applicable, and treat a row that
+says *not applicable* while the layer plainly exists as a contradiction to
+report rather than a line to trust. A row *deferred* since two changes ago stops
+you: wire it, or write it off with the reason in the row itself. The norm, and
+the three states a row may read, are in [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not).
+
 Three bite this skill in particular:
 
 - **A new workflow has no test yet** — tag it `@planned` and let the implementing

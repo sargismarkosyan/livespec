@@ -149,6 +149,14 @@ the next reader asks rather than extrapolating.
 | a journey naming a workflow that does not exist | error |
 | a workflow naming no journey | warning |
 
+Whether either one is *wired here* is a different question, and the gate wiring
+ledger in `specs/setup/README.md` is where it is answered. Read it before
+repeating the table above: a journey layer that arrived after `setup` did may
+have no check over it at all. Move the row this change makes applicable, report a
+row that contradicts the tree, and stop on one that has read *deferred* since two
+changes ago — the same norm this folder owns for warnings, applied to the gates
+themselves, and written down in [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not).
+
 That is all of it, on purpose. **Never invent a gate for prose** — nothing here
 is asserted, and a check on a judgment call reports something everybody already
 knew.

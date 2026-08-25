@@ -136,6 +136,29 @@ CI wiring, and the record of the fault injection from section 4.
 moved to another repo, it belongs in this plugin instead, and putting it here is
 how the two copies start to disagree.
 
+### The gate wiring ledger
+
+One more table, and the one that outlives you: a row for **every** gate named in
+[`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — not only the
+ones you wired — each reading *automated* (naming the command), *not applicable*
+(with the reason) or *deferred* (since which change, and why). Above it, the date
+and the version of livespec the wiring was reconciled against.
+
+Most rows on a fresh setup say **not applicable**, and honestly: there are no
+personas yet, so the gate over them cannot apply yet. Write *deferred* only where
+the layer exists and the check does not — writing it where *not applicable* is
+true is how a repository ends up carrying a permanent apology, and writing *not
+applicable* where a gap is real is how it carries an unbuilt gate for a year.
+
+**Installing over a repository that already has a ledger: diff it, never
+overwrite it.** Read what it was reconciled against, compare its rows to the
+gates that page names now, and report the difference — rows the method has since
+gained, rows naming a command that no longer exists, deferrals past the
+two-change limit. Then offer to wire what is missing. Re-stamp the version only
+when the wiring actually moved; a ledger re-stamped for a run that changed
+nothing has learned to lie. Rows you cannot date honestly say **predates the
+ledger** rather than getting an invented change number.
+
 ## 6. Write CLAUDE.md
 
 Follow [`claude-md.md`](../../method/claude-md.md) — it says what has to be in
@@ -169,6 +192,8 @@ Then hand back, short:
 
 - the verification command, and the fact that it is green;
 - which faults you injected and that each one failed the way it should;
+- **which gates are not wired**, read off the ledger rather than remembered, and
+  for each whether it is deferred or cannot apply here;
 - **what is still empty** — almost certainly the personas, the workflows and the
   journeys — and which skill fills each;
 - **the one next thing**: run `refine-personas`, because every other layer is

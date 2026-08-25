@@ -5,6 +5,39 @@ without bumping it and nobody receives the change — `/plugin update` sees the
 same string and keeps the cached copy. So: one entry here per version, and the
 bump lands in the same commit as the change it describes.
 
+## 0.7.0 — 2026-08-25
+
+**A repository can now say which of its gates are actually wired.** `setup`
+wires the gates that apply the day it runs — correctly, because the persona,
+workflow and journey layers usually do not exist yet. What was missing is
+anything that says so later: each layer's README honestly reported its own half
+as unautomated, nothing added them up, and a repository could carry an
+honestly-flagged, perpetually-unbuilt gate while looking green. Spec
+[`0001`](specs/changes/0001-the-gate-wiring-ledger.md); issues #11 and #7.
+
+- `method/gates.md` gains **the ledger**: one row per gate on that page, reading
+  *automated* (naming the command), *not applicable* (with the reason) or
+  *deferred* (since which change, and why). The tree stays the authority on what
+  applies; the ledger only says what is wired, and a row that contradicts the
+  tree is reported rather than repeated.
+- **A row deferred across two changes is either wired or written off** — the same
+  norm `gates.md` already held for warnings, now applied to the gates themselves.
+- `setup` writes the ledger into the bindings, and on a repository that already
+  has one **diffs it instead of overwriting**: what the method has since gained,
+  what names a command that no longer exists, what has outlived the deferral
+  limit. It re-stamps the version only when the wiring actually moved.
+- `refine-personas`, `refine-workflows` and `refine-journeys` read the ledger
+  before repeating their gate tables as fact, move the row the change makes
+  applicable, and stop for a decision on a row deferred twice.
+- The ledger carries **the version its wiring was last reconciled against** —
+  which is #7's ask, scoped to the installed process. `specs/spec.md`,
+  `method/README.md` and `CONTRIBUTING.md` now name that apart from per-commit
+  provenance, which nothing records and nothing here starts recording.
+- This repository's own bindings gained the table, including the honest rows: no
+  coverage gate, and the two git-shaped checks `gates.md` deliberately leaves out.
+- Added `10-gate-deferred-twice`, holding a `refine-workflows` run against a
+  ledger where two rows have been deferred since two changes ago.
+
 ## 0.6.0 — 2026-08-24
 
 **livespec now runs its own process.** `/livespec:setup` was applied to this
