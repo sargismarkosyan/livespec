@@ -68,9 +68,18 @@ belongs there, so a new file lands in the right place without an argument.
 ## Where it goes
 
 The repository root. `.claude/CLAUDE.md` is also always loaded and is a legitimate
-place for it, but the root is where a person looks and where every other
-repository keeps it — and being findable by a human is most of why the file is
-written in prose rather than configuration.
+place for it, but the root is where every other repository keeps it, and a file
+where everyone already expects it is one nobody has to be told about.
+
+**The reader you can count on is the agent.** This file is handed to every
+session whether or not anybody opens it, and a human reading it is occasional —
+in a repository with a spec layer, that is what a person opens instead, because
+it is the part that says who the work is for and what they were trying to do. So
+write the prose for the agent that acts on it: it is prose rather than
+configuration because what it carries is judgment to apply — what this repository
+is for, what to read, what never to copy — and none of that is a setting. The
+length rule below is a context-cost argument for the same reason, not an
+attention-span one.
 
 **One repository in a hundred will hit a tool that objects**: a repository that
 is itself a plugin root gets a warning from `claude plugin validate`, because a
