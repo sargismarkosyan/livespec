@@ -72,7 +72,7 @@ all, say that too — the process still installs, but the coverage gate has noth
 to stand on yet and the bindings file must admit it rather than name a threshold
 nobody measures.
 
-## 2. Ask the four things you cannot find out
+## 2. Ask the five things you cannot find out
 
 One round, with your recommendation attached to each. Everything else you decide
 yourself and record.
@@ -92,6 +92,15 @@ yourself and record.
 - **Is `main` protected, and what is the required check called?** If nobody can
   change repository settings, say so in the bindings — an unenforceable rule
   written as enforced is the worst line in any setup file.
+- **What proves a rule is true here, and how does a test say which rule it is
+  answering?** Both gates rest on this and nothing else can derive it.
+  [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here)
+  has the two honest answers — an ordinary test suite, or graded cases where the
+  product is judgment rather than code and there is no function to call.
+  **Recommend what the repository already runs**, and never stand up a second way
+  of testing alongside one that works. Where the answer is graded cases, say
+  plainly that they prove a weaker thing, so it is chosen rather than drifted
+  into.
 
 ## 3. Put the skeleton in, and nothing more
 
@@ -138,9 +147,34 @@ the repository rather than in this plugin, because CI has no plugins installed �
 the moment verification depends on something an agent session installs, it stops
 being the thing CI runs.
 
+**The rule binding is part of the gate, not a convenience.** Section 2's fifth
+answer decides its shape; either way the sitting leaves behind the thing a test
+uses to name its rule.
+
+- **An ordinary test suite** gets a helper that wraps the runner's grouping call
+  — `rule('<id>', …)` — looks the id up in `specs/features/`, and **throws where
+  the test is written** if it does not exist or is still `@planned`. Without it,
+  a rule id is a string inside a test name: unchecked, undiscoverable, and
+  impossible to rename from the spec. That failing at authoring time rather than
+  in CI is most of what this binding buys.
+- **Graded cases** get their suite from the tool that already builds one.
+  `claude plugin eval init <name>` writes it, interviewing in a terminal by
+  default, with `--bare` for a blank template; the case-folder layout is the
+  non-interactive path. **Point at the tool and read what it produces — do not
+  describe its output from memory, and do not hand-roll a case format.** A
+  bespoke layout invented in a sitting has one user and no documentation.
+
 **Coverage** is whatever the language already has. Lines, branches and functions
 if the tool reports all three; the thresholds are the ones agreed in section 2.
 If the tool reports only lines, say so in the bindings and say what that misses.
+
+**Take it twice.** The gated number is over everything; the second pass is over
+the rule-bound tests alone, and it says how much of the product the specification
+actually reaches. It goes in the report and
+[**never in a threshold**](../../method/testing.md#measure-the-rule-bound-tests-on-their-own-and-never-gate-it)
+— gated, it turns rules into a way of moving a number. Where the repository's
+tooling cannot split a coverage run, say so in the bindings rather than reporting
+one figure twice.
 
 **One command runs both**, and CI runs that same command. Not a longer list in CI
 than a person can run locally.
