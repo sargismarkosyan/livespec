@@ -84,10 +84,12 @@ that does not exist fails, on a should-not-fire case as much as any other.
 What stops a case being filler is the eval-suite gate, not a claim: every case
 carries `skill:<name>` and at least one outcome grader.
 
-**Unverified against the runner.** `claude plugin eval` will not start on this
-account (below), so the `tags:` keys have never been round-tripped through it. If
-the runner ever rejects one, the claim moves to a `case.yaml` — `caselib.py`
-already reads both — and only that reader changes.
+**Unverified against the native runner.** `claude plugin eval` will not start
+on this account (below), so the `tags:` keys have never been round-tripped
+through it — the runner that does run, `evals/runner/run.py`, reads them through
+the same `caselib.py` the gates use. If the native runner ever rejects one, the
+claim moves to a `case.yaml` — `caselib.py` already reads both — and only that
+reader changes.
 
 ## What has no gate, and what that misses
 
@@ -104,18 +106,23 @@ softened until it always passes still counts here, which is why
 [`evals/README.md`](../../evals/README.md) puts that in writing and
 `evalsuite.py` fails if the documented invocation loses `--ablation with-without`.
 
-**The cases are not run by any gate.** `claude plugin eval` is compiled into the
-CLI and gated per organisation during early access; on this account it prints
-`` `plugin eval` is currently in early access `` and exits before it reaches case
-discovery. Nothing local causes it — no telemetry-disabling variable, no gateway
-base URL. Enablement arrives server-side, and picking it up needs `claude update`
-and a fresh session.
-
-So the maintainer step, when it unblocks:
+**The cases are not run by any gate.** They cost money per session, and CI
+installs and pays for nothing. The maintainer step that runs them, since
+[0012](../changes/0012-a-runner-that-runs.md):
 
 ```
-claude plugin eval . --ablation with-without --judge-model sonnet --allow-tools Write Edit
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit
 ```
+
+It compiles the case folders into a promptfoo config (pinned `promptfoo@0.122.0`,
+run via `npx` — node is a maintainer-machine prerequisite, never CI's), drives
+each arm through `claude -p` (`--plugin-dir` present or absent is the ablation),
+and scores `llm` graders through the judge model with a `--json-schema` verdict.
+The format stays native to `claude plugin eval`, which is compiled into the CLI
+but gated per organisation during early access — on this account it prints
+`` `plugin eval` is currently in early access `` and exits before case
+discovery. Nothing local causes it; enablement arrives server-side, and if it
+ever lands, both runners read the same folders.
 
 **`--allow-tools` is an operator grant.** `Write`, `Edit`, `Bash`, `WebFetch`,
 `WebSearch` and `mcp__*` are refused unless the person running the suite grants
@@ -123,9 +130,10 @@ them, whatever a case's own `allowed_tools` says — so a grader checking what t
 agent created is inert without it. `evalsuite.py` fails when the invocation
 documented in `evals/README.md` does not grant what the cases ask for.
 
-Until then the gate proves a case **exists, claims a live rule, and can fail**.
-It does not prove it passes, and no output from `verify.py` should be read as
-saying it does.
+The gate proves a case **exists, claims a live rule, and can fail**. It does
+not prove it passes, and no output from `verify.py` should be read as saying it
+does — that is what running the suite is for, and no number from a run is
+trusted before the calibration pass `evals/README.md` describes.
 
 ## Gate wiring
 

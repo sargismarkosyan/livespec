@@ -7,20 +7,23 @@ checkable by reading the files. This suite is how a change to a skill is held
 against it.
 
 ```
-claude plugin eval . --ablation with-without --judge-model sonnet --allow-tools Write Edit
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit
 ```
 
-> **Not yet piloted, and currently unrunnable.** `claude plugin eval` is
-> compiled into the CLI but gated per organisation during early access: on this
-> account it prints `` `plugin eval` is currently in early access `` and exits
-> before it reaches case discovery, whatever arguments it is given. Nothing local
-> causes that — enablement arrives server-side and needs `claude update` and a
-> fresh session. So these cases have never been run. The first person who can run
-> them should treat the first pass as calibration — read every judge verdict and
-> ask whether they would have scored it the same way — and correct the rubrics
-> before anyone trusts a number from here. See *Calibration* below.
+> **Runs on promptfoo, not yet calibrated.** The native runner for this case
+> format — `claude plugin eval` — is gated per organisation during early access
+> and has never started on this account, so since
+> [0012](../specs/changes/0012-a-runner-that-runs.md) the suite runs through
+> [`evals/runner/`](runner/run.py) instead: each case goes through `claude -p`
+> with the plugin loaded and without, an llm grader's rubric is scored by the
+> judge model, and the cases stay written in the native format so enablement
+> arriving one day is a bonus rather than a migration. One case has been run end
+> to end; **nobody has read a full pilot's verdicts.** Whoever runs the first
+> one should treat it as calibration — read every judge verdict and ask whether
+> they would have scored it the same way — and correct the rubrics before
+> anyone trusts a number from here. See *Calibration* below.
 >
-> What *is* enforced meanwhile is the structure: `python3 .github/scripts/verify.py`
+> What CI enforces is the structure: `python3 .github/scripts/verify.py`
 > fails if a skill is held by no case, if a case is graded only by what fired, if
 > `runs` drops below three, if the last should-not-fire case is deleted, or if the
 > invocation below loses its baseline. That proves a case exists and **can** fail.
@@ -156,22 +159,25 @@ of that grader would still catch a real regression.
 Pilot before trusting a full run:
 
 ```
-claude plugin eval . --runs 1 --ablation with-without --no-publish --allow-tools Write Edit
+python3 evals/runner/run.py --runs 1 --ablation with-without --judge-model sonnet --allow-tools Write Edit
 ```
 
-Then, in the newest `evals/results/*/aggregate-result.json`:
+Then, against the run directory it prints (`evals/results/<stamp>/`):
 
-1. Check `suite.plugins` lists `livespec` with no `problem` of `manifest_invalid`,
-   `disabled_by_default` or `will_not_load`. Any of those mean the with-arm ran
-   *without* the plugin and the whole pilot is meaningless.
-2. Watch the run output for `⚠ case … cannot pass with the granted tools`. A case
+1. Check the summary's **fired** column. A fire case showing `0/1` in the
+   with-arm means the plugin never triggered there — and if that is every case,
+   the with-arm ran bare and the whole pilot is meaningless.
+2. Watch the run output for `⚠ <case> asks for <tool>; not granted`. A case
    whose grader needs a file that no granted tool can create scores 0 in both
    arms and reads as "the plugin did nothing".
-3. Read every judge verdict. If you would have scored even one differently, the
-   rubric is not ready.
+3. Read every judge verdict — each one is a `reason` in the run's
+   `results.json`, or `npx promptfoo@0.122.0 view` shows them in a browser. If
+   you would have scored even one differently, the rubric is not ready.
 
-Cost: the pilot's top-level `costUsd` is cases × 1 run × 2 arms. A full suite is
-roughly that × 3.
+Cost: the summary line prints what the pilot's sessions actually cost; a full
+suite is roughly that × 3. Sessions, transcripts and created files stay under
+the run directory, which is ignored — a run is a measurement of one moment, and
+what it concluded goes in the change spec.
 
 ## When a case needs a repository
 
@@ -179,5 +185,7 @@ These cases are deliberately self-contained — the situation is in the prompt, 
 the graded judgment does not depend on a `specs/` tree existing. If a case starts
 failing because the agent spends its turns hunting for `specs/setup/README.md`
 rather than answering, that is the signal to convert it to a `case.yaml` with a
-`scaffold_script` that lays down a minimal fixture (and to run with `--scaffold`,
-which is opt-in).
+`scaffold_script` that lays down a minimal fixture — native-runner features the
+gates already read (`caselib.py` merges `case.yaml` tags) but
+[`evals/runner/`](runner/run.py) does not yet execute. The first case to need a
+scaffold extends the runner in the same change, or waits for the native one.

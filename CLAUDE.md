@@ -81,12 +81,14 @@ python3 .github/scripts/verify.py                 # everything that can pass her
 claude plugin validate . --strict                 # marketplace manifest
 claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
 claude plugin validate ./skills --strict
-claude plugin eval . --ablation with-without --judge-model sonnet --allow-tools Write Edit   # maintainer step
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit  # maintainer step
 ```
 
-The last one **does not run**: `claude plugin eval` is gated behind early access
-on this account. The gates hold the eval suite structurally instead — see the
-bindings, and do not read a green `verify.py` as saying the cases passed.
+The last one **costs money per session and never runs in CI** — it drives real
+`claude -p` sessions through promptfoo, because the native `claude plugin eval`
+is gated behind early access on this account. The gates hold the eval suite
+structurally — see the bindings, and do not read a green `verify.py` as saying
+the cases passed.
 
 ## Layout
 

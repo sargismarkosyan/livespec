@@ -12,10 +12,11 @@ only way to hold judgment is to run it against a prompt and grade what comes
 back. So `tags: [rule:<id>]` on a case is what `rule('<id>', ...)` is in a repo
 that ships code. See specs/setup/README.md.
 
-What this gate cannot prove is that a case *passes* — `claude plugin eval` is
-gated behind early access and does not run here. It proves the case exists,
-claims a live rule, and meets the floor. The judging half is a maintainer step,
-and the bindings say so rather than implying this covers it.
+What this gate cannot prove is that a case *passes* — running the suite costs
+money per session and is a maintainer step (evals/runner/run.py), never CI's.
+This proves the case exists, claims a live rule, and meets the floor. The
+judging half is that runner, and the bindings say so rather than implying this
+covers it.
 
 Run: python3 .github/scripts/trace.py [root] [--json]
 

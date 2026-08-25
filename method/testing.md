@@ -32,7 +32,12 @@ not because it is a modern alternative to it.
 
 **Do not invent a third.** Whatever the answer, use the tooling that already
 builds that kind of suite. A bespoke format invented during a setup sitting is a
-format with one user, no documentation and nobody to ask.
+format with one user, no documentation and nobody to ask. And when that tooling
+cannot run where the suite has to — gated, unreleased, wrong platform — the
+fallback is another platform that already runs such suites, never a format of
+one's own. Keep the cases in the format the repository's gates read, so the
+tool that could not run stays a runner the suite might gain rather than a
+migration it owes.
 
 ## The two kinds
 

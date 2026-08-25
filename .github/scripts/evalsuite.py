@@ -8,9 +8,11 @@ is **which promises are actually exercised** — every skill held by at least on
 case, every case scored on what came out rather than on whether something fired,
 and the floor in evals/README.md made executable instead of aspirational.
 
-What this cannot do is run the cases: `claude plugin eval` is gated behind early
-access. So this gate is the structural half — the cases exist, they cover every
-skill, and none of them has been softened into a case that cannot fail.
+What this cannot do is run the cases: they cost money per session, and CI pays
+for nothing. The runner is `evals/runner/run.py` (the native `claude plugin
+eval` stays gated behind early access); this gate is the structural half — the
+cases exist, they cover every skill, and none of them has been softened into a
+case that cannot fail.
 
 Run: python3 .github/scripts/evalsuite.py [root]
 """
@@ -119,7 +121,7 @@ else:
     needed = sorted({tool for case in suite for tool in case["allowed_tools"] if tool in GATED_TOOLS})
     for line in text.splitlines():
         line = line.strip()
-        if not line.startswith("claude plugin eval"):
+        if not line.startswith(("python3 evals/runner/run.py", "claude plugin eval")):
             continue
         granted = re.split(r"\s--", line + " --")
         grant = next((part for part in granted if part.startswith("allow-tools")), "")
