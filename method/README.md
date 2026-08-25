@@ -98,6 +98,12 @@ they are `livespec:refine-spec` either way.
 `/plugin marketplace add sargismarkosyan/livespec` puts every repository back to
 the published copy.
 
+**Keep that command out of a committed `.claude/settings.json`.** A project file
+that declares a directory marketplace repoints the name on the machine of
+everyone who clones the repository, for all of their repositories, without their
+asking — so a local checkout is registered per machine, by hand, while the
+committed file only enables the plugin.
+
 Iterate there, and push when something settles. The alternative — editing the
 skills in `.claude/skills/` of whatever repo you are in — is how two copies of a
 method start disagreeing, which is the thing this plugin exists to stop.

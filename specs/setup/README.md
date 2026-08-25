@@ -370,17 +370,31 @@ side of that deal: this repository should look like the repositories it sets up.
 
 ## Running the plugin on itself
 
-`.claude/settings.json` declares the marketplace as a **directory source
-pointing at this checkout**, not at GitHub:
+`.claude/settings.json` enables the plugin and **names no marketplace**:
 
 ```json
-{ "extraKnownMarketplaces": { "livespec": { "source": { "source": "directory", "path": "." } } },
-  "enabledPlugins": { "livespec@livespec": true } }
+{ "enabledPlugins": { "livespec@livespec": true } }
 ```
 
-Pointing it at `sargismarkosyan/livespec` would load the *published* skills while
-you are editing the working tree — two copies of the method disagreeing inside
-the repository whose whole purpose is to stop that.
+Registering the checkout is a per-machine step, run once by hand:
+
+```
+/plugin marketplace add .
+```
+
+Until it is run, a session here has no `livespec:` skills — which is the intended
+failure. The file used to carry `extraKnownMarketplaces` pointing at `"."`, and
+that is what [#6](https://github.com/sargismarkosyan/livespec/issues/6) was
+about: a marketplace name is machine-wide, so a committed project file naming a
+directory source **repoints `livespec` for every repository on the machine of
+whoever clones this one**, silently and without their asking. A project file may
+enable a plugin; it should not be able to move a global name out from under the
+repositories nobody in this checkout is looking at.
+
+Pointing it at `sargismarkosyan/livespec` instead is the other wrong answer: that
+loads the *published* skills while you are editing the working tree — two copies
+of the method disagreeing inside the repository whose whole purpose is to stop
+that.
 
 ### What loads here, and how that was established
 
@@ -449,12 +463,14 @@ published marketplace and a checkout of it.
 
 ### What this costs, and the check that shows it
 
-**Opening this repository moves `livespec` for every repository on the machine.**
-Once the checkout is registered under that name, every other project enabling
-`livespec@livespec` gets the working tree, on whatever half-finished skill edit
-is sitting in it — the reference repository too, if it enables the plugin that
-way. That is the live hazard #6 found, and nothing in this repository fixes it;
-it is a fact about where marketplace names live.
+**Registering this checkout moves `livespec` for every repository on the
+machine.** Every other project enabling `livespec@livespec` then gets the working
+tree, on whatever half-finished skill edit is sitting in it — the reference
+repository too, if it enables the plugin that way. Dropping
+`extraKnownMarketplaces` means this repository no longer does that *to whoever
+clones it*; it does not stop the person who runs `/plugin marketplace add .` here
+from doing it to their own other repositories, because that is a fact about where
+marketplace names live rather than something a file here can decide.
 
 `/plugin marketplace list` says which copy is current. One line under `livespec`,
 and it is one of these two:
@@ -470,6 +486,9 @@ takes it again. **Neither is per-project, and the skill names cannot tell you
 which one you are on** — they are `livespec:refine-spec` either way. Only the
 marker method above, or that list, can.
 
-If a session here shows no `livespec:` skills at all, the marketplace is not
-registered on this machine: `/plugin marketplace add .` from the repository root
-registers it, with the machine-wide cost stated above.
+**A session here with no `livespec:` skills means the marketplace is not
+registered on this machine yet** — the ordinary state of a fresh clone, and the
+one `/plugin marketplace add .` fixes. Verified on 2026-08-25 with the marker
+method: with `extraKnownMarketplaces` gone and the marketplace registered, a
+session still listed the seven skills and the marker, so the enable alone is what
+this file has to carry.
