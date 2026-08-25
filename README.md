@@ -34,7 +34,7 @@ Seven skills, and the discipline they enforce.
 | `refine-personas` | Adds, amends or retires who it is for — and refuses a persona invented to make a wanted feature legal. |
 | `refine-journeys` | Keeps the arc over time honest, and holds the seams that belong to no single workflow. |
 | `record-clip` | Records the animated GIF a version ships with: the app being *used*, in a real browser. |
-| `setup` | **You run this one** — `/livespec:setup`. Installs all of the above into a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, and writes its bindings file and CLAUDE.md. It is the only skill Claude cannot start on its own. |
+| `setup` | **You run this one** — `/livespec:setup`. Installs all of the above into a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, writes its bindings file and CLAUDE.md, and then runs the persona, workflow and journey interviews rather than leaving you a list of them. It is the only skill Claude cannot start on its own. |
 
 Plus [the method](method/) — the loop, the repository conventions, what the gates
 have to mean, how to write a test that earns its keep, and what a repository's
