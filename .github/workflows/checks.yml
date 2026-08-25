@@ -12,6 +12,11 @@ jobs:
   repository:
     name: repository checks
     runs-on: ubuntu-latest
+    # The default token is read-only once any permission is named. The report
+    # needs to write a comment; nothing else in this workflow writes anything.
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,6 +36,43 @@ jobs:
       - name: Release inputs
         if: github.event_name == 'pull_request'
         run: python3 .github/scripts/version_gate.py origin/${{ github.base_ref }}
+
+      # Everything below is reporting. Both gates have already passed by here —
+      # steps stop on first failure — so this only ever describes a green run.
+      #
+      # `continue-on-error` on every step is not laziness: `gates.md` declares
+      # the report **not a gate**, and `always-green` in specs/spec.md is the
+      # promise it would break. A missing token, a rate limit or a base ref that
+      # will not check out must leave the build exactly as green as it was.
+      # The cost is that the report going missing is itself silent.
+      - name: The spec layer, here and on the base
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: |
+          python3 .github/scripts/trace.py --json > "$RUNNER_TEMP/head.json"
+          # The *current* gate, run against the base tree — so the delta reports
+          # what the spec layer did, not what a change to the gate did.
+          git worktree add --detach "$RUNNER_TEMP/base" "origin/${{ github.base_ref }}"
+          python3 .github/scripts/trace.py "$RUNNER_TEMP/base" --json > "$RUNNER_TEMP/base.json"
+
+      - name: Build the report
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: |
+          python3 .github/scripts/report.py "$RUNNER_TEMP/head.json" "$RUNNER_TEMP/base.json" \
+            | tee "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment it on the pull request
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+        # One comment per pull request, rewritten in place, so pushing does not
+        # bury the thread in near-identical reports.
+        run: |
+          gh pr comment "$PR" --body-file "$RUNNER_TEMP/report.md" --edit-last --create-if-none \
+            || gh pr comment "$PR" --body-file "$RUNNER_TEMP/report.md"
 
   manifests:
     name: plugin validate
