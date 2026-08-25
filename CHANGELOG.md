@@ -12,6 +12,42 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.9.0 — 2026-08-25
+
+**`setup` can be offered.** It could always be typed — `/livespec:setup`
+resolves and fires — but `disable-model-invocation: true` kept its name and
+description out of context entirely, so nothing could reach it. In a repository
+with no `specs/` and no `CLAUDE.md`, Claude could not fire `setup`, could not
+name the command, and invented a process instead. Issue
+[#19](https://github.com/sargismarkosyan/livespec/issues/19), specced as
+[`0004`](specs/changes/0004-setup-can-be-offered.md).
+
+- **The flag comes off.** `setup` is model-invocable, and the always-on cost
+  goes **3170 across 6 skills to 3809 across 7**, against the 5000 ceiling. That
+  is not a widened description — it is a 639-character one becoming visible for
+  the first time, which is a larger `context-budget` event than any widening
+  this repository has done, and it is paid for the way the promise requires.
+- **The restraint moves into the skill, where a case can grade it.** Before
+  anything is written, `setup` says what it will write by path, what it would
+  overwrite, and that three interviews follow — then **stops until told to go**.
+  That holds even when it was reached by slash command, because the list is the
+  part they have not yet seen. The 0.4.0 judgment was right and is not reversed;
+  only its mechanism is, because a skill nothing can see is a skill nothing can
+  offer.
+- **`USER_INVOKED_ONLY` is emptied rather than deleted, and checked both ways.**
+  A skill carrying `disable-model-invocation: true` without being listed there
+  now fails `checks.py`, so the flag cannot come back — and the budget
+  arithmetic cannot change under it — without a deliberate edit.
+- **Two cases, holding opposite halves.** `09` is re-cut from should-not-fire to
+  fire and renamed `09-setup-confirms-before-writing`: same repository, same
+  prompt, but the question is now *does it stop before writing* rather than
+  *does it stay out of the way*. As written it was unpassable — its grader asked
+  the agent to point at a command it had no way to know existed. New
+  `11-neg-setup-adjacent-request` asks a CI question in a repository that has
+  not been set up, and is what pays for the description being in context at all.
+- Fixed in passing: `README.md` claimed nine eval cases when there were ten,
+  stale since 0.7.0. There are eleven.
+
 ## 0.8.0 — 2026-08-25
 
 **`setup` finishes what it names.** Three places where it marked a step done
