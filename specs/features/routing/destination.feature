@@ -1,7 +1,7 @@
 @feature:routing-destination @workflow:adopt-the-process
 Feature: Whether a request is captured or built
 
-  @rule:capture-and-build-are-different-destinations @planned
+  @rule:capture-and-build-are-different-destinations
   Rule: What somebody reports is captured into the tracker; what somebody instructs becomes a change
 
     Example: a report reaches the tracker
@@ -22,7 +22,7 @@ Feature: Whether a request is captured or built
       Then it is captured as a tracked issue
       And it goes to the same place however that wish was phrased
 
-  @rule:capture-does-not-require-having-used-it @planned
+  @rule:capture-does-not-require-having-used-it
   Rule: Capturing a request does not depend on it coming from having used the app
 
     Example: a request with nothing behind it but a wish
@@ -37,7 +37,7 @@ Feature: Whether a request is captured or built
       Then it is captured as a tracked issue
       And what they were doing is captured with it
 
-  @rule:an-instruction-to-build-is-not-filed-instead @planned @refusal
+  @rule:an-instruction-to-build-is-not-filed-instead @refusal
   Rule: An instruction to build is never answered by filing an issue about it
 
     Example: a solution-shaped instruction

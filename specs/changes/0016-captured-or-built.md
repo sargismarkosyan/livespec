@@ -180,14 +180,16 @@ leaves behind is listed in [spec.md](../spec.md#what-a-version-leaves-behind).
   is. `refine-spec` narrows and owes nothing. **Headroom is not the argument** —
   there are 1199 characters spare and they are not what makes this affordable.
 
-- **The board evidence is thin, and one entry looks wrong.** The Δ 0.00 readings
-  above are single runs. Worse, `13-feedback-about-the-plugin` scores 1.00 in the
-  without-plugin arm while carrying a `skill-fired` grader whose `input_match`
-  requires a skill that is not loaded in that arm — which should be impossible.
-  That number is either a scoring artefact or a real defect in the runner, and
-  **either way it is a reason not to build an argument on the table.** The
-  argument here rests on the two descriptions contradicting each other, which is
-  readable without running anything. Worth its own issue.
+- **The board evidence is thin, and it is thinner than it looks.** The Δ 0.00
+  readings above are single runs. They are also partly structural: a `tool_used`
+  grader with `min:` and no `max:` is an *indicator* by
+  [`asserts.py`](../../evals/runner/asserts.py)'s contract — it always passes,
+  in both arms, weight zero, so that firing cannot inflate Δ. Every `skill-fired`
+  grader is one. So `13-feedback-about-the-plugin` scoring 1.00 without the
+  plugin is correct rather than broken, and what those cases actually measure is
+  their outcome graders alone — which on 02 and 13 come out level. **The
+  argument here does not rest on that table**, because two descriptions
+  contradicting each other is readable without running anything.
 
 - **`01-solution-shaped-request` is the case most exposed.** *"Add a 'clear all
   completed' button"* is an imperative and stays with `refine-spec` under item 3

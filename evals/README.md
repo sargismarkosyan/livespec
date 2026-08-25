@@ -77,6 +77,8 @@ came out.
 | `14-feedback-with-no-subject` | `feedback` **asks** where a genuinely ambiguous report belongs, and files nothing until told | it picks one and files — a wrong pick here is invisible to both maintainers |
 | `15-tracker-is-not-the-assumed-one` | `feedback` uses **the tracker the bindings name**, and builds evidence links for that host | `gh` or a `raw.githubusercontent.com` URL turns up in a repository that is not on GitHub |
 | `16-setup-with-no-app-code` | **`setup` asks what proves a rule** where there is nothing to call, and reaches for the tool that already builds a suite | it adopts graded cases silently, or invents a case format next to a generator |
+| `18-request-with-no-usage` | `feedback` captures a wish nobody has used the app to want, and demands no usage report first | a feature request has to arrive dressed as a bug to be tracked at all |
+| `19-neg-instruction-is-not-filed` | **`feedback` does not fire** on an instruction to make the change | the widened description takes "add drag-to-reorder" as something to queue rather than build |
 
 **`02`, `13`, `14` and `15` are the four that hold where an issue goes.** They
 are one rule seen from four sides: the ordinary report that resolves without
