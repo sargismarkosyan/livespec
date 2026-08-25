@@ -4,6 +4,15 @@ on:
   push:
     branches: [main]
   pull_request:
+    # The release-input gate reads this pull request's labels and body out of the
+    # event payload, which is a snapshot of the moment the event fired. On the
+    # default types — opened, synchronize, reopened — a label added at creation
+    # or after it is not in that snapshot, so the check demanding a label fails
+    # and adding one re-runs nothing. Re-running the job replays the same
+    # payload and fails again; the only way to green was an unrelated commit.
+    # Labels and the body are inputs to a gate here, so changing them is a
+    # trigger for it.
+    types: [opened, synchronize, reopened, labeled, unlabeled, edited]
 
 permissions:
   contents: read
