@@ -83,6 +83,12 @@ for case in suite:
         )
     if case["runs"] < MIN_RUNS:
         fail(where, f"runs {case['runs']} time(s); the floor is {MIN_RUNS}, because a single run of an LLM grader is noise")
+    if case["scaffold"] is not None and not case["scaffold"].is_file():
+        fail(
+            where,
+            f"declares scaffold_script: {case['scaffold'].name}, which does not exist in the case directory — "
+            "the case would run against an empty workspace and measure the stall, not the judgment",
+        )
     for skill in case["claims"]["skills"]:
         if skill not in skills:
             fail(where, f"is tagged skill:{skill}, which is not a skill in skills/")
@@ -117,6 +123,13 @@ else:
     for required in REQUIRED_INVOCATION:
         if required not in text:
             fail("evals/README.md", f"no longer names {required!r}; the floor says the suite is run with it")
+
+    if any(case["scaffold"] for case in suite) and "--scaffold" not in text:
+        fail(
+            "evals/README.md",
+            "does not name '--scaffold' in the documented invocation; a case carries a scaffold_script, "
+            "and a run without the flag measures an empty workspace where the fixture should be",
+        )
 
     needed = sorted({tool for case in suite for tool in case["allowed_tools"] if tool in GATED_TOOLS})
     for line in text.splitlines():

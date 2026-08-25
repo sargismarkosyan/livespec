@@ -17,7 +17,13 @@ exactly as the native CLI behaves, and stripped tools are warned about because
 a grader that could never fail proves nothing.
 
     python3 evals/runner/run.py --ablation with-without --judge-model sonnet \
-        --allow-tools Write Edit [--case NAME] [--runs N] [--model M]
+        --allow-tools Write Edit --scaffold [--case NAME] [--runs N] [--model M]
+
+`--scaffold` runs each case's `scaffold_script` — author-supplied bash, as you
+— in the session's fresh workspace before either arm starts. Off by default,
+exactly as the native CLI treats it: only use it on case files you authored. A
+scaffolded case run without the flag is warned about, because what it measures
+then is an empty workspace where the fixture should be.
 
 Costs real money per session and never runs in CI. Exit 0 is a completed
 measurement, whatever the scores; only a harness failure exits 1. No number
@@ -47,11 +53,13 @@ PROMPTFOO = "promptfoo@0.122.0"  # pinned: a floating runner makes every delta a
 GATED = {"Bash", "Write", "Edit", "WebFetch", "WebSearch"}
 
 
-def compile_config(suite: list[dict], repeat: int, granted: set[str]) -> dict:
+def compile_config(suite: list[dict], repeat: int, granted: set[str], scaffold: bool) -> dict:
     tests = []
     for case in suite:
         prompt_file = next(s for s in case["sources"] if s.name == "prompt.md")
         fields, body = frontmatter(prompt_file)
+        if case["scaffold"] and not scaffold:
+            print(f"  ⚠ {case['name']} declares a scaffold_script; running without it — pass --scaffold to lay the fixture down")
         allowed = []
         for tool in case["allowed_tools"]:
             if (tool in GATED or tool.startswith("mcp__")) and tool not in granted:
@@ -75,6 +83,7 @@ def compile_config(suite: list[dict], repeat: int, granted: set[str]) -> dict:
             "vars": {
                 "prompt": body.strip(),
                 "case": case["name"],
+                "scaffold": str(case["scaffold"]) if scaffold and case["scaffold"] else "",
                 "allowed_tools": " ".join(allowed),
                 "disallowed_tools": " ".join(sorted(GATED - set(allowed))),
                 "max_turns": fields.get("max_turns", "25"),
@@ -191,6 +200,9 @@ def main() -> int:
                         help="the only mode: every case runs with the plugin loaded and without")
     parser.add_argument("--judge-model", required=True, help="judge for llm graders; sonnet or larger, never the model under test")
     parser.add_argument("--allow-tools", nargs="*", default=[], help="operator grant for gated tools cases may ask for")
+    parser.add_argument("--scaffold", action="store_true",
+                        help="run each case's scaffold_script in its fresh workspace before the session — "
+                             "author-supplied bash, run as you; off by default, as the native runner treats it")
     parser.add_argument("--case", action="append", help="run only this case (repeatable)")
     parser.add_argument("--changed", action="store_true",
                         help="run only the cases the board holds no fresh measurement for — "
@@ -231,7 +243,7 @@ def main() -> int:
     run_dir = ROOT / "evals" / "results" / time.strftime("%Y%m%d-%H%M%S")
     run_dir.mkdir(parents=True)
 
-    config = compile_config(suite, repeat, set(args.allow_tools))
+    config = compile_config(suite, repeat, set(args.allow_tools), args.scaffold)
     config_path = run_dir / "promptfooconfig.json"
     config_path.write_text(json.dumps(config, indent=1))
 

@@ -6,19 +6,36 @@ case's prompt through `claude -p` — with the plugin loaded or without, which i
 the whole ablation — in a working directory of its own, keeps the stream
 transcript, and hands the final text back as the output the graders judge.
 Everything an assert needs beyond that text (the transcript, the tool calls,
-the files the session created) travels in `metadata`.
+the files the session wrote) travels in `metadata`.
+
+When the run passes a `scaffold` var, that script lays the case's fixture down
+in the fresh workspace first — both arms alike, because an arm handed a
+different repository would make delta a comparison of two different questions.
+The `files` a grader sees are then what the session wrote or changed, never
+what the scaffold laid down: a fixture with a `src/` tree must arm a
+no-source-edits grader, not trip it in both arms.
 
 Not run directly: `run.py` generates the config that names this file.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+
+
+def _snapshot(workspace: Path) -> dict[str, str]:
+    """Path → content hash of everything currently in the workspace."""
+    return {
+        str(p.relative_to(workspace)): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in workspace.rglob("*")
+        if p.is_file()
+    }
 
 
 def _read_stream(raw: str) -> tuple[str, list[dict]]:
@@ -75,6 +92,16 @@ def call_api(prompt, options, context):
     # directory afterwards so a run leaves everything inspectable in one place.
     workspace = Path(tempfile.mkdtemp(prefix=f"livespec-eval-{case}-{arm}-"))
 
+    laid_down: dict[str, str] = {}
+    scaffold = str(vars_.get("scaffold") or "")
+    if scaffold:
+        build = subprocess.run(["bash", scaffold], cwd=workspace, capture_output=True, text=True, timeout=120)
+        if build.returncode != 0:
+            (session_dir / "scaffold.log").write_text(build.stdout + build.stderr)
+            shutil.move(str(workspace), str(session_dir / "workspace"))
+            return {"error": f"scaffold exited {build.returncode} — nothing was measured; log in {session_dir}"}
+        laid_down = _snapshot(workspace)
+
     # Hermetic: no user settings, no MCP servers, and the gated tools the case
     # was not granted are disallowed outright — otherwise a session inherits
     # whatever this machine's global allowlist and MCP config happen to hold,
@@ -117,7 +144,7 @@ def call_api(prompt, options, context):
 
     result, tools = _read_stream(proc.stdout)
     (session_dir / "tools.json").write_text(json.dumps(tools, indent=1))
-    files = sorted(str(p.relative_to(workspace)) for p in workspace.rglob("*") if p.is_file())
+    files = sorted(path for path, digest in _snapshot(workspace).items() if laid_down.get(path) != digest)
     shutil.move(str(workspace), str(session_dir / "workspace"))
 
     return {

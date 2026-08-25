@@ -86,7 +86,7 @@ python3 .github/scripts/verify.py                 # everything that can pass her
 claude plugin validate . --strict                 # marketplace manifest
 claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
 claude plugin validate ./skills --strict
-python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit  # maintainer step
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold  # maintainer step
 ```
 
 The last one **costs money per session and never runs in CI** — it drives real
