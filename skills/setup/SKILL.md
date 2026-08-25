@@ -240,9 +240,14 @@ how the two copies start to disagree.
 
 One more table, and the one that outlives you: a row for **every** gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — not only the
-ones you wired — each reading *automated* (naming the command), *not applicable*
-(with the reason) or *deferred* (since which change, and why). Above it, the date
-and the version of livespec the wiring was reconciled against.
+ones you wired — each reading *automated* (naming the command), *unobserved*
+(wired, and nothing has watched it run), *not applicable* (with the reason) or
+*deferred* (since which change, and why). Above it, the date and the version of
+livespec the wiring was reconciled against.
+
+**A gate you wired in section 4 reads *unobserved*, not *automated*.** Breaking
+it against the injection table proves the gate; it does not prove this
+repository's pipeline runs it. Section 8 is where those rows get their answer.
 
 Most rows on a fresh setup say **not applicable**, and honestly: there are no
 personas yet, so the gate over them cannot apply yet. Write *deferred* only where
@@ -337,6 +342,28 @@ ledger row deferred twice, say — ends the chain there too, and that is the led
 working rather than the chain failing. Either way, hand back with where it
 stopped and what is left, which is a shorter list than the one you started with.
 
+### Then land it, and watch the pipeline hold it
+
+The interviews wrote change specs. **Commit them and open one pull request in
+this repository** — that is the last act of the sitting, and the first time
+anything here has been more than configured.
+
+What is on trial is not the specs. It is the wiring, so report what came back:
+whether the required check ran and what it said, and whether the report arrived
+on the pull request. A check that **refuses** it is the wiring working — say
+which of the two happened in as many words, because a red tick nobody explains
+reads as an install that broke something.
+
+**Do not merge it.** Opening it is the demonstration; merging is a decision that
+was never yours. And nothing else goes in it — the spec layer this sitting
+wrote, and no application code.
+
+**Where you cannot: say so, and mark those ledger rows *unobserved*.** No
+remote, no CI, no permission to open one — all fine, and all different from
+having watched it work. Never leave a bindings row asserting a behaviour nobody
+ran; that is the miss this whole step exists to stop, and it is the one an
+adopter finds months later with no way to tell which claims were real.
+
 ## What this skill refuses
 
 - **Starting the work because it was asked to consider it.** Claude may now
@@ -345,6 +372,8 @@ stopped and what is left, which is a shorter list than the one you started with.
   obviously needs it, which is every repository this skill ever runs in.
 - **Writing application code.** Not one line, including a test for code that
   already exists.
+- **Merging what it opened.** The pull request at the end of section 8 is
+  evidence, not a change somebody approved.
 - **Inventing a persona or a workflow** from the seed in section 2. The seed is
   an answer to "who is this for", not a design artifact, and treating it as one
   is how a product ends up built for somebody nobody ever met.

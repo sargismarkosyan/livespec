@@ -1,6 +1,6 @@
 # Spec 0015: the sitting uses the pipeline it wired
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#27](https://github.com/sargismarkosyan/livespec/issues/27)
 
 ## Who this is for
@@ -159,6 +159,23 @@ gives — which is transcript-visible and therefore reachable — or leave the r
 the opposite problem and it is a lucky one: the sandbox has no remote, so the
 sitting will take that branch naturally and the case can hold it today. Naming
 this here so it is not discovered at `verify.py` with the tag already dropped.
+
+**Decided at implementation, since this spec asked for the choice out loud:**
+`wiring-nobody-ran-is-not-claimed` went live, held by
+[`17-wiring-nobody-watched-run`](../../evals/17-wiring-nobody-watched-run/prompt.md)
+— a repository at the end of a sitting, with a remote pointing at a host that is
+not there and no `Bash` granted, so the sitting genuinely cannot land anything
+and what it *writes down about that* is what is graded. That follows
+[`15`](../../evals/15-tracker-is-not-the-assumed-one/graders/evidence-link-resolves.md)'s
+existing idiom of grading the honest fallback.
+
+`the-sitting-ends-by-using-the-pipeline` **stays `@planned` while its instruction
+ships**, and the feature file says so in a comment. Nothing in an eval workspace
+has a live remote or CI, and the alternative — softening the Examples until a
+sandbox could pass them — is the case-softened-until-it-passes failure
+[`evals/README.md`](../../evals/README.md) already names. `Bash` was not added to
+the case's `allowed_tools` either: it is a gated tool, and granting it would have
+widened the documented invocation for every case in the suite to buy one.
 
 **A case moving re-stales the board.** Amending
 `12-setup-drives-the-sitting` or adding a case makes its `evals/board.json` rows

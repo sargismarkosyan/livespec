@@ -4,6 +4,12 @@ Feature: The sitting using the pipeline it wired, or saying it could not
   @rule:the-sitting-ends-by-using-the-pipeline @planned
   Rule: The sitting ends by putting its own work through the pipeline it wired
 
+    # @planned here means *nothing can hold it yet*, not *nobody built it*: the
+    # instruction ships in setup's section 8, and no eval workspace has a live
+    # remote or CI for a case to watch the pipeline answer. Softening the
+    # Examples until a sandbox could pass them would buy the tag with the exact
+    # dishonesty evals/README.md warns about. See 0015, *Risks*.
+
     Example: the interviews left something to land
       Given the interviews have written change specs
       When the sitting ends
@@ -16,7 +22,7 @@ Feature: The sitting using the pipeline it wired, or saying it could not
       Then the hand-back says the report did not appear
       And the bindings do not claim that it is posted
 
-  @rule:wiring-nobody-ran-is-not-claimed @planned
+  @rule:wiring-nobody-ran-is-not-claimed
   Rule: Wiring the sitting could not watch run is recorded as unobserved
 
     Example: there is nowhere to open a pull request
