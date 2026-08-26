@@ -12,6 +12,20 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.21.0 — 2026-08-26
+
+An eighth skill, `doctor`, re-reads the gate wiring in a repository that already
+has the process: every claim the bindings make, checked against what owns the
+answer, with an open-items list at the end. It corrects the record and never the
+wiring. The ledger itself changed shape to make that possible — a row about
+anything outside the repository now carries how it was read back or says it was
+not read, a row says what part of the repository it does not cover, and a second
+table tracks the two pieces of wiring that must never gate: the pull-request
+report and the rule-bound coverage measure. `setup` reads branch protection from
+the platform instead of inferring it from CI config, and wires one coverage gate
+rather than one per language. Two new eval cases hold it:
+`24-a-ledger-nobody-read-back` and `25-neg-a-red-job-is-not-an-audit`.
+
 ## 0.20.0 — 2026-08-26
 
 The picture a version ships with is no longer always an animation. Its form
