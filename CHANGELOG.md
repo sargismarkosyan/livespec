@@ -12,6 +12,16 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.20.0 — 2026-08-26
+
+The picture a version ships with is no longer always an animation. Its form
+follows what changed — moving for something that unfolds, a still where the whole
+result is a screen sitting there, a line where there is nothing to see — and it
+is composed for somebody holding the request rather than the diff. `setup`'s
+deliverable row now asks which changes owe a picture here and in what form. Two
+new eval cases hold it: `22-nothing-moves-in-this-one` and
+`23-what-a-change-here-must-show`.
+
 ## 0.19.0 — 2026-08-26
 
 **A workaround now names the thing that would end it, and is never followed in
