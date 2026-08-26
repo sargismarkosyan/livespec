@@ -2,7 +2,7 @@
 
 ## What it is
 
-A Claude Code plugin: seven skills and the method they run, installed into
+A Claude Code plugin: eight skills and the method they run, installed into
 somebody else's repository so that the specification there cannot quietly stop
 being true. The code stays the source of truth; the spec carries the context the
 code cannot — who it is for, what they were trying to do, what was dropped and

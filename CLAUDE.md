@@ -1,6 +1,6 @@
 # livespec
 
-A Claude Code plugin: seven skills and the method they run, installed into other
+A Claude Code plugin: eight skills and the method they run, installed into other
 people's repositories so a specification there cannot quietly stop being true.
 **This repository is not an application** — it ships prose that an agent reads,
 and every skill in it is context that every session of every user pays for.
@@ -107,7 +107,7 @@ the cases passed.
 ## Layout
 
 ```
-skills/<name>/SKILL.md   the only thing Claude Code loads. Seven of them
+skills/<name>/SKILL.md   the only thing Claude Code loads. Eight of them
 method/                  the portable rules. Names no command or threshold
 templates/               copied into a consuming repository's specs/
 tools/                   invoked from a skill body via $CLAUDE_PLUGIN_ROOT

@@ -207,6 +207,24 @@ It is also the one row that closes itself — the first refusal makes it
 *automated*, and a row still reading *unobserved* long after the repository
 started merging changes is saying the gate has never once had an opinion.
 
+**A row about something that is not in the repository is read back, or it is not
+written as fact.** Branch protection, whether a named check is actually required,
+whether the credential a step needs exists — none of that is in the tree, so
+nothing about it can be inferred from the tree. A check named in a CI config is
+evidence that somebody wrote it down, and no evidence at all that the platform
+enforces it; the two look identical from inside a diff, which is the whole reason
+this record exists. **So the row carries how it was read** — the command that
+reads it again, and when it was last read — or it says plainly that it was not
+read, and why. That is a second axis, not a fifth state: a row can be read back
+from the platform and still be *unobserved*, because reading a setting is not
+watching it stop something.
+
+**And a row says what it leaves uncovered.** A gate wired over one language of
+two, one package of five, one directory of a monorepo, is not a gate over the
+repository — and a row reading *automated* with nothing after it will be read as
+one, by somebody who was not in the room. Name the part that has no gate. A gate
+that covers everything says so in the same breath and costs a clause.
+
 **The tree is the authority on what applies; the ledger only says what is
 wired.** A row reading *not applicable — no personas exist* in a repository that
 has personas contradicts the tree, and a skill reading the ledger says so instead
@@ -219,6 +237,29 @@ norm as a warning surviving two versions, for the same reason: a gap flagged in
 every change and closed in none is indistinguishable from a gap nobody noticed.
 Written off means the row becomes *not applicable*, with the reason in it — one
 decision, made in the open, instead of an apology repeated forever.
+
+### The wiring that must never gate
+
+Two things on this page have to be wired and must never be able to fail a build:
+the [report](#the-report-is-not-a-gate), and the
+[rule-bound measure](testing.md#measure-the-rule-bound-tests-on-their-own-and-never-gate-it)
+taken beside the gated coverage number. Neither is a gate, so neither belongs in
+the table above — and the ledger's own *nothing in it that is not a gate* line is
+what has been quietly displacing them. A repository names one as *not built yet*
+in a sentence somewhere and nothing ever asks again, because a sentence is not on
+any clock.
+
+So the bindings carry **a second, shorter table**, in the same place and with the
+same four states, for wiring that is expected and cannot gate:
+
+| Wiring | Reads |
+|---|---|
+| the pull-request report | one of the four states, and *unobserved* until somebody has watched one arrive |
+| the rule-bound measure, reported beside the gated number | one of the four states |
+
+The same two-change clock applies, for the same reason. **Their absence is
+harder to notice than a gate's, not easier** — a gate that is missing eventually
+lets something through, and a report that is missing is silent by design.
 
 The ledger also records **which version of the method the wiring was last
 reconciled against**, so a later `setup` run diffs what the repository has

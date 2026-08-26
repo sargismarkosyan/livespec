@@ -1,7 +1,7 @@
 @feature:wiring-ledger-claims @workflow:adopt-the-process
 Feature: What a gate wiring ledger is allowed to claim
 
-  @rule:a-claim-outside-the-tree-is-read-back @planned
+  @rule:a-claim-outside-the-tree-is-read-back
   Rule: A row about something the repository cannot see is read from what owns it, or it is not written as fact
 
     Example: the required check is named in CI and enforced by nothing
@@ -24,7 +24,7 @@ Feature: What a gate wiring ledger is allowed to claim
       Then that claim is reported as false
       And what was read to find that out is named
 
-  @rule:a-row-says-what-it-leaves-uncovered @planned
+  @rule:a-row-says-what-it-leaves-uncovered
   Rule: A gate wired over part of a repository is not recorded as covering it
 
     Example: coverage is wired for one of the two languages in the repository
@@ -38,7 +38,7 @@ Feature: What a gate wiring ledger is allowed to claim
       When the wiring is audited
       Then that row is reported as claiming more than was wired
 
-  @rule:a-gap-is-a-row-not-a-sentence @planned
+  @rule:a-gap-is-a-row-not-a-sentence
   Rule: Wiring named as missing becomes a row on the clock, including wiring that may never gate
 
     Example: something that must never gate is left described in prose
