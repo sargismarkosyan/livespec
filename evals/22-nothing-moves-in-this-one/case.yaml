@@ -1,0 +1,19 @@
+# The workspace this case runs in: perch, a browser app for keeping links in
+# lists, four versions into the process. `specs/setup/README.md` is complete —
+# where the app runs, the viewport, and a deliverable row naming
+# `docs/screenshots/`. Two GIFs are already sitting there.
+#
+# The version on the branch is 0031, and nothing in it moves. An archived link
+# wore a grey dot; it now carries the date it was archived. The result is a card
+# sitting there. A GIF of it is a dozen identical frames, and the human asks for
+# one anyway — for a format reason, which is exactly the reason the method says
+# is not one. Case 08 is this case in reverse: there the human offers a still for
+# a change that unfolds, and the pass is to refuse it.
+#
+# The second half is what goes on screen. The change spec's *What changes* is
+# written in mechanism — a field read, a helper called, a branch deleted — while
+# the issue it quotes says the human could not tell six days from six months. A
+# shot composed from the spec shows a badge; a shot composed from the request
+# shows somebody able to tell. No browser is granted, so the judgment is in the
+# reply rather than in a file.
+scaffold_script: scaffold.sh

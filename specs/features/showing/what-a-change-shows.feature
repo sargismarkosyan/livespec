@@ -1,7 +1,7 @@
 @feature:showing-what-a-change-shows @workflow:adopt-the-process
 Feature: What a version puts in front of somebody deciding whether to merge
 
-  @rule:the-form-follows-what-changed @planned
+  @rule:the-form-follows-what-changed
   Rule: What a version shows is moving when the change is something happening and still when its result is static, and the form is never picked by what is easier to produce
 
     Example: the change is only legible while it happens
@@ -28,8 +28,8 @@ Feature: What a version puts in front of somebody deciding whether to merge
       Then it says in a line that there is nothing to see
       And nothing is produced to fill the space
 
-  @rule:what-is-shown-answers-the-request @planned
-  Rule: What a version shows is picked so that somebody holding only the request and that one artefact can say whether it was delivered
+  @rule:what-is-shown-answers-the-request
+  Rule: What a version shows is picked so that somebody holding only the request and that one picture can say whether it was delivered
 
     Example: the person deciding has not read the diff
       Given a version opened as a pull request
@@ -48,9 +48,9 @@ Feature: What a version puts in front of somebody deciding whether to merge
       Given a request about something behaving differently than it used to
       When the version is recorded
       Then the state it is different from is in shot
-      And the difference is what the artefact is of
+      And the difference is what the picture is of
 
-  @rule:the-bindings-say-what-a-change-here-must-show @planned
+  @rule:the-bindings-say-what-a-change-here-must-show
   Rule: A consuming repository comes out of the sitting with bindings naming which changes owe something to look at, in what form, and where it goes
 
     Example: the sitting ends

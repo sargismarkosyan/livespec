@@ -8,7 +8,7 @@ captured as one commit — not so the spec can generate the code, but so the
 reasoning that produced the code is still readable in six months, when the diff
 has long since stopped explaining itself.
 
-The deliverable is a **series of moving pictures** — one per version — showing the
+The deliverable is a **series of pictures** — one per version — showing the
 product evolving change by change. That is why every commit must leave the app in
 a state worth looking at.
 
@@ -38,8 +38,8 @@ thing that fixes it.
 5. **AI implements.** Removes the `@planned` tags, writes the tests referencing
    those rules, gets the repository's verification green, commits.
 6. **AI records the version** using the [`record-clip`](../skills/record-clip/SKILL.md) skill — one
-   animated GIF of the change, on the branch — and opens the pull request with it
-   in the body.
+   picture of the change, on the branch — and opens the pull request with it in
+   the body.
 7. **Human merges**, and uses the new version.
 8. **AI closes the issue**, with a comment saying what was asked, what shipped,
    and why they differ. Back to 1.
@@ -48,11 +48,12 @@ Steps 2 and 3 are separate on purpose. Filing and specifying are different jobs
 and get done badly when merged — filing wants breadth and evidence, specifying
 wants focus and a decision.
 
-**Step 6 belongs to the AI, not the human.** The picture is an animated GIF
-recorded from the change spec's own shot list — see
-[repository.md](repository.md#every-pull-request-carries-a-moving-picture). The
-human still *uses* the version, which is step 7 and where the next round of
-feedback comes from; what they never do is produce the deliverable by hand.
+**Step 6 belongs to the AI, not the human.** The picture is recorded from the
+change spec's own shot list, in whichever form the change earns, and composed so
+that somebody holding only the request can tell whether they got it — see
+[repository.md](repository.md#every-pull-request-shows-what-it-did). The human
+still *uses* the version, which is step 7 and where the next round of feedback
+comes from; what they never do is produce the deliverable by hand.
 
 ## The rules
 

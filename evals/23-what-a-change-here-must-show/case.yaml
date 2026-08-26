@@ -1,0 +1,14 @@
+# The workspace this case runs in: relay, an operations dashboard, part-way
+# through adopting the process. The gate is wired and runs; the bindings the
+# other skills read were never written, which is the state setup's description
+# names outright.
+#
+# Skipping sections 1 to 4 is deliberate — a whole sitting is a long case, and
+# what is being graded is one row of section 5. The repository is chosen so that
+# row cannot be answered by habit: some of what lands here is a thing happening
+# on screen, some is a column appearing in a table, and a good deal of it — the
+# retry backoff, the schedule parser — is never seen by anybody. *Every pull
+# request carries a GIF* is wrong here three ways, and the row has to say which
+# changes owe a picture and in what form rather than leaving it to whoever is
+# writing the pull request that day.
+scaffold_script: scaffold.sh
