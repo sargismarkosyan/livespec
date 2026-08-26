@@ -12,6 +12,44 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.19.0 — 2026-08-26
+
+**A workaround now names the thing that would end it, and is never followed in
+silence.** When the process does not fit a repository, the right response is two
+things at once: file the mismatch where it can be fixed for everyone, and keep
+the local way of doing it so the work does not stop. Both are correct, and
+together they leave the repository carrying something whose reason may already
+have been removed somewhere else. Nobody in that arrangement can close it — the
+filed gap cannot know which repositories worked around it, the local file cannot
+know when the fix shipped, and the thing that did not fit cannot go looking for
+its own past inadequacies.
+
+**`method/process.md` now carries the rule.** A workaround is recorded where the
+repository's own facts already live — the bindings — as one row carrying what is
+done here instead, the gap it goes around, where that gap is filed, and what
+would end it. A row that cannot name the last of those is describing a decision
+rather than a workaround, and decisions do not expire. The row comes out when the
+workaround does.
+
+**The second half is the one that closes the loop:** a recorded workaround is
+never followed silently. A session standing on one says so, once, and says what
+would end it — and where it is already at the place that would answer that, says
+whether the answer has arrived. Not a poll and not a background job; a check that
+runs when nobody is in the room produces an answer nobody reads.
+
+**`feedback` wires both halves**, and it is the only skill that does. It reads a
+recorded workaround bearing on the step in hand and names it; and where the
+repository is going to carry on around what it just filed, it states the row in
+its reply and then writes it into the bindings. It is recording a decision
+somebody else made — it does not make one, and it does not touch the workaround.
+
+The instance this came from is live: `#10` shipped in 0.11.0, and the one
+repository that worked around it has never been told.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+https://claude.ai/code/session_017PFi1SRq6rF5zDarFxGvYa
+
 ## 0.18.0 — 2026-08-25
 
 **A skill that cannot finish a step now says so once and hands the work over.**
