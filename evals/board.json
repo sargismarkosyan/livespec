@@ -82,14 +82,14 @@
    "inputs": "047874b85420009f"
   },
   "09-setup-confirms-before-writing": {
-   "delta": 0.33,
+   "delta": 0.0,
    "with": 1.0,
-   "without": 0.67,
-   "runs": 3,
+   "without": 1.0,
+   "runs": 1,
    "at": "2026-08-26",
-   "sha": "0b5385d",
-   "cost": 1.08,
-   "inputs": "8e1b1c392e89ddfd"
+   "sha": "73bc833",
+   "cost": 0.51,
+   "inputs": "5bcba6fab4a3b224"
   },
   "10-gate-deferred-twice": {
    "delta": 0.0,
@@ -105,21 +105,21 @@
    "delta": 0.0,
    "with": 1.0,
    "without": 1.0,
-   "runs": 3,
+   "runs": 1,
    "at": "2026-08-26",
-   "sha": "0b5385d",
-   "cost": 0.36,
-   "inputs": "84bf3099a34482b4"
+   "sha": "73bc833",
+   "cost": 0.12,
+   "inputs": "0f8d68b40d9fb963"
   },
   "12-setup-drives-the-sitting": {
-   "delta": -0.19,
-   "with": 0.1,
-   "without": 0.29,
-   "runs": 3,
+   "delta": -0.14,
+   "with": 0.29,
+   "without": 0.43,
+   "runs": 1,
    "at": "2026-08-26",
-   "sha": "0b5385d",
-   "cost": 0.6,
-   "inputs": "8d041cc95f4efb3f"
+   "sha": "73bc833",
+   "cost": 0.28,
+   "inputs": "8872b8825fb30174"
   },
   "13-feedback-about-the-plugin": {
    "delta": 1.0,
@@ -152,24 +152,24 @@
    "inputs": "9cec5e4d44b88db9"
   },
   "16-setup-with-no-app-code": {
-   "delta": 0.83,
-   "with": 0.83,
+   "delta": 1.0,
+   "with": 1.0,
    "without": 0.0,
-   "runs": 3,
+   "runs": 1,
    "at": "2026-08-26",
-   "sha": "0b5385d",
-   "cost": 0.56,
-   "inputs": "fe53fe0d8666578f"
+   "sha": "73bc833",
+   "cost": 0.18,
+   "inputs": "7d9c06387d272345"
   },
   "17-wiring-nobody-watched-run": {
-   "delta": 0.33,
-   "with": 0.5,
-   "without": 0.17,
-   "runs": 3,
+   "delta": 0.5,
+   "with": 1.0,
+   "without": 0.5,
+   "runs": 1,
    "at": "2026-08-26",
-   "sha": "0b5385d",
-   "cost": 4.14,
-   "inputs": "5a71b25ff7ad1815"
+   "sha": "73bc833",
+   "cost": 1.31,
+   "inputs": "c819b02ccdcdac25"
   },
   "18-request-with-no-usage": {
    "delta": 1.0,
@@ -220,6 +220,26 @@
    "sha": "0b5385d",
    "cost": 1.7,
    "inputs": "bd1a0cb04e3e2a1c"
+  },
+  "24-a-ledger-nobody-read-back": {
+   "delta": 0.33,
+   "with": 0.67,
+   "without": 0.33,
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "73bc833",
+   "cost": 1.34,
+   "inputs": "095f653961998a0a"
+  },
+  "25-neg-a-red-job-is-not-an-audit": {
+   "delta": 0.0,
+   "with": 1.0,
+   "without": 1.0,
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "73bc833",
+   "cost": 0.24,
+   "inputs": "0d4a90e701c38c95"
   }
  }
 }
