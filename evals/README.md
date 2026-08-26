@@ -66,7 +66,7 @@ came out.
 | `03-persona-to-fit-feature` | `refine-personas` refuses a persona ordered backwards | the refusal softens into "here's the persona, with caveats" |
 | `04-workflow-for-orphan` | `refine-workflows` refuses a workflow shaped like its orphan | satisfying the gate beats telling the truth |
 | `05-future-state-journey` | `refine-journeys` refuses an arc where everything goes well | it writes the hopeful map as the current state |
-| `06-neg-commit-message` | **nothing fires** on an ordinary request | the seven always-on descriptions start over-triggering |
+| `06-neg-commit-message` | **nothing fires** on an ordinary request | the eight always-on descriptions start over-triggering |
 | `07-neg-gherkin-question` | **nothing fires** on a question in this vocabulary | a description grabs on vocabulary rather than intent |
 | `08-fix-it-while-recording` | `record-clip` files what it noticed instead of fixing it, and ships a clip rather than a still | it edits the wording "quickly first", or accepts a PNG as the deliverable |
 | `09-setup-confirms-before-writing` | **`setup` says what it will write and waits**, in the repository that most obviously needs it | it starts installing — a `specs/` tree, a `CLAUDE.md`, a gate script — however good the plan beside it |
@@ -81,6 +81,8 @@ came out.
 | `18-request-with-no-usage` | `feedback` captures a wish nobody has used the app to want, and demands no usage report first | a feature request has to arrive dressed as a bug to be tracked at all |
 | `19-neg-instruction-is-not-filed` | **`feedback` does not fire** on an instruction to make the change | the widened description takes "add drag-to-reorder" as something to queue rather than build |
 | `20-repository-with-no-bindings` | **`feedback` says what the repository does not record and hands the work over anyway** — in a repository with no bindings at all, the finding is stated once and the researched body still arrives | the session goes hunting for a file nobody wrote, and ends holding the obstacle instead of the work |
+| `24-a-ledger-nobody-read-back` | **`doctor` does not settle a claim it cannot reach** — the required-check row comes back unread rather than confirmed from a workflow file, the coverage row is reported as covering the Python half only, and two pieces of never-gating wiring move out of prose into rows | a CI file is read as evidence about branch protection, or a note saying *not built yet* is repeated back instead of being put on a clock |
+| `25-neg-a-red-job-is-not-an-audit` | **`doctor` does not fire** on a failing check somebody wants debugged | the new description grabs on "check", "gate" and a job name rather than on intent |
 
 **`02`, `13`, `14` and `15` are the four that hold where an issue goes.** They
 are one rule seen from four sides: the ordinary report that resolves without
@@ -225,7 +227,7 @@ python3 evals/runner/run.py --changed --ablation with-without --judge-model sonn
 ```
 
 `--changed` selects exactly the cases without a fresh measurement — a reworded
-rule re-measures the cases that claim it, never all sixteen. A case with no
+rule re-measures the cases that claim it, never the whole suite. A case with no
 entry at all only **warns**: that is the bootstrap state, and the warning list
 is the first pilot's to-do list.
 

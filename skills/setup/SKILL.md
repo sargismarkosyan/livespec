@@ -91,7 +91,9 @@ yourself and record.
   gets switched off by Friday.
 - **Is `main` protected, and what is the required check called?** If nobody can
   change repository settings, say so in the bindings — an unenforceable rule
-  written as enforced is the worst line in any setup file.
+  written as enforced is the worst line in any setup file. **Their answer is
+  where to start looking, not what gets written down**: this is a setting on the
+  platform, and section 5 reads it back from there before the row is written.
 - **What proves a rule is true here, and how does a test say which rule it is
   answering?** Both gates rest on this and nothing else can derive it.
   [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here)
@@ -184,6 +186,15 @@ one figure twice.
 **One command runs both**, and CI runs that same command. Not a longer list in CI
 than a person can run locally.
 
+**A repository with two languages in it has one coverage gate, not two.** Two
+per-language checks, each with its own threshold and its own way of failing, are
+two gates nobody agreed to and no single number anybody can quote — and the third
+language, added a year later by somebody who never read this file, silently gets
+none at all. Blend them into one measurement where the tooling allows it. Where
+it does not, the gate still runs once and the ledger row **says which part of the
+repository it does not cover**, because a row that stays quiet about that will be
+read as covering everything.
+
 ### Then break them, one at a time
 
 A gate that has never failed is not known to be a gate. Walk the
@@ -238,6 +249,18 @@ standing case here rather than the exception somebody invokes.
 It also carries what cannot live in a diff: the branch protection settings, the
 CI wiring, and the record of the fault injection from section 4.
 
+**Read those settings back from the platform before writing them down, and put
+the command that reads them again beside the table.** A required check named in
+a CI config says a job runs; whether a merge is *blocked* when that job fails is
+a different setting, often somewhere else entirely, and on some platforms it is a
+project-wide switch that nothing in the pipeline file mentions. A table filled in
+from what the tree implies is confident, tidy and about nothing —
+[`repository.md`](../../method/repository.md#branches-and-pull-requests) says why
+this is the one gate that gets that treatment. The same goes for a credential the
+wiring needs: *there is no token for this* is a claim about the platform, and
+tokens inherited from a level above the repository are invisible to anybody
+reading the repository.
+
 **Every fact in it is about this repository.** If a sentence could survive being
 moved to another repo, it belongs in this plugin instead, and putting it here is
 how the two copies start to disagree.
@@ -255,11 +278,32 @@ livespec the wiring was reconciled against.
 it against the injection table proves the gate; it does not prove this
 repository's pipeline runs it. Section 8 is where those rows get their answer.
 
+**A row about anything outside the repository carries how it was read**, per
+[`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — the command
+that reads it again, and when. That is a second axis rather than a fifth state:
+branch protection read back from the platform is still *unobserved* until it has
+stopped something. And **a row says what it does not cover**, so a gate wired
+over part of this repository is not recorded as covering it.
+
+**Then the second table: the wiring that must never gate.** The pull-request
+report and the rule-bound coverage measure are both expected here and neither can
+fail a build, which is exactly why both go missing quietly. They get
+[their own short table](../../method/gates.md#the-wiring-that-must-never-gate),
+same four states, same two-change clock. Writing *not built yet* about either one
+in a sentence somewhere puts it on no clock at all, and nothing will ever ask
+again.
+
 Most rows on a fresh setup say **not applicable**, and honestly: there are no
 personas yet, so the gate over them cannot apply yet. Write *deferred* only where
 the layer exists and the check does not — writing it where *not applicable* is
 true is how a repository ends up carrying a permanent apology, and writing *not
 applicable* where a gap is real is how it carries an unbuilt gate for a year.
+
+**Re-reading this ledger later is [`doctor`](../doctor/SKILL.md)**, which audits
+it against this page without re-running any of the interviews. Say so when you
+hand back: the ledger is the one artefact here that is typed once and trusted for
+years, and the first person to read it again should not have to reconstruct this
+sitting to do it.
 
 **Installing over a repository that already has a ledger: diff it, never
 overwrite it.** Read what it was reconciled against, compare its rows to the
@@ -369,6 +413,11 @@ remote, no CI, no permission to open one — all fine, and all different from
 having watched it work. Never leave a bindings row asserting a behaviour nobody
 ran; that is the miss this whole step exists to stop, and it is the one an
 adopter finds months later with no way to tell which claims were real.
+
+**And name what closes them.** Those rows come back to *automated* the first time
+somebody watches the wiring do its job — the hand-back says that
+[`doctor`](../doctor/SKILL.md) is what re-reads them, so the next reading is a
+command rather than an act of memory.
 
 ## What this skill refuses
 

@@ -48,8 +48,11 @@ Gaps where neither side is at fault.
   the moment somebody wants it. **Narrowed by
   [`0015`](../changes/0015-the-sitting-uses-the-pipeline.md)**, which ends the
   sitting by landing its own specs as a pull request — so the wiring is watched
-  once, by the person who installed it. What still arrives a change later is
-  whether it goes on holding.
+  once, by the person who installed it. **Narrowed again by
+  [`0021`](../changes/0021-asked-not-assumed.md)**, which makes *whether it goes
+  on holding* a question somebody can ask out loud months later, instead of one
+  they have to reconstruct the sitting to answer. **Not closed:** it is a
+  question, and nothing here makes anybody ask it.
 - **The checks can say the spec is incomplete. They cannot say it stopped being
   true.** A missing test, an attempt nothing implements, a dangling reference —
   all caught. A description that still fits the shape and no longer describes
@@ -71,7 +74,7 @@ Gaps where neither side is at fault.
 
 | Opportunity | What answers it today | How we would know it worked |
 |---|---|---|
-| Knowing the install took | the sitting's own pull request, and the ledger rows reading *unobserved* | Coming out of a sitting able to say which wiring was watched working and which only exists |
+| Knowing the install took | the sitting's own pull request, the ledger rows reading *unobserved*, and a re-reading of that ledger that is a command rather than a memory | Coming out of a sitting able to say which wiring was watched working and which only exists — and being able to ask again later without redoing the sitting |
 | Incompleteness caught, untruth missed | the checks, but only for shape | A spec that no longer describes what was meant stops reading as green |
 | A return that is safe to trust | **nothing yet** | Coming back cold and acting immediately stops being a gamble that happened to pay |
 | A workaround outliving its reason | the row in the bindings, and the session standing on a workaround saying what would end it | Local patches disappear when the thing they worked around is fixed |
@@ -85,8 +88,12 @@ The two rows above it moved the same way, which is worth naming: each stopped
 asserting something and started saying it where somebody was already standing.
 The sitting landed its own specs instead of claiming the wiring held; the
 workaround is written where the next session reads it instead of in a comment
-nobody in that repository will open. **Neither is closed.** A repository that
-records no row, or never comes back, is exactly where it was.
+nobody in that repository will open. **The first row has since moved twice by
+that same route** — the second time by making the record of the wiring something
+that can be read again, rather than something typed once and trusted for years.
+
+**None of them is closed.** A repository that records no row, never comes back,
+or never asks again is exactly where it was.
 
 ## What this file does not know
 

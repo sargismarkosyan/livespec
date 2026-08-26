@@ -77,6 +77,15 @@ Branch protection is the one gate that does not live in the repository, so it
 cannot be reviewed in a diff. That is why the table above is written down: it is
 the only record of a setting somebody could quietly change.
 
+**So it is read back from whatever enforces it, and never inferred from the
+repository.** A required check named in a CI config says a job runs; it says
+nothing about whether a merge is blocked when that job fails, and on more than
+one platform that is a separate setting somewhere else entirely. Filling this
+table in from what the tree implies produces a record that is confident, tidy and
+about nothing. Read the settings, write down what came back, and record the
+command that reads them again — the command is a binding, and it belongs in
+`specs/setup/README.md` beside the table.
+
 ### Every pull request shows what it did
 
 **A pull request that changes what the app looks like shows it, in the body.**

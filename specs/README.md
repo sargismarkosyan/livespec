@@ -41,7 +41,7 @@ Nothing here describes behaviour that already exists, with one carved exception:
 the six rules in `features/setup/` describe behaviour that shipped in 0.8.0 and
 0.9.0, because those two changes reserved the ids at the time and could not write
 the files — the workflow layer they had to name was still empty. A debt booked in
-the open is not the same as a layer specced backwards. The seven skills, the
+the open is not the same as a layer specced backwards. The skills, the
 method documents and the nine eval cases predate this layer and were not
 retroactively specced — [`setup`](../skills/setup/SKILL.md) section 7 says why,
 and [setup/README.md](setup/README.md) records which cases are exempt from

@@ -11,7 +11,7 @@ The part of this that does not change between repositories.
 | [graded-cases.md](graded-cases.md) | The other branch of that fork: proving judgment by grading it, for a repository whose product is prose. |
 | [claude-md.md](claude-md.md) | What a repository's CLAUDE.md must contain, and what must stay out of it. |
 
-Alongside them: [the seven skills](../skills/) that run the loop,
+Alongside them: [the eight skills](../skills/) that run the loop,
 [templates](../templates/) for a change spec, a persona, a journey, a workflow
 and a feature, and [`setup`](../skills/setup/SKILL.md) — the skill that installs all
 of it into a repository.

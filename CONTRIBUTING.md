@@ -18,7 +18,7 @@ exists:
 
 | | | |
 |---|---|---|
-| `skills/` | **component** | The only thing Claude Code loads. Seven skills. |
+| `skills/` | **component** | The only thing Claude Code loads. Eight skills. |
 | `method/` | payload | Inert. Reachable only because a `SKILL.md` links it. |
 | `templates/` | payload | Same. |
 | `tools/` | payload | Reached via `$CLAUDE_PLUGIN_ROOT/tools/…` from a skill body. |
@@ -28,7 +28,7 @@ exists:
 The distinction matters because it is the context budget:
 
 - **Every session pays** for each skill's `name` and `description`, whether or
-  not anything fires — currently ~3.8 KB across all seven skills. A skill marked
+  not anything fires — currently ~4.3 KB across all eight skills. A skill marked
   `disable-model-invocation: true` would cost nothing until invoked, because its
   description is not in context at all; **none carries the flag**, and `checks.py`
   fails one that starts to.
@@ -87,8 +87,9 @@ Costs every session, forever. Bring:
 
 1. a `description` that says when to fire and — as the existing ones do — when
    not to;
-2. at least one case tagged `skill:<name>`, and confirmation that the three
-   should-not-fire cases in `evals/` still pass. **This one is a gate, not
+2. at least one case tagged `skill:<name>` — including a should-not-fire case of
+   its own, which is how a new `description` is paid for — and confirmation that
+   the existing should-not-fire cases still pass. **This one is a gate, not
    advice** — `evalsuite.py` fails on a skill no case holds;
 3. a row in `README.md`'s table (CI checks the count against `skills/`).
 

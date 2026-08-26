@@ -41,7 +41,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. No coverage section: there is no coverage gate here, and *What has no gate* says why |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. A `case.yaml` may name a `scaffold_script` — bash in the case directory, run by `run.py --scaffold` in the session's fresh workspace, both arms alike. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
-| **Always-on budget** | 5000 chars across model-invocable skills; currently 3778 across 7 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
+| **Always-on budget** | 5000 chars across model-invocable skills; currently 4315 across 8 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
 | **What proves a rule** | **graded cases.** There is no application code to call — the product is judgment, so behaviour is run against a prompt and scored. The full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md); [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of |
 | **How a case names its rule** | `tags: [rule:<id>]` in the case's frontmatter, read by `caselib.py`. **Not** a `rule()` helper — there is no test runner here to wrap |
 | **Spec-bound coverage** | **not applicable.** It is a split of a coverage run, and there is no coverage gate here to split |
@@ -94,7 +94,7 @@ reader changes.
 ## What has no gate, and what that misses
 
 **There is no coverage gate.** Lines, branches and functions are meaningless
-against seven markdown files, and a coverage number over `.github/scripts/`
+against eight markdown files, and a coverage number over `.github/scripts/`
 alone would measure the gate rather than the product. Rather than name a
 threshold nobody measures, this repository does not have one.
 
@@ -183,9 +183,29 @@ that gap is the thing a later `setup` run offers to close.
 automated row was wired by the `setup` run in 0.6.0 and predates this ledger,
 which is why none of them carries a change number.
 
-The pull-request report in `gates.md` has no row on purpose: it is declared there
-as *not a gate*, it cannot fail a build, and a row for it would be the first
-thing in this table that is not a gate at all.
+### The wiring that must never gate
+
+The second table [`gates.md`](../../method/gates.md#the-wiring-that-must-never-gate)
+asks for, added by [`0021`](../changes/0021-asked-not-assumed.md). Neither line in
+it is a gate — that is the point of it being a separate table, and the reason
+both were previously tracked by nothing.
+
+| Wiring | State | How, or why not |
+|---|---|---|
+| the pull-request report | automated | [`report.py`](../../.github/scripts/report.py), posted by [`checks.yml`](../../.github/workflows/checks.yml). **Watched arriving on [#55](https://github.com/sargismarkosyan/livespec/pull/55)**, read back with `gh pr view 55 --json comments` rather than inferred from the workflow file. It takes its counts from `board.py --json` and recomputes nothing |
+| the rule-bound measure, beside the gated number | **not applicable** | there is no coverage here at all, gated or otherwise — *What has no gate* above says what stands in its place and what that misses |
+
+The report's row used to be a paragraph explaining why it had none: it is
+declared in `gates.md` as *not a gate*, so a row for it in the table above would
+have been the first thing there that was not one. That reasoning was sound and
+the conclusion was wrong — the thing it argued out of the ledger is exactly the
+thing nothing else tracks. It has a table now.
+
+**The stamp above still reads 0.9.0 on purpose.** This table is new bookkeeping;
+no gate was added, removed or rewired by the change that added it, and
+[`setup`](../../skills/setup/SKILL.md) says to re-stamp only when the wiring
+actually moved. A ledger re-stamped for a change that rewired nothing has learned
+to lie.
 
 ## The fault injection record
 
@@ -249,6 +269,13 @@ Migrated from classic branch protection to a **repository ruleset** on
 **2026-08-25**, and read back from the API. This is the one gate that does not
 live in the repository, so this table is the only record of a setting somebody
 could quietly change.
+
+**Everything below was read from GitHub rather than inferred from
+[`checks.yml`](../../.github/workflows/checks.yml)**, which is what
+[`repository.md`](../../method/repository.md#branches-and-pull-requests) requires
+of this table and what the commands at the end of this section are for. A
+workflow file naming a job says a job runs; it says nothing about whether this
+repository will let a red one merge.
 
 **Why it moved.** Classic protection with `enforce_admins` on a *personal*
 repository has no bypass list at all — its push allowlist is organisation-only —

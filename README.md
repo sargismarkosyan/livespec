@@ -24,7 +24,7 @@ against a local checkout are all in [method/README.md](method/README.md).
 
 ## What you get
 
-Seven skills, and the discipline they enforce.
+Eight skills, and the discipline they enforce.
 
 | Skill | What it does |
 |---|---|
@@ -34,6 +34,7 @@ Seven skills, and the discipline they enforce.
 | `refine-personas` | Adds, amends or retires who it is for — and refuses a persona invented to make a wanted feature legal. |
 | `refine-journeys` | Keeps the arc over time honest, and holds the seams that belong to no single workflow. |
 | `record-clip` | Records the animated GIF a version ships with: the app being *used*, in a real browser. |
+| `doctor` | Re-audits the gate wiring in a repository that already has the process — every claim the bindings make, checked against what owns the answer, with branch protection read back from the platform rather than from CI config. Corrects the record; wires nothing. |
 | `setup` | **Start here** — `/livespec:setup`, or ask for the process and let Claude reach it. Installs all of the above into a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, writes its bindings file and CLAUDE.md, and then runs the persona, workflow and journey interviews rather than leaving you a list of them. Whichever way it starts, it says what it will write and waits before writing any of it. |
 
 Plus [the method](method/) — the loop, the repository conventions, what the gates
@@ -104,7 +105,7 @@ implementation, and the series of pictures it produced.
 
 [CONTRIBUTING.md](CONTRIBUTING.md) — what is a component and what is payload,
 where a change belongs, and the two things a pull request owes the release.
-[evals/](evals/README.md) — the eleven cases that hold the judgment the skills
+[evals/](evals/README.md) — the cases that hold the judgment the skills
 exist for, measured as uplift over running without them.
 [CHANGELOG.md](CHANGELOG.md) — written on merge rather than by hand, because
 `main` is what every install updates from.
@@ -112,7 +113,7 @@ exist for, measured as uplift over running without them.
 livespec runs its own process: [specs/](specs/README.md) is this repository's
 spec layer, [specs/setup/README.md](specs/setup/README.md) its bindings, and
 `python3 .github/scripts/verify.py` the one command that means everything
-passes — including breaking every gate on purpose, 31 ways, to prove they still
+passes — including breaking every gate on purpose, 40 ways, to prove they still
 fire.
 
 MIT licensed.
