@@ -10,10 +10,17 @@
 # about, and spec 0003 is where the clearing came from.
 #
 # What is deliberately absent: anything saying **who wrote the bad title**. The
-# bindings say reports usually go in through the `feedback` skill and that
-# people also file by hand, and no case grants a shell, so the tracker cannot
-# be read from here to settle it. Also absent: the issue itself, in any local
-# form — nothing here mirrors the tracker.
+# bindings say some issues here are typed by hand and some are written by the
+# tooling, and no case grants a shell, so the tracker cannot be read from here
+# to settle it. Also absent: the issue itself in any local form — nothing here
+# mirrors the tracker.
+#
+# The word the bindings do NOT use is `feedback`. The first measurement (Δ
+# −0.33) named the skill in that row, and the without-plugin arm read it as an
+# instruction: it tried to call `Skill(feedback)`, was told the name is a UI
+# command, and the one bare run that passed reached the second destination by
+# quoting the row back. A fixture is laid down in both arms alike, so anything
+# in it that names the plugin's machinery is handed to the baseline too.
 set -euo pipefail
 
 mkdir -p specs/setup specs/features/shelf specs/workflows specs/changes docs/feedback src
@@ -33,7 +40,7 @@ cat > specs/setup/README.md <<'EOF'
 | | |
 |---|---|
 | **Where the app runs** | open `index.html` in a browser; no build step |
-| **Tracker** | GitHub `acme/shelf`, filed with `gh`. Reports usually go in through the `feedback` skill; people also open one by hand when they are already on the site |
+| **Tracker** | GitHub `acme/shelf`, filed with `gh`. Findings get filed rather than fixed — some issues are typed by hand, some are written by the tooling |
 | **Stored state** | localStorage key `shelf`; the shape is in `specs/spec.md` |
 | **Screenshot home** | `docs/feedback/`, committed and pushed |
 | **Tests** | none yet — the suite is a coming infrastructure change |

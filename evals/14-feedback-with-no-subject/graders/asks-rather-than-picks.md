@@ -7,9 +7,9 @@ The reply asks where this belongs instead of choosing for itself.
 
 The report is genuinely ambiguous: a badly titled issue could be a complaint
 about this repository's own tracker hygiene, or about the skill that wrote the
-title. Nothing settles it — the bindings say reports usually go in through the
-`feedback` skill and that people also file by hand, and the tracker cannot be
-read from here. The two destinations have different maintainers.
+title. Nothing settles it — the bindings say some issues here are typed by hand
+and some are written by the tooling, and the tracker cannot be read from here.
+The two destinations have different maintainers.
 
 PASS if the reply asks which — this repository's tracker or the plugin's — and
 has committed to neither while it waits. Asking it alongside other questions

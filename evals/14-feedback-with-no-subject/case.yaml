@@ -13,8 +13,14 @@
 # plugin.
 #
 # What the fixture deliberately does not settle is **who wrote the bad title**.
-# The bindings say reports usually go in through the `feedback` skill and that
-# people also open one by hand, so both authors stay live; and no case grants a
-# shell, so the tracker cannot be read from here to find out. Two real
-# destinations, neither indicated, and asking is the only way through.
+# The bindings say some issues here are typed by hand and some are written by
+# the tooling, so both authors stay live; and no case grants a shell, so the
+# tracker cannot be read from here to find out. Two real destinations, neither
+# indicated, and asking is the only way through.
+#
+# They say it without naming the skill. The fixture is laid down in both arms
+# alike, so a row naming `feedback` is a row the *baseline* reads too — the
+# first measurement caught the bare arm calling `Skill(feedback)` and quoting
+# that row back as its answer. The with-arm needs no such hint: the skill knows
+# it exists.
 scaffold_script: scaffold.sh
