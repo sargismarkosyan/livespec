@@ -57,6 +57,14 @@ another way through; the rule and its reasoning are in
 This narrows nothing in step 3: looking for the **cause** is the job, looking for
 a **way to run an unavailable step** is not.
 
+**The bindings may also record a workaround** — something this repository does
+its own way because of a gap filed somewhere else. Where one bears on the step in
+front of you, say once that you are following it and what would end it; where you
+are already at the tracker that gap was filed in, say whether it is still open.
+Never follow one silently, and never go looking for a tracker you had no other
+reason to reach. The rule is in
+[`process.md`](../../method/process.md#a-workaround-names-what-would-end-it).
+
 If the repository the session is in *is* this plugin's repository, all of the
 above still applies and gives the same answer. Nothing here requires the two to
 be different places.
@@ -267,5 +275,20 @@ Give the user the issue URLs, one line each, and say plainly what you found
 while investigating — especially if the cause turned out to be different from
 what they assumed. If you deliberately did not file something they said, say so
 and why.
+
+**If this repository is going to carry on around what you just filed, record
+that.** Filing the gap where it can be fixed for everyone and keeping the local
+way of doing it are both right, and between them they leave a workaround that
+nothing ever ends. Write one row into the bindings: what is done here instead,
+the gap it goes around, where it is filed, and what would end it. **Say the row
+in your reply before you write it**, the way you named the repository before
+filing — a wrong row costs one word now and outlives everybody later. You are
+recording a decision somebody else made, not making one, and not touching the
+workaround itself; the row comes out when the workaround does.
+
+**Where the filing could not go through from here, the row still goes in now**,
+naming the report you handed over rather than an issue number nobody in this
+session can create. The workaround is in force today, and a row that waits for a
+number will only ever be written by sessions that did not have the problem.
 
 Then stop. Picking the issue up and writing a spec is a separate, later step.
