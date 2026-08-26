@@ -164,9 +164,10 @@ for entry in \
   "0013: a queued job slides into place as the one ahead of it finishes"
 do
   echo "$entry" >> CHANGELOG.md
+  git add CHANGELOG.md
   GIT_AUTHOR_NAME="Tomas Ek" GIT_AUTHOR_EMAIL=tomas@example.com \
   GIT_COMMITTER_NAME="Tomas Ek" GIT_COMMITTER_EMAIL=tomas@example.com \
-    git commit -q -am "$entry"
+    git commit -q -m "$entry"
 done
 
 git remote add origin git@github.com:tomasek/relay.git
