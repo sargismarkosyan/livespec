@@ -17,6 +17,13 @@ Feature: A workaround kept because of a gap owned somewhere else
       Then the row it will write is in the reply
       And a wrong one can be corrected before it is in the file
 
+    Example: nothing could be filed from this session
+      Given a repository about to carry on around a gap
+      And the report of that gap could not be filed from where the session is standing
+      When the workaround is recorded
+      Then the row is written now, naming the report that was handed over
+      And it does not wait for a number nobody here can create
+
     Example: nothing is being worked around
       Given a mismatch filed where it can be fixed for everyone
       When the repository is not carrying on around it

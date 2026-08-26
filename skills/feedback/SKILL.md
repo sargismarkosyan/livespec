@@ -286,4 +286,9 @@ filing — a wrong row costs one word now and outlives everybody later. You are
 recording a decision somebody else made, not making one, and not touching the
 workaround itself; the row comes out when the workaround does.
 
+**Where the filing could not go through from here, the row still goes in now**,
+naming the report you handed over rather than an issue number nobody in this
+session can create. The workaround is in force today, and a row that waits for a
+number will only ever be written by sessions that did not have the problem.
+
 Then stop. Picking the issue up and writing a spec is a separate, later step.

@@ -12,14 +12,14 @@
    "inputs": "7b2509cf60357f5b"
   },
   "02-feedback-from-use": {
-   "delta": 0.0,
+   "delta": 0.25,
    "with": 0.75,
-   "without": 0.75,
+   "without": 0.5,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "1ed586d",
+   "sha": "d0e3fa9",
    "cost": 0.14,
-   "inputs": "510419f9d56cfea2"
+   "inputs": "e071782e191ae270"
   },
   "03-persona-to-fit-feature": {
    "delta": 0.0,
@@ -122,14 +122,14 @@
    "inputs": "d4387db3d5e973cf"
   },
   "13-feedback-about-the-plugin": {
-   "delta": 0.0,
-   "with": 0.0,
+   "delta": 1.0,
+   "with": 1.0,
    "without": 0.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "1ed586d",
-   "cost": 0.59,
-   "inputs": "7689f0f4684f9efa"
+   "sha": "d0e3fa9",
+   "cost": 0.84,
+   "inputs": "6b9000442188f203"
   },
   "14-feedback-with-no-subject": {
    "delta": 0.0,
@@ -137,9 +137,9 @@
    "without": 0.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "1ed586d",
-   "cost": 0.14,
-   "inputs": "5742cdc5d36a0fdc"
+   "sha": "d0e3fa9",
+   "cost": 0.2,
+   "inputs": "f45fb5ab264f1d80"
   },
   "15-tracker-is-not-the-assumed-one": {
    "delta": 0.0,
@@ -147,9 +147,9 @@
    "without": 1.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "1ed586d",
-   "cost": 0.54,
-   "inputs": "d87147d6b97bba6d"
+   "sha": "d0e3fa9",
+   "cost": 0.45,
+   "inputs": "430760d522e31315"
   },
   "16-setup-with-no-app-code": {
    "delta": 1.0,
@@ -172,34 +172,44 @@
    "inputs": "8df961d6960a0b59"
   },
   "18-request-with-no-usage": {
-   "delta": 0.0,
+   "delta": 1.0,
    "with": 1.0,
-   "without": 1.0,
+   "without": 0.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "1ed586d",
-   "cost": 0.17,
-   "inputs": "599d2b74de907673"
+   "sha": "d0e3fa9",
+   "cost": 0.14,
+   "inputs": "9c3889e90c87db0a"
   },
   "19-neg-instruction-is-not-filed": {
-   "delta": 0.0,
-   "with": 1.0,
+   "delta": -0.5,
+   "with": 0.5,
    "without": 1.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "1ed586d",
-   "cost": 0.16,
-   "inputs": "a3ebd78003501945"
+   "sha": "d0e3fa9",
+   "cost": 0.17,
+   "inputs": "d7e356c0e541735c"
   },
   "20-repository-with-no-bindings": {
    "delta": 0.5,
-   "with": 1.0,
-   "without": 0.5,
+   "with": 0.5,
+   "without": 0.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "1ed586d",
-   "cost": 0.39,
-   "inputs": "05fd5e6f3808e625"
+   "sha": "d0e3fa9",
+   "cost": 0.71,
+   "inputs": "f927413bae64c2eb"
+  },
+  "21-a-workaround-already-recorded": {
+   "delta": 0.0,
+   "with": 0.0,
+   "without": 0.0,
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "d0e3fa9",
+   "cost": 0.27,
+   "inputs": "1675bbb91f7680d1"
   }
  }
 }
