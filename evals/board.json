@@ -12,14 +12,14 @@
    "inputs": "7b2509cf60357f5b"
   },
   "02-feedback-from-use": {
-   "delta": 0.25,
-   "with": 0.75,
+   "delta": 0.5,
+   "with": 1.0,
    "without": 0.5,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "d0e3fa9",
-   "cost": 0.14,
-   "inputs": "e071782e191ae270"
+   "sha": "7d38397",
+   "cost": 0.16,
+   "inputs": "ba2f440e01b26b97"
   },
   "03-persona-to-fit-feature": {
    "delta": 0.0,
@@ -127,19 +127,19 @@
    "without": 0.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "d0e3fa9",
-   "cost": 0.84,
-   "inputs": "6b9000442188f203"
+   "sha": "7d38397",
+   "cost": 1.4,
+   "inputs": "9e4ad3d1595c9382"
   },
   "14-feedback-with-no-subject": {
-   "delta": 0.0,
+   "delta": -1.0,
    "with": 0.0,
-   "without": 0.0,
+   "without": 1.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "d0e3fa9",
+   "sha": "7d38397",
    "cost": 0.2,
-   "inputs": "f45fb5ab264f1d80"
+   "inputs": "e656ae2bac3a9b09"
   },
   "15-tracker-is-not-the-assumed-one": {
    "delta": 0.0,
@@ -147,9 +147,9 @@
    "without": 1.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "d0e3fa9",
-   "cost": 0.45,
-   "inputs": "430760d522e31315"
+   "sha": "7d38397",
+   "cost": 0.52,
+   "inputs": "9cec5e4d44b88db9"
   },
   "16-setup-with-no-app-code": {
    "delta": 1.0,
@@ -177,29 +177,29 @@
    "without": 0.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "d0e3fa9",
-   "cost": 0.14,
-   "inputs": "9c3889e90c87db0a"
+   "sha": "7d38397",
+   "cost": 0.17,
+   "inputs": "ee9aa565fd3c0b02"
   },
   "19-neg-instruction-is-not-filed": {
-   "delta": -0.5,
-   "with": 0.5,
+   "delta": 0.0,
+   "with": 1.0,
    "without": 1.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "d0e3fa9",
-   "cost": 0.17,
-   "inputs": "d7e356c0e541735c"
+   "sha": "7d38397",
+   "cost": 0.16,
+   "inputs": "c01bfc7bc551a16e"
   },
   "20-repository-with-no-bindings": {
-   "delta": 0.5,
+   "delta": 0.0,
    "with": 0.5,
-   "without": 0.0,
+   "without": 0.5,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "d0e3fa9",
-   "cost": 0.71,
-   "inputs": "f927413bae64c2eb"
+   "sha": "7d38397",
+   "cost": 0.8,
+   "inputs": "b9a3ea9de67fa0c4"
   },
   "21-a-workaround-already-recorded": {
    "delta": 0.0,
@@ -207,9 +207,9 @@
    "without": 0.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "d0e3fa9",
-   "cost": 0.27,
-   "inputs": "1675bbb91f7680d1"
+   "sha": "7d38397",
+   "cost": 0.99,
+   "inputs": "bd1ec44c14176278"
   }
  }
 }
