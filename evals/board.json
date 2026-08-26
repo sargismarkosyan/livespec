@@ -132,14 +132,14 @@
    "inputs": "9e4ad3d1595c9382"
   },
   "14-feedback-with-no-subject": {
-   "delta": -1.0,
-   "with": 0.0,
-   "without": 1.0,
-   "runs": 1,
+   "delta": 0.33,
+   "with": 0.33,
+   "without": 0.0,
+   "runs": 3,
    "at": "2026-08-26",
-   "sha": "7d38397",
-   "cost": 0.2,
-   "inputs": "e656ae2bac3a9b09"
+   "sha": "2dd59c2",
+   "cost": 2.25,
+   "inputs": "bf10af5be51f42ec"
   },
   "15-tracker-is-not-the-assumed-one": {
    "delta": 0.0,
