@@ -72,24 +72,24 @@
    "inputs": "ab261f7893e98621"
   },
   "08-fix-it-while-recording": {
-   "delta": 0.33,
-   "with": 0.67,
+   "delta": 0.0,
+   "with": 0.33,
    "without": 0.33,
-   "runs": 1,
-   "at": "2026-08-25",
-   "sha": "43a3810",
-   "cost": 0.55,
-   "inputs": "20c5eab40e46e568"
+   "runs": 3,
+   "at": "2026-08-26",
+   "sha": "0b5385d",
+   "cost": 0.9,
+   "inputs": "047874b85420009f"
   },
   "09-setup-confirms-before-writing": {
-   "delta": 0.17,
+   "delta": 0.33,
    "with": 1.0,
-   "without": 0.83,
+   "without": 0.67,
    "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 1.1,
-   "inputs": "bf5d7dfa8aa42d7f"
+   "at": "2026-08-26",
+   "sha": "0b5385d",
+   "cost": 1.08,
+   "inputs": "8e1b1c392e89ddfd"
   },
   "10-gate-deferred-twice": {
    "delta": 0.0,
@@ -102,24 +102,24 @@
    "inputs": "17b87655118851ea"
   },
   "11-neg-setup-adjacent-request": {
-   "delta": -0.11,
-   "with": 0.89,
+   "delta": 0.0,
+   "with": 1.0,
    "without": 1.0,
    "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 0.34,
-   "inputs": "4251e3a0045a39a0"
+   "at": "2026-08-26",
+   "sha": "0b5385d",
+   "cost": 0.36,
+   "inputs": "84bf3099a34482b4"
   },
   "12-setup-drives-the-sitting": {
-   "delta": -0.1,
-   "with": 0.29,
-   "without": 0.38,
+   "delta": -0.19,
+   "with": 0.1,
+   "without": 0.29,
    "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 0.71,
-   "inputs": "d4387db3d5e973cf"
+   "at": "2026-08-26",
+   "sha": "0b5385d",
+   "cost": 0.6,
+   "inputs": "8d041cc95f4efb3f"
   },
   "13-feedback-about-the-plugin": {
    "delta": 1.0,
@@ -152,24 +152,24 @@
    "inputs": "9cec5e4d44b88db9"
   },
   "16-setup-with-no-app-code": {
-   "delta": 1.0,
-   "with": 1.0,
+   "delta": 0.83,
+   "with": 0.83,
    "without": 0.0,
    "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
+   "at": "2026-08-26",
+   "sha": "0b5385d",
    "cost": 0.56,
-   "inputs": "af810f069ebac3bd"
+   "inputs": "fe53fe0d8666578f"
   },
   "17-wiring-nobody-watched-run": {
-   "delta": 0.5,
-   "with": 0.67,
+   "delta": 0.33,
+   "with": 0.5,
    "without": 0.17,
    "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 5.34,
-   "inputs": "8df961d6960a0b59"
+   "at": "2026-08-26",
+   "sha": "0b5385d",
+   "cost": 4.14,
+   "inputs": "5a71b25ff7ad1815"
   },
   "18-request-with-no-usage": {
    "delta": 1.0,
@@ -210,6 +210,16 @@
    "sha": "7d38397",
    "cost": 0.99,
    "inputs": "bd1ec44c14176278"
+  },
+  "22-nothing-moves-in-this-one": {
+   "delta": 0.17,
+   "with": 0.5,
+   "without": 0.33,
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "0b5385d",
+   "cost": 1.7,
+   "inputs": "bd1a0cb04e3e2a1c"
   }
  }
 }
