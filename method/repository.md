@@ -28,7 +28,7 @@ tests/
   behaviour/             must reference a Gherkin rule
   workflows/             one walkthrough per workflow
 
-docs/screenshots/        the series — one moving picture per version
+docs/screenshots/        the series — one picture per version
 docs/feedback/           images attached to open issues, deleted when they close
 ```
 
@@ -77,15 +77,29 @@ Branch protection is the one gate that does not live in the repository, so it
 cannot be reviewed in a diff. That is why the table above is written down: it is
 the only record of a setting somebody could quietly change.
 
-### Every pull request carries a moving picture
+### Every pull request shows what it did
 
 **A pull request that changes what the app looks like shows it, in the body.**
 The deliverable is a series of pictures — a description of a screen is not one,
 and a reviewer should not have to check the branch out to see what a version did.
 
-**One animated GIF per version**, in `docs/screenshots/`, named for the change
-spec that shipped it. A still is not enough: much of what an app does is a thing
-*happening*, and a frozen frame is exactly the part that does not carry.
+**One picture per version**, in `docs/screenshots/`, named for the change spec
+that shipped it.
+
+**The form follows what changed, never what is easier to produce.** Much of what
+an app does is a thing *happening*, and a frozen frame is exactly the part that
+does not carry — so a change that unfolds is recorded moving. A change whose
+whole result is a screen sitting there is a still, and padding it into an
+animation to satisfy a format buys nobody anything. Which one is owed is a fact
+about the change, and the moment the convenient answer and the true one come
+apart it is the recording that is owed.
+
+**And it is composed for somebody holding the request and nothing else.** That is
+the standard, and it is harder than it sounds: not *does this show the change*
+but *can the person who asked tell whether they got it* — from the request and
+this one picture, without the diff, the branch or the app. A picture that shows
+how the change was built rather than what was asked for has failed that, however
+faithfully it records.
 
 It is recorded **on the branch, before the pull request is opened**, by the
 [`record-clip`](../skills/record-clip/SKILL.md) skill, which owns the how —
@@ -101,8 +115,8 @@ echo "![...](https://raw.githubusercontent.com/<owner>/<repo>/$sha/docs/screensh
 
 A branch URL is the obvious thing and it rots: branches are deleted on merge and
 the image goes with them. Relative paths do not work at all — GitHub does not
-resolve them in a pull request body. A raw `.gif` animates there, which is the
-whole reason this is the format.
+resolve them in a pull request body. A raw `.gif` animates there, which is why a
+recording is that format rather than a video file.
 
 A change with nothing to see — tooling, a doc, a refactor — says so in a line
 instead. That is the only exemption, and "it is hard to record" is not it.
@@ -252,7 +266,7 @@ half-answers one, say exactly what did not change and invite a reopen.
 
 ## Screenshots
 
-`docs/screenshots/` holds one moving picture per version — the actual deliverable.
+`docs/screenshots/` holds one picture per version — the actual deliverable.
 `docs/feedback/` holds images attached to issues, which are evidence rather than
 product.
 

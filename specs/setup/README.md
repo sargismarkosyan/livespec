@@ -41,7 +41,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. No coverage section: there is no coverage gate here, and *What has no gate* says why |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. A `case.yaml` may name a `scaffold_script` — bash in the case directory, run by `run.py --scaffold` in the session's fresh workspace, both arms alike. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
-| **Always-on budget** | 5000 chars across model-invocable skills; currently 3801 across 7 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
+| **Always-on budget** | 5000 chars across model-invocable skills; currently 3778 across 7 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
 | **What proves a rule** | **graded cases.** There is no application code to call — the product is judgment, so behaviour is run against a prompt and scored. The full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md); [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of |
 | **How a case names its rule** | `tags: [rule:<id>]` in the case's frontmatter, read by `caselib.py`. **Not** a `rule()` helper — there is no test runner here to wrap |
 | **Spec-bound coverage** | **not applicable.** It is a split of a coverage run, and there is no coverage gate here to split |
@@ -49,7 +49,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Required checks** | `repository checks` and `plugin validate` — the `name:` of each job in `.github/workflows/checks.yml` |
 | **Tracker** | GitHub Issues on `sargismarkosyan/livespec`, via `gh`. No `--repo` is passed: `gh` resolves it from the working directory, which is this repository. **This is the degenerate case** — the repository a session works in and the plugin's own repository are the same place here, and a skill must not read that as the normal shape |
 | **Where the app runs** | nowhere. There is no app |
-| **Deliverable of a version** | the pull request description. No moving picture — see *What does not apply* |
+| **Deliverable of a version** | the pull request description. No picture in any form — see *What does not apply* |
 | **Manifest validation** | `claude plugin validate . --strict`, `./.claude-plugin/plugin.json`, `./skills` — offline, no credentials |
 | **What a contributor owes a release** | one `patch`/`minor`/`major` label on the pull request, and a `## Changelog` section in its body — plus the Gherkin block when the change moves a `.feature`. Nothing else — `version` and `CHANGELOG.md` are written by the pipeline and must not be edited in a branch |
 
@@ -352,10 +352,19 @@ command. Renaming a job silently un-requires the check.
 - **[`record-clip`](../../skills/record-clip/SKILL.md)** and
   `docs/screenshots/`. There is no app to record. A version's deliverable is its
   pull request description, and the exemption in
-  [`repository.md`](../../method/repository.md#every-pull-request-carries-a-moving-picture)
+  [`repository.md`](../../method/repository.md#every-pull-request-shows-what-it-did)
   — a change with nothing to see says so in a line — is the standing case here
   rather than the exception. The skill still ships, is still held by a case, and
   is simply never used on this repository.
+
+  **That covers the form too, and it is worth saying once.**
+  [`0020`](../changes/0020-enough-to-say-yes.md) made the picture's form follow
+  what the change was — moving for a thing happening, a still where the whole
+  result is a screen sitting there. Neither branch will ever be taken here: there
+  is no screen, so the question never arises rather than always resolving to one
+  answer. It is the first rule in the method that no version of this repository
+  will exercise, and it ships on the strength of its eval cases and the pilots
+  rather than on having been lived here.
 - **`docs/feedback/`.** Issues here are filed from reading, not from using an
   app, so there are no screenshots to attach or to `git rm` on close.
 

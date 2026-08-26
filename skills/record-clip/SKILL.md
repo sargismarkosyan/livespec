@@ -1,25 +1,46 @@
 ---
 name: record-clip
-description: Record the animated GIF a version ships with — the app being used in a real browser — and save it to docs/screenshots/. Use when asked to record, film, screenshot or capture a version, a clip, a GIF or a video of the app, or to show a change moving rather than frozen. Every pull request that changes what the app looks like needs one. Ships with the plugin — it records the app and never changes it.
+description: Record the picture a version ships with — the app being used in a real browser — and save it to docs/screenshots/. Use when asked to record, film, screenshot or capture a version, a clip, a GIF or a video of the app, or to show what a change did. Every pull request that changes what the app looks like needs one. Ships with the plugin — it records the app and never changes it.
 ---
 
 # Record the version
 
-Produces **one looping GIF** in `docs/screenshots/`: the app being *used*, not a
-still. It is the only picture a version gets, and the pull request carries it —
-see [`repository.md`](../../method/repository.md). **Keep it
-short**: a handful of seconds, a dozen or so frames. Nobody watches a long one,
-and it lives in git forever.
+Produces **one picture** in `docs/screenshots/`: the app being *used*, not
+described. It is the only picture a version gets, and the pull request carries
+it — see [`repository.md`](../../method/repository.md#every-pull-request-shows-what-it-did).
+**Keep it short**: a handful of seconds, a dozen or so frames. Nobody watches a
+long one, and it lives in git forever.
 
-**No PNGs.** A frozen frame is not a deliverable here. Half of what an app does
-is something *happening* — a thing unfolding, a line landing where it was
-dropped, a suggestion being taken — and that is exactly the half a still drops.
+## Decide the form before you record
+
+**A looping GIF, unless the change has nothing that happens.** Half of what an
+app does is something *happening* — a thing unfolding, a line landing where it
+was dropped, a suggestion being taken — and that is exactly the half a still
+drops. Padding those into an animation is not the risk; delivering a frozen frame
+of them is.
+
+**A PNG only when the whole result of the change is a screen sitting there** — a
+label reworded, a column added, an empty state that now says something else.
+Nothing unfolds, so a recording of it is a dozen identical frames, and the still
+answers the reviewer's question better than the loop does.
+
+The form is a fact about the change, not about what is convenient. Being offered
+a still, being short of time, or the recording being awkward to set up are none
+of them the reason — the exemption in the method is *nothing to see*, and "it is
+hard to record" is explicitly not it. When the two answers come apart, record.
 
 ## What to record
 
 **The change this version made, in the shortest sequence that shows it.** Read
 the change spec first: its *What changes* section is the shot list, and its
 *Acceptance checks* are usually already in order.
+
+**Compose it for somebody holding the request and nothing else.** The change spec
+is the shot list; the *request* is the standard — the issue it came from, or the
+spec's own *The job behind the request*. They have not read the diff and will not
+check the branch out, so the question a shot has to answer is whether the person
+who asked can tell that they got what they asked for. A sequence that shows how
+the change was built answers a question nobody was asking.
 
 Get on screen the thing that is new, plus just enough of what was there before to
 make it read. Search shows a result from somewhere the user was not looking.
@@ -60,11 +81,17 @@ that reads like somebody's real data.
    it is `tools/clip.py` two levels up from this skill file.
 6. Stop the background server.
 
+**A still is steps 1, 2 and one screenshot**, written straight to
+`docs/screenshots/vNNN-<slug>.png`. No `.frames/`, no stitcher. The viewport is
+the same one — a series that changes size stops being a series whichever format
+it is in.
+
 ## Rules
 
-- **Never commit the frames.** Only the finished GIF. `.frames/` is ignored.
-- **One GIF per version**, named for the change spec that shipped it —
-  `v001-<the spec's slug>.gif`.
+- **Never commit the frames.** Only the finished picture. `.frames/` is ignored.
+- **One picture per version**, named for the change spec that shipped it —
+  `v001-<the spec's slug>.gif`, or `.png` where the change had nothing that
+  happens.
 - **Recorded on the branch, before the pull request is opened**, and embedded in
   the body by a raw URL pinned to the commit. A branch URL rots when the branch
   is deleted on merge.
@@ -73,3 +100,6 @@ that reads like somebody's real data.
   do not re-record around it.
 - Check the file size before committing. Over ~1 MB means too many frames or too
   large a viewport.
+- **The form is reported, not slipped in.** Say which one this version got and
+  why, in the same breath as handing the file over. A still that arrives without
+  its reason is indistinguishable from a recording somebody gave up on.
