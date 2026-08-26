@@ -1,0 +1,16 @@
+# The workspace this case runs in: a repository that adopted the process and
+# already does one thing its own way because the process did not fit. Its
+# bindings carry a **workarounds table** with a row in it — hand-filing through
+# the web UI, because `feedback` once assumed GitHub — naming the upstream issue
+# that would end it.
+#
+# Two things make it the case. The report is a *second* mismatch, and the human
+# says in the same breath that the local habit continues, so a row is owed. And
+# the row already there is one whose reason is gone: livespec#10 shipped in
+# 0.11.0, and these bindings name a tracker command, which is the very thing
+# that issue asked for. Nothing in this repository has ever said so.
+#
+# No tracker is reachable from here — no case grants Bash — so the session
+# cannot close the question by asking. Saying which workaround it could not
+# check, and what to run, is the pass.
+scaffold_script: scaffold.sh

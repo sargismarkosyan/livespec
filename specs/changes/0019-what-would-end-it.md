@@ -1,6 +1,6 @@
 # Spec 0019: what would end it
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#28](https://github.com/sargismarkosyan/livespec/issues/28) — a
   local workaround has no expiry, filed as a seam rather than a defect.
 

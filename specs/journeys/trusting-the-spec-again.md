@@ -61,7 +61,11 @@ Gaps where neither side is at fault.
 - **A local workaround has no expiry.** What gets filed upstream and patched
   locally stays patched. Nothing later says the reason has gone and the
   workaround can come out, so the repository keeps a fix whose cause was removed
-  somewhere else.
+  somewhere else. **Narrowed by
+  [`0019`](../changes/0019-what-would-end-it.md)**, which writes the join down
+  where this repository's own facts already live and has the session that stands
+  on a workaround say what would end it — instead of that fact existing only in a
+  comment on somebody else's closed issue.
 
 ## Ownership and metrics
 
@@ -70,14 +74,19 @@ Gaps where neither side is at fault.
 | Knowing the install took | the sitting's own pull request, and the ledger rows reading *unobserved* | Coming out of a sitting able to say which wiring was watched working and which only exists |
 | Incompleteness caught, untruth missed | the checks, but only for shape | A spec that no longer describes what was meant stops reading as green |
 | A return that is safe to trust | **nothing yet** | Coming back cold and acting immediately stops being a gamble that happened to pay |
-| A workaround outliving its reason | **nothing yet** | Local patches disappear when the thing they worked around is fixed |
+| A workaround outliving its reason | the row in the bindings, and the session standing on a workaround saying what would end it | Local patches disappear when the thing they worked around is fixed |
 
-**Two "nothing yet" rows left, and they are the same moment** — the point where
-somebody comes back and believes what they read. That moment is the entire claim
-of this product, and nothing in it currently reaches that far. The row above them
-moved because the sitting stopped asserting the thing it could have shown; these
-two have no equivalent step to borrow, because nobody is in the room when they
-fail.
+**One "nothing yet" row left** — the return, where somebody comes back and
+believes what they read. That moment is the entire claim of this product, nothing
+in it currently reaches that far, and it has no step to borrow because nobody is
+in the room when it fails.
+
+The two rows above it moved the same way, which is worth naming: each stopped
+asserting something and started saying it where somebody was already standing.
+The sitting landed its own specs instead of claiming the wiring held; the
+workaround is written where the next session reads it instead of in a comment
+nobody in that repository will open. **Neither is closed.** A repository that
+records no row, or never comes back, is exactly where it was.
 
 ## What this file does not know
 

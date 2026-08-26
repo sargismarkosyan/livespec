@@ -168,3 +168,44 @@ work attached.
 somebody reported is the most valuable thing any of these skills does, and it
 ends when it has an answer. What this rules out is looking for a *way to perform
 a step that is not available here*, which ends when the session does.
+
+### A workaround names what would end it
+
+The section above is about a step that cannot be taken here at all. This one is
+about what usually happens next: the work goes **around** it and carries on. The
+gap gets filed where it can be fixed for everyone, and the local way of doing it
+stays so that nothing stops. Both halves are right. Together they leave the
+repository carrying something whose reason may already be gone.
+
+**Nobody in that arrangement can close it.** The filed gap cannot know which
+repositories worked around it — nothing records that. The local way of doing it
+cannot know when the fix shipped; it is a file here and the fix is somewhere
+else. And the thing that did not fit cannot go looking for its own past
+inadequacies. Every party behaves correctly and the join still does not exist,
+which makes this structural rather than somebody's oversight — and structural
+gaps are closed by writing the join down, not by trying harder.
+
+**Record it where this repository's own facts already live** — the bindings,
+beside the other dated tables of what is true here. One row per workaround,
+carrying four things:
+
+- **what is done here instead**, in enough detail to recognise a year later;
+- **the gap it goes around**;
+- **where that gap is filed**, so it can be looked at rather than remembered;
+- **what would end it** — the arrival that makes the workaround removable.
+
+A row that cannot name the last of those is describing a **decision** rather than
+a workaround. Decisions do not expire, and filing one here is how the table turns
+into a list of everything anybody is unhappy about, which is a second thing to
+maintain and the opposite of the point.
+
+**A recorded workaround is never followed silently.** A row read only by the
+person who wrote it has not closed anything. So a session standing on a
+workaround says so, once, and says what would end it — and where it is already at
+the place that would answer that, it says whether the answer has arrived. Not a
+poll, and not a background job: a check that runs when nobody is in the room
+produces an answer nobody reads.
+
+**The row comes out when the workaround does.** A record that outlives what it
+describes is the same failure one level up, and worse, because it reads as
+current to everybody who was not there.

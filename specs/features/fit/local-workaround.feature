@@ -1,7 +1,7 @@
 @feature:fit-local-workaround @workflow:adopt-the-process
 Feature: A workaround kept because of a gap owned somewhere else
 
-  @rule:a-workaround-records-what-would-end-it @planned
+  @rule:a-workaround-records-what-would-end-it
   Rule: Work that carries on around a gap owned elsewhere is recorded in the bindings, naming what would end it
 
     Example: the process does not fit and the work continues anyway
@@ -23,7 +23,7 @@ Feature: A workaround kept because of a gap owned somewhere else
       Then no row is recorded
       And the bindings do not become a list of what is outstanding elsewhere
 
-  @rule:a-recorded-workaround-is-not-followed-silently @planned
+  @rule:a-recorded-workaround-is-not-followed-silently
   Rule: A workaround the bindings record is never followed without saying so, and without saying what would end it
 
     Example: the reason has gone and nothing had said so
