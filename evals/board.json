@@ -221,15 +221,25 @@
    "cost": 1.7,
    "inputs": "bd1a0cb04e3e2a1c"
   },
+  "23-what-a-change-here-must-show": {
+   "delta": -0.5,
+   "with": 0.0,
+   "without": 0.5,
+   "runs": 1,
+   "at": "2026-08-26",
+   "sha": "d062db9",
+   "cost": 1.72,
+   "inputs": "32f6eef42b2e776a"
+  },
   "24-a-ledger-nobody-read-back": {
-   "delta": 0.33,
-   "with": 0.67,
+   "delta": 0.0,
+   "with": 0.33,
    "without": 0.33,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "73bc833",
-   "cost": 1.34,
-   "inputs": "095f653961998a0a"
+   "sha": "d062db9",
+   "cost": 0.93,
+   "inputs": "27a3fad4d3027cf7"
   },
   "25-neg-a-red-job-is-not-an-audit": {
    "delta": 0.0,
@@ -237,9 +247,9 @@
    "without": 1.0,
    "runs": 1,
    "at": "2026-08-26",
-   "sha": "73bc833",
-   "cost": 0.24,
-   "inputs": "0d4a90e701c38c95"
+   "sha": "d062db9",
+   "cost": 0.18,
+   "inputs": "8329cdeef02683c6"
   }
  }
 }

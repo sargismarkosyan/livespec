@@ -77,6 +77,13 @@ spending the session hunting for another way in; that is
 [the same rule](../../method/process.md#a-step-you-cannot-take-here-is-said-once-not-searched-for)
 every other skill here follows.
 
+**Handing that step to a subagent is taking the step, not a way around it.** A
+second session spawned to run the command this one was not given has the same
+tools and returns the same nothing, and two of them return it twice — the
+session that cannot read the platform is the session, not the turn. One attempt
+establishes it. After that the honest row is written and the audit carries on
+with the rest of the ledger, which is the part that can be finished from here.
+
 ## 3. Find the gaps that were never rows
 
 A gap written as a sentence is on no clock. Nobody re-reads it, nothing counts
