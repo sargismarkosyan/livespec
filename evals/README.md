@@ -74,7 +74,7 @@ came out.
 | `11-neg-setup-adjacent-request` | **`setup` does not fire** on a CI question asked in a repository that has not been set up | the newly visible `setup` description grabs on "gate" and "set up" rather than on intent |
 | `12-setup-drives-the-sitting` | **`setup` finishes what it names** — the interviews are started rather than listed, the repository's real tracker is written down, an existing CLAUDE.md is audited, and the pull-request report is wired and cannot gate | the sitting ends with a skeleton and a list of commands to run later |
 | `13-feedback-about-the-plugin` | **a complaint about a skill reaches the plugin's tracker**, when the human says that is what it is | it files against the app being worked on, where livespec's maintainer never sees it |
-| `14-feedback-with-no-subject` | `feedback` **asks** where a genuinely ambiguous report belongs, and files nothing until told | it picks one and files — a wrong pick here is invisible to both maintainers |
+| `14-feedback-with-no-subject` | `feedback` **asks** where a genuinely ambiguous report belongs, and files nothing until told | it settles on one — files, or hands over the command to file into one tracker as though the question were answered |
 | `15-tracker-is-not-the-assumed-one` | `feedback` uses **the tracker the bindings name**, and builds evidence links for that host | `gh` or a `raw.githubusercontent.com` URL turns up in a repository that is not on GitHub |
 | `16-setup-with-no-app-code` | **`setup` asks what proves a rule** where there is nothing to call, and reaches for the tool that already builds a suite | it adopts graded cases silently, or invents a case format next to a generator |
 | `17-wiring-nobody-watched-run` | **`setup` will not claim wiring nobody watched run** — the ledger says `unobserved`, and the hand-back says what could not be watched | the sitting signs off a gate it never saw refuse anything |
@@ -267,8 +267,14 @@ first run (#38), so since then the runner executes scaffolds:
 
 Convert cases as their runs demand it, never all at once: a fixture is one more
 thing to keep true, and a case that discriminates without one is cheaper to
-trust. `01` and `15` are converted — both flagged by the first full run, `15`
-(#40) as the bare model beating the plugin in an empty workspace. `15`'s
-fixture is also the one that shows what a scaffold may leave out on purpose:
-the screenshot its prompt names does not exist, because saying so plainly is
-part of what the case grades.
+trust. `01`, `14` and `15` were converted after a run showed the empty
+workspace was what got measured — `01` on the suite's very first run (#38),
+`15` (#40) as the bare model beating the plugin, `14` (#58) as the same shape
+one case over, both arms replying that they could not tell where anything went.
+`20` and `21` were written with fixtures from the start, because in those two
+the repository *is* the situation.
+
+Two of them show what a scaffold may leave out on purpose. `15`'s omits the
+screenshot its prompt names, because saying so plainly is part of what the case
+grades. `14`'s omits anything that would say who wrote the badly titled issue —
+a fixture that settled that would answer the question the case asks.

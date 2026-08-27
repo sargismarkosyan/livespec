@@ -1,0 +1,26 @@
+# The workspace this case runs in. What is graded here is *which of two
+# repositories a report belongs in* — the one being worked on, or the plugin's
+# — and until now that was asked in an empty directory where neither exists.
+# Both arms spent their reply saying so, and the judge scored two ways of
+# saying "I cannot tell where this goes" against each other (#58). That is
+# #40's defect one case over: the fired skill degrading where the repository
+# it assumes is absent.
+#
+# So the fixture is a repository that adopted the process — bindings naming its
+# own GitHub tracker, a spec layer, and the undo bug the mis-titled issue is
+# really about, in `src/` with the change spec that introduced it. The plugin's
+# tracker is the second destination and needs no fixture; it comes with the
+# plugin.
+#
+# What the fixture deliberately does not settle is **who wrote the bad title**.
+# The bindings say some issues here are typed by hand and some are written by
+# the tooling, so both authors stay live; and no case grants a shell, so the
+# tracker cannot be read from here to find out. Two real destinations, neither
+# indicated, and asking is the only way through.
+#
+# They say it without naming the skill. The fixture is laid down in both arms
+# alike, so a row naming `feedback` is a row the *baseline* reads too — the
+# first measurement caught the bare arm calling `Skill(feedback)` and quoting
+# that row back as its answer. The with-arm needs no such hint: the skill knows
+# it exists.
+scaffold_script: scaffold.sh
