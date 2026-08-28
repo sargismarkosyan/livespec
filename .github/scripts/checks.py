@@ -14,7 +14,13 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = Path(__file__).resolve().parent
+
+# The root is an argument, the way trace.py, evalsuite.py and board.py already
+# take one. Without it this gate could only ever be pointed at the repository it
+# lives in, which is why it was the one gate inject.py could not break — and so
+# the one gate never known to fire. See inject.py.
+ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else SCRIPTS.parents[1]
 
 # Always-on context is the one budget every session pays. Each skill's name and
 # description load whether or not it fires; the bodies do not.
@@ -45,6 +51,9 @@ NUMBER_WORDS = {
 
 failures: list[str] = []
 notes: list[str] = []
+# Printed after the failures: what a mismatched enumeration should have said,
+# so the fix is a paste rather than a recount.
+hints: list[str] = []
 
 
 def fail(where: str, message: str) -> None:
@@ -241,6 +250,89 @@ for directory in ("method", "templates", "tools"):
             continue
         fail(rel(payload), "is referenced by no skill, method doc, or README — it ships to every user unread")
 
+# --- 6. the enumerations nobody should be typing ----------------------------
+
+# Two lists in the bindings restate something a script already knows. Both had
+# drifted: the fault injection record was six faults behind `inject.py`, and
+# *What it runs* had been missing the board gate since it shipped. They are
+# imported rather than re-read, so the copy and the original cannot disagree —
+# everything both modules do at import time is build a list of constants.
+sys.path.insert(0, str(SCRIPTS))
+import inject  # noqa: E402
+import verify  # noqa: E402
+
+RECORD_HEADING = "## The fault injection record"
+WARNS = "**warns, does not fail**"
+RUNS_ROW = "| **What it runs** |"
+
+bindings = ROOT / "specs" / "setup" / "README.md"
+
+
+def injected() -> list[tuple[str, str]]:
+    """Every fault inject.py holds, in the order it applies them."""
+    return [(f[0], f[3]) for f in inject.FAULTS] + [(f[0], "fails") for f in inject.RELEASE_FAULTS]
+
+
+def recorded(text: str) -> list[tuple[str, str]] | None:
+    """The rows of the record's table, or None when the section itself is gone."""
+    if RECORD_HEADING not in text:
+        return None
+    section = text.split(RECORD_HEADING, 1)[1].split("\n## ", 1)[0]
+    rows: list[tuple[str, str]] = []
+    for line in section.splitlines():
+        if not line.startswith("|") or line.startswith("|--"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 2 or cells[0].lower() == "injected fault":
+            continue
+        rows.append((cells[0], "warns" if "warn" in cells[1].lower() else "fails"))
+    return rows
+
+
+def as_table(rows: list[tuple[str, str]]) -> str:
+    body = "\n".join(f"| {name} | {WARNS if e == 'warns' else 'fails'} | \u2714 |" for name, e in rows)
+    return "| Injected fault | Expected | Result |\n|---|---|---|\n" + body
+
+
+if not bindings.exists():
+    fail(rel(bindings), "is missing; it is the bindings every skill reads")
+else:
+    text = bindings.read_text()
+
+    # The record is the evidence behind `gates-are-proven`. Somebody checking that
+    # promise reads this table instead of running Python, so it may not be behind
+    # the injector it describes.
+    wanted = injected()
+    found = recorded(text)
+    if found is None:
+        fail(rel(bindings), f"has no {RECORD_HEADING!r} section; it is the evidence behind gates-are-proven")
+    elif found != wanted:
+        wanted_names = [name for name, _ in wanted]
+        found_names = [name for name, _ in found]
+        expected_for = dict(wanted)
+        for name in wanted_names:
+            if name not in found_names:
+                fail(rel(bindings), f"the fault injection record has no row for {name!r}")
+        for name in found_names:
+            if name not in wanted_names:
+                fail(rel(bindings), f"the record has a row for {name!r}, which inject.py does not hold")
+        for name, outcome in found:
+            if name in expected_for and expected_for[name] != outcome:
+                fail(rel(bindings), f"the record says {name!r} {outcome}; inject.py expects it to {expected_for[name]}")
+        if sorted(found_names) == sorted(wanted_names) and found_names != wanted_names:
+            fail(rel(bindings), "the record lists the faults in a different order from inject.py")
+        hints.append("the fault injection record as inject.py now reads:\n\n" + as_table(wanted))
+
+    # Same defect one row up: what verify.py runs is verify.py's to say.
+    row = next((line for line in text.splitlines() if line.startswith(RUNS_ROW)), None)
+    runs = [script for _, script in verify.GATES]
+    if row is None:
+        fail(rel(bindings), "has no '**What it runs**' row; nothing else says which gates verify.py runs")
+    else:
+        named = re.findall(r"`([A-Za-z_]+\.py)`", row)
+        if named != runs:
+            fail(rel(bindings), f"'What it runs' names {named}; verify.py runs {runs}, in that order")
+
 # --- report ----------------------------------------------------------------
 
 for note in notes:
@@ -250,6 +342,8 @@ if failures:
     print(f"\n{len(failures)} problem(s):\n", file=sys.stderr)
     for problem in failures:
         print(f"  ✘ {problem}", file=sys.stderr)
+    for hint in hints:
+        print(f"\n  {hint}\n", file=sys.stderr)
     sys.exit(1)
 
 print(f"\n✔ checks passed ({count} skills)")

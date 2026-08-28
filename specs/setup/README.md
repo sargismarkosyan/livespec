@@ -27,17 +27,17 @@ wherever the method says *test*, this repository means **eval case**:
 | | |
 |---|---|
 | **Verification** | `python3 .github/scripts/verify.py` |
-| **What it runs** | `checks.py`, `trace.py`, `evalsuite.py`, `inject.py`, in that order |
+| **What it runs** | `checks.py`, `trace.py`, `evalsuite.py`, `board.py`, `inject.py`, in that order |
 | **Language** | Python 3.12, standard library only. **No dependency may be added** — CI installs nothing to run the gates |
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
 | **Eval-suite gate** | `.github/scripts/evalsuite.py [root]` |
-| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks it 25 ways, then breaks the release inputs 9 more. It also holds two **controls**: that the unbroken release inputs release, and that `report.py` exits zero on every degenerate input, which is what `always-green` rests on |
+| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks every gate in it one fault at a time, then breaks the release inputs, which need no fixture. *The fault injection record* below is generated from its two lists and checked against them by `checks.py`, so it cannot fall behind. It also holds two **controls**: that the unbroken release inputs release, and that `report.py` exits zero on every degenerate input, which is what `always-green` rests on |
 | **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body |
 | **Spec-surface check** | the same gate, asked separately. Fails a change to a `.feature` under `specs/features/` or `specs/workflows/` whose body carries no ` ```gherkin ` block and no link to a `.feature` pinned at a 40-character SHA. A layer README is not a `.feature` and does not trigger it |
 | **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, runs `verify.py`, commits, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
 | **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate and the release job share, and pure, so `inject.py` can break it |
-| **Repository checks** | `.github/scripts/checks.py` — manifests, skill frontmatter, always-on budget, link and payload checks |
+| **Repository checks** | `.github/scripts/checks.py [root]` — manifests, skill frontmatter, always-on budget, link and payload checks, and the two enumerations in this file that restate what another script owns. It takes a root so `inject.py` can break it |
 | **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. No coverage section: there is no coverage gate here, and *What has no gate* says why |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. A `case.yaml` may name a `scaffold_script` — bash in the case directory, run by `run.py --scaffold` in the session's fresh workspace, both arms alike. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
@@ -155,7 +155,7 @@ gate.
 
 ## Gate wiring
 
-**Reconciled against livespec 0.9.0 on 2026-08-25.** One row per gate named in
+**Reconciled against livespec 0.22.0 on 2026-08-28.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
@@ -174,14 +174,15 @@ that gap is the thing a later `setup` run offers to close.
 | journey → workflow | automated | `trace.py` |
 | workflow → journey | automated | `trace.py`, as a **warning** — where an attempt sits in the arc is a judgment |
 | structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` |
-| both gates verified to fire | automated | `inject.py` — 37 faults (28 against a fixture, 9 against the release inputs), re-run by every `verify.py` |
+| both gates verified to fire | automated | `inject.py` — every gate broken in a fixture and the release inputs broken as pure functions, re-run by every `verify.py`. **`checks.py` is in that set only since [`0022`](../changes/0022-nobody-types-the-record.md)**, which is when it first took a root and could be pointed at a fixture at all; before that it was the one gate here never known to fire |
+| the enumerations in this file read back from what owns them | automated | `checks.py`, added by [`0022`](../changes/0022-nobody-types-the-record.md) — *The fault injection record* against `inject.py`, *What it runs* against `verify.py`. Both were typed, and both had drifted |
 | coverage — lines, branches, functions | **not applicable** | there is no application code to measure; the eval-suite gate stands in its place, and *What has no gate* above says what that misses |
 | a journey looked at since the workflows under it moved | **not applicable** | a git question, and CI checks out one commit — it would pass forever while looking enforced |
 | features piled up under a workflow since its file was last edited | **not applicable** | same, and `gates.md` leaves both out for that reason |
 
 **No row is deferred**, so nothing here is on the two-change clock. Every
-automated row was wired by the `setup` run in 0.6.0 and predates this ledger,
-which is why none of them carries a change number.
+automated row but the last was wired by the `setup` run in 0.6.0 and predates this
+ledger, which is why they carry no change number.
 
 ### The wiring that must never gate
 
@@ -201,17 +202,28 @@ have been the first thing there that was not one. That reasoning was sound and
 the conclusion was wrong — the thing it argued out of the ledger is exactly the
 thing nothing else tracks. It has a table now.
 
-**The stamp above still reads 0.9.0 on purpose.** This table is new bookkeeping;
-no gate was added, removed or rewired by the change that added it, and
+**The stamp moved to 0.22.0, and the reason is the test for moving it.** It sat at
+0.9.0 through the change that added the second table — that was new bookkeeping,
+with no gate added, removed or rewired, and
 [`setup`](../../skills/setup/SKILL.md) says to re-stamp only when the wiring
-actually moved. A ledger re-stamped for a change that rewired nothing has learned
-to lie.
+actually moved. [`0022`](../changes/0022-nobody-types-the-record.md) moved it: a
+gate gained a check and another gate became injectable for the first time. A ledger
+re-stamped for a change that rewired nothing has learned to lie, and one left
+unstamped through a change that rewired something has learned it the other way
+round.
 
 ## The fault injection record
 
-Run on **2026-08-25** by `python3 .github/scripts/inject.py`, which is part of
+Run on **2026-08-28** by `python3 .github/scripts/inject.py`, which is part of
 `verify.py` and therefore of every CI run — so this record is re-made rather than
-remembered. **34 of 34 faults produced the expected result.**
+remembered. **Every fault below produced the expected result**, and
+`verify.py` prints the count on every run.
+
+**`checks.py` reads this table back from `inject.py`.** A fault with no row, a
+row naming a fault nobody injects, or an *Expected* cell that disagrees fails the
+build, and the gate prints the table as it should read. Before that check existed
+this record was six faults behind the injector and said so in three different
+numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 
 | Injected fault | Expected | Result |
 |---|---|---|
@@ -237,9 +249,19 @@ remembered. **34 of 34 faults produced the expected result.**
 | the last should-not-fire case removed | fails | ✔ |
 | a skill held by no case | fails | ✔ |
 | the documented invocation loses its baseline | fails | ✔ |
+| a scaffold_script that names no file | fails | ✔ |
+| a scaffolded case whose documented invocation never lays the fixture down | fails | ✔ |
 | a gated tool a case asks for is never granted | fails | ✔ |
+| the runner losing its refusal of an unapproved run | fails | ✔ |
+| a measurement whose inputs moved on | fails | ✔ |
+| a measurement whose rule was reworded | fails | ✔ |
+| a case the board has never measured | **warns, does not fail** | ✔ |
 | an llm grader with an empty rubric | fails | ✔ |
 | every case removed | fails | ✔ |
+| the fault injection record losing a row | fails | ✔ |
+| the record naming a fault nobody injects | fails | ✔ |
+| a recorded fault whose expected result was flipped | fails | ✔ |
+| the bindings losing a gate verify.py runs | fails | ✔ |
 | shipping change with no release label | fails | ✔ |
 | two release labels at once | fails | ✔ |
 | pull request body with no changelog section | fails | ✔ |
@@ -252,7 +274,7 @@ remembered. **34 of 34 faults produced the expected result.**
 
 **Two controls sit alongside the table and are not faults.** One checks the unbroken release inputs still release; the other checks the report cannot fail a build — there is nothing to break there, because the whole promise is that nothing breaks, so what is asserted is that every degenerate input still exits zero. It was confirmed by making `report.py` able to fail and watching the control report it.
 
-The last nine need no fixture. `releaselib.py` is pure — a label list and a pull
+The release faults need no fixture. `releaselib.py` is pure — a label list and a pull
 request body in, a decision out — which is the whole reason it is a module rather
 than two copies of a regex. The gate it replaced was **not** injectable and
 shipped for three versions without ever being known to fire; that was the

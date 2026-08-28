@@ -112,13 +112,19 @@ nothing but Python 3 — no dependency may be added to the gates, because CI
 installs nothing to run them. `plugin validate` is an offline schema check and
 needs no credentials.
 
-`verify.py` runs four things: [`checks.py`](.github/scripts/checks.py) (what only
-this repository knows about itself), [`trace.py`](.github/scripts/trace.py)
-(traceability, both directions), [`evalsuite.py`](.github/scripts/evalsuite.py)
-(every skill held by a case, every case able to fail), and
-[`inject.py`](.github/scripts/inject.py), which breaks every gate 37 ways — 28 in
-a temporary fixture, and 9 against the release inputs, which are pure functions
-over a label list and a pull request body — and checks each one fires. What each binding means is in
+`verify.py` runs the gates named in its own `GATES` list, and
+[`specs/setup/README.md`](specs/setup/README.md)'s *What it runs* row is checked
+against that list rather than kept in step by hand. They are
+[`checks.py`](.github/scripts/checks.py) (what only this repository knows about
+itself), [`trace.py`](.github/scripts/trace.py) (traceability, both directions),
+[`evalsuite.py`](.github/scripts/evalsuite.py) (every skill held by a case, every
+case able to fail), [`board.py`](.github/scripts/board.py) (no measurement
+outliving what it measured), and
+[`inject.py`](.github/scripts/inject.py), which breaks every gate one fault at a
+time — in a temporary fixture, and against the release inputs, which are pure
+functions over a label list and a pull request body — and checks each one fires.
+What was tried is recorded in the bindings, and `checks.py` reads that record
+back from `inject.py` so it cannot fall behind. What each binding means is in
 [`specs/setup/README.md`](specs/setup/README.md).
 
 If you changed a skill, a rule or an eval case, the evals are no longer
