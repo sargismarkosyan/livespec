@@ -150,8 +150,10 @@ measurement somebody pays for; that is not what this sentence is worth.
   until every one is re-measured. At `runs: 3` that is roughly $10–11 billed to
   the maintainer's account, and
   [`evals/README.md`](../../evals/README.md) is unambiguous that the flag which
-  spends it is the maintainer's signature and never an agent's. It gets its own
-  issue and its own version.
+  spends it is the maintainer's signature and never an agent's. Filed as
+  [#62](https://github.com/sargismarkosyan/livespec/issues/62), which also carries
+  the finding underneath it: the core judgment of four `refine-*` skills and
+  `record-clip` is graded by a case and specced by no rule at all.
 - **Not gating the always-on budget figure.** `specs/setup/README.md` says
   *4315 across 8*; `checks.py` computes and prints that number on every run and
   it is currently right. One number, one file, already printed beside it.
