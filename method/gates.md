@@ -267,6 +267,26 @@ against what this page now names and offers the difference, rather than
 re-deriving the state from scratch. That is a record about the installed process.
 It is not provenance for a commit, and nothing else in the repository gains any.
 
+### And what is not wiring at all
+
+A check that runs on somebody's own machine before they push — the
+[run before the work leaves it](testing.md#and-again-before-it-leaves-this-machine)
+— is neither of the two things above. It is not a gate, and it is not wiring
+that must never gate. It is **local, opt-in, and bypassable on purpose**: every
+version control that offers a hook offers a flag that skips it, and that flag
+will be used, correctly, by somebody in a hurry at the end of a bad day.
+
+So it gets **no row, in either table**. A row is a claim about what this
+repository refuses, and a courtesy recorded as a refusal is the false green this
+page exists to prevent — worse than no record, because a reader adding up the
+rows would now count a check that anybody can walk past. An audit of the ledger
+does not count it as coverage either, for the same reason.
+
+If it is written down at all it belongs with the other things that are true of
+one machine rather than of the repository, in the bindings' own prose: what it
+runs, what it deliberately leaves to the pipeline, and the line somebody types to
+opt in. Nothing reads it to decide whether a gate exists.
+
 ## Both gates are verified to fire
 
 They are tested against deliberate violations rather than assumed to work. Break

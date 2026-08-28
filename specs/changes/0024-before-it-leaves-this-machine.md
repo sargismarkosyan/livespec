@@ -75,7 +75,7 @@ what their repository refuses.
 **How we would know it worked:** in a repository whose one verification command
 runs both free gates and a graded suite, the thing that comes out of the sitting
 runs the free part, says why the paid part is not in it, and appears in no table
-of gates. That is `26-two-seconds-before-the-push`,
+of gates. That is [`26`](../../evals/26-two-seconds-before-the-push/prompt.md),
 and it is the fixture, not a hypothetical: `beacon`'s `make verify` bills $4.10 a
 run and carries a freshness check whose only cure is one of those runs.
 
@@ -125,7 +125,7 @@ more measurements to say the same thing twice.
 ### The Gherkin
 
 One new feature,
-`specs/features/setup/before-the-push.feature`,
+[`specs/features/setup/before-the-push.feature`](../features/setup/before-the-push.feature),
 `@feature:setup-before-the-push` under `@workflow:adopt-the-process`, with three
 live rules:
 
@@ -137,7 +137,8 @@ live rules:
   from CI.
 
 All three are claimed by one new case,
-`26-two-seconds-before-the-push`, with a scaffold. It is a new case rather than another claim on `12`, which
+[`26-two-seconds-before-the-push`](../../evals/26-two-seconds-before-the-push/prompt.md),
+with a scaffold. It is a new case rather than another claim on `12`, which
 `evals/README.md` has now warned about growing for two versions running.
 
 ### And this repository does it to itself

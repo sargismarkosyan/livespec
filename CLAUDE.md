@@ -85,7 +85,7 @@ this repository actually loses:
   stale board entry is a reason to stop and ask, never a licence to spend. Say
   which cases are stale and what it will cost, then wait. The commit and the
   pull request can be finished with a gap where the numbers go.
-- **Every commit green.** `verify.py` before committing, always.
+- **Every commit green.** `verify.py` before committing, always. `git config core.hooksPath .githooks` makes `.githooks/pre-push` run the free four fifths of it before a push — off until you type that, bypassable with `--no-verify`, and deliberately not in the ledger.
 
 ## Commands
 

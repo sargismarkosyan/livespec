@@ -11,17 +11,19 @@ only way to hold judgment is to run it against a prompt and grade what came back
 | [personas/](personas/README.md) | Who the plugin is for | [`refine-personas`](../skills/refine-personas/SKILL.md) |
 | [journeys/](journeys/README.md) | The arc of adopting it, and the seams | [`refine-journeys`](../skills/refine-journeys/SKILL.md) |
 | [workflows/](workflows/README.md) | The bounded attempts somebody makes with it | [`refine-workflows`](../skills/refine-workflows/SKILL.md) |
-| [features/](features/) | Gherkin — the enforced contract. Six live rules, all under `setup/` | [`refine-spec`](../skills/refine-spec/SKILL.md) |
+| [features/](features/) | Gherkin — the enforced contract. The live rules, each claimed by an eval case | [`refine-spec`](../skills/refine-spec/SKILL.md) |
 | [changes/](changes/) | One numbered change spec per version | [`refine-spec`](../skills/refine-spec/SKILL.md) |
 | [setup/README.md](setup/README.md) | The bindings — every command, threshold and path that is this repository's rather than the method's | already written |
 
 **`features/` arrived in [`0008`](changes/0008-the-gate-gets-something-to-hold.md),
 and not before.** A directory is created when something goes in it — a tree of
 empty folders reads as a process that was installed and never run, and the gate
-cannot tell an empty layer from a broken one. What it holds is six rules whose
-ids were reserved two versions earlier by changes that could not spend them, and
-nothing else: the layer still starts at the next change rather than at the
-history.
+cannot tell an empty layer from a broken one. What it held then was six rules
+whose ids were reserved two versions earlier by changes that could not spend
+them, and nothing else: the layer started at the next change rather than at the
+history, and has grown one change at a time since. The count is not restated
+here — a number typed into prose is the drift [`0022`](changes/0022-nobody-types-the-record.md)
+was about, and this one had already gone six versions stale.
 
 ## Where the method stops and this repository starts
 
@@ -42,7 +44,7 @@ the six rules in `features/setup/` describe behaviour that shipped in 0.8.0 and
 0.9.0, because those two changes reserved the ids at the time and could not write
 the files — the workflow layer they had to name was still empty. A debt booked in
 the open is not the same as a layer specced backwards. The skills, the
-method documents and the nine eval cases predate this layer and were not
+method documents and the eval cases written before it predate this layer and were not
 retroactively specced — [`setup`](../skills/setup/SKILL.md) section 7 says why,
 and [setup/README.md](setup/README.md) records which cases are exempt from
 claiming a rule as a result. Numbering starts at

@@ -86,6 +86,7 @@ came out.
 | `23-what-a-change-here-must-show` | **`setup` writes a deliverable row that answers what a change here must show**, in a repository whose gate is already wired and whose bindings were never written | the bindings come back a restatement of the method, with nothing in them only this repository knows |
 | `24-a-ledger-nobody-read-back` | **`doctor` does not settle a claim it cannot reach** — the required-check row comes back unread rather than confirmed from a workflow file, the coverage row is reported as covering the Python half only, and two pieces of never-gating wiring move out of prose into rows | a CI file is read as evidence about branch protection, or a note saying *not built yet* is repeated back instead of being put on a clock |
 | `25-neg-a-red-job-is-not-an-audit` | **`doctor` does not fire** on a failing check somebody wants debugged | the new description grabs on "check", "gate" and a job name rather than on intent |
+| `26-two-seconds-before-the-push` | **`setup` offers the free half of verification before a push**, keeps the graded suite and the check nobody can clear here out of it, and gives it no ledger row | the hook runs `make verify` whole — billing per push and blocking on a stale board — or turns up in the tree unannounced, or is recorded as a gate |
 
 **`02`, `13`, `14` and `15` are the four that hold where an issue goes.** They
 are one rule seen from four sides: the ordinary report that resolves without
@@ -103,6 +104,14 @@ ordinary case rather than the edge. Both its outcome graders have to pass
 together, and that is deliberate: naming the gap without handing over the work
 fails it, and so does handing over work that never named the gap. Either alone
 is a session somebody has to repeat.
+
+**`26` is the case with a fixture built to make the wrong answer attractive.**
+`beacon`'s one command runs the free gates, a graded suite that bills about
+$4.10, and a freshness check whose only cure is one of those runs — so the
+obvious hook, the one that runs the whole command, charges its owner per push
+and blocks every push the moment a case goes stale. What separates a pass from a
+fail here is whether cost was used as the criterion or whether the split
+happened to come out right.
 
 `09`, `11` and `12` hold `setup`, and they hold three different halves of it —
 `09` the stop before writing, `11` the staying out, `12` everything after the go.
