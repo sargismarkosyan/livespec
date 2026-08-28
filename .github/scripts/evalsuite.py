@@ -143,6 +143,35 @@ else:
             "and a run without the flag measures an empty workspace where the fixture should be",
         )
 
+    # A case with no row is a case nobody reviews. This table is where anyone sees
+    # what the suite holds without opening every directory, and it went three rows
+    # behind before anything noticed — 0023. Only that a row exists is checked; a
+    # gate on what it says would be a gate on prose.
+    TABLE_HEADING = "## What each case is for"
+    if TABLE_HEADING not in text:
+        fail("evals/README.md", f"has no {TABLE_HEADING!r} section; nothing else lists what each case holds")
+    else:
+        section = text.split(TABLE_HEADING, 1)[1].split("\n## ", 1)[0]
+        described = {
+            match.group(1)
+            for line in section.splitlines()
+            if line.startswith("|")
+            for match in [re.match(r"\|\s*`([^`]+)`", line)]
+            if match
+        }
+        for case in suite:
+            if case["name"] not in described:
+                fail(
+                    "evals/README.md",
+                    f"{case['name']} has no row in 'What each case is for'; a case nobody "
+                    "described is a case nobody reviews",
+                )
+        for name in sorted(described - {case["name"] for case in suite}):
+            fail(
+                "evals/README.md",
+                f"'What each case is for' has a row for {name!r}, which is not a case directory",
+            )
+
     needed = sorted({tool for case in suite for tool in case["allowed_tools"] if tool in GATED_TOOLS})
     for line in text.splitlines():
         line = line.strip()

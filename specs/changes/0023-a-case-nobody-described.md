@@ -1,6 +1,6 @@
 # Spec 0023: a case nobody described
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#62](https://github.com/sargismarkosyan/livespec/issues/62)
 - **Depends on:** [`0022`](0022-nobody-types-the-record.md) — the same defect, one
   file over, and the argument for gating an enumeration rather than correcting it

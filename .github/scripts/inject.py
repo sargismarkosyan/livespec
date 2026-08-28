@@ -145,6 +145,18 @@ def build(root: Path) -> None:
         for case in cases(root)
     }
     (root / "evals" / "board.json").write_text(json.dumps({"format": 1, "cases": entries}, indent=1))
+    # The case table, for the same reason as the bindings: generated from what it
+    # describes, so the unbroken fixture is green by construction.
+    readme = root / "evals" / "README.md"
+    rows = "\n".join(
+        f"| `{case['name']}` | holds the thing | it stops holding it |" for case in cases(root)
+    )
+    readme.write_text(
+        readme.read_text()
+        + "\n## What each case is for\n\n| Case | Holds | Fails when |\n|---|---|---|\n"
+        + rows
+        + "\n"
+    )
     bindings(root)
 
 
@@ -339,6 +351,13 @@ FAULTS = [
      "fails", "does not name '--scaffold'"),
     ("a gated tool a case asks for is never granted", SUITE,
      lambda r: edit(r, "evals/README.md", " --allow-tools Write", ""), "fails", "never grants"),
+    ("a case with no row in the table", SUITE,
+     lambda r: edit(r, "evals/README.md", "| `case-walk` | holds the thing | it stops holding it |\n", ""),
+     "fails", "no row in 'What each case is for'"),
+    ("a row for a case nobody has", SUITE,
+     lambda r: edit(r, "evals/README.md", "|---|---|---|\n",
+                    "|---|---|---|\n| `case-gone` | holds the thing | it stops holding it |\n"),
+     "fails", "which is not a case directory"),
     ("the runner losing its refusal of an unapproved run", SUITE,
      lambda r: write(r, "evals/runner/run.py", "# a runner that just runs, spending whatever it spends\n"),
      "fails", "no longer refuses an unapproved run"),
