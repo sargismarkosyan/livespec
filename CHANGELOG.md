@@ -12,6 +12,27 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.22.0 — 2026-08-28
+
+The fault injection record in the bindings is now read back from `inject.py`
+rather than typed. `checks.py` fails a fault with no row, a row naming a fault
+nobody injects, an `Expected` cell that disagrees, or a gate missing from *What
+it runs* — and prints the table as it should read. It was six faults behind and
+gave three different totals; those totals are deleted rather than corrected,
+because a count nobody derives is a claim that can only go stale.
+
+`checks.py` now takes a `[root]` like the other gates, so `inject.py` can break
+it. It is the last gate here to get a fault, and `verify.py`'s closing line —
+*all fired against injected faults* — is true for the first time.
+
+`method/gates.md` says the portable half: whatever holds the faults owns their
+names, the record is checked against it, and a total nobody derives is better
+deleted than corrected.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+https://claude.ai/code/session_01Q3CJFrwy6CknMRhGxQzLcu
+
 ## 0.21.0 — 2026-08-26
 
 An eighth skill, `doctor`, re-reads the gate wiring in a repository that already
