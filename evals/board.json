@@ -76,10 +76,10 @@
    "with": 0.33,
    "without": 0.33,
    "runs": 3,
-   "at": "2026-08-26",
-   "sha": "0b5385d",
-   "cost": 0.9,
-   "inputs": "047874b85420009f"
+   "at": "2026-08-28",
+   "sha": "eacfe6d",
+   "cost": 1.29,
+   "inputs": "703e99b2b4145c3d"
   },
   "09-setup-confirms-before-writing": {
    "delta": 0.0,
