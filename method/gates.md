@@ -294,4 +294,13 @@ each one in turn and read the message it produces:
 If you change either gate, re-check it the same way, and keep the results in the
 repository's bindings where somebody can read what was actually tried.
 
+**That record is read back from the injector, never typed.** It is the evidence
+for the promise that no gate ships without a fault that makes it fire, and a
+hand-copied list of what was injected drifts exactly the way a hand-maintained
+map does — silently, and in the direction of looking finished. Whatever holds the
+faults is the one that owns their names; the gates check the record against it,
+so a fault added without a row fails the build rather than going unrecorded. The
+same applies to any count of them: a total nobody derives is a claim that can
+only go stale, and is better deleted than corrected.
+
 **A gate that has never failed is not known to be a gate.**

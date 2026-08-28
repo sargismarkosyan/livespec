@@ -1,6 +1,6 @@
 # Spec 0022: nobody types the record
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#59](https://github.com/sargismarkosyan/livespec/issues/59)
 - **Depends on:** nothing. The enumerations it reads back have all been in the
   tree since [`0013`](0013-the-board-of-latest-measurements.md).
@@ -95,7 +95,7 @@ it is the exact sequence that produced this issue six times without a word.
   currently says `checks.py`, `trace.py`, `evalsuite.py`, `inject.py` — the
   board gate has been missing from it since `0013`. It gains `board.py`, and
   gains a gate.
-- **`inject.py` gains `checks.py` as a fifth injectable gate**, with the fixture
+- **`inject.py` gains `checks.py` as an injectable gate**, with the fixture
   files that gate needs to pass on a synthetic tree, and faults for both new
   checks: a row deleted, a row naming a fault that does not exist, an *Expected*
   cell flipped from `fails` to `warns`, and a gate dropped from the *What it
@@ -111,6 +111,11 @@ it is the exact sequence that produced this issue six times without a word.
   that only a gate can keep true, and that nobody needs, is better deleted than
   gated.
 - **The record gains its six missing rows**, taken from `inject.py`.
+- **The gate wiring ledger moves.** Its stamp goes to 0.22.0 — a gate gained a
+  check and another became injectable, which is the one thing that earns a
+  re-stamp — and it gains a row for the enumerations `checks.py` now reads back.
+  The *both gates verified to fire* row says that `checks.py` is only in that set
+  from here.
 - **`evals/README.md` gains rows for `21`, `22` and `23`** — correct while that
   table lives. What happens to the table itself is the next change; see below.
 

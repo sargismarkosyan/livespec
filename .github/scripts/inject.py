@@ -28,6 +28,7 @@ import tempfile
 from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parent
+CHECKS = SCRIPTS / "checks.py"
 TRACE = SCRIPTS / "trace.py"
 SUITE = SCRIPTS / "evalsuite.py"
 BOARD = SCRIPTS / "board.py"
@@ -81,7 +82,50 @@ FIXTURE: dict[str, str] = {
     "evals/case-walk/graders/outcome.md": GRADER,
     "evals/case-neg/prompt.md": "---\ntags: [should-not-fire, rule:two]\nruns: 3\n---\nWrite me a commit message.\n",
     "evals/case-neg/graders/outcome.md": GRADER,
+    # checks.py reads these two against each other. Minimal on purpose: the
+    # fixture is here to be broken, not to be a second copy of the plugin.
+    ".claude-plugin/plugin.json": json.dumps(
+        {
+            "name": "livespec",
+            "version": "0.0.0",
+            "description": "A synthetic fixture, not the plugin.",
+            "license": "MIT",
+            "repository": "https://example.test/fixture",
+        },
+        indent=1,
+    ),
+    ".claude-plugin/marketplace.json": json.dumps(
+        {"name": "fixture", "plugins": [{"name": "livespec", "source": "./"}]}, indent=1
+    ),
 }
+
+
+def bindings(root: Path) -> None:
+    """The two enumerations checks.py reads back, generated from what owns them.
+
+    `checks.py` compares the fault injection record against FAULTS + RELEASE_FAULTS
+    and the *What it runs* row against verify.py's gate list. Generating both here
+    means the unbroken fixture is green by construction — and, less obviously, that
+    a fault added below is recorded in the fixture without anybody remembering to,
+    which is the same property the check exists to give the real bindings.
+    """
+    rows = [(f[0], f[3]) for f in FAULTS] + [(f[0], "fails") for f in RELEASE_FAULTS]
+    table = "\n".join(
+        f"| {name} | {'**warns, does not fail**' if outcome == 'warns' else 'fails'} | \u2714 |"
+        for name, outcome in rows
+    )
+    runs = ", ".join(f"`{script}`" for _, script in VERIFY_GATES)
+    path = root / "specs" / "setup" / "README.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "# Bindings\n\n"
+        "## The table\n\n"
+        "| | |\n|---|---|\n"
+        f"| **What it runs** | {runs}, in that order |\n\n"
+        "## The fault injection record\n\n"
+        "| Injected fault | Expected | Result |\n|---|---|---|\n"
+        f"{table}\n"
+    )
 
 
 def build(root: Path) -> None:
@@ -101,6 +145,7 @@ def build(root: Path) -> None:
         for case in cases(root)
     }
     (root / "evals" / "board.json").write_text(json.dumps({"format": 1, "cases": entries}, indent=1))
+    bindings(root)
 
 
 def drop_board_entry(root: Path, name: str) -> None:
@@ -139,6 +184,7 @@ def drop(root: Path, relative: str) -> None:
 
 sys.path.insert(0, str(SCRIPTS))
 from caselib import cases, measurement_inputs  # noqa: E402
+from verify import GATES as VERIFY_GATES  # noqa: E402
 from releaselib import (  # noqa: E402
     ReleaseInputError,
     bump_manifest,
@@ -308,6 +354,24 @@ FAULTS = [
     ("every case removed", SUITE,
      lambda r: [drop(r, f"evals/{c}") for c in ("case-rule", "case-walk", "case-neg")],
      "fails", "measurement of nothing"),
+    # The record of what was injected is itself something a gate holds. Until these
+    # four, checks.py was the one gate here that could never be broken on purpose —
+    # it took no root — and so the one never known to fire.
+    ("the fault injection record losing a row", CHECKS,
+     lambda r: edit(r, "specs/setup/README.md", "| live rule with no case | fails | \u2714 |\n", ""),
+     "fails", "has no row for"),
+    ("the record naming a fault nobody injects", CHECKS,
+     lambda r: edit(r, "specs/setup/README.md", "|---|---|---|\n",
+                    "|---|---|---|\n| a fault nobody injects | fails | \u2714 |\n"),
+     "fails", "which inject.py does not hold"),
+    ("a recorded fault whose expected result was flipped", CHECKS,
+     lambda r: edit(r, "specs/setup/README.md",
+                    "| workflow naming no journey | **warns, does not fail** | \u2714 |",
+                    "| workflow naming no journey | fails | \u2714 |"),
+     "fails", "inject.py expects it to warns"),
+    ("the bindings losing a gate verify.py runs", CHECKS,
+     lambda r: edit(r, "specs/setup/README.md", "`board.py`, ", ""),
+     "fails", "verify.py runs"),
 ]
 
 
@@ -323,7 +387,7 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="livespec-inject-") as workspace:
         control = Path(workspace) / "control"
         build(control)
-        for gate in (TRACE, SUITE):
+        for gate in (CHECKS, TRACE, SUITE):
             code, output = run(gate, control)
             if code != 0:
                 problems.append(f"the unbroken fixture fails {gate.name}:\n{output}")
