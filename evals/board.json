@@ -270,6 +270,16 @@
    "sha": "b4d9189",
    "cost": 6.42,
    "inputs": "52240ed76673bcd0"
+  },
+  "28-a-hook-is-not-a-row": {
+   "delta": 0.83,
+   "with": 1.0,
+   "without": 0.17,
+   "runs": 3,
+   "at": "2026-08-29",
+   "sha": "9ac4f4d",
+   "cost": 3.45,
+   "inputs": "6f020186c6e08b27"
   }
  }
 }
