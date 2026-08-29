@@ -50,3 +50,10 @@ Feature: The cheap half of verification, run before the work leaves the machine
       Given the checks now run before a push
       When the required checks are reviewed
       Then nothing has been removed from them
+
+    Example: the wiring is audited and a hook is described in the prose
+      Given bindings whose prose describes a check that runs before a push
+      And that check is opt-in and can be skipped with a flag
+      When the wiring is audited
+      Then no row is added for it in either table
+      And it is not counted as coverage

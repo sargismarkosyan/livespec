@@ -212,6 +212,19 @@ prose and does not count it as coverage.
 **Nothing came out of CI for it.** `checks.yml` still runs `verify.py` whole,
 board gate included, and that is still the required check.
 
+**It has been watched, and watching it changes nothing about where it belongs.**
+On 2026-08-29 a `doctor` run pushed this tree to a throwaway local bare
+repository: a clean tree went through, a tree with one unclaimed live rule
+appended was refused — `✘ verification failed: traceability, gate fault
+injection`, and `git push` exited non-zero with the ref never created on the
+remote. Then the same broken tree was pushed again with `--no-verify` and landed.
+Both halves were the point of the exercise. The hook does what the row above says
+it does, on the machine it was run on, and the second half is why it still gets
+no row: a check that the person it constrains can decline in four extra
+characters is a courtesy, and a courtesy counted as a refusal is the false green
+this ledger exists to prevent. The observation belongs here, in prose, and is not
+coverage.
+
 The report's row used to be a paragraph explaining why it had none: it is
 declared in `gates.md` as *not a gate*, so a row for it in the table above would
 have been the first thing there that was not one. That reasoning was sound and
@@ -325,9 +338,12 @@ a gate that cannot.
 ## Branch protection, and the one credential that bypasses it
 
 Migrated from classic branch protection to a **repository ruleset** on
-**2026-08-25**, and read back from the API. This is the one gate that does not
-live in the repository, so this table is the only record of a setting somebody
-could quietly change.
+**2026-08-25**. This is the one gate that does not live in the repository, so
+this table is the only record of a setting somebody could quietly change — and
+the only thing keeping it honest is somebody re-running the commands at the end
+of this section. **Last read back on 2026-08-29**, with all three; every value
+below matched what was already written, and nothing here is a memory of the
+sitting that set it up.
 
 **Everything below was read from GitHub rather than inferred from
 [`checks.yml`](../../.github/workflows/checks.yml)**, which is what
@@ -355,7 +371,7 @@ enforcement `active`.
 | Required approvals | **0** — GitHub does not let anyone approve their own pull request, and there is one contributor. Zero still forces every change through a pull request and both checks |
 | Required checks | `repository checks`, `plugin validate`, both matched to the GitHub Actions app (`integration_id` 15368) |
 | Strict (up to date with `main`) | yes |
-| Applies to admins | yes — no role, team or user is on the bypass list |
+| Applies to admins | yes — no role, team or user is on the bypass list, and the API answers `current_user_can_bypass: never` for the owner's own token |
 | Force pushes | blocked (`non_fast_forward`) |
 | Deletion | blocked |
 | Conversation resolution required | yes |
@@ -532,8 +548,10 @@ claude -p "List the exact names of every skill available to you, one per line, n
 ```
 
 **The copy that loads in this repository is the working tree.** The session
-listed the seven skills *and* the marker. That is the claim this section always
-made, and it is now an observation.
+listed every skill then shipping — seven at the time; `doctor` has since made it
+eight — *and* the marker. That is the claim this section always made, and it is
+now an observation. The count is of the day it was run and is not maintained
+here; `ls skills/` is the answer to how many there are now.
 
 **The declaration above is not what makes that true.** Run from a copy of this
 repository at a different path — its own `.claude/settings.json`, its own
@@ -609,5 +627,5 @@ marker method above, or that list, can.
 registered on this machine yet** — the ordinary state of a fresh clone, and the
 one `/plugin marketplace add .` fixes. Verified on 2026-08-25 with the marker
 method: with `extraKnownMarketplaces` gone and the marketplace registered, a
-session still listed the seven skills and the marker, so the enable alone is what
-this file has to carry.
+session still listed the skills of that day and the marker, so the enable alone
+is what this file has to carry.

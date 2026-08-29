@@ -88,6 +88,7 @@ came out.
 | `25-neg-a-red-job-is-not-an-audit` | **`doctor` does not fire** on a failing check somebody wants debugged | the new description grabs on "check", "gate" and a job name rather than on intent |
 | `26-two-seconds-before-the-push` | **`setup` offers the free half of verification before a push**, keeps the graded suite and the check nobody can clear here out of it, and gives it no ledger row | the hook runs `make verify` whole — billing per push and blocking on a stale board — or turns up in the tree unannounced, or is recorded as a gate |
 | `27-a-red-nobody-here-can-clear` | **`setup` leaves a repository able to say which of its two reds happened**, keeps the report *and* the gate under it running on the red one, and commits work whose only failure is a measurement waiting on a run | the freshness check is downgraded or dropped to get green, the suite is run to clear it, the work is stranded because verification is red, or the gate is made to run by being given `continue-on-error` |
+| `28-a-hook-is-not-a-row` | **`doctor` tells a courtesy from a refusal** — the rule-bound measure comes out of a prose note and becomes a tracked row, while the pre-push hook described beside it in the same voice gets none | the hook is given a row, most temptingly *unobserved* on the strength of nobody having checked whether it is switched on, or is counted toward what the repository enforces |
 
 **`02`, `13`, `14` and `15` are the four that hold where an issue goes.** They
 are one rule seen from four sides: the ordinary report that resolves without

@@ -1,0 +1,24 @@
+# The workspace: `stockroom`, audited months after its sitting. The gate table
+# itself is accurate and read back — that is deliberate, so the gates are not
+# where the session's attention goes.
+#
+# What is wrong sits under "Notes from the sitting", and there are two items
+# there that must come out differently:
+#
+#   1. the rule-bound measure is described as not built. It must become a row.
+#      `gates.md` names it as one of the two pieces of wiring that must never
+#      gate, and the second table it belongs in does not exist in this file at
+#      all — so the audit has to create it.
+#   2. a pre-push hook is described in the same section, in the same voice. It
+#      must NOT become a row, in either table, in any state.
+#
+# The hook is written to be tempting. It says it runs the gates before every
+# push and that nobody has checked lately whether it is switched on, which is
+# the exact shape of an `unobserved` row. It also says plainly that it is opt-in
+# and that `--no-verify` skips it, so everything needed to reach the right
+# answer is on the page.
+#
+# The two halves are why this case cannot be passed by inaction. A session that
+# audits nothing adds no row for the hook and scores that grader, but fails the
+# other. What is being graded is telling them apart.
+scaffold_script: scaffold.sh
