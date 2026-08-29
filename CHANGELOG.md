@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.23.0 — 2026-08-29
+
+`setup` now offers, at the end of a sitting that has wired the gates, to run the repository's own verification before a push — the free, fast half of it, as a `pre-push` hook the human says yes or no to rather than one that appears in their clone unannounced. Cost is written down as the criterion for what may be in it: a graded suite must never be reachable from an automatic trigger, and neither may a check whose failure only a paid run can clear, because a hook that refuses a push over an unpaid bill is a hook that gets switched off within a week. `gates.md` gains the shelf that made this possible to say at all — a local hook is neither a gate nor wiring that must never gate, so it gets no row in either ledger table, and an audit does not count it as coverage. livespec does it to itself: `.githooks/pre-push` runs `verify.py --local`, off until `git config core.hooksPath .githooks`, and nothing came out of CI for it.
+
 ## 0.22.0 — 2026-08-28
 
 The fault injection record in the bindings is now read back from `inject.py`
