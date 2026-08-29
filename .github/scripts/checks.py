@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -86,7 +87,33 @@ def frontmatter(path: Path) -> dict[str, str] | None:
 
 
 def markdown_files() -> list[Path]:
-    return sorted(p for p in ROOT.rglob("*.md") if ".git" not in p.parts)
+    """Every markdown file that is part of this repository.
+
+    Git decides what that means, because git is what decides it everywhere else.
+    `evals/results/` holds whole fixture repositories a scaffold laid down, whose
+    internal links point at files the fixture never had — reading those failed the
+    link check on the machine of whoever had just paid for a run, and only there,
+    because a fresh checkout has no such directory. `evals/README.md` already
+    promised a run's evidence stays under an ignored directory; this is the gate
+    keeping that promise. See issue #68.
+
+    Where git cannot answer — `inject.py` points this at a plain temporary
+    directory — every file is read, which is what the injected faults need.
+    """
+    found = sorted(p for p in ROOT.rglob("*.md") if ".git" not in p.parts)
+    try:
+        ignored = subprocess.run(
+            ["git", "check-ignore", "--stdin"],
+            input="\n".join(str(p) for p in found),
+            capture_output=True, text=True, cwd=ROOT, timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return found
+    # 0 = some paths ignored, 1 = none are, anything else = not a work tree.
+    if ignored.returncode not in (0, 1):
+        return found
+    skip = {line for line in ignored.stdout.splitlines() if line}
+    return [p for p in found if str(p) not in skip]
 
 
 # --- 1. manifests agree with each other ------------------------------------
