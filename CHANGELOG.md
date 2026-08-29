@@ -12,6 +12,18 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.24.0 — 2026-08-29
+
+`method/` carried three sentences written before graded-case bookkeeping invented a failure that is not a defect, and they disagreed with each other. `repository.md` forbade committing a state that fails verification; `graded-cases.md` sanctioned finishing the work with a gap where the numbers go; `gates.md` said a report only ever describes a green run. All three are corrected together. The absolute now carries one exception, narrow enough to state in full — it is the **only** failure, the cure is a spend rather than an edit, and nobody in the session can authorise it — and that exception buys a commit and a push, never a merge: the pipeline goes on refusing until somebody pays. What it owes is two sentences, one in the commit and one in the pull request, naming which measurements are waiting and who can clear them.
+
+`graded-cases.md` adds the requirement the contradiction was hiding: a verification that can be red for a reason the method sanctions has to say **which** red in its result — what a machine reads and the last line a person reads — not only in prose addressed to whoever remembers the page. A red nobody can act on gets investigated two or three times, found innocent every time, and then stops being read, and the gate goes on running with nobody looking at it.
+
+`gates.md` had already cost something. Its sentence about green runs is why a report is wired to stop with the job — so the count carrying *stale* is unreachable on precisely the runs where it would change what somebody does. What explains a build now survives the build failing, which is safe because a report still cannot fail one.
+
+`setup` finishes a sentence it already started. Where a verification command can be red for a sanctioned reason, the repository leaves the sitting able to tell that apart from a broken gate, and with its report not skipped on the failure it exists to describe.
+
+livespec does it to itself: `verify.py` exits **2** when every failure is a bill and **1** when anything else is broken — including a break sitting underneath a bill, because a defect must never report as a bill. `run.py` already exited 2 for the same sentence from the other side. The decision is a pure function so `inject.py` can break it without a fixture, and it does. The pull-request report steps are guarded `!cancelled()`, so the **Stale** row reaches the run it was built for. CI is red either way; this distinguishes the red, it does not soften it.
+
 ## 0.23.0 — 2026-08-29
 
 `setup` now offers, at the end of a sitting that has wired the gates, to run the repository's own verification before a push — the free, fast half of it, as a `pre-push` hook the human says yes or no to rather than one that appears in their clone unannounced. Cost is written down as the criterion for what may be in it: a graded suite must never be reachable from an automatic trigger, and neither may a check whose failure only a paid run can clear, because a hook that refuses a push over an unpaid bill is a hook that gets switched off within a week. `gates.md` gains the shelf that made this possible to say at all — a local hook is neither a gate nor wiring that must never gate, so it gets no row in either ledger table, and an audit does not count it as coverage. livespec does it to itself: `.githooks/pre-push` runs `verify.py --local`, off until `git config core.hooksPath .githooks`, and nothing came out of CI for it.
