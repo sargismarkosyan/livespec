@@ -186,6 +186,55 @@ one figure twice.
 **One command runs both**, and CI runs that same command. Not a longer list in CI
 than a person can run locally.
 
+### Then offer to run it before the push
+
+One command that a person can run locally is the precondition for the thing
+nobody has yet been offered: **firing it automatically before the work leaves
+this machine.** Ask.
+[`testing.md`](../../method/testing.md#and-again-before-it-leaves-this-machine)
+is the rule; this is where it gets proposed to somebody who can say no.
+
+**Say what it would be, and wait.** A `pre-push` hook is the usual shape —
+`.githooks/pre-push` running the command, and `git config core.hooksPath
+.githooks` to turn it on — and the second line is the whole opt-in, so it is
+worth saying out loud that a clone without it has nothing installed. **Then stop
+and let them answer.** A hook that turns up unannounced is the same defect as a
+gate nobody agreed to, and it gets switched off rather than argued with.
+
+**Pre-push, not pre-commit**, and give the reason rather than the preference: a
+ten-commit branch runs the same checks ten times to learn the same thing once,
+and a check that expensive stops being kept somewhere around the fourth commit.
+Push is the last moment the work is still only yours.
+
+**Then say what will not be in it, in the same breath.** Cost is the selection
+criterion, so the hook carries the free and fast half — the gates, the type
+check, the unit tests, the linter — and two things stay out even though the one
+command runs them:
+
+- **a graded suite**, which must refuse to start without a per-run approval from
+  whoever is paying. A hook is exactly the automatic trigger that rule forbids,
+  and wiring one in bills them per push.
+- **any check whose failure cannot be cleared here for free** — stale eval
+  bookkeeping being the usual one. Red for a reason the method sanctions, fixable
+  only by a run somebody has to pay for, and indistinguishable to a hook from a
+  broken gate. Leave it to the pipeline.
+
+Where the verification command runs both kinds, **the hook runs the free part by
+name, from the same list the command already reads.** A hook with its own copy of
+that list is a second answer to *what does verification mean here*, and it goes
+stale the first time a gate is added.
+
+**It is not a gate, and it does not become one.** No row in either ledger table —
+[`gates.md`](../../method/gates.md#and-what-is-not-wiring-at-all) says why a
+bypassable courtesy recorded as a refusal is worse than no record. **And nothing
+comes out of CI because a hook exists**: every check that blocked a merge before
+this still blocks it. If it is written down, it goes in the bindings' prose as
+something true of one machine — what it runs, what it leaves to the pipeline, and
+the line somebody types to opt in.
+
+**Declining is an answer, and it ends here.** Write nothing, say nothing about it
+in the ledger, and carry on with section 5.
+
 **A repository with two languages in it has one coverage gate, not two.** Two
 per-language checks, each with its own threshold and its own way of failing, are
 two gates nobody agreed to and no single number anybody can quote — and the third

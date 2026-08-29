@@ -181,3 +181,45 @@ priority as a defect in the code, because a gate nobody trusts is not a gate.
 Run the repository's verification — both gates, the same thing CI runs. The
 command is in `specs/setup/README.md`; what each failure *means* is in
 [gates.md](gates.md).
+
+## And again before it leaves this machine
+
+Committing is not the moment the work stops being yours; pushing is. A branch
+that runs verification ten times to learn the same thing once has taught
+everybody on it that the rule is too expensive to keep, and the rule stops being
+kept somewhere around the fourth commit. **So the run that has to happen is the
+one before the push**, and a repository is entitled to make that automatic:
+whatever the version control offers that fires before work leaves the machine —
+a `pre-push` hook is the usual shape — running the one command the bindings
+already name.
+
+**Offered, never installed unannounced.** A check that appears in somebody's
+clone without being agreed to is the same defect as a gate nobody agreed to, and
+the first thing they will do is find out how to turn it off. It is proposed, in
+words, and somebody says yes or no.
+
+**Cost is what decides what goes in it, and it is stated as the reason.** Only
+checks that are free, fast, and fixable here — the gates, the type check, the
+unit tests, the linter. Seconds, not dollars, and not a round trip through
+anything. Two kinds stay out, and both look tempting because they are already in
+the one command:
+
+- **anything that costs money per run.** A [graded suite](graded-cases.md#freshness-is-gated-the-score-never-is)
+  must refuse to start without a per-run approval from the person paying, and an
+  automatic trigger is precisely what that rule exists to forbid. A hook that can
+  reach one is a bill nobody signed, charged per push.
+- **anything whose failure cannot be cleared here for free.** Stale eval
+  bookkeeping is the common case: it is red for a reason the method sanctions,
+  the only fix is a run somebody has to pay for, and a check that cannot tell
+  that apart from a broken gate blocks every push until it is disabled. Leave it
+  to the pipeline, which is where the bill is meant to be argued.
+
+Where the one command runs both kinds, the hook runs the free part of it by
+name — from the same list the command reads, never a second copy — and says
+which part it left to CI.
+
+**It takes nothing away.** Nothing is removed from the pipeline because a hook
+exists; every check that blocked a merge yesterday still blocks it. What this
+adds is a fast local signal, and
+[gates.md](gates.md#and-what-is-not-wiring-at-all) says why that is not the same
+thing as a gate.

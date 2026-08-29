@@ -28,6 +28,7 @@ wherever the method says *test*, this repository means **eval case**:
 |---|---|
 | **Verification** | `python3 .github/scripts/verify.py` |
 | **What it runs** | `checks.py`, `trace.py`, `evalsuite.py`, `board.py`, `inject.py`, in that order |
+| **Before the push** | `.githooks/pre-push` — one line, `exec verify.py --local`. **Off by default**: `git config core.hooksPath .githooks` turns it on in a clone, `git config --unset core.hooksPath` turns it off, and `git push --no-verify` walks past it. `--local` runs every gate but `board.py`, whose only cure is an eval run the maintainer pays for — see *The wiring that must never gate* below for why it has no row anywhere |
 | **Language** | Python 3.12, standard library only. **No dependency may be added** — CI installs nothing to run the gates |
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
@@ -196,6 +197,19 @@ both were previously tracked by nothing.
 |---|---|---|
 | the pull-request report | automated | [`report.py`](../../.github/scripts/report.py), posted by [`checks.yml`](../../.github/workflows/checks.yml). **Watched arriving on [#55](https://github.com/sargismarkosyan/livespec/pull/55)**, read back with `gh pr view 55 --json comments` rather than inferred from the workflow file. It takes its counts from `board.py --json` and recomputes nothing |
 | the rule-bound measure, beside the gated number | **not applicable** | there is no coverage here at all, gated or otherwise — *What has no gate* above says what stands in its place and what that misses |
+
+**The pre-push hook is in neither table, and that is the decision rather than an
+omission.** It runs the free four fifths of `verify.py` before a push, it is off
+until somebody types the `core.hooksPath` line into their own clone, and
+`--no-verify` skips it. A row claiming it — in either state, in either table —
+would credit this repository with a refusal that nothing enforces, which is the
+false green [`gates.md`](../../method/gates.md#and-what-is-not-wiring-at-all)
+names as the worse outcome than no record at all. What it runs is in *The table*
+above, where the bindings keep what is true of one machine. `doctor` reads it as
+prose and does not count it as coverage.
+
+**Nothing came out of CI for it.** `checks.yml` still runs `verify.py` whole,
+board gate included, and that is still the required check.
 
 The report's row used to be a paragraph explaining why it had none: it is
 declared in `gates.md` as *not a gate*, so a row for it in the table above would

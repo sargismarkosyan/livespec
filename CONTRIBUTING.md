@@ -112,6 +112,18 @@ nothing but Python 3 — no dependency may be added to the gates, because CI
 installs nothing to run them. `plugin validate` is an offline schema check and
 needs no credentials.
 
+**To have the first of those run itself before you push**, once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+`.githooks/pre-push` then runs `verify.py --local` — every gate except the
+measurement board, whose only fix is an eval run somebody pays for and which is
+CI's to fail. It is a courtesy, not a gate: it is off until you type that line,
+`git push --no-verify` skips it, and it has no row in the gate wiring ledger for
+exactly that reason.
+
 `verify.py` runs the gates named in its own `GATES` list, and
 [`specs/setup/README.md`](specs/setup/README.md)'s *What it runs* row is checked
 against that list rather than kept in step by hand. They are

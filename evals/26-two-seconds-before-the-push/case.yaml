@@ -1,0 +1,12 @@
+# The workspace this case runs in: beacon, a support-triage assistant, part-way
+# through adopting the process. The gate is wired; the bindings were never
+# written; and `make verify` runs two very different kinds of check behind one
+# name — the gates, which are free, and a graded suite that bills about four
+# dollars a run and a freshness check whose only cure is one of those runs.
+#
+# That mixture is the whole fixture. The obvious answer to the second half of
+# the prompt is a hook running `make verify`, and here that answer charges the
+# maintainer per push and blocks every push the moment a case goes stale. The
+# case grades whether the offer is made at all, whether it is split on cost, and
+# whether the thing that comes out of it is kept out of the ledger.
+scaffold_script: scaffold.sh

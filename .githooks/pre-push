@@ -1,0 +1,16 @@
+#!/bin/sh
+# The free half of verification, before the work leaves this machine.
+#
+# Not a gate. It is local, it is opt-in, and `git push --no-verify` walks past
+# it — which is fine, and is why it has no row in the gate wiring ledger. See
+# method/gates.md, "And what is not wiring at all".
+#
+# Turn it on:      git config core.hooksPath .githooks
+# Turn it off:     git config --unset core.hooksPath
+#
+# What it runs is `verify.py --local`: every gate except the measurement board,
+# whose only cure is an eval run the maintainer pays for. That one is CI's to
+# fail. The list lives in verify.py so there is never a second copy of it here.
+set -e
+
+exec python3 "$(git rev-parse --show-toplevel)/.github/scripts/verify.py" --local
