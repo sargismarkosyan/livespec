@@ -170,6 +170,28 @@ Closes #12
   it on the pull request, but finding out locally is cheaper, and every commit is
   a screenshot candidate.
 
+**That absolute has exactly one exception, and it is narrow enough to state in
+full.** A repository may hold a check whose failure nobody in the session can
+clear — [graded-case bookkeeping](graded-cases.md#freshness-is-gated-the-score-never-is)
+is the usual one, red because a number no longer describes the files it measured,
+and curable only by a run somebody has to pay for and approve. Such a state may be
+committed and pushed. Three conditions, all of them:
+
+- it is the **only** failure. A broken gate underneath one is a broken gate, and
+  the exception is not available to the state that carries it;
+- the cure is a spend rather than an edit;
+- nobody in the session can authorise that spend.
+
+**What it owes is two sentences.** The commit says which measurements are waiting
+and that nothing here clears them. The pull request says what the run costs and
+who can approve it — so the person who can is told, rather than the fact sitting
+in a log nobody opens.
+
+**And it ends at the push.** The exception buys a commit and a push, so the work
+can be read and reviewed while the bill is settled. It does not buy a merge: the
+pipeline goes on refusing until somebody pays, and a repository that lets this
+state merge has not resolved the conflict, it has removed the gate.
+
 ## Issues
 
 **Wherever that repository's bindings say, through the command they name.** Not a

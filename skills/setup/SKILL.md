@@ -219,6 +219,16 @@ command runs them:
   only by a run somebody has to pay for, and indistinguishable to a hook from a
   broken gate. Leave it to the pipeline.
 
+**Leaving it to the pipeline is only an answer if the pipeline can say which red
+it is.** So where the verification command can fail for a reason the method
+sanctions, the repository leaves this sitting able to tell that apart from a
+broken gate — in what the command returns as much as in its last line — and with
+its pull-request report **not** skipped on the failure it exists to describe.
+[`graded-cases.md`](../../method/graded-cases.md#freshness-is-gated-the-score-never-is)
+says why this is not a nicety: a red nobody can act on gets investigated a few
+times, found innocent every time, and then stops being read — and a gate nobody
+reads still counts as coverage to everybody looking at the list.
+
 Where the verification command runs both kinds, **the hook runs the free part by
 name, from the same list the command already reads.** A hook with its own copy of
 that list is a second answer to *what does verification mean here*, and it goes

@@ -1,7 +1,7 @@
 @feature:verification-which-red @workflow:adopt-the-process
 Feature: A verification that can be red without anything being broken
 
-  @rule:the-one-red-a-commit-may-carry @planned
+  @rule:the-one-red-a-commit-may-carry
   Rule: A state whose only failure is a measurement waiting on a spend nobody in the session can approve may be committed and pushed, and says so
 
     Example: a skill body moves and the cases holding it go stale
@@ -23,7 +23,7 @@ Feature: A verification that can be red without anything being broken
       Then the pipeline is still red
       And the exception has bought a commit and a push, never a merge
 
-  @rule:a-red-says-which-red-it-is @planned
+  @rule:a-red-says-which-red-it-is
   Rule: Where verification can fail for a reason the method sanctions, its result says which of the two happened without anybody reading the log
 
     Example: the only failure is bookkeeping waiting on a run
@@ -44,7 +44,7 @@ Feature: A verification that can be red without anything being broken
       Then it says so the one way it always has
       And no second kind of red has been invented for a state this repository cannot enter
 
-  @rule:what-explains-a-red-survives-it @planned
+  @rule:what-explains-a-red-survives-it
   Rule: Whatever a repository posts to explain its state still runs when the state is the sanctioned red
 
     Example: the report is what would have said which red it was

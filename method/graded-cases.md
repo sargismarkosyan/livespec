@@ -120,6 +120,33 @@ a reason to stop and ask, never a licence to spend. Say which cases went stale
 and what it will cost, and wait; the work can be finished with a gap where the
 numbers go.
 
+**So a stale measurement is the one red a commit may carry**, and the page about
+committing is where that is written down rather than left to be inferred from
+here: [repository.md](repository.md#commits) states the exception, the three
+conditions on it, and the fact that it ends at the push. What belongs on this page
+is the consequence of the design above. Gating the bookkeeping deliberately
+creates a **failure that is not a defect**, and it is the only one this method
+has.
+
+**A failure that is not a defect has to say so.** Verification that can be red for
+a reason this page sanctions must make the two distinguishable **in its result** —
+in what a machine reads, and in the last line a person reads — not only in prose
+addressed to whoever remembers this page. How is the repository's own business: a
+separate exit status, a distinct final line, the check reported apart from the
+rest. That there is one is not.
+
+**Skipping it costs the gate, not the afternoon.** A red meaning *a number is
+waiting on an approval* that looks exactly like a red meaning *something is
+broken* gets investigated the first two or three times, found innocent every time,
+and then stops being investigated at all. The gate is still running and nobody is
+reading it — which is worse than never having wired it, because it still counts as
+coverage to everybody looking at the list.
+
+**The same rule reaches whatever else describes the build.** A report skipped when
+verification fails cannot describe the one failure the method sanctions;
+[gates.md](gates.md#the-report-is-not-a-gate) says why that is a defect in the
+report rather than a property of reports.
+
 ## The evidence is local, the summary is durable
 
 A run produces far more than a score: full transcripts, every graded verdict, the

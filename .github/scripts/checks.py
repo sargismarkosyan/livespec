@@ -269,8 +269,13 @@ bindings = ROOT / "specs" / "setup" / "README.md"
 
 
 def injected() -> list[tuple[str, str]]:
-    """Every fault inject.py holds, in the order it applies them."""
-    return [(f[0], f[3]) for f in inject.FAULTS] + [(f[0], "fails") for f in inject.RELEASE_FAULTS]
+    """Every fault inject.py holds, in the order it applies them.
+
+    Asked of inject.py rather than assembled here: which lists it keeps, and how
+    many, is its business. This check exists because a second copy of something
+    drifts, so it does not open with one.
+    """
+    return inject.record_rows()
 
 
 def recorded(text: str) -> list[tuple[str, str]] | None:

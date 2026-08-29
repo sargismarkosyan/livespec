@@ -27,19 +27,20 @@ wherever the method says *test*, this repository means **eval case**:
 | | |
 |---|---|
 | **Verification** | `python3 .github/scripts/verify.py` |
+| **What it returns** | 0 green; **1** a gate is broken; **2** nothing is broken and a measurement run somebody pays for is owed. The split is `COSTS_MONEY` in `verify.py`, the same constant `--local` filters on, and the decision is `verdict()` — pure, so `inject.py` can break it without a fixture. A mixed failure is **1**: a defect never reports as a bill. `run.py` already exits 2 for the same sentence from the other side. **CI is red either way** — this distinguishes the red, it does not soften it |
 | **What it runs** | `checks.py`, `trace.py`, `evalsuite.py`, `board.py`, `inject.py`, in that order |
 | **Before the push** | `.githooks/pre-push` — one line, `exec verify.py --local`. **Off by default**: `git config core.hooksPath .githooks` turns it on in a clone, `git config --unset core.hooksPath` turns it off, and `git push --no-verify` walks past it. `--local` runs every gate but `board.py`, whose only cure is an eval run the maintainer pays for — see *The wiring that must never gate* below for why it has no row anywhere |
 | **Language** | Python 3.12, standard library only. **No dependency may be added** — CI installs nothing to run the gates |
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
 | **Eval-suite gate** | `.github/scripts/evalsuite.py [root]` |
-| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks every gate in it one fault at a time, then breaks the release inputs, which need no fixture. *The fault injection record* below is generated from its two lists and checked against them by `checks.py`, so it cannot fall behind. It also holds two **controls**: that the unbroken release inputs release, and that `report.py` exits zero on every degenerate input, which is what `always-green` rests on |
+| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks every gate in it one fault at a time, then breaks the release inputs, which need no fixture. *The fault injection record* below is generated from its three lists and checked against them by `checks.py`, so it cannot fall behind. Two of the three are pure and need no fixture: the release inputs, and `verify.py`'s `verdict()`. It also holds three **controls**: that the unbroken release inputs release, that `report.py` exits zero on every degenerate input, which is what `always-green` rests on, and that a run whose only failure is the board reads as a bill rather than a defect |
 | **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body |
 | **Spec-surface check** | the same gate, asked separately. Fails a change to a `.feature` under `specs/features/` or `specs/workflows/` whose body carries no ` ```gherkin ` block and no link to a `.feature` pinned at a 40-character SHA. A layer README is not a `.feature` and does not trigger it |
 | **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, runs `verify.py`, commits, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
 | **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate and the release job share, and pure, so `inject.py` can break it |
 | **Repository checks** | `.github/scripts/checks.py [root]` — manifests, skill frontmatter, always-on budget, link and payload checks, and the two enumerations in this file that restate what another script owns. It takes a root so `inject.py` can break it |
-| **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. No coverage section: there is no coverage gate here, and *What has no gate* says why |
+| **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. Since [`0025`](../changes/0025-which-red-it-is.md) each is guarded `!cancelled()` rather than left to stop with the job, so the report is built and posted **on a red build too** — the run where its *Stale* row is the thing worth reading, and the run it was previously skipped on. No coverage section: there is no coverage gate here, and *What has no gate* says why |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. A `case.yaml` may name a `scaffold_script` — bash in the case directory, run by `run.py --scaffold` in the session's fresh workspace, both arms alike. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
 | **Always-on budget** | 5000 chars across model-invocable skills; currently 4315 across 8 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
@@ -157,7 +158,7 @@ gate.
 
 ## Gate wiring
 
-**Reconciled against livespec 0.22.0 on 2026-08-28.** One row per gate named in
+**Reconciled against livespec 0.24.0 on 2026-08-29.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
@@ -195,7 +196,7 @@ both were previously tracked by nothing.
 
 | Wiring | State | How, or why not |
 |---|---|---|
-| the pull-request report | automated | [`report.py`](../../.github/scripts/report.py), posted by [`checks.yml`](../../.github/workflows/checks.yml). **Watched arriving on [#55](https://github.com/sargismarkosyan/livespec/pull/55)**, read back with `gh pr view 55 --json comments` rather than inferred from the workflow file. It takes its counts from `board.py --json` and recomputes nothing |
+| the pull-request report | automated | [`report.py`](../../.github/scripts/report.py), posted by [`checks.yml`](../../.github/workflows/checks.yml). **Watched arriving on [#55](https://github.com/sargismarkosyan/livespec/pull/55)**, read back with `gh pr view 55 --json comments` rather than inferred from the workflow file. It takes its counts from `board.py --json` and recomputes nothing. **Arriving on a *red* build is unobserved** — [`0025`](../changes/0025-which-red-it-is.md) guarded the steps `!cancelled()` for exactly that case and the only evidence so far is the workflow file, which is the kind of evidence this table exists to refuse. Its own pull request is the first run that can settle it |
 | the rule-bound measure, beside the gated number | **not applicable** | there is no coverage here at all, gated or otherwise — *What has no gate* above says what stands in its place and what that misses |
 
 **The pre-push hook is in neither table, and that is the decision rather than an
@@ -217,19 +218,28 @@ have been the first thing there that was not one. That reasoning was sound and
 the conclusion was wrong — the thing it argued out of the ledger is exactly the
 thing nothing else tracks. It has a table now.
 
-**The stamp moved to 0.22.0, and the reason is the test for moving it.** It sat at
+**The stamp moved to 0.24.0**, because [`0025`](../changes/0025-which-red-it-is.md)
+rewired three things rather than describing them: `inject.py` gained a third list
+of faults and a third control, `checks.py` gained the check that reads that list
+back, and the report stopped being skipped on a failing build. That last one is a
+change to *when* wiring runs, which is wiring — a row that only ever ran on green
+was covering less than it read as covering.
+
+**The previous stamp, and why it is the test for moving one.** It sat at
 0.9.0 through the change that added the second table — that was new bookkeeping,
 with no gate added, removed or rewired, and
 [`setup`](../../skills/setup/SKILL.md) says to re-stamp only when the wiring
-actually moved. [`0022`](../changes/0022-nobody-types-the-record.md) moved it: a
-gate gained a check and another gate became injectable for the first time. A ledger
+actually moved. [`0022`](../changes/0022-nobody-types-the-record.md) moved it to 0.22.0: a
+gate gained a check and another gate became injectable for the first time.
+[`0024`](../changes/0024-before-it-leaves-this-machine.md) then left it alone, and
+was right to — a pre-push hook is not a gate and rewired nothing. A ledger
 re-stamped for a change that rewired nothing has learned to lie, and one left
 unstamped through a change that rewired something has learned it the other way
 round.
 
 ## The fault injection record
 
-Run on **2026-08-28** by `python3 .github/scripts/inject.py`, which is part of
+Run on **2026-08-29** by `python3 .github/scripts/inject.py`, which is part of
 `verify.py` and therefore of every CI run — so this record is re-made rather than
 remembered. **Every fault below produced the expected result**, and
 `verify.py` prints the count on every run.
@@ -288,8 +298,9 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a version that is not major.minor.patch | fails | ✔ |
 | spec-moving change whose body carries no gherkin | fails | ✔ |
 | a gherkin block with nothing in it | fails | ✔ |
+| a broken gate underneath a stale measurement | fails | ✔ |
 
-**Two controls sit alongside the table and are not faults.** One checks the unbroken release inputs still release; the other checks the report cannot fail a build — there is nothing to break there, because the whole promise is that nothing breaks, so what is asserted is that every degenerate input still exits zero. It was confirmed by making `report.py` able to fail and watching the control report it.
+**Three controls sit alongside the table and are not faults.** One checks the unbroken release inputs still release; one checks the report cannot fail a build — there is nothing to break there, because the whole promise is that nothing breaks, so what is asserted is that every degenerate input still exits zero. It was confirmed by making `report.py` able to fail and watching the control report it. The third, added by [`0025`](../changes/0025-which-red-it-is.md), asserts the two reds from the side no fault can reach: a green run says nothing, and a run whose only failure is the board exits 2, does not say *verification failed*, and names who can approve the run that clears it.
 
 The release faults need no fixture. `releaselib.py` is pure — a label list and a pull
 request body in, a decision out — which is the whole reason it is a module rather

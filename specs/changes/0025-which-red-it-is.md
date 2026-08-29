@@ -1,6 +1,6 @@
 # Spec 0025: which red it is
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#65](https://github.com/sargismarkosyan/livespec/issues/65)
 - **Depends on:** nothing. It corrects three sentences written before
   [`0013`](0013-the-board-of-latest-measurements.md) created a failure that is not

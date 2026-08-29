@@ -145,8 +145,7 @@ the most convincing false green there is.
 ## The report is not a gate
 
 A report on a pull request — spec health, coverage, what is specced but not built
-— earns its place only if it **cannot fail the build**. It runs after both gates
-have passed, so it only ever describes a green run.
+— earns its place only if it **cannot fail the build**.
 
 And it recomputes nothing. If the traceability gate passed, that *is* the proof
 every live rule has a test; a report that re-derives it is a second copy of the
@@ -178,6 +177,20 @@ because it could not build a report is a gate nobody declared. If the token is
 missing, the base will not check out, or the tooling breaks, it says nothing and
 the build is unaffected. The honest cost of that: a report going missing is
 itself silent, and nobody is told.
+
+**And it describes a red build too.** The obvious wiring puts the report after
+the gates, where it only ever runs on a green one — which is backwards for any
+repository whose verification can fail for a reason the method sanctions, such as
+[bookkeeping waiting on a run somebody pays for](graded-cases.md#freshness-is-gated-the-score-never-is).
+That build is the one whose state most needs explaining, and a report skipped on
+failure is unreachable on precisely the runs where its numbers would change what
+somebody does. **So what explains a build survives the build failing**, and the
+numbers a gate hands over are worth handing over when the gate is red.
+
+That is safe because of the rule above rather than despite it: a report that runs
+on a red build cannot turn it green, and one that cannot be built still says
+nothing and still fails nothing. What it must not become is a second opinion — it
+reports which failure happened, and never whether the failure counts.
 
 ## What is wired, and what is not
 
