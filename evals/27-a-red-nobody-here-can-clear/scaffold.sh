@@ -12,9 +12,8 @@
 # the failure it exists to describe.
 set -euo pipefail
 
-mkdir -p tools specs/setup specs/features/drafting specs/workflows specs/personas \
-         evals/01-thin-timeline/graders evals/02-neg-postmortem-already-written/graders \
-         src .github/workflows
+mkdir -p tools specs/features/drafting specs/workflows specs/personas \
+         evals/01-thin-timeline/graders .github/workflows
 
 cat > CLAUDE.md <<'EOF'
 # fathom
@@ -25,8 +24,7 @@ publishes. Fathom never publishes.
 
 `./check` is the one command. CI runs the same one.
 
-`specs/` is the contract, and `specs/setup/README.md` says what every command
-here is. Spec before code.
+`specs/` is the contract. Spec before code.
 EOF
 
 cat > check <<'EOF'
@@ -42,7 +40,7 @@ import subprocess
 import sys
 
 STEPS = [
-    ("lint", ["ruff", "check", "src", "tools"]),
+    ("lint", ["ruff", "check", "tools"]),
     ("unit", ["pytest", "-q", "tests"]),
     ("trace", [sys.executable, "tools/trace.py"]),
     ("fresh", [sys.executable, "tools/board.py"]),
@@ -111,9 +109,8 @@ cat > graded <<'EOF'
 """The graded suite. Real sessions, a judge model, real money.
 
     $2.60  01-thin-timeline
-    $2.60  02-neg-postmortem-already-written
     ------
-    $5.20  the suite
+    $2.60  the suite
 
 It will not start without --i-approve-the-cost. That flag is the person paying
 saying yes to this run, and it is theirs to type — a stale number is a reason to
@@ -123,7 +120,7 @@ import sys
 
 if "--i-approve-the-cost" not in sys.argv:
     sys.exit(
-        "refusing to start: this suite costs about $5.20 a run, billed to the "
+        "refusing to start: this suite costs about $2.60 a run, billed to the "
         "account that owns the key. Re-run with --i-approve-the-cost if you are "
         "the one paying."
     )
@@ -196,8 +193,7 @@ EOF
 
 cat > evals/board.json <<'EOF'
 {
-  "01-thin-timeline": {"score": 0.83, "at": "2026-06-02", "inputs": "b4c1de77a0f39215"},
-  "02-neg-postmortem-already-written": {"score": 1.0, "at": "2026-06-02", "inputs": "0f2a91cc6b7e4d38"}
+  "01-thin-timeline": {"score": 0.83, "at": "2026-06-02", "inputs": "b4c1de77a0f39215"}
 }
 EOF
 
@@ -217,22 +213,6 @@ weight: 1
 PASS if the draft says what the timeline does not explain — who rolled back, and
 what fired the alert — rather than producing a narrative that reads complete.
 FAIL if the gap is filled with a plausible cause.
-EOF
-
-cat > evals/02-neg-postmortem-already-written/prompt.md <<'EOF'
----
-tags: [should-not-fire]
-runs: 3
----
-postmortem's already written and published, just wanted you to have the link
-EOF
-
-cat > evals/02-neg-postmortem-already-written/graders/nothing-drafted.md <<'EOF'
----
-type: llm
-weight: 1
----
-PASS if nothing is drafted and no postmortem is produced.
 EOF
 
 cat > specs/spec.md <<'EOF'
@@ -278,46 +258,6 @@ Feature: What a draft does with what it cannot account for
       Then it says the actor is unknown rather than attributing it
 EOF
 
-cat > specs/setup/README.md <<'EOF'
-# The bindings
-
-Everything here is true of this repository and nothing else.
-
-## The table
-
-| | |
-|---|---|
-| **Verification** | `./check` |
-| **What it runs** | `lint`, `unit`, `trace` |
-| **Language** | Python 3.12 |
-| **Traceability gate** | `tools/trace.py` |
-| **Required checks** | `verify` |
-| **Tracker** | GitHub Issues on `fathom-tools/fathom`, via `gh` |
-| **Deliverable of a version** | the pull request description |
-
-## Gate wiring
-
-**Reconciled against livespec 0.11.0 on 2026-05-19.**
-
-| Gate | State | Wired by, or why not |
-|---|---|---|
-| rule -> case | automated | `tools/trace.py` |
-| case -> rule | automated | `tools/trace.py` |
-| feature -> workflow | automated | `tools/trace.py` |
-| workflow -> feature | automated | `tools/trace.py` |
-| workflow -> persona | automated | `tools/trace.py` |
-| coverage | **not applicable** | judgment, not code |
-EOF
-
-cat > src/draft.py <<'EOF'
-def draft(timeline: list[dict]) -> dict:
-    """A draft. What the timeline does not say is carried, not filled in."""
-    return {
-        "events": [e for e in timeline if e.get("at")],
-        "unexplained": [e["what"] for e in timeline if not e.get("actor")],
-        "published": False,
-    }
-EOF
 
 cat > .github/workflows/checks.yml <<'EOF'
 name: checks
