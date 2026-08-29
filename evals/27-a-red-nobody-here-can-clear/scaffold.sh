@@ -273,6 +273,13 @@ jobs:
       - name: Check
         run: ./check
 
+      # Not about the tree - it reads this pull request, which is why it is not
+      # part of ./check. Nothing may merge without a line for the changelog.
+      - name: Changelog entry
+        run: |
+          jq -er '.pull_request.body | test("(?m)^## Changelog")' "$GITHUB_EVENT_PATH" \
+            || { echo "::error::no ## Changelog section in the description"; exit 1; }
+
       # Reporting. `check` has passed by here - steps stop on first failure - so
       # this only ever describes a green run.
       - name: Comment the report

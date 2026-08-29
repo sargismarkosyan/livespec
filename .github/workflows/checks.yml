@@ -42,11 +42,26 @@ jobs:
       # of verify.py, and why it only runs here. It checks the two things the
       # release job cannot work out for itself: how big the change is, and what
       # to say about it. See .github/workflows/release.yml.
+      #
+      # `!cancelled()` because it does not depend on Verify: this reads the pull
+      # request, Verify reads the tree, and neither can fail because the other
+      # did. Without it this gate was skipped on twelve of the last twelve
+      # failing runs, so nothing said whether the label was fine or was never
+      # looked at — and since a red board is a failure the method sanctions
+      # pushing on, that could stand for days. See method/gates.md, "A gate that
+      # does not depend on a failing one", and specs/changes/0026-what-else-is-wrong.md.
+      #
+      # It is still a gate. No `continue-on-error` here: running late changes
+      # when it speaks and never whether it blocks, and copying the guard down
+      # from the reporting steps *with* their continue-on-error is the way to
+      # break that.
       - name: Release inputs
-        if: github.event_name == 'pull_request'
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         run: python3 .github/scripts/version_gate.py origin/${{ github.base_ref }}
 
-      # Everything below is reporting, and it runs whether or not Verify passed.
+      # Everything below is reporting. The gate above is guarded for a different
+      # reason and keeps its teeth; these three have none by design.
+      #
       # A job stops at its first failing step unless a step says otherwise, and
       # that default made the report unreachable on the one run it exists for:
       # a red board is a failure the method sanctions committing and pushing, so
@@ -62,7 +77,7 @@ jobs:
       # promise it would break. A missing token, a rate limit or a base ref that
       # will not check out must leave the build exactly as it was — which now
       # includes leaving a red build red. The report cannot turn one green: it
-      # runs after the gating step and changes no step's outcome.
+      # runs after the gating steps and changes no step's outcome.
       # The cost is that the report going missing is itself silent.
       - name: The spec layer, here and on the base
         if: ${{ !cancelled() && github.event_name == 'pull_request' }}
@@ -109,14 +124,24 @@ jobs:
           node-version: "22"
       # `plugin validate` is an offline schema check — it needs no credentials.
       - name: Install the Claude Code CLI
+        id: install
         run: npm install -g @anthropic-ai/claude-code
+      # The same argument as Release inputs above, three times: these read three
+      # different files and none of them can fail because another did, so one
+      # failure hiding the other two costs a round trip and buys nothing.
+      #
+      # Conditioned on the install rather than on `!cancelled()` alone, because
+      # these *do* depend on something: with the CLI missing all three fail
+      # saying so, which is one finding reported three times.
       - name: Validate the marketplace manifest
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: claude plugin validate . --strict
       # --strict is dropped here alone. It treats warnings as errors, and this
       # repository is a plugin root that deliberately keeps its project CLAUDE.md
       # at the root — where `plugin validate` warns, correctly for a consumer and
       # wrongly for us. Any *other* warning still fails the job.
       - name: Validate the plugin manifest
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: |
           out=$(claude plugin validate ./.claude-plugin/plugin.json 2>&1) || { echo "$out"; exit 1; }
           echo "$out"
@@ -125,4 +150,5 @@ jobs:
             exit 1
           fi
       - name: Validate the skills
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: claude plugin validate ./skills --strict

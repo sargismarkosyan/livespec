@@ -192,6 +192,37 @@ on a red build cannot turn it green, and one that cannot be built still says
 nothing and still fails nothing. What it must not become is a second opinion — it
 reports which failure happened, and never whether the failure counts.
 
+## A gate that does not depend on a failing one
+
+The same wiring hides more than the report. A run stops at its first failing
+check, which is right while every red clears in the minute after it is read: it
+gets fixed, the run happens again, and everything below speaks then. It stops
+being right the moment a red can **stand** — and where bookkeeping waits on a
+spend nobody in the session can approve, one can, for days. "Stop at the first
+failure" then quietly means "hide every other verdict until the bill is settled",
+and somebody pays the expensive thing only to be told the cheap thing was wrong
+all along.
+
+So a gate that does not depend on the failing one runs anyway, and its verdict is
+in the same run. Nothing is being let through: **the build fails either way**.
+What changes is how much of what is wrong gets said per attempt, and the reader
+was going to fix all of it regardless.
+
+The guarantee that makes this different from the report is the one worth writing
+down, because it is the opposite guarantee. A report may run late *because it
+cannot gate*. A gate may run late only if running late leaves it gating — so
+**running late changes when it speaks and never whether it blocks**. Whatever
+softening a report is given so it can fail harmlessly is exactly what a gate must
+not be given when the same guard is copied down a file. That copy is the
+plausible mistake, and it turns a gate into a report while looking like tidiness.
+
+**Depends on** is doing real work in that sentence, and it is not a synonym for
+*comes after*. Two checks reading different things cannot fail for each other's
+reasons; a check that cannot start until an earlier step has prepared something
+can, and forcing it to run then reports one failure a second time in language
+that suggests two. So the condition is that the prerequisite got there, not
+merely that the run is still alive.
+
 ## What is wired, and what is not
 
 A repository rarely gets every gate on this page on the day the process arrives.

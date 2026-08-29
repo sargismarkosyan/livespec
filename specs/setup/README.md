@@ -158,7 +158,7 @@ gate.
 
 ## Gate wiring
 
-**Reconciled against livespec 0.24.0 on 2026-08-29.** One row per gate named in
+**Reconciled against livespec 0.25.0 on 2026-08-29.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
@@ -218,7 +218,16 @@ have been the first thing there that was not one. That reasoning was sound and
 the conclusion was wrong — the thing it argued out of the ledger is exactly the
 thing nothing else tracks. It has a table now.
 
-**The stamp moved to 0.24.0**, because [`0025`](../changes/0025-which-red-it-is.md)
+**The stamp moved to 0.25.0**, because
+[`0026`](../changes/0026-what-else-is-wrong.md) changed when four gates run —
+which is wiring by the same reading `0025` established below, and by a wider
+margin: three of the four had never once executed on a failing run. Nothing was
+added, removed or made to cover new ground, so no row above changes state. What
+changed is that rows already reading *automated* are now reachable on the runs
+where they were skipped, and a row is a claim about what this repository refuses
+rather than about what it refuses on a good day.
+
+**It had moved to 0.24.0 before that**, because [`0025`](../changes/0025-which-red-it-is.md)
 rewired three things rather than describing them: `inject.py` gained a third list
 of faults and a third control, `checks.py` gained the check that reads that list
 back, and the report stopped being skipped on a failing build. That last one is a
@@ -399,6 +408,18 @@ on push to `main` and on every pull request:
   release-input gate on pull requests only.
 - **`plugin validate`** — Node 22, installs `@anthropic-ai/claude-code` from npm
   and runs the three offline schema validations.
+
+**Four steps across the two jobs carry `!cancelled()` and are still gates**,
+added by [`0026`](../changes/0026-what-else-is-wrong.md): the release-input gate,
+and the three validations. None of them can fail because an earlier gate did —
+one reads the pull request where `verify.py` reads the tree, and the three read
+three different files — so a job stopping at its first failure was costing a
+round trip and hiding nothing that was not already failing. **Neither the guard
+nor anything else gives them `continue-on-error`**, which is the line between
+these and the three reporting steps below them in the same job. The three
+validations are additionally conditioned on `steps.install.outcome == 'success'`:
+they do depend on the CLI being installed, and without that clause one missing
+install is reported three times as three failures.
 
 **The pull-request trigger names its types**, which a workflow rarely needs to
 do: `opened, synchronize, reopened, labeled, unlabeled, edited`. The first three
