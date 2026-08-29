@@ -58,3 +58,26 @@ Feature: A verification that can be red without anything being broken
       When it is built and posted
       Then whether the change may merge is unchanged by it
       And a report that cannot be built still says nothing and fails nothing
+
+  @rule:a-red-does-not-hide-the-gates-after-it @planned
+  Rule: A gate that does not depend on a failing one still runs on the same red build, and still gates
+
+    Example: the sanctioned red is standing and something else is wrong as well
+      Given verification red only because a measurement is waiting on a spend nobody in the session can approve
+      And a second gate reading the change itself rather than the tree
+      When the run finishes
+      Then the second gate has said whether it passed
+      And what is still owed was learned on one run rather than on the run after the bill was settled
+
+    Example: speaking later does not turn a gate into a report
+      Given a gate that now runs after a failing gate
+      When it finds something wrong
+      Then the change still cannot merge
+      And running late has changed when it speaks and never whether it blocks
+
+    Example: a gate whose prerequisite never ran
+      Given a gate that cannot run until an earlier step has prepared what it needs
+      And that earlier step failing
+      When the run carries on
+      Then the gate is not made to run anyway
+      And nothing reports a second failure that is only the first one restated
