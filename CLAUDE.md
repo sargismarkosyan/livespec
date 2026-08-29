@@ -13,8 +13,8 @@ approves specs. Read that split into everything below.
 
 **This repository is its own plugin.** The method in [`method/`](method/README.md)
 and the skills in [`skills/`](skills/) are not reference material to consult when
-stuck — they are the rules this repository is held to, and reading them is not
-optional. Do not restate them here.
+stuck — they are the rules this repository is held to, so they are worth reading
+rather than working around. They do not need restating here.
 
 **The line:** could this sentence survive a repository with pytest and a Makefile?
 If yes it belongs in `method/`. If it names a command, a threshold, a filename or
@@ -52,26 +52,26 @@ Getting this wrong is how two copies of a method start disagreeing.
    `release.yml` writes the bump, the entry, the tag and the GitHub Release.
 8. Close the issue with what was asked, what shipped, and why they differ.
 
-## Rules that get broken here
+## The rules easiest to lose here
 
-The full set is in [method/process.md](method/process.md). These are the ones
-this repository actually loses:
+The full set is in [method/process.md](method/process.md). These are the ones a
+session here is most likely to miss:
 
-- **The `description` is the expensive field.** It loads in every session.
-  Widening one is paid for in `evals/` with a should-not-fire case, never on a hunch.
+- **The `description` is the expensive field.** It loads in every session, so
+  widening one is paid for in `evals/` with a should-not-fire case.
 - **Skills never implement.** `feedback` files, `refine-*` specs, `record-clip`
   records. None of them touch application code.
-- **No dependency may be added to the gates.** Python 3 standard library only —
-  CI installs nothing to run them.
+- **The gates take no dependencies.** Python 3 standard library only — CI
+  installs nothing to run them.
 - **Merging is releasing.** `main` is production: the marketplace takes no ref,
-  so `/plugin update` reads `version` off this branch. The pipeline moves it —
-  what you owe is the label, the `## Changelog` section, and the Gherkin block
-  when a `.feature` moved. CI fails a pull request that ships or re-promises
-  without them. Editing `version` or `CHANGELOG.md`
-  by hand now fights the release job rather than helping it.
+  so `/plugin update` reads `version` off this branch. The pipeline moves it,
+  and what a pull request owes is the label, the `## Changelog` section, and the
+  Gherkin block when a `.feature` moved. CI fails a pull request that ships or
+  re-promises without them. Editing `version` or `CHANGELOG.md` by hand works
+  against the release job rather than with it.
 - **Rule, workflow and persona ids are permanent.** Renaming one orphans every
   case pointing at it, in every consuming repository at once.
-- **A payload file nothing links fails CI.** It ships to every user unread.
+- **A payload file nothing links fails CI.** It would ship to every user unread.
 - **A measurement does not outlive what it measured.** Editing a skill, a rule
   or an eval case stales its entries in `evals/board.json`, and `verify.py`
   **exits 2** until `evals/runner/run.py --changed` re-measures exactly those —
@@ -80,16 +80,19 @@ this repository actually loses:
   is a gate, and a tree failing both is 1. Committing and pushing on a 2 is
   sanctioned — [`method/repository.md`](method/repository.md), *Commits*, says
   what the commit and the pull request then owe.
-- **The suite never runs unasked.** Every run bills the maintainer's account
-  and draws down its session limit — about $1.80 for one case, ~$4 for the
-  suite, and three runs in one sitting have exhausted it outright. `run.py`
+- **The suite runs when the maintainer asks for it.** Every run bills their
+  account and draws down its session limit — about $1.80 for one case, ~$4 for
+  the suite, and three runs in one sitting have exhausted it outright. `run.py`
   refuses without `--i-approve-the-cost`, `evalsuite.py` fails if that refusal
-  is removed, and **the flag is the maintainer's signature, not yours**: a
-  stale board entry is a reason to stop and ask, never a licence to spend. Say
-  which cases are stale and what it will cost, then wait. The commit and the
-  pull request can be finished with a gap where the numbers go.
-- **Every commit green, or exit 2 and said out loud.** `verify.py` before
-  committing, always. `git config core.hooksPath .githooks` makes `.githooks/pre-push` run the free four fifths of it before a push — off until you type that, bypassable with `--no-verify`, and deliberately not in the ledger.
+  is removed, and the flag is the maintainer's to add rather than the session's.
+  A stale board entry is worth naming and costing out; the decision to spend
+  comes from them. Say which cases are stale and what it will cost, then wait —
+  the commit and the pull request can be finished with a gap where the numbers
+  go.
+- **Every commit green, or exit 2 and said out loud.** Run `verify.py` before
+  committing. `git config core.hooksPath .githooks` makes `.githooks/pre-push`
+  run the free four fifths of it before a push — off until you type that,
+  bypassable with `--no-verify`, and deliberately not in the ledger.
 
 ## Commands
 
@@ -105,8 +108,8 @@ The last one refuses unless the maintainer adds `--i-approve-the-cost`, per the
 rule above. It **costs money per session and never runs in CI** — it drives real
 `claude -p` sessions through promptfoo, because the native `claude plugin eval`
 is gated behind early access on this account. The gates hold the eval suite
-structurally — see the bindings, and do not read a green `verify.py` as saying
-the cases passed.
+structurally — see the bindings, and a green `verify.py` does not mean the
+cases passed.
 
 ## Layout
 
