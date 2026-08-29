@@ -100,19 +100,33 @@ FIXTURE: dict[str, str] = {
 }
 
 
+def record_rows() -> list[tuple[str, str]]:
+    """Every fault this module holds, in the order it applies them.
+
+    The one definition, called by the fixture below and by checks.py against the
+    real bindings. A fourth list of faults is wired in here and nowhere else —
+    the previous shape had this expression written out twice, and the second copy
+    was found by adding a list and watching only one of them notice.
+    """
+    return (
+        [(f[0], f[3]) for f in FAULTS]
+        + [(f[0], "fails") for f in RELEASE_FAULTS]
+        + [(f[0], "fails") for f in VERDICT_FAULTS]
+    )
+
+
 def bindings(root: Path) -> None:
     """The two enumerations checks.py reads back, generated from what owns them.
 
-    `checks.py` compares the fault injection record against FAULTS + RELEASE_FAULTS
-    and the *What it runs* row against verify.py's gate list. Generating both here
-    means the unbroken fixture is green by construction — and, less obviously, that
-    a fault added below is recorded in the fixture without anybody remembering to,
+    `checks.py` compares the fault injection record against `record_rows()` and the
+    *What it runs* row against verify.py's gate list. Generating both here means
+    the unbroken fixture is green by construction — and, less obviously, that a
+    fault added below is recorded in the fixture without anybody remembering to,
     which is the same property the check exists to give the real bindings.
     """
-    rows = [(f[0], f[3]) for f in FAULTS] + [(f[0], "fails") for f in RELEASE_FAULTS]
     table = "\n".join(
         f"| {name} | {'**warns, does not fail**' if outcome == 'warns' else 'fails'} | \u2714 |"
-        for name, outcome in rows
+        for name, outcome in record_rows()
     )
     runs = ", ".join(f"`{script}`" for _, script in VERIFY_GATES)
     path = root / "specs" / "setup" / "README.md"
@@ -196,6 +210,7 @@ def drop(root: Path, relative: str) -> None:
 
 sys.path.insert(0, str(SCRIPTS))
 from caselib import cases, measurement_inputs  # noqa: E402
+import verify  # noqa: E402
 from verify import GATES as VERIFY_GATES  # noqa: E402
 from releaselib import (  # noqa: E402
     ReleaseInputError,
@@ -268,6 +283,23 @@ def report_control() -> None:
             )
             assert result.returncode == 0, f"the report exited {result.returncode} on {name}"
             assert result.stdout.strip(), f"the report printed nothing on {name}"
+
+
+def verdict_control() -> None:
+    """The two reds verify.py must keep apart, asserted from the correct side.
+
+    Not faults: nothing is broken here. It is the boundary the fault below sits
+    just outside of, and it is worth stating because the whole promise is that a
+    bill and a defect look different — which cannot be proved by breaking things
+    alone.
+    """
+    code, line = verify.verdict([])
+    assert code == 0 and not line, "a green run is not silent"
+
+    code, line = verify.verdict(["measurement board"])
+    assert code == verify.OWED, f"a bill exits {code}, not {verify.OWED}"
+    assert "verification failed" not in line, "a bill still reads as a failure"
+    assert "approve" in line, "a bill does not say who can clear it"
 
 
 def release_control() -> None:
@@ -394,6 +426,23 @@ FAULTS = [
 ]
 
 
+# The third pure list. Like the release faults it needs no fixture — verify.py's
+# verdict() takes a list of failed gate names and returns a decision — and like
+# them it exists because the thing being broken is a judgment rather than a file.
+#
+# One fault, and it is the only direction that can hurt: a real defect sitting
+# underneath an unpaid bill. Reporting that as a bill hides a break behind a
+# state the method says may be committed and pushed, which would turn the
+# exception in repository.md into a way of shipping anything.
+#
+# (name, what to try, the exit it must return, a phrase the line must contain)
+VERDICT_FAULTS = [
+    ("a broken gate underneath a stale measurement",
+     lambda: verify.verdict(["traceability", "measurement board"]),
+     verify.BROKEN, "verification failed"),
+]
+
+
 def run(gate: Path, root: Path, extra: list[str] | None = None) -> tuple[int, str]:
     result = subprocess.run(
         [sys.executable, str(gate), str(root), *(extra or [])], capture_output=True, text=True
@@ -437,6 +486,11 @@ def main() -> int:
     except AssertionError as error:
         problems.append(f"the unbroken release inputs do not release: {error}")
 
+    try:
+        verdict_control()
+    except AssertionError as error:
+        problems.append(f"verification cannot tell a bill from a defect: {error}")
+
     for name, attempt, phrase in RELEASE_FAULTS:
         try:
             attempt()
@@ -449,12 +503,19 @@ def main() -> int:
         if not ok:
             problems.append(f"{name}: expected a refusal naming {phrase!r}; got {detail}")
 
+    for name, attempt, expected, phrase in VERDICT_FAULTS:
+        code, line = attempt()
+        ok = code == expected and phrase in line
+        print(f"    {'✔' if ok else '✘'} {name:<48} fails")
+        if not ok:
+            problems.append(f"{name}: expected exit {expected} naming {phrase!r}; got exit {code}\n{line}")
+
     if problems:
         print(f"\n{len(problems)} gate(s) did not fire as expected:\n", file=sys.stderr)
         for problem in problems:
             print(f"  ✘ {problem}\n", file=sys.stderr)
         return 1
-    total = len(FAULTS) + len(RELEASE_FAULTS)
+    total = len(FAULTS) + len(RELEASE_FAULTS) + len(VERDICT_FAULTS)
     print(f"✔ gate fault injection: {total}/{total} faults caught")
     return 0
 

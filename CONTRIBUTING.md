@@ -124,6 +124,14 @@ CI's to fail. It is a courtesy, not a gate: it is off until you type that line,
 `git push --no-verify` skips it, and it has no row in the gate wiring ledger for
 exactly that reason.
 
+**`verify.py` has two reds.** Exit 1 is a gate broken and fixable here. Exit 2 is
+nothing broken and a measurement run somebody pays for owed — the state
+[`method/repository.md`](method/repository.md) permits committing and pushing, so
+long as the commit says which measurements are waiting and the pull request says
+what a run costs and who can approve one. A tree failing both is exit 1: a defect
+never reports as a bill. The split is `COSTS_MONEY`, the same constant `--local`
+filters on.
+
 `verify.py` runs the gates named in its own `GATES` list, and
 [`specs/setup/README.md`](specs/setup/README.md)'s *What it runs* row is checked
 against that list rather than kept in step by hand. They are
@@ -140,7 +148,7 @@ back from `inject.py` so it cannot fall behind. What each binding means is in
 [`specs/setup/README.md`](specs/setup/README.md).
 
 If you changed a skill, a rule or an eval case, the evals are no longer
-optional: their entries on `evals/board.json` go stale and `verify.py` fails
+optional: their entries on `evals/board.json` go stale and `verify.py` exits 2
 until `evals/runner/run.py --changed` re-measures exactly what moved — see
 [`evals/README.md`](evals/README.md). Running them stays a maintainer step
 (they cost money per session; CI checks the bookkeeping, never runs a case):

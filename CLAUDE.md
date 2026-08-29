@@ -74,9 +74,12 @@ this repository actually loses:
 - **A payload file nothing links fails CI.** It ships to every user unread.
 - **A measurement does not outlive what it measured.** Editing a skill, a rule
   or an eval case stales its entries in `evals/board.json`, and `verify.py`
-  fails until `evals/runner/run.py --changed` re-measures exactly those — real
-  sessions, real money, run locally before the commit. The score is never
-  gated; only its bookkeeping is.
+  **exits 2** until `evals/runner/run.py --changed` re-measures exactly those —
+  real sessions, real money. The score is never gated; only its bookkeeping is.
+  Exit 2 is the one red that means nothing is broken and a run is owed; exit 1
+  is a gate, and a tree failing both is 1. Committing and pushing on a 2 is
+  sanctioned — [`method/repository.md`](method/repository.md), *Commits*, says
+  what the commit and the pull request then owe.
 - **The suite never runs unasked.** Every run bills the maintainer's account
   and draws down its session limit — about $1.80 for one case, ~$4 for the
   suite, and three runs in one sitting have exhausted it outright. `run.py`
@@ -85,7 +88,8 @@ this repository actually loses:
   stale board entry is a reason to stop and ask, never a licence to spend. Say
   which cases are stale and what it will cost, then wait. The commit and the
   pull request can be finished with a gap where the numbers go.
-- **Every commit green.** `verify.py` before committing, always. `git config core.hooksPath .githooks` makes `.githooks/pre-push` run the free four fifths of it before a push — off until you type that, bypassable with `--no-verify`, and deliberately not in the ledger.
+- **Every commit green, or exit 2 and said out loud.** `verify.py` before
+  committing, always. `git config core.hooksPath .githooks` makes `.githooks/pre-push` run the free four fifths of it before a push — off until you type that, bypassable with `--no-verify`, and deliberately not in the ledger.
 
 ## Commands
 

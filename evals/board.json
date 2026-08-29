@@ -82,14 +82,14 @@
    "inputs": "703e99b2b4145c3d"
   },
   "09-setup-confirms-before-writing": {
-   "delta": 0.33,
+   "delta": 0.5,
    "with": 1.0,
-   "without": 0.67,
-   "runs": 3,
+   "without": 0.5,
+   "runs": 1,
    "at": "2026-08-29",
-   "sha": "452bcc3",
-   "cost": 1.09,
-   "inputs": "c52823f449bda2d0"
+   "sha": "5f881d1",
+   "cost": 0.28,
+   "inputs": "887be59a268ca82a"
   },
   "10-gate-deferred-twice": {
    "delta": 0.0,
@@ -105,21 +105,21 @@
    "delta": 0.0,
    "with": 1.0,
    "without": 1.0,
-   "runs": 3,
+   "runs": 1,
    "at": "2026-08-29",
-   "sha": "452bcc3",
-   "cost": 0.36,
-   "inputs": "efc4bda55e841049"
+   "sha": "5f881d1",
+   "cost": 0.12,
+   "inputs": "a9a4d8e8d7087c71"
   },
   "12-setup-drives-the-sitting": {
-   "delta": -0.1,
-   "with": 0.19,
-   "without": 0.29,
-   "runs": 3,
+   "delta": -0.14,
+   "with": 0.29,
+   "without": 0.43,
+   "runs": 1,
    "at": "2026-08-29",
-   "sha": "452bcc3",
-   "cost": 0.77,
-   "inputs": "8706d6129854f7df"
+   "sha": "5f881d1",
+   "cost": 0.34,
+   "inputs": "4fba9afa3dc5a9a1"
   },
   "13-feedback-about-the-plugin": {
    "delta": 1.0,
@@ -152,24 +152,24 @@
    "inputs": "9cec5e4d44b88db9"
   },
   "16-setup-with-no-app-code": {
-   "delta": 0.83,
-   "with": 0.83,
+   "delta": 0.5,
+   "with": 0.5,
    "without": 0.0,
-   "runs": 3,
+   "runs": 1,
    "at": "2026-08-29",
-   "sha": "452bcc3",
-   "cost": 0.73,
-   "inputs": "aacd5ac62661aa70"
+   "sha": "79a5b39",
+   "cost": 0.17,
+   "inputs": "072e37145ac9efeb"
   },
   "17-wiring-nobody-watched-run": {
-   "delta": 0.67,
-   "with": 0.83,
-   "without": 0.17,
-   "runs": 3,
+   "delta": 1.0,
+   "with": 1.0,
+   "without": 0.0,
+   "runs": 1,
    "at": "2026-08-29",
-   "sha": "452bcc3",
-   "cost": 4.49,
-   "inputs": "8566ce91e93ce1e2"
+   "sha": "79a5b39",
+   "cost": 1.59,
+   "inputs": "2737c73260502ab0"
   },
   "18-request-with-no-usage": {
    "delta": 1.0,
@@ -222,14 +222,14 @@
    "inputs": "bd1a0cb04e3e2a1c"
   },
   "23-what-a-change-here-must-show": {
-   "delta": 0.33,
-   "with": 0.33,
-   "without": 0.0,
-   "runs": 3,
+   "delta": -0.5,
+   "with": 0.0,
+   "without": 0.5,
+   "runs": 1,
    "at": "2026-08-29",
-   "sha": "452bcc3",
-   "cost": 3.82,
-   "inputs": "8d15f9eaa56b9966"
+   "sha": "79a5b39",
+   "cost": 1.43,
+   "inputs": "944d39268f7744f1"
   },
   "24-a-ledger-nobody-read-back": {
    "delta": 0.0,
@@ -252,14 +252,24 @@
    "inputs": "8329cdeef02683c6"
   },
   "26-two-seconds-before-the-push": {
-   "delta": -0.33,
-   "with": 0.67,
-   "without": 1.0,
-   "runs": 3,
+   "delta": 0.33,
+   "with": 1.0,
+   "without": 0.67,
+   "runs": 1,
    "at": "2026-08-29",
-   "sha": "452bcc3",
-   "cost": 4.67,
-   "inputs": "68905e8a50f882d8"
+   "sha": "8117129",
+   "cost": 1.21,
+   "inputs": "7a54f6dad0096395"
+  },
+  "27-a-red-nobody-here-can-clear": {
+   "delta": 0.67,
+   "with": 0.67,
+   "without": 0.0,
+   "runs": 1,
+   "at": "2026-08-29",
+   "sha": "8117129",
+   "cost": 2.31,
+   "inputs": "93a4b2b27e1828ca"
   }
  }
 }
