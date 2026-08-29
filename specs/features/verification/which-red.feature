@@ -59,7 +59,7 @@ Feature: A verification that can be red without anything being broken
       Then whether the change may merge is unchanged by it
       And a report that cannot be built still says nothing and fails nothing
 
-  @rule:a-red-does-not-hide-the-gates-after-it @planned
+  @rule:a-red-does-not-hide-the-gates-after-it
   Rule: A gate that does not depend on a failing one still runs on the same red build, and still gates
 
     Example: the sanctioned red is standing and something else is wrong as well

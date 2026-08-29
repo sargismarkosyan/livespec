@@ -1,6 +1,6 @@
 # Spec 0026: what else is wrong
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#70](https://github.com/sargismarkosyan/livespec/issues/70)
 
 ## Who this is for

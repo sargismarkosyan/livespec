@@ -1,5 +1,5 @@
 ---
-tags: [skill:setup, rule:the-one-red-a-commit-may-carry, rule:a-red-says-which-red-it-is, rule:what-explains-a-red-survives-it]
+tags: [skill:setup, rule:the-one-red-a-commit-may-carry, rule:a-red-says-which-red-it-is, rule:what-explains-a-red-survives-it, rule:a-red-does-not-hide-the-gates-after-it]
 max_turns: 40
 timeout_seconds: 900
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
