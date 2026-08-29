@@ -74,7 +74,8 @@ runs: 3
 | `workflow:<id>` | this case walks that workflow end to end | `trace.py` — a workflow nothing walks fails |
 | `should-not-fire` | this case asserts nothing fires | `evalsuite.py` — the suite must always keep at least one |
 
-**A case is not required to claim a rule**, and six now do. The direction that
+**A case is not required to claim a rule**, and the cases that predate this layer
+do not — see *The spec layer starts today* in [`../README.md`](../README.md). The direction that
 carries the value — `rule → case` — needed no exemption to work: it had nothing
 to fail on while the layer was empty and armed itself the moment the first rules
 landed in [`0008`](../changes/0008-the-gate-gets-something-to-hold.md). What is
@@ -252,6 +253,8 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a scaffold_script that names no file | fails | ✔ |
 | a scaffolded case whose documented invocation never lays the fixture down | fails | ✔ |
 | a gated tool a case asks for is never granted | fails | ✔ |
+| a case with no row in the table | fails | ✔ |
+| a row for a case nobody has | fails | ✔ |
 | the runner losing its refusal of an unapproved run | fails | ✔ |
 | a measurement whose inputs moved on | fails | ✔ |
 | a measurement whose rule was reworded | fails | ✔ |
