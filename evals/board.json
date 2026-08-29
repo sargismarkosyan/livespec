@@ -252,14 +252,24 @@
    "inputs": "8329cdeef02683c6"
   },
   "26-two-seconds-before-the-push": {
-   "delta": -0.33,
-   "with": 0.67,
-   "without": 1.0,
-   "runs": 3,
+   "delta": 0.33,
+   "with": 1.0,
+   "without": 0.67,
+   "runs": 1,
    "at": "2026-08-29",
-   "sha": "452bcc3",
-   "cost": 4.67,
-   "inputs": "68905e8a50f882d8"
+   "sha": "8117129",
+   "cost": 1.21,
+   "inputs": "7a54f6dad0096395"
+  },
+  "27-a-red-nobody-here-can-clear": {
+   "delta": 0.67,
+   "with": 0.67,
+   "without": 0.0,
+   "runs": 1,
+   "at": "2026-08-29",
+   "sha": "8117129",
+   "cost": 2.31,
+   "inputs": "93a4b2b27e1828ca"
   }
  }
 }
