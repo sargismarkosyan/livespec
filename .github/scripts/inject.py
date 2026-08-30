@@ -181,6 +181,19 @@ def drop_board_entry(root: Path, name: str) -> None:
     path.write_text(json.dumps(data, indent=1))
 
 
+def board_runs(root: Path, name: str, runs: int) -> None:
+    """Put one entry below the floor without touching anything it measured.
+
+    The inputs hash stays valid on purpose: this is the fault where the number
+    is perfectly fresh and still not a measurement, which is the one the board
+    could not see until #75.
+    """
+    path = root / "evals" / "board.json"
+    data = json.loads(path.read_text())
+    data["cases"][name]["runs"] = runs
+    path.write_text(json.dumps(data, indent=1))
+
+
 def edit(root: Path, relative: str, old: str, new: str) -> None:
     path = root / relative
     text = path.read_text()
@@ -393,12 +406,18 @@ FAULTS = [
     ("the runner losing its refusal of an unapproved run", SUITE,
      lambda r: write(r, "evals/runner/run.py", "# a runner that just runs, spending whatever it spends\n"),
      "fails", "no longer refuses an unapproved run"),
+    ("the runner letting a run below the floor take a measurement's row", SUITE,
+     lambda r: write(r, "evals/runner/run.py",
+                     "# refuses without --i-approve-the-cost, and writes the board whatever it ran\n"),
+     "fails", "caselib.replaces()"),
     ("a measurement whose inputs moved on", BOARD,
      lambda r: edit(r, "evals/case-rule/prompt.md", "Do the thing.", "Do the other thing."), "fails", "changed since"),
     ("a measurement whose rule was reworded", BOARD,
      lambda r: edit(r, "specs/features/core/core.feature", "the thing is there", "the thing is elsewhere"), "fails", "changed since"),
     ("a case the board has never measured", BOARD,
      lambda r: drop_board_entry(r, "case-walk"), "warns", "never measured"),
+    ("a board entry from fewer runs than the floor", BOARD,
+     lambda r: board_runs(r, "case-walk", 1), "warns", "below the floor"),
     ("an llm grader with an empty rubric", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: llm\nweight: 1\n---\n"),
      "fails", "will pass on anything"),

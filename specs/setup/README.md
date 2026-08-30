@@ -156,6 +156,20 @@ gated — only its bookkeeping. The pull-request report reads the counts from
 `board.py --json`, which always exits 0: in that mode it is a hand-over, not a
 gate.
 
+**The floor is `MIN_RUNS = 3` in `caselib.py`, and it binds both ends.**
+`evalsuite.py` fails a case declaring fewer runs than that; `board.py` **warns**
+on an entry that came back from fewer, keeps it, shows it, and leaves it out of
+both the measured count and the mean. `run.py` calls `caselib.replaces()` before
+every write and will not put a below-floor number into a row a measurement
+holds — `evalsuite.py` fails if that call goes missing, the same way it fails if
+`--i-approve-the-cost` does. Added by [`0028`](../changes/0028-below-the-floor.md)
+after a `--runs 1` pilot overwrote a three-run entry, flipped its sign and
+cleared the freshness gate in one write, on
+[#75](https://github.com/sargismarkosyan/livespec/issues/75). On the day it
+landed the board read **5 measured, 23 below the floor, mean Δ +0.44**, where it
+had read *28 measured, mean Δ +0.29* the day before; no session was run, and
+what moved was what the numbers were allowed to be called.
+
 ## Gate wiring
 
 **Reconciled against livespec 0.25.0 on 2026-08-29.** One row per gate named in
@@ -302,9 +316,11 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a case with no row in the table | fails | ✔ |
 | a row for a case nobody has | fails | ✔ |
 | the runner losing its refusal of an unapproved run | fails | ✔ |
+| the runner letting a run below the floor take a measurement's row | fails | ✔ |
 | a measurement whose inputs moved on | fails | ✔ |
 | a measurement whose rule was reworded | fails | ✔ |
 | a case the board has never measured | **warns, does not fail** | ✔ |
+| a board entry from fewer runs than the floor | **warns, does not fail** | ✔ |
 | an llm grader with an empty rubric | fails | ✔ |
 | every case removed | fails | ✔ |
 | the fault injection record losing a row | fails | ✔ |
