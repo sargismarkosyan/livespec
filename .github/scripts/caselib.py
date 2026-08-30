@@ -163,3 +163,34 @@ def measurement_inputs(case: dict, root: Path) -> str:
         if skill_md.exists():
             digest.update(skill_md.read_bytes())
     return digest.hexdigest()[:16]
+
+
+# The floor a number has to clear before it is a measurement of anything. One
+# run of an LLM grader is noise, and a suite that lets noise onto the board is
+# measuring its own variance. Shared with the runner and the board gate for the
+# same reason `measurement_inputs` is: three places deciding separately what
+# counts as a measurement is how a pilot ends up wearing a measurement's clothes.
+MIN_RUNS = 3
+
+
+def is_measurement(entry: dict | None) -> bool:
+    """Whether a board entry was produced by enough runs to be believed.
+
+    Below the floor the number is still worth keeping — it is what the board has
+    — but it is not coverage, it does not go into a mean, and it may not stand
+    in for a measurement.
+    """
+    return isinstance(entry, dict) and isinstance(entry.get("runs"), int) and entry["runs"] >= MIN_RUNS
+
+
+def replaces(prior: dict | None, runs: int) -> bool:
+    """Whether a run of `runs` sessions may take `prior`'s row on the board.
+
+    A run at or above the floor always may. Below it, a run may only fill a row
+    that holds nothing or holds another number below the floor — it may never
+    overwrite a measurement. That is not tidiness: an entry carries the inputs
+    hash that clears the freshness gate, so a pilot written over a measurement
+    both loses the number and turns the red that was asking for a real run
+    green. Both halves happened on 2026-08-29 (issue #75).
+    """
+    return runs >= MIN_RUNS or not is_measurement(prior)

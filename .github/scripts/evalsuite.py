@@ -24,12 +24,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from caselib import cases  # noqa: E402
+from caselib import MIN_RUNS, cases  # noqa: E402
 
 ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[2]
-
-# A single run of an LLM grader is noise, not a measurement.
-MIN_RUNS = 3
 
 # Graders that score what came out. `tool_used` says only that something fired —
 # and under ablation it is excluded from the score entirely, so a case graded by
@@ -119,12 +116,28 @@ for skill, holders in sorted(covered.items()):
 # The guard that makes it refuse an unapproved run is load-bearing rather than
 # a courtesy, so removing it is a gate failure like any other.
 runner = ROOT / "evals" / "runner" / "run.py"
-if runner.exists() and "--i-approve-the-cost" not in runner.read_text():
+runner_source = runner.read_text() if runner.exists() else ""
+if runner.exists() and "--i-approve-the-cost" not in runner_source:
     fail(
         "evals/runner/run.py",
         "no longer refuses an unapproved run. Every run spends real money and real session budget; "
         "the maintainer approves each one specifically, and nothing — not CI, not a stale board "
         "entry, not the --changed heal — may start one without --i-approve-the-cost.",
+    )
+
+# The other thing the runner may not do quietly. A run below the floor is a
+# pilot: its verdicts are the point and its number is noise, so it may fill an
+# empty row and may never take a measurement's. Left to a convention, that held
+# until the first hurried afternoon — a --runs 1 pilot overwrote a $4.67
+# three-run entry, flipped its sign, and cleared the freshness gate that had
+# been asking for exactly the run it replaced (#75). caselib decides it now, and
+# a runner that stops asking caselib is a gate failure like any other.
+if runner.exists() and "replaces(" not in runner_source:
+    fail(
+        "evals/runner/run.py",
+        "no longer asks caselib.replaces() before writing the board. A run below the floor could "
+        "then overwrite a measurement — losing the number and clearing the staleness that was "
+        "asking for a real run, in one write nothing records.",
     )
 
 readme = ROOT / "evals" / "README.md"

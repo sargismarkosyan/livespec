@@ -151,7 +151,27 @@ holds the one that was added to them.
 In the without-plugin arm, `09` remains the case that shows what a bare model
 does with the same request, which is invent a process.
 
-The negative cases are the ones to watch. Seven skills' descriptions load in
+`26-two-seconds-before-the-push` is the case with a history worth knowing before
+its number is read. It was measured at **Δ −0.33** on 2026-08-28 (`452bcc3`) —
+the only case in the suite whose own change had made it negative — and
+[#67](https://github.com/sargismarkosyan/livespec/issues/67) was filed on it:
+one with-plugin session had spent its turns hunting a `Bash` tool no case grants
+and ended on a clarifying question, one grader was lost to the judge crashing,
+and the bare arm scored 1.00 three times out of three, which is a fixture a
+competent baseline aces.
+
+**The decision is to keep the case as it is**, and it was made on a re-measure
+rather than on an argument. On 2026-08-30 the rule it claims gained an example,
+so the entry went stale and was re-run at the floor: **with 1.00, without 0.78,
+Δ +0.22**. The with-arm scored 1.00 in all three runs — including the two that
+never wrote `specs/setup/README.md`, because offering the hook and waiting for an
+answer is what the rule asks for — and the bare arm lost ground on the graders
+asking where the hook runs and what it leaves to CI. So the fixture does
+discriminate, the spiral did not recur, and the −0.33 stands as a fact about
+`452bcc3` rather than as a live defect. It is written down here because a Δ that
+size, seen cold, is worth exactly one re-open and no more.
+
+The negative cases are the ones to watch. Eight skills' descriptions load in
 every session, and the cost of widening one — or, as with `setup`, of making one
 visible at all — is paid here — where it should show up as a scored failure rather than as a user
 wondering why an interview started.
@@ -162,7 +182,10 @@ These are not negotiable when the suite is edited:
 
 - **at least one should-NOT-fire case** stays in the suite;
 - **every case has at least one outcome grader**; `tool_used` alone is never a case;
-- **`runs: 3` minimum**, because a single run of an LLM grader is noise;
+- **`runs: 3` minimum**, because a single run of an LLM grader is noise. The
+  board holds the same floor from the other end: a number that came back from
+  fewer runs is kept and shown, never counted as a measurement, and never
+  written over one that cleared it — see *The board*;
 - **every skill is held by at least one case.** A skill nothing holds costs
   context in every session and cannot be changed safely;
 - **every case says which skill it holds**, in `tags:` — `skill:<name>`. A case
@@ -218,6 +241,17 @@ Then, against the run directory it prints (`evals/results/<stamp>/`):
    `results.json`, or `npx promptfoo@0.122.0 view` shows them in a browser. If
    you would have scored even one differently, the rubric is not ready.
 
+**A pilot cannot take a measurement's row.** `--runs 1` is below the floor, so
+`run.py` writes its number only where the board holds nothing or holds another
+number below the floor; against a case already measured at three runs it keeps
+the measurement, prints `✋ <case>: 1 run(s) is below the floor…`, and leaves the
+pilot's numbers where a pilot's numbers belong — in the summary above and in the
+run directory. This is not fastidiousness about an old number: the row is also
+what clears the freshness gate, so a pilot written into it loses the measurement
+*and* turns the red that was asking for a real run green. Both happened to `26`
+on 2026-08-29 — a $1.21 single run replaced a $4.67 three-run entry and flipped
+its sign, and nothing recorded that it had ([#75](https://github.com/sargismarkosyan/livespec/issues/75)).
+
 Cost: the summary line prints what the pilot's sessions actually cost; a full
 suite is roughly that × 3. Sessions, transcripts and created files stay under
 the run directory, which is ignored — the evidence is local and reproducible.
@@ -244,6 +278,21 @@ python3 evals/runner/run.py --changed --ablation with-without --judge-model sonn
 rule re-measures the cases that claim it, never the whole suite. A case with no
 entry at all only **warns**: that is the bootstrap state, and the warning list
 is the first pilot's to-do list.
+
+**An entry below the floor warns too, and is not counted.** `runs` is read
+rather than merely recorded: an entry from fewer than three runs is listed, kept
+and shown, left out of the mean, and not reported as measured. It is not a
+failure — the number is the best the board has, and calling it coverage is the
+part that would be a lie. Staleness is still asked of it first, because a number
+that no longer describes these files is wrong however many runs produced it. The
+floor lives in `caselib.py` with `is_measurement()` and `replaces()`, so the
+gate, the runner and the suite gate cannot come to different conclusions about
+what a measurement is.
+
+On the day this was wired the board went from *28 measured, mean Δ +0.29* to
+**5 measured, 23 below the floor, mean Δ +0.44**, without a session being run.
+Nothing regressed and nothing improved; the average had been taken over 22
+single runs and one two-run entry as though they were measurements.
 
 **The score is never gated.** A Δ of zero ships; a stale Δ does not. What the
 gate enforces is that a number still describes the files it claims to — gating

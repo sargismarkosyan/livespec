@@ -155,12 +155,37 @@ that can settle an argument about a number** — so keep it, and keep it out of 
 repository's history.
 
 What is committed is the **summary**: per case, the arms, the difference, when,
-against which commit, and the fingerprint. One line each, durable, diffable, and
-enough to see a product getting better or worse over months.
+against which commit, how many runs produced it, and the fingerprint. One line
+each, durable, diffable, and enough to see a product getting better or worse
+over months.
 
 **The distinction is not tidiness.** Transcripts committed become a repository
 nobody can clone; transcripts discarded leave a number with nothing behind it,
 and the first time somebody disputes it there is no way to look.
+
+### A run below the floor does not take a measurement's row
+
+How many runs a number needs before anybody believes it is not settled here —
+see below — and the repository picks its own floor. What *is* settled is what
+happens once it has picked one.
+
+Pilots are worth running: a short run exists so the verdicts can be read before
+anybody pays for a full one, and reading them is the point of it. But a pilot of
+a case that has already been measured produces a second number for the same row,
+and **the measurement keeps the row.** Not out of deference to the older number.
+The row is also what clears the freshness gate, so a pilot written into it does
+two things in one write: the measurement is gone, and the red that was asking for
+a real run has turned green — at the exact moment the run it was asking for
+became most necessary. Both halves are silent, and the sign can flip on the way
+through.
+
+So **the summary says how many runs produced it, and everything reading the
+summary reads that field too.** A number below the floor is kept and shown — it
+is the best the board has, and deleting it would only put the row back to empty
+— but it is not counted as coverage, it stays out of any average, and it never
+overwrites a number above the floor. A board that cannot tell the two apart
+publishes its own variance as a result, in whichever direction the last pilot
+happened to fall.
 
 ## What this page does not settle
 

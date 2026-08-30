@@ -11,6 +11,14 @@ This gate checks the bookkeeping:
   exactly the stale set, never the full suite.
 - a case with no entry **warns** — the bootstrap state; the warning list is the
   to-do list for the first pilot.
+- a case whose entry came from fewer runs than the floor **warns, and is not
+  counted** — a pilot's number is what the board has, never what it knows. It
+  stays visible, it stays out of the mean, and it is not read as coverage.
+
+That last one is why the mean here moved on 2026-08-30 without a single session
+being run: 23 of 28 entries turned out to be below the floor — 22 single-run
+pilots and one that lost a session to a 429 — and the average had been taken
+over all of them as though they were measurements (#75).
 
 **The score is never gated.** A delta of zero ships; a stale delta does not.
 Gating the number would turn the suite into something to be optimised at; what
@@ -30,7 +38,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from caselib import cases, measurement_inputs  # noqa: E402
+from caselib import MIN_RUNS, cases, is_measurement, measurement_inputs  # noqa: E402
 
 AS_JSON = "--json" in sys.argv
 args = [a for a in sys.argv[1:] if a != "--json"]
@@ -55,6 +63,7 @@ except (OSError, json.JSONDecodeError):
 suite = cases(ROOT)
 measured: list[str] = []
 stale: list[str] = []
+below: list[str] = []
 never: list[str] = []
 deltas: list[float] = []
 as_of = ""
@@ -64,6 +73,10 @@ for case in suite:
     if entry is None:
         never.append(case["name"])
         continue
+    # Staleness is asked first, and of every entry rather than only of the ones
+    # that cleared the floor: a number that no longer describes these files is a
+    # lie however many runs produced it, and demoting a stale row to a warning
+    # because it was only a pilot would be a gate getting quieter over time.
     if entry.get("inputs") != measurement_inputs(case, ROOT):
         stale.append(case["name"])
         failures.append(
@@ -71,6 +84,9 @@ for case in suite:
             f"case, a rule it claims or a skill it holds has changed since. The number no longer describes "
             f"these files. Re-measure exactly what changed:\n      {HEAL}"
         )
+        continue
+    if not is_measurement(entry):
+        below.append(case["name"])
         continue
     measured.append(case["name"])
     if isinstance(entry.get("delta"), (int, float)):
@@ -87,23 +103,32 @@ if never:
         f"the first pilot's to-do list, not a failure"
     )
 
+if below:
+    listed = ", ".join(f"{n} ({entries[n].get('runs', '?')})" for n in below[:6]) + ("…" if len(below) > 6 else "")
+    warnings.append(
+        f"{len(below)} entr{'y' if len(below) == 1 else 'ies'} below the floor of {MIN_RUNS} runs ({listed}) "
+        f"— pilots, kept and shown but not counted as measurements and not in the mean. Not a failure: "
+        f"the number is the best the board has, and calling it coverage is what would be the lie"
+    )
+
 mean = round(sum(deltas) / len(deltas), 2) if deltas else None
 
 if AS_JSON:
     # A hand-over for the report, never a gate: exits 0 whatever it found, so
     # a stale board can still be *reported* — which is when the row matters.
     print(json.dumps({
-        "measured": len(measured), "stale": len(stale), "never": len(never),
-        "mean_delta": mean, "as_of": as_of or None,
+        "measured": len(measured), "stale": len(stale), "below": len(below),
+        "never": len(never), "mean_delta": mean, "as_of": as_of or None,
     }))
     sys.exit(0)
 
 for warning in warnings:
     print(f"  ⚠ {warning}")
 
-summary = f"{len(measured)} measured, {len(stale)} stale, {len(never)} never measured"
+summary = (f"{len(measured)} measured, {len(stale)} stale, {len(below)} below the floor, "
+           f"{len(never)} never measured")
 if mean is not None:
-    summary += f"; mean Δ {mean:+.2f} over the fresh entries (as of {as_of})"
+    summary += f"; mean Δ {mean:+.2f} over the fresh measurements (as of {as_of})"
 
 if failures:
     print(f"\n{len(failures)} stale measurement(s):\n", file=sys.stderr)

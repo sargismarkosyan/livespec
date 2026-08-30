@@ -44,7 +44,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / ".github" / "scripts"))
-from caselib import cases, frontmatter, measurement_inputs  # noqa: E402
+from caselib import MIN_RUNS, cases, frontmatter, measurement_inputs, replaces  # noqa: E402
 
 PROMPTFOO = "promptfoo@0.122.0"  # pinned: a floating runner makes every delta a comparison across two runners
 
@@ -201,6 +201,15 @@ def record(measured: dict, suite: list[dict]) -> None:
     measurement of; the board gate fails the entry when those inputs move on.
     A case whose sessions all errored is not recorded — a non-measurement is
     not a measurement of zero.
+
+    **A run below the floor may not take a measurement's row.** `--runs 1` is a
+    pilot: it exists so the verdicts can be read before a real run is paid for,
+    and its number is the noise the floor exists to keep out. Letting it write
+    anyway costs twice — the measurement it replaces is gone, and the fresh
+    inputs hash it brings turns the red that was asking for a real run green.
+    Both happened to `26-two-seconds-before-the-push` (#75). The pilot's numbers
+    are still printed above and still in the run directory, which is where a
+    pilot's answer lives; what it does not get is the durable row.
     """
     board = load_board()
     by_name = {case["name"]: case for case in suite}
@@ -209,20 +218,35 @@ def record(measured: dict, suite: list[dict]) -> None:
                              capture_output=True, text=True).stdout.strip() or "unknown"
     except OSError:
         sha = "unknown"
+    written, held = 0, []
     for name, s in measured.items():
+        runs = min(len(s["with"]), len(s["without"]))
+        prior = board["cases"].get(name)
+        if not replaces(prior, runs):
+            held.append((name, runs, prior))
+            continue
         board["cases"][name] = {
             "delta": round(mean(s["with"]) - mean(s["without"]), 2),
             "with": round(mean(s["with"]), 2),
             "without": round(mean(s["without"]), 2),
-            "runs": min(len(s["with"]), len(s["without"])),
+            "runs": runs,
             "at": time.strftime("%Y-%m-%d"),
             "sha": sha,
             "cost": round(s["cost"], 2),
             "inputs": measurement_inputs(by_name[name], ROOT),
         }
+        written += 1
     board["cases"] = dict(sorted(board["cases"].items()))
     BOARD.write_text(json.dumps(board, indent=1) + "\n")
-    print(f"  board updated: {len(measured)} entr{'y' if len(measured) == 1 else 'ies'} — evals/board.json")
+    print(f"  board updated: {written} entr{'y' if written == 1 else 'ies'} — evals/board.json")
+    for name, runs, prior in held:
+        # .get() rather than indexing: the board is a hand-editable file, and a
+        # refusal that crashes on a missing field is a refusal nobody hears.
+        delta = prior.get("delta")
+        shown = f"Δ {delta:+.2f}, " if isinstance(delta, (int, float)) else ""
+        print(f"  ✋ {name}: {runs} run(s) is below the floor of {MIN_RUNS}, and the board already holds "
+              f"a {prior['runs']}-run measurement ({shown}{prior.get('at', 'undated')}). Kept. Read this "
+              f"pilot's verdicts in the run directory; re-run it at the floor to replace the number.")
 
 
 def main() -> int:

@@ -81,6 +81,7 @@ def table(rows: list[tuple[str, tuple[str, ...]]], base: dict | None, head: dict
 BOARD_ROWS = [
     ("Measured, still fresh", ("measured",)),
     ("Stale — inputs changed since", ("stale",)),
+    ("Below the floor — a pilot, not a measurement", ("below",)),
     ("Never measured", ("never",)),
 ]
 
