@@ -123,6 +123,13 @@ The floor does not distinguish a pilot from a measurement that lost a session,
 and should not: the board cannot tell them apart either, and both are below what
 the suite says a number needs.
 
+**The pull-request report will not show this move, and is right not to.**
+[`checks.yml`](../../.github/workflows/checks.yml) runs the *current* gate
+against the base tree on purpose — so the delta reports what the measurements
+did, not what a change to the gate did — which means both of its columns read 5.
+The table above is this repository's reading of the same board on two days, and
+the only place the move is visible.
+
 **This is a correction, not a regression.** Nothing got worse; a claim stopped
 being made. The mean moving *up* is worth noticing for exactly that reason — it
 is not a result, it is the arithmetic no longer including 23 numbers that were
