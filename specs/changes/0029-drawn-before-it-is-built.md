@@ -251,6 +251,31 @@ rather than discovering later:
 them, which is a fact about what the board measures rather than a claim that
 they matter less.
 
+### What the run returned
+
+Measured on **2026-09-01** at `773ecd0`, one case, six sessions, **$2.51** — the
+estimate above said ~$1.80 and was low.
+
+| | before | after |
+|---|---|---|
+| `01-solution-shaped-request` Δ | +0.83 (3 runs, 2026-08-25) | **+1.00** (3 runs) |
+| with / without | 0.83 / 0.00 | 1.00 / 0.00 |
+
+**Uncalibrated, and one incidental observation is worth more than the number.**
+All three with-arm sessions named the absent tool unprompted — *"this session has
+no `Artifact` tool, so there is no sketch page"* — in a line, with the reason,
+and none pasted a substitute into the reply. That is
+`an-absent-sketch-is-said-rather-than-filled` firing in a case that does not
+claim it, which is the strongest evidence available here that the instruction
+lands, given no arm can watch the other two rules at all.
+
+One phrase is worth watching rather than acting on: *"the before/after and the
+moves-vs-stays ledger are in the spec's prose instead."* Those belong in *What
+changes* regardless, so this is most likely the skill saying where they live —
+but "instead" hints at a spec whose content varied with the host, which
+*What we are not doing* rules out. One reading of one sentence in one session is
+not a finding. If it recurs it is an issue, not a patch.
+
 ## Risks
 
 - **The sketch becomes the thing approved.** The likeliest failure, and the
