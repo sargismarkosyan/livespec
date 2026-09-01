@@ -1,7 +1,7 @@
 @feature:setup-coverage-binding @workflow:adopt-the-process
 Feature: What the coverage gate is asked to demand
 
-  @rule:the-coverage-demand-is-not-todays-score @planned
+  @rule:the-coverage-demand-is-not-todays-score
   Rule: What the sitting recommends is the whole of what is in scope, never the number the code happens to score today
 
     Example: the score becomes the threshold and the gate can only ever be met
@@ -16,7 +16,7 @@ Feature: What the coverage gate is asked to demand
       Then the bindings say the gate has nothing to stand on yet
       And no threshold is written for a run nobody makes
 
-  @rule:what-is-not-covered-is-named-rather-than-subtracted @planned
+  @rule:what-is-not-covered-is-named-rather-than-subtracted
   Rule: Whatever the demand does not reach is named where the gate is configured, with its reason beside it
 
     Example: an occupied repository on its first day

@@ -1,6 +1,6 @@
 # Spec 0030: covered, or named
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#79](https://github.com/sargismarkosyan/livespec/issues/79)
 - **Depends on:** nothing. It corrects one question in
   [`setup`](../../skills/setup/SKILL.md) §2 and the refusal that already names
@@ -104,8 +104,8 @@ percentage cannot do.
 
 | Rule id | Feature file | New or changed | Ships |
 |---|---|---|---|
-| `the-coverage-demand-is-not-todays-score` | `features/setup/coverage-binding.feature` | new | `@planned` |
-| `what-is-not-covered-is-named-rather-than-subtracted` | `features/setup/coverage-binding.feature` | new | `@planned` |
+| `the-coverage-demand-is-not-todays-score` | `features/setup/coverage-binding.feature` | new | live |
+| `what-is-not-covered-is-named-rather-than-subtracted` | `features/setup/coverage-binding.feature` | new | live |
 
 A new file rather than two rules added to
 [`test-binding`](../features/setup/test-binding.feature): that one answers *what
