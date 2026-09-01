@@ -1,6 +1,6 @@
 # Spec 0029: drawn before it is built
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#78](https://github.com/sargismarkosyan/livespec/issues/78)
 - **Depends on:** nothing. It sits beside
   [`0020`](0020-enough-to-say-yes.md), which made the picture's form follow the
@@ -98,11 +98,11 @@ visible in the sketch and not visible in the prose.
 
 **Rules added or changed** — the `@rule:` ids in `specs/features/`:
 
-| Rule id | Feature file | New or changed |
-|---|---|---|
-| `the-decision-gets-what-the-prose-cannot-carry` | `features/showing/before-it-is-built.feature` | new |
-| `what-is-shown-is-not-the-spec-again` | `features/showing/before-it-is-built.feature` | new |
-| `an-absent-sketch-is-said-rather-than-filled` | `features/showing/before-it-is-built.feature` | new |
+| Rule id | Feature file | New or changed | Ships |
+|---|---|---|---|
+| `the-decision-gets-what-the-prose-cannot-carry` | `features/showing/before-it-is-built.feature` | new | `@planned` — see below |
+| `what-is-shown-is-not-the-spec-again` | `features/showing/before-it-is-built.feature` | new | `@planned` — see below |
+| `an-absent-sketch-is-said-rather-than-filled` | `features/showing/before-it-is-built.feature` | new | live, claimed by [`29-nowhere-to-draw-it`](../../evals/29-nowhere-to-draw-it/prompt.md) |
 
 A new file rather than three rules added to
 [`what-a-change-shows`](../features/showing/what-a-change-shows.feature): that
@@ -110,6 +110,42 @@ one is about what a **version** puts in front of somebody deciding whether to
 merge, and this is about what a **change spec** puts in front of somebody
 deciding whether to build. Same area, different object, and merging them would
 take that file to five rules and past its line limit.
+
+### What no case reaches, and how that was established
+
+**Found during implementation, after this spec was approved, and it changed what
+two of the three rules ship as.** Recorded here rather than quietly absorbed.
+
+The suite drives `claude -p`. Asked on **2026-09-01** what tools it has —
+`claude -p "List the exact names of every tool available to you, one per line,
+no commentary." --model haiku` — a headless session answered with 40 of them and
+**no way to render a page** among them. Not a permission the runner withholds:
+the tool is not in the session at all, so `--allow-tools` cannot grant it and no
+arm of an ablation can watch a sketch being drawn.
+
+So the two rules about what a sketch *contains* ship `@planned`, and
+`@planned` here carries the meaning
+[`setup-demonstration`](../features/setup/demonstration.feature) already
+established in this repository: **nothing can hold it yet**, not *nobody built
+it*. The instruction ships in §7 and does the work; what is missing is an arm
+that can see the result. Softening the Examples until a session with no such
+tool could pass them would buy the tag with the dishonesty
+[`evals/README.md`](../../evals/README.md) warns about.
+
+What **is** watchable is the absence, and that is the third rule — a headless
+session is not a contrived fixture for it, it is the ordinary case. So
+`an-absent-sketch-is-said-rather-than-filled` gained an example for *nowhere to
+draw it*, went live, and is claimed by
+[`29-nowhere-to-draw-it`](../../evals/29-nowhere-to-draw-it/prompt.md). That case
+also holds the constraint from the other side: pasting a summary or a mock-up in
+the sketch's place is a fail, which is the failure mode this whole change is
+built to avoid, caught in the one session shape a case can actually run.
+
+**Two of three rules unheld is the honest count and it is written down**, in the
+feature file beside each rule and in
+[the bindings](../setup/README.md#what-has-no-gate-and-what-that-misses). The
+tag says planned; whether a sketch carries evidence or decoration is watched by
+the person reading it and by nobody here.
 
 ### The objection this has to answer, because §7 already raises it
 
@@ -209,7 +245,7 @@ rather than discovering later:
 | What moves | What goes stale | What it costs |
 |---|---|---|
 | `skills/refine-spec/SKILL.md` | [`01-solution-shaped-request`](../../evals/01-solution-shaped-request/) — 3 runs, Δ +0.83, one of the five entries currently above the floor | ~$1.80 to re-measure |
-| a new case claiming the three rules | nothing; a new row | ~$1.80 to measure |
+| [`29-nowhere-to-draw-it`](../../evals/29-nowhere-to-draw-it/prompt.md), claiming the one rule a case can reach | nothing; a new row, never measured | ~$1.80 to measure |
 
 `method/process.md` and `specs/spec.md` are in neither column — no case holds
 them, which is a fact about what the board measures rather than a claim that

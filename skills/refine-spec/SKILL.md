@@ -203,6 +203,52 @@ Persona, workflow, end value and scope are all *in* the spec under their own
 headings. Repeating them in chat gives the reader two versions to reconcile, and
 the one in the terminal is the one that goes stale.
 
+### And draw the sketch, before approval is asked for
+
+The spec argues its case in prose. **What it cannot do is show the reader the
+thing it is arguing about** — and this is the one step where that matters most,
+because the change does not exist yet and there is nothing to record. So publish
+one page carrying the evidence, where the session has a tool that can (in Claude
+Code, `Artifact`), and hand it over with the links.
+
+**What goes in it** — the evidence the spec argues from and cannot carry at
+reading speed:
+
+- **what it is now, beside what it would be.** Both states in one view, so the
+  difference is the thing being looked at rather than something to reconstruct.
+- **what moves and what stays, with the reason against each.** A row per thing
+  the change touches. This is usually the half that decides the answer.
+- **a count that changed** — how many of something there were, and how many
+  after.
+- **a link to the change spec.**
+
+That is not a screen-only list. A command's output, a config file, a rule about
+what gets counted — all have a before, a ledger and a count, and a repository
+with nothing on a screen still has a change spec.
+
+**What must never go in it.** *Who this is for*, *The job behind the request*,
+*Why now*, *The end value* — the four sections this skill spent its whole effort
+on. They are in the spec, the sketch points at the spec for them, and a page
+that restates them is the second version the section above rules out, only
+prettier and harder to ignore. **Evidence, never argument.** If the sketch could
+be approved without opening the spec, it is the wrong page.
+
+**Only what the spec establishes gets drawn.** Where the spec does not say what
+state the change starts from, do not draw one. Invented evidence, in a document
+whose whole purpose is to *be* evidence, at the moment somebody is deciding on
+it, is worse than no document.
+
+**Two absences, each one line.** Where there is nothing the prose cannot carry —
+a renamed constant, a corrected path — say so and draw nothing; padding the space
+is the failure this is meant to prevent. Where the session has no way to publish
+a page, say that once and hand back as below. Do not go looking for another way:
+that is [`process.md`](../../method/process.md#a-step-you-cannot-take-here-is-said-once-not-searched-for)'s
+ordinary case, and the rest of the session is worth more than the page.
+
+**Revising it replaces it.** A later version of the sketch goes to the same
+address, so the reader is never holding two. That address is the whole reason
+this is a page and not a summary typed into the terminal.
+
 ### If `specs/workflows/` or `specs/personas/` changed, confirm that first
 
 **Separately, and before the spec's own approval.** These edits never arrive on
