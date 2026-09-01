@@ -34,7 +34,8 @@ thing that fixes it.
    It digs out the job behind the request, checks it against the persona and
    workflows, and writes Gherkin rules tagged `@planned` plus a numbered change
    spec. It does not implement.
-4. **Human approves** the spec, or asks for changes.
+4. **Human approves** the spec, or asks for changes — holding the spec and
+   the sketch drawn from it.
 5. **AI implements.** Removes the `@planned` tags, writes the tests referencing
    those rules, gets the repository's verification green, commits.
 6. **AI records the version** using the [`record-clip`](../skills/record-clip/SKILL.md) skill — one
@@ -70,6 +71,18 @@ comes from; what they never do is produce the deliverable by hand.
   approval: show that diff by itself, say in one line what it changes about who
   this is for or what they do, and get it confirmed *before* asking for approval
   of the spec. **If only one thing is reviewed in a round, it is this one.**
+- **The decision gets the evidence it rests on.** Step 4 is the only place in
+  the loop where somebody decides on a thing that does not exist yet, so prose
+  is not merely thin there — it is the whole of what is available. The spec
+  carries the argument; a **sketch** drawn from it carries what the argument is
+  *about*: what it is now beside what it would be, what moves and what stays
+  with the reason against each, the count that changed. Evidence, never
+  argument — it restates none of the spec's own headings and points at the file
+  for them, or it is a second version of the spec, and the copy that is not the
+  file is always the one that goes stale. Where there is nothing the prose
+  cannot carry, or nowhere in this session to render one, that is a line and
+  nothing is put in its place. A sketch is drawn from a spec at step 4; the
+  picture at step 6 is recorded from the app. Two objects, two steps.
 - **Feedback is never fixed on the spot.** It becomes an issue, then a spec, then
   a commit. Fixing something the moment it is mentioned is the fastest way to
   lose the record of why it changed.

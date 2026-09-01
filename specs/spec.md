@@ -33,6 +33,7 @@ how two documents start meaning slightly different things.
 | **arm** | One side of an ablation run: with the plugin loaded, or without. **Δ** is the difference, and it is the only number that says anything about livespec. |
 | **consuming repository** | Somebody else's repository, with the plugin installed. Where `specs/setup/README.md` and the gates actually live. |
 | **version** | A change spec number. Version 3 is the state of this repository after spec `0003` shipped. |
+| **sketch** | What the person deciding on a change spec is shown beside it: the evidence that spec argues from, drawn *from* the spec. Never recorded from an app — that is the **picture** a version ships with, and the two are separate objects arriving at separate steps. |
 
 Two words deliberately **not** used: *documentation*, for anything under
 `specs/` — it is a contract, and calling it documentation is how it stops being

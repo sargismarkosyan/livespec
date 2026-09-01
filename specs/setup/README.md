@@ -109,6 +109,19 @@ softened until it always passes still counts here, which is why
 [`evals/README.md`](../../evals/README.md) puts that in writing and
 `evalsuite.py` fails if the documented invocation loses `--ablation with-without`.
 
+**And it misses whatever needs a tool the runner's sessions do not have.**
+Asked on **2026-09-01** — `claude -p "List the exact names of every tool
+available to you, one per line, no commentary." --model haiku` — a headless
+session listed 40 tools and no way to render a page among them. That is not a
+grant `--allow-tools` withholds; the tool is absent from the session, so neither
+arm of an ablation can reach behaviour that needs one. Two rules in
+[`before-it-is-built`](../features/showing/before-it-is-built.feature) ship
+`@planned` for that reason and say so in the file — the same shape as
+[`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature),
+which no workspace with a live remote could be built for. Both are recorded
+rather than softened; see [`0029`](../changes/0029-drawn-before-it-is-built.md),
+*What no case reaches*.
+
 **The cases are not run by any gate.** They cost money per session, and CI
 installs and pays for nothing. The maintainer step that runs them, since
 [0012](../changes/0012-a-runner-that-runs.md):
@@ -495,6 +508,16 @@ command. Renaming a job silently un-requires the check.
   answer. It is the first rule in the method that no version of this repository
   will exercise, and it ships on the strength of its eval cases and the pilots
   rather than on having been lived here.
+**The sketch is not covered by that exemption, and does apply here.** It is
+drawn *from a change spec*, at step 4, and needs no app — where `record-clip`
+needs one and therefore never runs. So a change here owes one whenever its spec
+argues from something the prose cannot carry at a glance:
+[`0028`](../changes/0028-below-the-floor.md)'s before-and-after of the board is
+the worked example, and it was already drawn in prose because the spec could not
+be read without it. The two are separated in
+[`spec.md`](../spec.md)'s vocabulary for exactly this reason — one word away
+from being confused, and this section is where the confusion would have landed.
+
 - **`docs/feedback/`.** Issues here are filed from reading, not from using an
   app, so there are no screenshots to attach or to `git rm` on close.
 

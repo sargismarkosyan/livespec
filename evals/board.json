@@ -2,14 +2,14 @@
  "format": 1,
  "cases": {
   "01-solution-shaped-request": {
-   "delta": 0.83,
-   "with": 0.83,
+   "delta": 1.0,
+   "with": 1.0,
    "without": 0.0,
    "runs": 3,
-   "at": "2026-08-25",
-   "sha": "cc627c0",
-   "cost": 1.78,
-   "inputs": "7b2509cf60357f5b"
+   "at": "2026-09-01",
+   "sha": "773ecd0",
+   "cost": 2.51,
+   "inputs": "74a4cda15095d21c"
   },
   "02-feedback-from-use": {
    "delta": 0.5,
