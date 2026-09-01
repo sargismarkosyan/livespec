@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "livespec",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "description": "Spec-driven development where the code stays the source of truth. Eight skills for the loop — set the process up in any repository, turn feedback into researched issues and requests into specs, one small change per version, each with a moving picture.",
   "author": {
     "name": "Sargis Markosyan",

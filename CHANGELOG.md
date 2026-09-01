@@ -12,6 +12,16 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.27.0 — 2026-09-01
+
+`refine-spec` now draws a sketch of the change and hands it over before asking for approval — the evidence a change spec argues from and cannot carry at reading speed: what it is now beside what it would be, what moves and what stays with the reason against each, and the count that changed. It carries evidence and never argument: the spec's own headings stay in the spec and the sketch links to them, so nobody is left holding a second version. Where a change has nothing the prose cannot carry, or the session has no way to render a page, that is one line and nothing is put in its place. `method/process.md` gains the portable rule at step 4 and separates a **sketch**, drawn from a spec, from the **picture** recorded from the app at step 6.
+
+---
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+https://claude.ai/code/session_01BwEtwiajuaUDZwpVMGp3Cs
+
 ## 0.26.0 — 2026-08-30
 
 The eval board now tells a measurement from a pilot. `runs` has always been recorded and was never read, so a `--runs 1` calibration run could overwrite a three-run measurement — losing the number, flipping its sign, and clearing the freshness gate that had been asking for exactly the run it replaced. The floor now lives in `caselib.py`: the runner refuses to put a below-floor number into a row a measurement holds, and the board gate warns on one, keeps it, shows it, and leaves it out of the mean and the measured count. `method/graded-cases.md` gains the portable rule — a run below the repository's own floor does not take a measurement's row, and the summary carries how many runs produced it.
