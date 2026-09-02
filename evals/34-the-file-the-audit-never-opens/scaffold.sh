@@ -35,7 +35,7 @@ command.
 ## The loop
 
 1. Human uses it and reports what they found.
-2. AI files issues (`/livespec:feedback`). It does not fix.
+2. AI files issues (`/livespec:todo`). It does not fix.
 3. AI writes the spec (`/livespec:refine-spec`) — Gherkin plus a numbered change spec.
 4. Human approves the spec and the sketch, or asks for changes.
 5. AI implements, gets `npm run verify` green, commits.

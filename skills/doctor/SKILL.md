@@ -138,6 +138,21 @@ to see* is exempt from the first and not the second — a repository with no app
 still has change specs. A ledger holding one of the two looks, at a glance, like
 one that has been asked this already.
 
+**A fourth is not in the bindings at all, and is the one this plugin causes.** The
+repository's own account of the loop names the skills it tells a session to
+reach for. Those names are ours and they move; that file does not. So read every
+name it gives as a skill — in `CLAUDE.md`, in the bindings, wherever the loop is
+written down — against **the skills this plugin now has**, and report any that
+reaches none, with the name it now has and the line as it will read. A record
+naming a skill that does not exist is not a gap and not an overstatement: it is
+an instruction that fails silently, in the one file written to be followed by
+somebody who was not there when it changed.
+
+**Only a name standing for a skill counts.** The same word is very often the
+ordinary noun the loop is described with, and a directory or a label can carry it
+too. A sentence about what the process does is not a reference, and reporting one
+is how this check becomes noise on its second run.
+
 Then the clock: **a row deferred across two changes is either wired or written
 off.** Read how long each deferral has been sitting there, and say which ones are
 past it. Written off means the row becomes *not applicable* with the reason in

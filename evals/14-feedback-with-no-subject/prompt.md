@@ -1,5 +1,5 @@
 ---
-tags: [skill:feedback, rule:an-unstated-subject-is-asked-about]
+tags: [skill:todo, rule:an-unstated-subject-is-asked-about]
 max_turns: 20
 timeout_seconds: 420
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

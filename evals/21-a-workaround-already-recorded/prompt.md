@@ -1,5 +1,5 @@
 ---
-tags: [skill:feedback, rule:a-workaround-records-what-would-end-it, rule:a-recorded-workaround-is-not-followed-silently]
+tags: [skill:todo, rule:a-workaround-records-what-would-end-it, rule:a-recorded-workaround-is-not-followed-silently]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

@@ -5,7 +5,7 @@
 # `specs/setup/README.md` is real and complete enough to act on — a verification
 # command, a tracker row naming a corporate GitLab reached through `glab`, a gate
 # wiring ledger, and a **workarounds** table with one row. That row is the point:
-# issues here are filed by hand through the web UI because `feedback` once
+# issues here are filed by hand through the web UI because `todo` once
 # assumed GitHub, filed upstream as livespec#10, and the row names what would end
 # it. livespec#10 shipped seven versions ago and nothing here knows.
 #
@@ -75,7 +75,7 @@ thing whose arrival would let us stop. A row comes out when the workaround does.
 
 | Recorded | What we do here instead | The gap it goes around | Filed | What would end it |
 |---|---|---|---|---|
-| 2026-06-02 | Issues are opened by hand in the GitLab web UI and the number pasted back; the plugin's filing step is not used | `feedback` assumed GitHub and `gh`, which cannot reach `gitlab.internal.example` | [livespec#10](https://github.com/sargismarkosyan/livespec/issues/10) | that issue shipping — `feedback` reading the tracker out of these bindings instead of assuming one |
+| 2026-06-02 | Issues are opened by hand in the GitLab web UI and the number pasted back; the plugin's filing step is not used | `todo` assumed GitHub and `gh`, which cannot reach `gitlab.internal.example` | [livespec#10](https://github.com/sargismarkosyan/livespec/issues/10) | that issue shipping — `todo` reading the tracker out of these bindings instead of assuming one |
 EOF
 
 cat > src/sift.py <<'EOF'

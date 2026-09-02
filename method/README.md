@@ -34,7 +34,7 @@ The first registers this repository as a marketplace; the second installs the
 plugin from it. `/plugin` on its own opens the browser if you would rather click.
 
 **To check it took**, start a session and look at the skill names: they arrive
-prefixed, as `livespec:refine-spec`, `livespec:feedback`, `livespec:setup` and so
+prefixed, as `livespec:refine-spec`, `livespec:todo`, `livespec:setup` and so
 on. Any of them can be typed directly — `/livespec:setup` is the usual way to
 start the install — and Claude can also reach `setup` itself, in which case it
 says what it would write and waits rather than starting. A bare `refine-spec`

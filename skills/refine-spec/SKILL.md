@@ -1,6 +1,6 @@
 ---
 name: refine-spec
-description: Refine a request into an approved-ready spec before any code is written. Use when someone says to build, change, add to, fix or improve the app they are building — "just add a button", picking up a tracked issue, or acting on feedback. An instruction lands here; reporting or wishing is feedback. Interrogates the request against the persona and workflows, works out the real job and end value, then writes the Gherkin rules and the numbered change spec. Never implements.
+description: Refine a request into an approved-ready spec before any code is written. Use when someone says to build, change, add to, fix or improve the app they are building — "just add a button", picking up a tracked issue, or acting on feedback. An instruction lands here; reporting or wishing is todo. Interrogates the request against the persona and workflows, works out the real job and end value, then writes the Gherkin rules and the numbered change spec. Never implements.
 ---
 
 # Refine the request into a spec

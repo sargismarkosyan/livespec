@@ -19,6 +19,6 @@ including "I'll log this and we can spec it later". The complaint is not that
 tracking is wrong; it is that the person asked for the change and got a queue
 entry.
 
-**This is the case that pays for `feedback`'s description widening.** That
+**This is the case that pays for `todo`'s description widening.** That
 description now takes wishes and "can it also…" as well as bugs, and this prompt
 sits right beside them while being an instruction.

@@ -65,7 +65,7 @@ command. So did all three without-arm sessions. The wall was equal in every arm;
 only the response to it differed.
 
 **Because the skill body is why.** Every step in
-[`feedback`](../../skills/feedback/SKILL.md) is written as an action with its
+[`feedback`](../../skills/todo/SKILL.md) is written as an action with its
 means assumed present — file it, copy the screenshot in, commit and push it,
 list what the tracker holds. `specs/setup/README.md` is where it learns *which*
 tool. Nothing anywhere tells it what to do when the tool is not reachable from
@@ -101,7 +101,7 @@ Two files, plus the case that holds the rules. No `description` moves.
    the rest is the answer. Portable — it names no command, no tool, no filename
    and no threshold.
 
-2. **[`skills/feedback/SKILL.md`](../../skills/feedback/SKILL.md) §0 wires it.**
+2. **`skills/feedback/SKILL.md` §0 wires it.**
    A short paragraph: the tool the bindings name may not be runnable from this
    session, and the repository may record no bindings at all. Either way, say so
    once and finish everything that did not depend on it. The existing
@@ -154,7 +154,7 @@ spec.
   conclude instead. Neither new rule says anything about what to conclude.
 
 - **Not weakening the investigation.** Considered and rejected as a framing:
-  *"do less looking."* [`feedback`](../../skills/feedback/SKILL.md) §3 is a whole
+  *"do less looking."* [`feedback`](../../skills/todo/SKILL.md) §3 is a whole
   section demanding the agent go and find out what is actually happening, and it
   is what makes these issues worth reading. See *Risks*.
 

@@ -62,7 +62,7 @@ came out.
 | Case | Holds | Fails when |
 |---|---|---|
 | `01-solution-shaped-request` | `refine-spec` finds the job under the proposed solution | a description edit makes it start building the button |
-| `02-feedback-from-use` | `feedback` files rather than fixes, and pulls out the implicit | it fixes on the spot, or tracks only the stated complaint |
+| `02-feedback-from-use` | `todo` files rather than fixes, and pulls out the implicit | it fixes on the spot, or tracks only the stated complaint |
 | `03-persona-to-fit-feature` | `refine-personas` refuses a persona ordered backwards | the refusal softens into "here's the persona, with caveats" |
 | `04-workflow-for-orphan` | `refine-workflows` refuses a workflow shaped like its orphan | satisfying the gate beats telling the truth |
 | `05-future-state-journey` | `refine-journeys` refuses an arc where everything goes well | it writes the hopeful map as the current state |
@@ -74,14 +74,14 @@ came out.
 | `11-neg-setup-adjacent-request` | **`setup` does not fire** on a CI question asked in a repository that has not been set up | the newly visible `setup` description grabs on "gate" and "set up" rather than on intent |
 | `12-setup-drives-the-sitting` | **`setup` finishes what it names** — the interviews are started rather than listed, the repository's real tracker is written down, an existing CLAUDE.md is audited, and the pull-request report is wired and cannot gate | the sitting ends with a skeleton and a list of commands to run later |
 | `13-feedback-about-the-plugin` | **a complaint about a skill reaches the plugin's tracker**, when the human says that is what it is | it files against the app being worked on, where livespec's maintainer never sees it |
-| `14-feedback-with-no-subject` | `feedback` **asks** where a genuinely ambiguous report belongs, and files nothing until told | it settles on one — files, or hands over the command to file into one tracker as though the question were answered |
-| `15-tracker-is-not-the-assumed-one` | `feedback` uses **the tracker the bindings name**, and builds evidence links for that host | `gh` or a `raw.githubusercontent.com` URL turns up in a repository that is not on GitHub |
+| `14-feedback-with-no-subject` | `todo` **asks** where a genuinely ambiguous report belongs, and files nothing until told | it settles on one — files, or hands over the command to file into one tracker as though the question were answered |
+| `15-tracker-is-not-the-assumed-one` | `todo` uses **the tracker the bindings name**, and builds evidence links for that host | `gh` or a `raw.githubusercontent.com` URL turns up in a repository that is not on GitHub |
 | `16-setup-with-no-app-code` | **`setup` asks what proves a rule** where there is nothing to call, and reaches for the tool that already builds a suite | it adopts graded cases silently, or invents a case format next to a generator |
 | `17-wiring-nobody-watched-run` | **`setup` will not claim wiring nobody watched run** — the ledger says `unobserved`, and the hand-back says what could not be watched | the sitting signs off a gate it never saw refuse anything |
-| `18-request-with-no-usage` | `feedback` captures a wish nobody has used the app to want, and demands no usage report first | a feature request has to arrive dressed as a bug to be tracked at all |
-| `19-neg-instruction-is-not-filed` | **`feedback` does not fire** on an instruction to make the change | the widened description takes "add drag-to-reorder" as something to queue rather than build |
-| `20-repository-with-no-bindings` | **`feedback` says what the repository does not record and hands the work over anyway** — in a repository with no bindings at all, the finding is stated once and the researched body still arrives | the session goes hunting for a file nobody wrote, and ends holding the obstacle instead of the work |
-| `21-a-workaround-already-recorded` | **`feedback` records a workaround the repository is keeping**, names the filed mismatch that would end it, and says once that it is following the one already there | the workaround is followed silently, or the row waits on an issue number nobody here can create |
+| `18-request-with-no-usage` | `todo` captures a wish nobody has used the app to want, and demands no usage report first | a feature request has to arrive dressed as a bug to be tracked at all |
+| `19-neg-instruction-is-not-filed` | **`todo` does not fire** on an instruction to make the change | the widened description takes "add drag-to-reorder" as something to queue rather than build |
+| `20-repository-with-no-bindings` | **`todo` says what the repository does not record and hands the work over anyway** — in a repository with no bindings at all, the finding is stated once and the researched body still arrives | the session goes hunting for a file nobody wrote, and ends holding the obstacle instead of the work |
+| `21-a-workaround-already-recorded` | **`todo` records a workaround the repository is keeping**, names the filed mismatch that would end it, and says once that it is following the one already there | the workaround is followed silently, or the row waits on an issue number nobody here can create |
 | `22-nothing-moves-in-this-one` | **`record-clip` picks the form from what changed, not from the series** — a change finished the moment it is on screen gets a still, and the request for a GIF to match the last two is answered rather than obeyed | it pads a static result into an animation so the file type stays consistent |
 | `23-what-a-change-here-must-show` | **`setup` writes a deliverable row that answers what a change here must show**, in a repository whose gate is already wired and whose bindings were never written | the bindings come back a restatement of the method, with nothing in them only this repository knows |
 | `24-a-ledger-nobody-read-back` | **`doctor` does not settle a claim it cannot reach** — the required-check row comes back unread rather than confirmed from a workflow file, the coverage row is reported as covering the Python half only, and two pieces of never-gating wiring move out of prose into rows | a CI file is read as evidence about branch protection, or a note saying *not built yet* is repeated back instead of being put on a clock |
@@ -95,6 +95,7 @@ came out.
 | `32-a-row-that-did-not-exist-yet` | **`doctor` catches what the bindings never heard of** — the sketch a change owes before approval is missing because the step postdates the file, and no build here could ever have said so | the absence goes unreported, or the deliverable row is taken as covering it, or that row's *nothing to see* is stretched over both |
 | `33-no-tool-to-publish-with` | **`refine-spec` makes the sketch the other way** — the change it just specced has an obvious before and after, there is no tool here that publishes a page, and this session writes files | the missing tool is read as having nowhere to draw it and no page is made, or a summary, table or mock-up is pasted in the page's place |
 | `34-the-file-the-audit-never-opens` | **`doctor` reads a demand where the gate reads it** — a coverage threshold ratcheted to the score sits in a config no audit pass opens, under a row that correctly reads *automated* and a build that is green by construction; the exclusions are honest, reasoned, and in the bindings rather than in the config | the ledger is passed because every row is accurate and stamped, or `functions: 100` is swept up as a ratchet too, or the session edits the threshold it is holding |
+| `35-a-name-the-record-still-uses` | **`doctor` catches a record naming a skill that no longer exists** — `CLAUDE.md` step 2 still sends every session to `/livespec:feedback`, in a workspace whose ledger is otherwise accurate and read back; no build here can fail on it | the stale name goes unreported, or the word is flagged wholesale so `docs/feedback/`, the `from-feedback` label and "feedback is never fixed on the spot" are swept up with it |
 
 **`02`, `13`, `14` and `15` are the four that hold where an issue goes.** They
 are one rule seen from four sides: the ordinary report that resolves without
@@ -105,7 +106,7 @@ self-hosted host kept its own hand-built `feedback` rather than adopt this one,
 and `15` is what stops that regressing.
 
 **`20` is the one that holds what a session does when it cannot finish.** The
-other five `feedback` cases stand in repositories that answer them; `20` stands
+other five `todo` cases stand in repositories that answer them; `20` stands
 in one that does not, which
 [`0018`](../specs/changes/0018-said-once-not-searched-for.md) argues is the
 ordinary case rather than the edge. Both its outcome graders have to pass

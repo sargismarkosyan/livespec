@@ -73,7 +73,7 @@ with pytest and a Makefile? If not, it is a binding, not the method.
   `.github/scripts/checks.py` is empty, and its check runs **both ways**: a skill
   carrying the flag without being listed there fails, so it cannot come back
   quietly.
-- **Skills never implement.** `feedback` files, `refine-*` specs, `record-clip`
+- **Skills never implement.** `todo` files, `refine-*` specs, `record-clip`
   records. None of them touch `src/`. A change that relaxes this is a change to
   what livespec is, and needs to be argued as one.
 - **Relative links from a `SKILL.md` resolve inside the plugin** (`../../method/…`).

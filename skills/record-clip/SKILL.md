@@ -96,7 +96,7 @@ it is in.
   the body by a raw URL pinned to the commit. A branch URL rots when the branch
   is deleted on merge.
 - **Never touch `src/` or `specs/`.** If the recording shows something broken,
-  that is a finding: file it with the `feedback` skill. Do not fix it here, and
+  that is a finding: file it with the `todo` skill. Do not fix it here, and
   do not re-record around it.
 - Check the file size before committing. Over ~1 MB means too many frames or too
   large a viewport.

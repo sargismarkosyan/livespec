@@ -1,5 +1,5 @@
 ---
-tags: [skill:feedback, rule:an-unreachable-step-is-said-not-searched-for, rule:what-did-not-need-it-is-still-handed-over]
+tags: [skill:todo, rule:an-unreachable-step-is-said-not-searched-for, rule:what-did-not-need-it-is-still-handed-over]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

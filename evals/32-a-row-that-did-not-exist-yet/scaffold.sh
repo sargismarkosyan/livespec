@@ -22,7 +22,7 @@ contract: read `specs/setup/README.md` before assuming any command.
 ## The loop
 
 1. Human tests and reports.
-2. AI files issues (`/livespec:feedback`). It does not fix.
+2. AI files issues (`/livespec:todo`). It does not fix.
 3. AI writes the spec (`/livespec:refine-spec`) — Gherkin plus a numbered change spec.
 4. Human approves, or asks for changes.
 5. AI implements, gets `make verify` green, commits.

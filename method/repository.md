@@ -236,7 +236,7 @@ answer.
 
 | Label | Meaning |
 |---|---|
-| `from-feedback` | Came out of a human testing session. Everything the `feedback` skill files. |
+| `from-feedback` | Came out of a human testing session. Everything the `todo` skill files. |
 | `bug` | Behaviour that contradicts a spec, or a crash. |
 | `enhancement` | Something new. |
 | `ux` | Usability friction, layout, or wording. |

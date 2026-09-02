@@ -1,5 +1,5 @@
 ---
-tags: [skill:feedback, rule:the-tracker-comes-from-the-bindings, rule:evidence-links-follow-the-tracker]
+tags: [skill:todo, rule:the-tracker-comes-from-the-bindings, rule:evidence-links-follow-the-tracker]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
