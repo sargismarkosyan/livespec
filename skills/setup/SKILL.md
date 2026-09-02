@@ -86,8 +86,12 @@ yourself and record.
   is the seed for the persona layer, not the persona — do not write the file from
   this answer, hand it to `refine-personas` afterwards.
 - **What is the verification command, and what is the coverage gate over?** Ask
-  what is in scope and what is excluded from it, not what number to put on it,
-  and recommend the whole of what is left. A threshold set at what the code
+  what is in scope and what is excluded from it, rather than what percentage to
+  settle on, and recommend the whole of what is left — **100% of it**, once the
+  exclusions are named. Say that figure rather than leaving it to be worked out:
+  a recommendation nobody can put a number to is one nobody can refuse, while
+  the wrong answer — today's score — arrives already converted. It is 100% of
+  what *remains*, never of the repository. A threshold set at what the code
   scores today is a ratchet that never moves, and every point between it and the
   score is regression no build will report. An occupied repository does not get a
   lower number to fit its untested modules: those are named as exclusions, each

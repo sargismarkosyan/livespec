@@ -30,3 +30,21 @@ Feature: What the coverage gate is asked to demand
       When the sitting answers
       Then it asks which parts that room is standing in for
       And an exemption nobody can name is not written into the bindings
+
+  @rule:the-demand-is-recommended-as-a-figure
+  Rule: The recommendation says what the whole of the scope comes to, rather than describing its shape and leaving the figure to be worked out
+
+    # The figure is portable — it is the same in every consuming repository,
+    # which is what separates it from the threshold that lands in the bindings.
+
+    Example: the sitting recommends a shape and names no number
+      Given a consuming repository whose sitting has settled what the coverage gate is over
+      When the sitting recommends what that gate should demand
+      Then the recommendation names the figure the whole of that scope comes to
+      And the adopter is not left to convert a description into a number
+
+    Example: most of the repository is outside the scope and the figure does not move
+      Given a consuming repository excluding a generated client and a legacy importer
+      When the sitting recommends what the gate should demand
+      Then the figure is the whole of what remains once those exclusions are named
+      And it is not lowered because part of the repository sits outside the scope

@@ -126,6 +126,13 @@ and `specs/setup/README.md` describes it. Two things about it are method:
 
 The thresholds are the repository's. The judgment is not:
 
+- **Why it is worth a gate at all**, where an agent wrote the code and the tests
+  that check it: coverage is the only mechanical evidence that the tests reach
+  the code, and nobody has read either. Reach is all it proves — a test can
+  execute a line and assert nothing about it — which is why it is taken beside
+  traceability rather than instead of it. A rule with a test that names it, and
+  a number saying the tests get there: neither is worth much alone, and together
+  they are hard to satisfy dishonestly.
 - What is not covered is named, or it is a gap. A demand set below the whole of
   what is in scope hands out an exemption without saying what it is for, and
   nobody can then tell code that was never covered from code that stopped being.
