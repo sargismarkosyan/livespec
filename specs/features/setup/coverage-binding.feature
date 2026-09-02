@@ -31,12 +31,11 @@ Feature: What the coverage gate is asked to demand
       Then it asks which parts that room is standing in for
       And an exemption nobody can name is not written into the bindings
 
-  @rule:the-demand-is-recommended-as-a-figure @planned
+  @rule:the-demand-is-recommended-as-a-figure
   Rule: The recommendation says what the whole of the scope comes to, rather than describing its shape and leaving the figure to be worked out
 
-    # @planned: the rule is written before the skill body carries it. The
-    # figure is portable — it is the same in every consuming repository, which
-    # is what separates it from the threshold that lands in the bindings.
+    # The figure is portable — it is the same in every consuming repository,
+    # which is what separates it from the threshold that lands in the bindings.
 
     Example: the sitting recommends a shape and names no number
       Given a consuming repository whose sitting has settled what the coverage gate is over
