@@ -99,6 +99,18 @@ coverage number. Neither can fail a build, so neither ever announces its own
 absence. Check the second table exists and holds both; where the bindings predate
 it, that is the offer to make.
 
+**A third is not wiring at all and goes missing the same way.** A change here
+owes a **sketch** before it is approved, and the bindings say which ones — see
+[`process.md`](../../method/process.md#the-rules). No build can fail on it, so
+nothing has ever reported its absence, and bindings written before that step
+existed do not mention it. Check for the row; where it is missing, offer it as it
+will read. **The row for what a version must show is not that row.** It is the
+picture, recorded from the app at the end; the sketch is drawn from the change
+spec before anybody approves it, and a repository whose bindings record *nothing
+to see* is exempt from the first and not the second — a repository with no app
+still has change specs. A ledger holding one of the two looks, at a glance, like
+one that has been asked this already.
+
 Then the clock: **a row deferred across two changes is either wired or written
 off.** Read how long each deferral has been sitting there, and say which ones are
 past it. Written off means the row becomes *not applicable* with the reason in

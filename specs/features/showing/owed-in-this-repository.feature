@@ -1,7 +1,7 @@
 @feature:showing-owed-in-this-repository @workflow:adopt-the-process
 Feature: What a repository records about the sketch it owes at the approval step
 
-  @rule:the-bindings-say-a-sketch-is-owed-here @planned
+  @rule:the-bindings-say-a-sketch-is-owed-here
   Rule: A consuming repository comes out of the sitting with its bindings saying which changes here owe a sketch before approval, and with its own account of the loop saying what the person holds at that step
 
     Example: the sitting ends
@@ -21,7 +21,7 @@ Feature: What a repository records about the sketch it owes at the approval step
       When that file is written or audited
       Then its approval step says the person holds the sketch as well as the spec
 
-  @rule:what-arrived-after-the-bindings-were-written-is-caught @planned
+  @rule:what-arrived-after-the-bindings-were-written-is-caught
   Rule: An audit reports what the recorded process never mentioned because it did not exist yet, and offers the row rather than waiting for something to announce the absence
 
     Example: the bindings were written before the sketch existed

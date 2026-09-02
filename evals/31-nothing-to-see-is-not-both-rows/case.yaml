@@ -1,0 +1,18 @@
+# The workspace: `beacon`, a log-shipping daemon with no interface of any kind.
+# The gate is wired and accurate, so the gates are not where the session's
+# attention goes. Section 5 is, and it owes two rows that are one word apart.
+#
+# The picture is genuinely exempt here — there is no screen, so the method's
+# *nothing to see* line is this repository's standing case rather than an
+# exception somebody invokes. That is the correct answer for the first row and
+# it is the bait for the second.
+#
+# The sketch is not exempt. It is drawn from a change spec before approval, and
+# a repository with no app still has change specs. A session that writes
+# *nothing to see* once and lets it stand for both has written the bindings that
+# every consuming repository set up before 0.27.0 already has.
+#
+# This is why the case cannot be passed by writing less: a session that omits
+# the deliverable section entirely fails the first grader, and one that writes a
+# single exemption covering everything fails the second.
+scaffold_script: scaffold.sh

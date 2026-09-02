@@ -37,7 +37,10 @@ value: it is a map, not a summary.
 
 **6. The loop, numbered.** Eight steps at most, one line each. It is the thing an
 agent is supposed to follow, and a link to it elsewhere is one indirection too
-many at the moment it matters.
+many at the moment it matters. **The approval step says what the person is
+holding** — the spec, and the sketch drawn from it. *Human approves* on its own
+is that step as it read before there was anything to hold, and it is what a file
+written back then still says to every session that opens it.
 
 **7. The rules worth having in front of you — a subset, not all of them.** Link
 the full set in the method and then list the ones that actually get broken here:

@@ -1,0 +1,22 @@
+# The workspace: `tidewatch`, audited months after its sitting. The gate table
+# is accurate and was read back from the platform — deliberately, so the gates
+# are not where the session's attention goes.
+#
+# What is wrong is what the file has never heard of. It is stamped "Reconciled
+# against livespec 0.24.0", it carries a correct deliverable row for the picture
+# a version ships with, and it says nothing about the sketch a change owes
+# before it is approved, because that step did not exist when the file was
+# typed. No build here can fail on it, so nothing has ever reported its absence.
+#
+# The deliverable row is the bait, twice over. It is the row somebody scanning
+# for "what a change here must show" finds, so a ledger holding it looks like
+# one that has been asked this already. And it correctly records that there is
+# nothing to see in this repository — an exemption that belongs to the picture
+# and not to the sketch, which is drawn from a change spec rather than recorded
+# from the app.
+#
+# So the case has a positive half and a negative half. A session that audits
+# nothing leaves the deliverable row alone and scores the second grader while
+# failing the first. A session that tidies the deliverable row — dropping its
+# exemption, or stretching it over both — fails the second.
+scaffold_script: scaffold.sh
