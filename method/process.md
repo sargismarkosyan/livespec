@@ -80,8 +80,8 @@ comes from; what they never do is produce the deliverable by hand.
   argument — it restates none of the spec's own headings and points at the file
   for them, or it is a second version of the spec, and the copy that is not the
   file is always the one that goes stale. Where there is nothing the prose
-  cannot carry, or nowhere in this session to render one, that is a line and
-  nothing is put in its place. A sketch is drawn from a spec at step 4; the
+  cannot carry, or no way in this session to produce one in any form, that is a
+  line and nothing is put in its place. A sketch is drawn from a spec at step 4; the
   picture at step 6 is recorded from the app. Two objects, two steps.
 - **Feedback is never fixed on the spot.** It becomes an issue, then a spec, then
   a commit. Fixing something the moment it is mentioned is the fastest way to

@@ -207,9 +207,15 @@ the one in the terminal is the one that goes stale.
 
 The spec argues its case in prose. **What it cannot do is show the reader the
 thing it is arguing about** — and this is the one step where that matters most,
-because the change does not exist yet and there is nothing to record. So publish
-one page carrying the evidence, where the session has a tool that can (in Claude
-Code, `Artifact`), and hand it over with the links.
+because the change does not exist yet and there is nothing to record. So make one
+page carrying the evidence, and hand it over with the links.
+
+**Two ways to make it, in this order.** Publish it where the session has a tool
+that can (in Claude Code, `Artifact`). Where it has none, **write it as an
+`.html` file and hand over the path**: a page somebody opens on their own machine
+is a page, and this is the ordinary second way rather than a workaround. It goes
+somewhere the repository does not track and never into the spec commit — the
+change spec is the record, and this is a page for one decision.
 
 **What goes in it** — the evidence the spec argues from and cannot carry at
 reading speed:
@@ -240,14 +246,17 @@ it, is worse than no document.
 
 **Two absences, each one line.** Where there is nothing the prose cannot carry —
 a renamed constant, a corrected path — say so and draw nothing; padding the space
-is the failure this is meant to prevent. Where the session has no way to publish
-a page, say that once and hand back as below. Do not go looking for another way:
-that is [`process.md`](../../method/process.md#a-step-you-cannot-take-here-is-said-once-not-searched-for)'s
+is the failure this is meant to prevent. Where the session can **neither publish
+a page nor write a file**, say that once and hand back as below. That is the last
+resort rather than the first, and one absent tool is not it — a session that can
+write the spec files can write the page. Do not go looking for a third way: that
+is [`process.md`](../../method/process.md#a-step-you-cannot-take-here-is-said-once-not-searched-for)'s
 ordinary case, and the rest of the session is worth more than the page.
 
 **Revising it replaces it.** A later version of the sketch goes to the same
-address, so the reader is never holding two. That address is the whole reason
-this is a page and not a summary typed into the terminal.
+address — the same link, or the same file path rewritten where it stands — so the
+reader is never holding two. That address is the whole reason this is a page and
+not a summary typed into the terminal.
 
 ### If `specs/workflows/` or `specs/personas/` changed, confirm that first
 

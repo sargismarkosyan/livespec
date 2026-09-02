@@ -88,7 +88,7 @@ Feature: What the one decision a person holds gets to look at
       Then it is drawn anyway
       And the difficulty is not read as the exemption
 
-  @rule:a-missing-tool-is-not-a-missing-page @planned
+  @rule:a-missing-tool-is-not-a-missing-page
   Rule: A sketch takes whichever form the session can produce — a published page where the host has one, a written file where it does not — and only a session that can produce neither says so instead
 
     Example: the host has no tool that publishes a page
