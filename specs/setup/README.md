@@ -38,12 +38,12 @@ wherever the method says *test*, this repository means **eval case**:
 | **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body |
 | **Spec-surface check** | the same gate, asked separately. Fails a change to a `.feature` under `specs/features/` or `specs/workflows/` whose body carries no ` ```gherkin ` block and no link to a `.feature` pinned at a 40-character SHA. A layer README is not a `.feature` and does not trigger it |
 | **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, runs `verify.py --local`, commits, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
-| **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate and the release job share, and pure, so `inject.py` can break it |
-| **Repository checks** | `.github/scripts/checks.py [root]` — manifests, skill frontmatter, always-on budget, link and payload checks, and the two enumerations in this file that restate what another script owns. It takes a root so `inject.py` can break it |
+| **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate, the release job and the changelog-shape check share, and pure, so `inject.py` can break it |
+| **Repository checks** | `.github/scripts/checks.py [root]` — manifests, skill frontmatter, always-on budget, link and payload checks, the two enumerations in this file that restate what another script owns, and — since [`0038`](../changes/0038-the-other-side-of-the-difference.md) — that `CHANGELOG.md` keeps the shape an audit in a consuming repository reads by: at the plugin root, every heading `## <version> — <date>`, the manifest's `version` with an entry. It takes a root so `inject.py` can break it |
 | **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. Since [`0025`](../changes/0025-which-red-it-is.md) each is guarded `!cancelled()` rather than left to stop with the job, so the report is built and posted **on a red build too** — the run where its *Stale* row is the thing worth reading, and the run it was previously skipped on. No coverage section: there is no coverage gate here, and *What has no gate* says why |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. A `case.yaml` may name a `scaffold_script` — bash in the case directory, run by `run.py --scaffold` in the session's fresh workspace, both arms alike. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
-| **Always-on budget** | 5000 chars across model-invocable skills; currently 4315 across 8 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
+| **Always-on budget** | 5000 chars across model-invocable skills; currently 4321 across 8 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
 | **What proves a rule** | **graded cases.** There is no application code to call — the product is judgment, so behaviour is run against a prompt and scored. The full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md); [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of |
 | **How a case names its rule** | `tags: [rule:<id>]` in the case's frontmatter, read by `caselib.py`. **Not** a `rule()` helper — there is no test runner here to wrap |
 | **Spec-bound coverage** | **not applicable.** It is a split of a coverage run, and there is no coverage gate here to split |
@@ -185,7 +185,7 @@ what moved was what the numbers were allowed to be called.
 
 ## Gate wiring
 
-**Reconciled against livespec 0.25.0 on 2026-08-29.** One row per gate named in
+**Reconciled against livespec 1.1.0 on 2026-09-02.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
@@ -206,6 +206,7 @@ that gap is the thing a later `setup` run offers to close.
 | structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` |
 | both gates verified to fire | automated | `inject.py` — every gate broken in a fixture and the release inputs broken as pure functions, re-run by every `verify.py`. **`checks.py` is in that set only since [`0022`](../changes/0022-nobody-types-the-record.md)**, which is when it first took a root and could be pointed at a fixture at all; before that it was the one gate here never known to fire |
 | the enumerations in this file read back from what owns them | automated | `checks.py`, added by [`0022`](../changes/0022-nobody-types-the-record.md) — *The fault injection record* against `inject.py`, *What it runs* against `verify.py`. Both were typed, and both had drifted |
+| the record an audit reads by keeps its shape | automated | `checks.py`, added by [`0038`](../changes/0038-the-other-side-of-the-difference.md) — `CHANGELOG.md` at the plugin root, every heading a release and a date, the manifest's `version` with an entry. Read through `releaselib.py`, which is also what writes it, and broken by two faults in `inject.py`. Every version *reaching* an entry was already held by the release faults; this holds the shape the reading depends on |
 | coverage — lines, branches, functions | **not applicable** | there is no application code to measure; the eval-suite gate stands in its place, and *What has no gate* above says what that misses |
 | a journey looked at since the workflows under it moved | **not applicable** | a git question, and CI checks out one commit — it would pass forever while looking enforced |
 | features piled up under a workflow since its file was last edited | **not applicable** | same, and `gates.md` leaves both out for that reason |
@@ -258,7 +259,19 @@ have been the first thing there that was not one. That reasoning was sound and
 the conclusion was wrong — the thing it argued out of the ledger is exactly the
 thing nothing else tracks. It has a table now.
 
-**The stamp moved to 0.25.0**, because
+**The stamp moved to 1.1.0**, because
+[`0038`](../changes/0038-the-other-side-of-the-difference.md) gave `checks.py` a
+check and `inject.py` two faults that prove it — a gate gained a check, which is
+[`0022`](../changes/0022-nobody-types-the-record.md)'s test, and the table above
+gained a row for it. The number is the one this change ships as under its
+`minor` label, written before the release job writes it, the way `0025` and
+`0026` did. By the reading `0038` itself introduced, nothing between 0.25.0 and
+here asked wiring of this repository that it lacks — there is no coverage gate to
+have ratcheted, and the sketch row was already here — and the one line of
+*record* the range found behind, step 4 of this repository's own `CLAUDE.md`
+naming the spec and not the sketch, is corrected in the same change.
+
+**It had moved to 0.25.0 before that**, because
 [`0026`](../changes/0026-what-else-is-wrong.md) changed when four gates run —
 which is wiring by the same reading `0025` established below, and by a wider
 margin: three of the four had never once executed on a failing run. Nothing was
@@ -340,6 +353,8 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | the record naming a fault nobody injects | fails | ✔ |
 | a recorded fault whose expected result was flipped | fails | ✔ |
 | the bindings losing a gate verify.py runs | fails | ✔ |
+| a changelog heading the reader cannot parse | fails | ✔ |
+| a manifest version with no changelog entry | fails | ✔ |
 | shipping change with no release label | fails | ✔ |
 | two release labels at once | fails | ✔ |
 | pull request body with no changelog section | fails | ✔ |
@@ -668,3 +683,20 @@ one `/plugin marketplace add .` fixes. Verified on 2026-08-25 with the marker
 method: with `extraKnownMarketplaces` gone and the marketplace registered, a
 session still listed the skills of that day and the marker, so the enable alone
 is what this file has to carry.
+
+### What ships beside the skills, and how that was established
+
+`doctor` reads two files from the plugin root — `CHANGELOG.md`, for what the
+method changed between a consuming repository's stamp and the version installed,
+and `.claude-plugin/plugin.json`, for that version — two levels up from its own
+skill file. That the cache carries them is the packaging's, not this
+repository's, so it cannot be gated from here; it is recorded instead. Read on
+**2026-09-02**: `~/.claude/plugins/cache/livespec/livespec/0.27.0/` holds
+`CHANGELOG.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `LICENSE`, `README.md` and every
+directory at this root — everything, which is what [CONTRIBUTING.md](../../CONTRIBUTING.md)
+says and is now an observation rather than a description. A directory
+marketplace is this working tree itself, so the same files are there by
+construction. What *is* gated from here is the shape of the file the audit reads
+by — see *Repository checks* in the table and the two faults in the record above.
+A local `.claude/skills/` copy of a skill has nothing two levels up; the skill
+says so once and audits the ledger without it.

@@ -1,0 +1,13 @@
+# The workspace: `ridgeline`, a trail-conditions log for one national park,
+# whose ledger reads "Reconciled against livespec 9.4.0" — a version the plugin
+# installed has not reached. Somebody typed it, or the plugin went backwards;
+# the audit cannot tell which and is not asked to. What it must not do is read
+# the high number as the ledger being current, or compute a range that runs
+# backwards and read entries "between".
+#
+# Both versions are named — the stamp, and the one in the plugin's own manifest
+# — the stamp is reported as ahead of what is installed, and no range is read.
+# Then the rest of the ledger is audited as it would have been: the rule-bound
+# measure is described in prose as "not built yet", which is a row on no clock,
+# and that finding is the proof the audit carried on past the stamp.
+scaffold_script: scaffold.sh

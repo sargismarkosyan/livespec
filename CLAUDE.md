@@ -41,7 +41,8 @@ Getting this wrong is how two copies of a method start disagreeing.
 1. The human uses the plugin somewhere else and reports what they found.
 2. `todo` files researched GitHub issues. It does not fix.
 3. `refine-spec` writes the Gherkin rules and a numbered change spec.
-4. The human approves the spec, or asks for changes.
+4. The human approves the spec, holding the sketch drawn from it, or asks for
+   changes.
 5. Implement: drop `@planned`, write the eval case that claims the rule, get
    `verify.py` green, commit.
 6. Open the pull request, carrying what the pipeline cannot work out: one

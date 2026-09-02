@@ -76,8 +76,9 @@ badly against old commits, say so in the change that makes it.
 What a repository does record is one level up and one thing only: the
 [gate wiring ledger](gates.md#what-is-wired-and-what-is-not) in its bindings
 carries the version its wiring was last reconciled against, so `setup` can offer
-the difference on a later run. That is the installed process, not a commit's
-history.
+the difference on a later run and `doctor` can read, from the changelog that
+ships with the plugin, what moved between. That is the installed process, not a
+commit's history.
 
 ### Working on the method itself
 

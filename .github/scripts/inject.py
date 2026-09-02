@@ -97,6 +97,8 @@ FIXTURE: dict[str, str] = {
     ".claude-plugin/marketplace.json": json.dumps(
         {"name": "fixture", "plugins": [{"name": "livespec", "source": "./"}]}, indent=1
     ),
+    # checks.py holds this to the shape an audit reads by, against the manifest.
+    "CHANGELOG.md": "# Changelog\n\n## 0.0.0 — 2026-01-01\n\nThe fixture's one release.\n",
 }
 
 
@@ -228,6 +230,7 @@ from verify import GATES as VERIFY_GATES  # noqa: E402
 from releaselib import (  # noqa: E402
     ReleaseInputError,
     bump_manifest,
+    entries,
     extract_entry,
     extract_gherkin,
     moves_spec,
@@ -252,7 +255,7 @@ RELEASE_FAULTS = [
     ("changelog section left empty",
      lambda: extract_entry("## Changelog\n\n## Notes\n\ntext"), "is empty"),
     ("a version that already has an entry",
-     lambda: prepend_entry("# Changelog\n\n## 0.9.0 — x\n\nold\n", "0.9.0", "2026-01-01", "e"),
+     lambda: prepend_entry("# Changelog\n\n## 0.9.0 — 2026-01-01\n\nold\n", "0.9.0", "2026-01-02", "e"),
      "already has an entry"),
     ("a manifest with no version field",
      lambda: bump_manifest('{"name": "livespec"}', "0.9.0"), "no `version` field"),
@@ -321,9 +324,10 @@ def release_control() -> None:
     assert extract_entry(GOOD_BODY) == "Body of the entry.", "the entry is not taken verbatim"
     assert next_version("0.8.0", "minor") == "0.9.0", "the increment does not apply"
     assert '"version": "0.9.0"' in bump_manifest('{\n  "version": "0.8.0"\n}', "0.9.0")
-    log = prepend_entry("# Changelog\n\nhead\n\n## 0.8.0 — x\n\nold\n", "0.9.0", "2026-01-01", "Body.")
+    log = prepend_entry("# Changelog\n\nhead\n\n## 0.8.0 — 2026-01-01\n\nold\n", "0.9.0", "2026-01-02", "Body.")
     assert log.index("## 0.9.0") < log.index("## 0.8.0"), "the new entry is not on top"
     assert "Body." in log, "the entry did not survive into the changelog"
+    assert entries(log) == [("0.9.0", "2026-01-02"), ("0.8.0", "2026-01-01")], "the entries are not read back newest first"
     assert extract_gherkin(GOOD_BODY) == "Rule: it holds", "the quoted Gherkin is not read"
     assert extract_gherkin(
         "see https://x.test/o/r/blob/" + "a" * 40 + "/specs/features/a.feature"
@@ -442,6 +446,15 @@ FAULTS = [
     ("the bindings losing a gate verify.py runs", CHECKS,
      lambda r: edit(r, "specs/setup/README.md", "`board.py`, ", ""),
      "fails", "verify.py runs"),
+    # The record an audit in a consuming repository reads by. Every version
+    # reaches an entry — the release faults below hold that — but nothing held
+    # the shape the reading depends on until these two. See specs/changes/0038.
+    ("a changelog heading the reader cannot parse", CHECKS,
+     lambda r: edit(r, "CHANGELOG.md", "## 0.0.0 — 2026-01-01", "## 0.0.0"),
+     "fails", "is not `## <version> — <date>`"),
+    ("a manifest version with no changelog entry", CHECKS,
+     lambda r: edit(r, ".claude-plugin/plugin.json", '"version": "0.0.0"', '"version": "0.0.1"'),
+     "fails", "has no CHANGELOG.md entry"),
 ]
 
 

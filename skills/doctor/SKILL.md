@@ -38,6 +38,32 @@ missing. It is present, accurate, and stale. **Having been correct when it was
 written is not a reason to leave it**, and a complete ledger is not a current
 one.
 
+**And read the other side of that difference, which the plugin ships.**
+`gates.md` says what the method asks now; what it asked at the stamp is in
+[`CHANGELOG.md`](../../CHANGELOG.md), two levels up from this skill's own
+directory — `$CLAUDE_PLUGIN_ROOT` where it is set — beside
+[`plugin.json`](../../.claude-plugin/plugin.json), whose `version` is the plugin
+installed. Read every entry after the stamp, up to and including the one for the
+version installed; the headings are `## <version> — <date>`, newest first.
+**An entry says where to look, never what to do.** Entries are prose written for
+a person — reliable about which skill or page moved, unreliable as a checklist —
+so what an entry asks of *this* repository is read from `gates.md`,
+[`claude-md.md`](../../method/claude-md.md) and the skill as they now stand, at
+the place the entry points. An entry that is mostly the reasoning for a change
+asks nothing the method does not; an entry that moved nothing this repository
+holds — how this plugin measures itself, a rule for a kind of repository this is
+not — is passed over in a line saying so, and is not a finding. The reading
+directs the questions below, the read-back and the gaps after them; it is not a
+second list, and a row found under an entry is found once.
+
+Three ranges are a line each. A stamp at the version installed: *nothing
+between to reconcile*, and the rest of the audit as usual. A stamp ahead of the
+version installed — a downgrade, or a stamp somebody typed — both versions
+named, and no range read. A changelog that cannot be reached from here: said
+once, with what would read it, and the ledger audited without it, which is
+[the same rule](../../method/process.md#a-step-you-cannot-take-here-is-said-once-not-searched-for)
+as the platform in §2 that cannot be reached.
+
 For each row, four questions — and the last two are the ones nobody asks:
 
 - **What state does it claim?** *automated*, *not applicable*, *deferred*,
@@ -153,6 +179,13 @@ ordinary noun the loop is described with, and a directory or a label can carry i
 too. A sentence about what the process does is not a reference, and reporting one
 is how this check becomes noise on its second run.
 
+That check is one instance of the reading in §1 — an entry that renamed a skill
+points here — and the same file holds the rest of what
+[`claude-md.md`](../../method/claude-md.md) asks of the loop. Where an entry moved
+what a step must say, and the step here still reads as it did before, that line
+is behind in exactly the same way: present, correct-looking, and reported by
+nothing.
+
 Then the clock: **a row deferred across two changes is either wired or written
 off.** Read how long each deferral has been sitting there, and say which ones are
 past it. Written off means the row becomes *not applicable* with the reason in
@@ -172,16 +205,39 @@ Then make the corrections you found — **to the record only.** Show the rows as
 they will read, then write them. Where the wiring itself is missing, that is the
 last line of the report and it names `setup`, which does the building.
 
+**The record is the bindings and `CLAUDE.md`.** A loop step or a skill name the
+reading found behind is corrected there, in place, shown as it will read — never
+handed back as a line for `setup` to write. A renamed skill is corrected
+everywhere the record *instructs* by the old name, in `CLAUDE.md` and in the
+bindings alike; a dated account of what once ran under that name is left as
+written, because a record edited to agree with the present is not a record.
+Wiring the method now asks for and this repository lacks becomes a row reading
+*deferred* — since which change, and naming the version of the method that moved
+it — so the fact is in the ledger and on the two-change clock rather than in a
+report nobody re-reads. Those rows are what the last line hands to `setup`.
+
 **Re-stamp the version the ledger was reconciled against only if the wiring
 actually moved.** A ledger re-stamped for an audit that changed nothing has
 learned to lie, and it is worse than the stale one it replaced because it now
 looks fresh.
+
+**The stamp follows the wiring and never the reading.** Having read every entry
+between, corrected the record and written the rows moves it not at all; it moves
+when `setup` brings the wiring level, and until then the same range is read
+again next time. That is the price of a stamp that means what it says, and it is
+paid on purpose.
 
 ## What this skill refuses
 
 - **Wiring anything.** Not a gate, not a report, not a coverage split, not a
   threshold — including the one it just worked out is wrong. It writes the record
   of what is wired; `setup` writes the wiring.
+- **Reading an entry as a task list.** The entry is where to look; what is
+  asked is read from the method and the skill as they now stand. A repository
+  told to do what a paragraph of rationale mentioned has been audited against
+  nothing.
+- **Re-stamping for having read.** The stamp follows the wiring. A reading that
+  moved it would read as current over rows that are not.
 - **Writing application code**, which no skill here does.
 - **Running the interviews.** A repository whose layers are empty has a different
   problem, and `setup` section 8 is where that gets fixed.

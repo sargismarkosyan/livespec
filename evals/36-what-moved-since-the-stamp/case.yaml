@@ -1,0 +1,30 @@
+# The workspace: `saltmarsh`, a tide and mooring log for one small harbour, set
+# up on livespec 0.25.0 on 2026-08-30 and correct as of it. Every gate row is
+# accurate and read back from the platform, both pieces of never-gating wiring
+# are in the second table, and the coverage exclusions live in the tool's own
+# config. A pass that reads rows against their own text finds a clean ledger.
+#
+# The plugin has moved on since, and the record has not. Read the way the audit
+# now reads — the plugin's own changelog from the entry after 0.25.0 up to the
+# version installed, each entry as where to look — four things are owed:
+#
+#   0.27.0  CLAUDE.md step 4 reads "Human approves, or asks for changes" and
+#           says nothing about what the person holds. No rule catches this one.
+#   0.28.0  the coverage demand in pyproject.toml is a ratchet read off a
+#   0.30.0  report, sitting exactly on the score — wiring, so it becomes a
+#           deferred row naming the version that moved it, the number is left
+#           alone, and setup is named with the row.
+#   0.29.0  no sketch row in the bindings; the picture's row is there.
+#   1.0.0   CLAUDE.md step 2 sends every session to `/livespec:feedback`.
+#
+# Two entries in the range ask nothing of this repository: 0.26.0 is a floor on
+# this plugin's own eval board, and 0.31.0 is what the audit itself now does.
+# A session that reads entries as a task list will tell a Python repository
+# with no graded cases to add a floor on runs, split its CI, or change a release
+# script. None of that is asked.
+#
+# What must survive: the stamp, which follows the wiring and stays at 0.25.0
+# however much of the record was corrected; a dated note in the bindings that
+# an issue was filed with `/livespec:feedback` on 2026-08-31, which is history;
+# `docs/feedback/` and the `from-feedback` label, which are not skill names.
+scaffold_script: scaffold.sh

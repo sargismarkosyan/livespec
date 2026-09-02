@@ -33,6 +33,7 @@ how two documents start meaning slightly different things.
 | **arm** | One side of an ablation run: with the plugin loaded, or without. **Δ** is the difference, and it is the only number that says anything about livespec. |
 | **consuming repository** | Somebody else's repository, with the plugin installed. Where `specs/setup/README.md` and the gates actually live. |
 | **version** | A change spec number. Version 3 is the state of this repository after spec `0003` shipped. |
+| **stamp** | The plugin version a consuming repository's ledger was last reconciled against — *livespec 0.25.0*, a release and never a change number. It follows the wiring: it moves when the wiring is brought level with the method, and a reading that only corrected the record leaves it where it was. What the method changed between it and the plugin installed is read from `CHANGELOG.md`. |
 | **sketch** | What the person deciding on a change spec is shown beside it: the evidence that spec argues from, drawn *from* the spec. Never recorded from an app — that is the **picture** a version ships with, and the two are separate objects arriving at separate steps. |
 
 Two words deliberately **not** used: *documentation*, for anything under
@@ -50,7 +51,10 @@ There is no build output and no database. What a version writes down, and where:
   body and checked by the gate. See [setup/README.md](setup/README.md).
 - **`.claude-plugin/plugin.json`** — the `version` field, which pins every
   install. A change merged without moving it reaches nobody.
-- **`CHANGELOG.md`** — one entry per version.
+- **`CHANGELOG.md`** — one entry per version. Also what an audit in a consuming
+  repository reads, from the entry after its stamp to the one for the plugin
+  installed, for where the method moved — as where to look, never as a list of
+  tasks.
 - **a git tag** `livespec--v<version>`, and the GitHub Release that carries the
   same entry.
 
@@ -68,8 +72,8 @@ there, the change says so in its own spec.
 What a consuming repository *does* record is **setup-level**: the gate wiring
 ledger in its `specs/setup/README.md` carries the plugin version that wiring was
 last reconciled against. That is a fact about the process installed there, not
-about any commit — no commit gains provenance, and the ledger answers *what was
-this last checked against*, never *which version wrote this line*. The two are
+about any commit — no commit gains provenance, and the ledger answers *what is
+this wiring level with*, never *which version wrote this line*. The two are
 named apart here because a stamp on a repository reads, at a glance, like a stamp
 on its history.
 
