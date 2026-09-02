@@ -365,6 +365,39 @@ else:
         if named != runs:
             fail(rel(bindings), f"'What it runs' names {named}; verify.py runs {runs}, in that order")
 
+# --- 7. the record an audit reads by keeps its shape ------------------------
+
+# An audit in a consuming repository reads CHANGELOG.md — the one that ships at
+# the plugin root beside the manifest — from the entry after its ledger's stamp
+# to the entry for the version installed. Every shipping version reaches an entry
+# already; version_gate.py and release.py hold that. What nothing held is the
+# shape the reading depends on: the file at the root, every heading a release
+# and a date, the manifest's version with an entry. Read through releaselib, the
+# reader the release job writes with, so the copy and the original cannot
+# disagree. See specs/changes/0038.
+from releaselib import ReleaseInputError, entries as changelog_entries  # noqa: E402
+
+changelog = ROOT / "CHANGELOG.md"
+if not changelog.exists():
+    fail(
+        rel(changelog),
+        "is missing; it is what an audit in a consuming repository reads for what "
+        "the method changed between its ledger's stamp and the version installed",
+    )
+else:
+    try:
+        released = {version for version, _ in changelog_entries(changelog.read_text())}
+    except ReleaseInputError as error:
+        fail(rel(changelog), str(error))
+    else:
+        installed = plugin.get("version")
+        if installed and installed not in released:
+            fail(
+                rel(plugin_json),
+                f"version {installed!r} has no CHANGELOG.md entry; an audit reading up to "
+                "the version installed would stop one short of it",
+            )
+
 # --- report ----------------------------------------------------------------
 
 for note in notes:

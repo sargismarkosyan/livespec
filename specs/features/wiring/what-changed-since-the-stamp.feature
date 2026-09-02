@@ -1,7 +1,7 @@
 @feature:wiring-what-changed-since-the-stamp @workflow:adopt-the-process
 Feature: What an audit reads for between the ledger's stamp and the plugin installed
 
-  @rule:the-entries-between-are-where-to-look @planned
+  @rule:the-entries-between-are-where-to-look
   Rule: What the method changed between the stamp and the plugin installed is read from the changelog the plugin ships, and each entry says where to look rather than what to do
 
     Example: the stamp is several releases behind the plugin installed
@@ -22,7 +22,7 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       Then the entry is passed over in a line saying so
       And no finding is reported for it
 
-  @rule:a-range-with-nothing-in-it-is-said-not-computed @planned
+  @rule:a-range-with-nothing-in-it-is-said-not-computed
   Rule: A stamp at the plugin installed, a stamp ahead of it, and a changelog that cannot be reached are each said in a line
 
     Example: the ledger is stamped at the plugin installed
@@ -43,7 +43,7 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       Then that is said once, with what would read it
       And the rest of the ledger is audited as it would have been
 
-  @rule:a-reading-leaves-the-stamp-where-it-was @planned @refusal
+  @rule:a-reading-leaves-the-stamp-where-it-was @refusal
   Rule: The stamp follows the wiring and never the reading
 
     Example: the reading corrected only the record
@@ -57,7 +57,7 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       Then the stamp is left where it was
       And the ledger does not read as level with the plugin installed
 
-  @rule:what-the-reading-finds-is-corrected-as-record-or-written-as-a-row @planned
+  @rule:what-the-reading-finds-is-corrected-as-record-or-written-as-a-row
   Rule: What the reading finds is corrected in place where it is record — the bindings and CLAUDE.md — and becomes a deferred row where it is wiring, never wired by the audit
 
     Example: an entry moved something the repository's CLAUDE.md is required to carry

@@ -311,6 +311,16 @@ against what this page now names and offers the difference, rather than
 re-deriving the state from scratch. That is a record about the installed process.
 It is not provenance for a commit, and nothing else in the repository gains any.
 
+**What changed between that version and the one installed is read from the
+record the plugin ships with each version, never regenerated from the method.**
+A generated list of what each version obliges is a second copy of the method
+waiting to disagree with it; the record that shipped is where to look, and this
+page and the skills as they now stand are what is asked. **And the stamp follows
+the wiring, not the reading.** An audit that read every entry between, corrected
+the record and wrote a row for each gap leaves it where it was; it moves when the
+wiring is brought level. A stamp moved for having been looked at would read as
+current over rows that are not.
+
 ### And what is not wiring at all
 
 A check that runs on somebody's own machine before they push — the

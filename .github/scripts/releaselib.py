@@ -41,6 +41,12 @@ SPEC_SURFACE = ("specs/features/", "specs/workflows/")
 
 VERSION = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
 
+# The shape `prepend_entry` writes, and the shape an audit in a consuming
+# repository reads by — from the entry after its ledger's stamp to the entry for
+# the version installed. One regex for both, so what writes the file and what
+# holds it to its shape cannot disagree. See specs/changes/0038.
+ENTRY_HEADING = re.compile(r"^## (\d+\.\d+\.\d+) — (\d{4}-\d{2}-\d{2})$")
+
 # Either form #21 allows: the Gherkin quoted inline, or linked at a commit. A
 # branch link is deliberately not accepted — branches are deleted on merge and
 # the evidence goes with them, which is the same rot the moving picture's raw
@@ -197,10 +203,31 @@ def bump_manifest(manifest: str, version: str) -> str:
     return updated
 
 
+def entries(changelog: str) -> list[tuple[str, str]]:
+    """Every entry heading, newest first, as (version, date).
+
+    A `## ` heading that does not parse is refused rather than stepped over: a
+    reader that skips one can no longer say where the range it was asked for
+    begins, which is the whole of what an audit wants from this file.
+    """
+    found: list[tuple[str, str]] = []
+    for line in changelog.replace("\r\n", "\n").split("\n"):
+        if not line.startswith("## "):
+            continue
+        match = ENTRY_HEADING.match(line.rstrip())
+        if not match:
+            raise ReleaseInputError(
+                f"CHANGELOG.md heading {line.rstrip()!r} is not `## <version> — <date>`, "
+                "the shape release.py writes and an audit reads by"
+            )
+        found.append((match.group(1), match.group(2)))
+    return found
+
+
 def prepend_entry(changelog: str, version: str, date: str, entry: str) -> str:
     """Put the new entry above the newest existing one, under its own heading."""
     heading = f"## {version} — {date}"
-    if f"## {version}" in changelog:
+    if any(released == version for released, _ in entries(changelog)):
         raise ReleaseInputError(f"CHANGELOG.md already has an entry for {version}")
 
     lines = changelog.split("\n")

@@ -1,6 +1,6 @@
 # Spec 0038: the other side of the difference
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#92](https://github.com/sargismarkosyan/livespec/issues/92)
 - **Depends on:** nothing to build. It stands behind
   [`0032`](0032-the-repository-does-not-know-it-is-owed.md),
@@ -353,9 +353,12 @@ What is checked by hand:
    range is read.
 5. Run it where the changelog cannot be reached — a copy of the skill with
    nothing two levels up. It says so once, and the rest of the audit arrives.
-6. Run it against this repository's own bindings, stamped 0.25.0 and being the
-   plugin. The range is the same seven entries; it reports the step-4 line in
-   this `CLAUDE.md` and nothing about the sketch row, which is present here.
+6. Run it against this repository's own bindings. At `a9dc9bb`, before the
+   implementing change, they were stamped 0.25.0 and this `CLAUDE.md`'s step 4
+   named the spec and not the sketch: the reading finds that line and nothing
+   else, the sketch row being present here. The implementing change corrected
+   the line and re-stamped, because `checks.py` gained a check; after it the
+   audit reports *nothing between to reconcile*.
 7. `python3 .github/scripts/verify.py` — exit 2 on this spec commit for the 22
    rows already owed, and nothing else red. All four rules drop `@planned` in
    the implementing change, each claimed by a case tagged `rule:<id>`.
