@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.28.0 — 2026-09-02
+
+`setup` no longer recommends the coverage threshold a repository already scores. The question in §2 stops asking for a number and asks what is in scope and what is excluded from it, and the demand over what remains is the whole of it — because every point between a threshold and the score is regression no build will report, over lines nobody chose. The objection that made the old instruction reasonable is answered rather than obeyed: an occupied repository does not get a lower number to fit its untested modules, it names them as exclusions with their reasons, so nothing fails on day one and the remainder shrinks in a diff instead of creeping in a number. §4 says where they go — the coverage tool's own config, never a paragraph beside it, because a list the runner never reads is a second copy of the gate. The refusal at the end now catches both routes to a number nobody chose: copied from another repository, or subtracted from your own score. `method/testing.md` gains the judgment and no number — what is not covered is named, or it is a gap.
+
 ## 0.27.0 — 2026-09-01
 
 `refine-spec` now draws a sketch of the change and hands it over before asking for approval — the evidence a change spec argues from and cannot carry at reading speed: what it is now beside what it would be, what moves and what stays with the reason against each, and the count that changed. It carries evidence and never argument: the spec's own headings stay in the spec and the sketch links to them, so nobody is left holding a second version. Where a change has nothing the prose cannot carry, or the session has no way to render a page, that is one line and nothing is put in its place. `method/process.md` gains the portable rule at step 4 and separates a **sketch**, drawn from a spec, from the **picture** recorded from the app at step 6.
