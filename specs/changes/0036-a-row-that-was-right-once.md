@@ -1,6 +1,6 @@
 # Spec 0036: a row that was right once
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#89](https://github.com/sargismarkosyan/livespec/issues/89)
 - **Depends on:** nothing to build. It stands beside
   [`0032`](0032-the-repository-does-not-know-it-is-owed.md), which caught the

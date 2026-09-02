@@ -1,7 +1,7 @@
 @feature:wiring-what-an-audit-reads @workflow:adopt-the-process
 Feature: What an audit reads, and which version of the method it reads against
 
-  @rule:a-number-is-read-where-the-gate-reads-it @planned
+  @rule:a-number-is-read-where-the-gate-reads-it
   Rule: A number a gate enforces is read from the config the gate reads, and a demand set at what the code happened to score is reported as measured rather than chosen
 
     Example: the demand is the score the day the row was written
@@ -31,7 +31,7 @@ Feature: What an audit reads, and which version of the method it reads against
       Then the row that recorded that number as a decision is corrected
       And the config the gate reads is left to the sitting that wires it
 
-  @rule:the-checklist-is-the-method-as-it-now-stands @planned
+  @rule:the-checklist-is-the-method-as-it-now-stands
   Rule: A row is audited against the method as it now stands, and having been correct under the version the ledger is stamped against is not a reason to leave it
 
     Example: the row conformed to the version it was reconciled against

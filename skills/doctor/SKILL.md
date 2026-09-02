@@ -28,7 +28,17 @@ and do not go looking through the tree for one somebody might have put elsewhere
 
 ## 1. Take the ledger apart, row by row
 
-For each row, three questions — and the second is the one nobody asks:
+**Start from the stamp, and read against [`gates.md`](../../method/gates.md) as
+it now stands.** The ledger records which version of the method its wiring was
+last reconciled against; that is what to read *for*, and it is not evidence that
+anything beneath it is current. `setup` runs once, so every row here was written
+against the method as it read on the day of the sitting — and a row that was
+right then and is not right now announces nothing, because nothing about it is
+missing. It is present, accurate, and stale. **Having been correct when it was
+written is not a reason to leave it**, and a complete ledger is not a current
+one.
+
+For each row, four questions — and the last two are the ones nobody asks:
 
 - **What state does it claim?** *automated*, *not applicable*, *deferred*,
   *unobserved*.
@@ -38,6 +48,23 @@ For each row, three questions — and the second is the one nobody asks:
   of five, one directory of a monorepo, is not a gate over this repository. If
   the row does not say which part has no gate, it is being read as though it
   covered everything.
+- **Where did the number come from?** For a row whose gate enforces one — a
+  coverage threshold is the usual case — **open the config the gate reads**, and
+  report the demand that is in it rather than the row's description of it. An
+  audit that only reads rows cannot answer this, which is how a threshold nobody
+  chose survives every audit under a build that is green by construction. A
+  demand equal to what the code scores today was **measured rather than chosen**:
+  it is a ratchet, the slack between it and the score is zero by construction
+  rather than by health, and everything between it and the whole of what is in
+  scope is code at no address. Say it was read off a report, and name the part it
+  leaves unaddressed. **The exception is a demand that is the whole of what is in
+  scope** — 100% of what remains once the exclusions are named, which is what
+  `setup` recommends: that figure equals the score by construction too, and
+  reporting it as a ratchet tells every correctly wired repository that it is
+  broken. While that file is open, check where the exclusions live: what the
+  demand does not reach belongs in the tool's own config, and a list only the
+  bindings know about is a second copy of the gate. **Correct the row, and leave
+  the number** — a threshold is wiring, and wiring is `setup`'s.
 
 Then the cross-check `gates.md` already asks for: **the tree is the authority on
 what applies.** A row reading *not applicable — no personas exist* in a
@@ -137,8 +164,9 @@ looks fresh.
 
 ## What this skill refuses
 
-- **Wiring anything.** Not a gate, not a report, not a coverage split. It writes
-  the record of what is wired; `setup` writes the wiring.
+- **Wiring anything.** Not a gate, not a report, not a coverage split, not a
+  threshold — including the one it just worked out is wrong. It writes the record
+  of what is wired; `setup` writes the wiring.
 - **Writing application code**, which no skill here does.
 - **Running the interviews.** A repository whose layers are empty has a different
   problem, and `setup` section 8 is where that gets fixed.
