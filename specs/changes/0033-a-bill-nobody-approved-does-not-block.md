@@ -81,6 +81,10 @@ of merges where nobody ever runs the suite and nobody notices, which the
   blocks nothing** — no `continue-on-error`, because a job marked green with the
   finding buried in an annotation is a worse warning than a red one, and this
   repository's whole argument is that a silent absence is the expensive kind.
+- **`release.yml` runs `verify.py --local` too.** Added after the first attempt
+  shipped without it and the release job refused on the same stale board, one
+  step past the merge it had just been allowed through — see *Where this was
+  wrong the first time*.
 - **`verify.py` does not change.** Same five gates, same order, same exit codes,
   same `COSTS_MONEY`. A person still runs one command and still gets a 2. What
   moved is which CI job asks, not what the answer means.
@@ -127,6 +131,25 @@ Four things are different, and they are the whole of the argument:
 
 The case is not edited and its rubric keeps that line. If a future session tries
 this on its own initiative, it should still fail.
+
+### Where this was wrong the first time
+
+The change shipped naming `checks.yml` and nothing else. `0031`, `0032` and
+`0033` merged — `repository checks` green, `measurement board` red and blocking
+nothing, exactly as designed — and then `release.yml` ran the full `verify.py`
+on `main`, exited 2 on the same seventeen cases, and released nothing. No
+version, no entry, no tag.
+
+**One step later is worse than at the merge**, which is why this is worth
+writing down rather than quietly patching. A refusal at the merge leaves the
+work on a branch. A refusal here leaves it on `main` with no version, which is
+production carrying a change no install can pull — the one place this repository
+cannot afford a stuck build, since the marketplace reads `version` off that
+branch.
+
+The gate was right to be where it was; the change was incomplete. Both callers
+now ask the same question, and *Acceptance checks* below gained the one that
+would have caught it.
 
 ### What is genuinely given up
 
@@ -215,3 +238,6 @@ the two `@planned` rules [`0029`](0029-drawn-before-it-is-built.md) left behind.
 5. `gh api repos/sargismarkosyan/livespec/rules/branches/main` — the required
    contexts are still exactly `repository checks` and `plugin validate`, and
    `measurement board` is not among them.
+6. **Merge that branch and watch `release.yml`.** It writes the version, the
+   entry and the tag with the board still stale. This is the check the first
+   attempt did not have, and the one that failed.

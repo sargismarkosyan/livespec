@@ -66,9 +66,17 @@ jobs:
 
       # Before the push, not after. `main` is production: a tree that fails here
       # is a tree every install would pull.
+      #
+      # `--local` for the same reason `checks.yml` uses it: the one gate it
+      # leaves out can only be cleared by a purchase, and this job cannot make
+      # one either. Requiring it here would put the block 0033 removed from the
+      # merge one step later, where it is worse — the change is already on
+      # `main`, so a refusal leaves production carrying work that never got a
+      # version. Every gate a failure here could actually mean still runs.
+      # See specs/changes/0033-a-bill-nobody-approved-does-not-block.md.
       - name: Verify
         if: steps.release.outputs.released == 'true'
-        run: python3 .github/scripts/verify.py
+        run: python3 .github/scripts/verify.py --local
 
       - name: Commit and push
         if: steps.release.outputs.released == 'true'
