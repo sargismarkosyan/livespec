@@ -12,6 +12,47 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.0.0 — 2026-09-02
+
+**The `feedback` skill is now `todo`.** The word had three owners in one session and only one of them could move: Claude Code's built-in `SendFeedback` tool, whose subject is feedback *about Claude Code* and which leaves the repository entirely; this plugin's skill, whose subject is a finding *about the app being built*; and — recorded in this repository's own persona file and never read as the defect it describes — **the adopter's own hand-built `feedback` skill, kept in the GitLab repository rather than replaced with the plugin's**. A local skill of the same name shadows the plugin's outright, which `method/README.md` already states in the next breath. The two destinations could hardly be further apart, and a single word was the only thing telling them apart; a misfire there does not look wrong, it looks confident and lands where nobody working on the app will look.
+
+The description stops claiming the collided token: the trigger list's bare `"feedback"` becomes `"feedback about the app"`, a **narrowing** rather than a widening, so no should-not-fire case is owed for it. **`todo` deliberately does not become a trigger word** — it is already in always-on context as the name, and in the trigger list it would widen straight into `todo-change`, where *todo* is an app object and "add a todo" is an instruction to build. `19-neg-instruction-is-not-filed` is the existing guard on that and is re-measured rather than added to. Always-on context moves 4315 → 4321 of 5000.
+
+**What moved is the prose that names a skill; what stayed is the prose that names the loop.** `setup`, `record-clip` and `refine-spec` each told a session to reach for it by name and moved with it — `refine-spec`'s in its always-on description, where the routing sentence lives. Left exactly as they were: the loop's ordinary noun, `docs/feedback/`, the `from-feedback` label, the persona's line about *their own* skill, the eval directory names, and every change spec and `CHANGELOG.md` entry, because a record edited to agree with the present is not a record. Four links in `0018` and `0019` pointed at the moved file: the two whose text is the skill's then-name are repointed to where it now lives, the two whose text is the old path are unlinked, and no historical wording changed.
+
+**`doctor` gains the half that reaches repositories already set up.** A name in a consuming repository's own account of the loop is now read against the skills this plugin has, and one that reaches none is reported with the name it now has and the line as it will read. It is a fourth thing in §3 alongside the pull-request report, the rule-bound measure and the sketch — present, correct-looking, and reported by nothing, because no build can fail on it. Only a name standing for a skill counts: the same word is very often the ordinary noun the loop is described with, and a directory or a label can carry it too, so a session that greps rather than reads is wrong three times out of four in the case that holds this.
+
+**This ships as a major because it reads badly against old commits in a consuming repository.** Every `CLAUDE.md` written by an earlier `setup` names a skill that no longer exists, and nothing records which version of the method built any commit there. What the change does about that is bounded and stated in the spec: the new rule catches the *current* record when somebody audits, and says nothing about history.
+
+---
+
+The rule that landed, from `specs/features/wiring/what-an-audit-reads.feature`:
+
+```gherkin
+@rule:a-skill-the-record-names-is-one-that-exists
+Rule: A skill named in a repository's own record is read against the skills this plugin now has, and a record left on a name that has moved is reported
+
+  Example: the record names a skill that has been renamed away
+    Given a consuming repository whose own account of the loop names a skill by a name this plugin no longer has
+    When the wiring is audited
+    Then that name is reported as reaching no skill
+    And the name it now has is offered in its place
+
+  Example: the same word is ordinary prose rather than a skill
+    Given a record describing what the loop does in the same word a skill is named for
+    When the wiring is audited
+    Then nothing is reported about that sentence
+    And only a name standing for a skill is read as one
+
+  Example: every skill the record names exists
+    Given a consuming repository whose record names only skills this plugin has
+    When the wiring is audited
+    Then nothing about the names is reported
+    And no correction is offered that nobody needs
+```
+
+Claimed by new case `35-a-name-the-record-still-uses`: `kilnlog`, a workspace whose ledger is accurate and read back and whose stamp is one version behind, so the stale name in `CLAUDE.md` step 2 is the only thing open in it. Three decoys carry the same word and none is a reference to a skill — `docs/feedback/`, the `from-feedback` label, and the rules line *"feedback is never fixed on the spot"* — and the record also names three skills that do still exist, so the check has to discriminate rather than flag every `/livespec:` it finds.
+
 ## 0.31.0 — 2026-09-02
 
 `doctor`'s section-1 pass now opens the file a gate reads. It asks a fourth question of every row whose gate enforces a number — **where did that number come from?** — and answers it from the tool's own config rather than from the row describing it. A threshold set at what the code scores today is a ratchet wearing a decision's clothes: the slack is zero by construction rather than by health, the row above it reads *automated* accurately, and the build is green, so nothing has ever reported it. Such a demand is now reported as **measured rather than chosen**, with the part of the tree it leaves at no address named. **The exception is stated with the rule rather than after it** — a demand that is the whole of what is in scope matches the score by construction too, which is exactly what [`0035`](specs/changes/0035-what-the-whole-of-it-comes-to.md) recommends, and a finding that fires on every correctly wired repository is one nobody reads twice. The same file being open catches where the exclusions live: what the demand does not reach belongs in the coverage tool's config, and a list only the bindings know about is a second copy of the gate. The section also now **starts from the stamp instead of ending at it** — the version the ledger was reconciled against is what to read *for*, not evidence that anything beneath it is current — so a row that was correct under the method as it stood when it was typed is still read against the method as it now stands. [`0032`](specs/changes/0032-the-repository-does-not-know-it-is-owed.md) caught the absence-shaped half of that seam, a row the recorded process never mentioned because it did not exist yet; this is the row that is **present, accurate and complete**, which is precisely why nothing announces it. The number itself is not moved — *not a threshold, including the one it just worked out is wrong* joins the refusals — and what gets corrected is the row that called it a decision.
