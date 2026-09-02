@@ -27,7 +27,7 @@ wherever the method says *test*, this repository means **eval case**:
 | | |
 |---|---|
 | **Verification** | `python3 .github/scripts/verify.py` |
-| **What it returns** | 0 green; **1** a gate is broken; **2** nothing is broken and a measurement run somebody pays for is owed. The split is `COSTS_MONEY` in `verify.py`, the same constant `--local` filters on, and the decision is `verdict()` — pure, so `inject.py` can break it without a fixture. A mixed failure is **1**: a defect never reports as a bill. `run.py` already exits 2 for the same sentence from the other side. **CI is red either way** — this distinguishes the red, it does not soften it |
+| **What it returns** | 0 green; **1** a gate is broken; **2** nothing is broken and a measurement run somebody pays for is owed. The split is `COSTS_MONEY` in `verify.py`, the same constant `--local` filters on, and the decision is `verdict()` — pure, so `inject.py` can break it without a fixture. A mixed failure is **1**: a defect never reports as a bill. `run.py` already exits 2 for the same sentence from the other side. **CI runs the two halves as two jobs** — `repository checks` runs `--local` and gates; `measurement board` runs the rest, fails visibly and is required by nothing. See [`0033`](../changes/0033-a-bill-nobody-approved-does-not-block.md) |
 | **What it runs** | `checks.py`, `trace.py`, `evalsuite.py`, `board.py`, `inject.py`, in that order |
 | **Before the push** | `.githooks/pre-push` — one line, `exec verify.py --local`. **Off by default**: `git config core.hooksPath .githooks` turns it on in a clone, `git config --unset core.hooksPath` turns it off, and `git push --no-verify` walks past it. `--local` runs every gate but `board.py`, whose only cure is an eval run the maintainer pays for — see *The wiring that must never gate* below for why it has no row anywhere |
 | **Language** | Python 3.12, standard library only. **No dependency may be added** — CI installs nothing to run the gates |
@@ -449,7 +449,7 @@ request that changes what ships; `version_gate.py` fails on none or on two, and
 [`.github/workflows/checks.yml`](../../.github/workflows/checks.yml), two jobs,
 on push to `main` and on every pull request:
 
-- **`repository checks`** — Python 3.12, runs `verify.py`, then the
+- **`repository checks`** — Python 3.12, runs `verify.py --local`, then the
   release-input gate on pull requests only.
 - **`plugin validate`** — Node 22, installs `@anthropic-ai/claude-code` from npm
   and runs the three offline schema validations.

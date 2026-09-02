@@ -34,10 +34,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # One command, the same one a person runs locally. A longer list in CI
-      # than anybody can reproduce is how a required check stops being trusted.
+      # The same command a person runs locally, minus the one gate nobody in a
+      # session can clear. `--local` filters on COSTS_MONEY in verify.py, which
+      # holds exactly one name; every other gate still runs here and still
+      # blocks. The freshness check it leaves out has its own job below.
+      # See specs/changes/0033-a-bill-nobody-approved-does-not-block.md.
       - name: Verify
-        run: python3 .github/scripts/verify.py
+        run: python3 .github/scripts/verify.py --local
       # A property of a pull request, not of a tree — which is why it is not part
       # of verify.py, and why it only runs here. It checks the two things the
       # release job cannot work out for itself: how big the change is, and what
@@ -113,6 +116,28 @@ jobs:
         run: |
           gh pr comment "$PR" --body-file "$RUNNER_TEMP/report.md" --edit-last --create-if-none \
             || gh pr comment "$PR" --body-file "$RUNNER_TEMP/report.md"
+
+  # The other half of verify.py, on its own line, because its only cure is a
+  # purchase — an eval run billed to the maintainer's account, which nobody in a
+  # session may approve. Requiring it made a ~$58 run the price of merging any
+  # change that touches a skill body, and a rule that can only be followed by
+  # spending is one that eventually gets walked past instead.
+  #
+  # So it fails, visibly, and blocks nothing: it is not among the required
+  # contexts on `main` (`repository checks` and `plugin validate`, read back from
+  # the platform on 2026-09-02). Deliberately no `continue-on-error` — that would
+  # mark this green and bury the finding in an annotation, and a silent absence
+  # is the expensive kind. See specs/changes/0033-a-bill-nobody-approved-does-not-block.md.
+  board:
+    name: measurement board
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: What has no fresh measurement
+        run: python3 .github/scripts/board.py
 
   manifests:
     name: plugin validate

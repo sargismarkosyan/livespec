@@ -20,8 +20,8 @@ Feature: A verification that can be red without anything being broken
     Example: the branch reaches the point of merging
       Given a change pushed with measurements still waiting on a run
       When it is put up for review
-      Then the pipeline is still red
-      And the exception has bought a commit and a push, never a merge
+      Then what is waiting is still reported on the change
+      And no purchase stands between finished work and merging it
 
   @rule:a-red-says-which-red-it-is
   Rule: Where verification can fail for a reason the method sanctions, its result says which of the two happened without anybody reading the log
@@ -81,3 +81,29 @@ Feature: A verification that can be red without anything being broken
       When the run carries on
       Then the gate is not made to run anyway
       And nothing reports a second failure that is only the first one restated
+
+  @rule:a-measurement-nobody-can-clear-does-not-block @planned
+  Rule: A check whose only cure is a purchase nobody in the session can approve is reported on its own and blocks nothing, while every check somebody can clear still blocks
+
+    # @planned because no case here can reach it: what it promises is about a
+    # merge, and a case is one session against one prompt. Softening it into
+    # something a session could pass would buy the tag with the dishonesty
+    # evals/README.md warns about. See 0033, *Data*.
+
+    Example: the only thing outstanding is a bill
+      Given a change whose gates all hold and whose measurements are waiting on a run
+      When the pipeline finishes
+      Then the checks that gate have passed
+      And what is owed is failing on its own, where somebody will see it
+
+    Example: a gate is broken as well
+      Given a change with a broken gate and a stale measurement
+      When the pipeline finishes
+      Then the change cannot merge
+      And the reason it cannot is the gate rather than the bill
+
+    Example: the bill is never paid
+      Given a repository merging changes with measurements owed
+      When somebody asks what has gone unmeasured
+      Then the count is on every change rather than in a log
+      And nothing has quietly stopped reporting it because it stopped blocking
