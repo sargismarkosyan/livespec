@@ -12,6 +12,22 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.29.0 — 2026-09-02
+
+The **sketch** a change spec is handed over with now reaches the people it was written for.
+
+`refine-spec` is no longer tied to one tool: where the session can publish a page it publishes one, and where it cannot but can write a file it writes the page as an `.html` file and hands over the path — untracked, kept out of the spec commit, rewritten in place when the spec is revised. Saying the sketch could not be drawn is reserved for a session that can do neither.
+
+A repository now records that it owes one. `setup` writes the row into its bindings beside what a version must show, without letting one *nothing to see* cover both — the picture is recorded from the app, the sketch is drawn from the change spec, and a repository with no app still has change specs — while `doctor` checks for that row as a third thing no build can fail on, and offers it where the bindings predate the step. `method/process.md` and `method/claude-md.md` carry the portable halves, including that the loop's approval step names what the person is holding.
+
+Separately, a verification failure whose only cure is a purchase no longer blocks a merge or a release. CI runs the two halves as two jobs: `repository checks` runs `verify.py --local` — every gate somebody in the session can clear — and gates as before, while a new `measurement board` job reports what has no fresh measurement, fails visibly and is required by nothing. `verify.py` itself is unchanged, exit codes included.
+
+And a release that did not happen is still owed: `release.py` reads what a version carries from the last release tag rather than from one merge, so a run that fails no longer strands its shipping changes on `main` forever.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+https://claude.ai/code/session_01Tvs5oodmqhiXsG8fFJHsZQ
+
 ## 0.28.0 — 2026-09-02
 
 `setup` no longer recommends the coverage threshold a repository already scores. The question in §2 stops asking for a number and asks what is in scope and what is excluded from it, and the demand over what remains is the whole of it — because every point between a threshold and the score is regression no build will report, over lines nobody chose. The objection that made the old instruction reasonable is answered rather than obeyed: an occupied repository does not get a lower number to fit its untested modules, it names them as exclusions with their reasons, so nothing fails on day one and the remainder shrinks in a diff instead of creeping in a number. §4 says where they go — the coverage tool's own config, never a paragraph beside it, because a list the runner never reads is a second copy of the gate. The refusal at the end now catches both routes to a number nobody chose: copied from another repository, or subtracted from your own score. `method/testing.md` gains the judgment and no number — what is not covered is named, or it is a gap.
