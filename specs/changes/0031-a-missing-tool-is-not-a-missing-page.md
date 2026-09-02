@@ -1,6 +1,6 @@
 # Spec 0031: a missing tool is not a missing page
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#82](https://github.com/sargismarkosyan/livespec/issues/82)
 - **Depends on:** [`0029`](0029-drawn-before-it-is-built.md), which introduced
   the sketch and, in the same breath, decided the thing this corrects.
@@ -106,15 +106,21 @@ after the hand-back.
   way in this session to produce one in any form*. The portable half, naming no
   tool and no format — the method already had the better sentence and only has
   to stop being readable as a check against one thing.
-- **[`29-nowhere-to-draw-it`](../../evals/29-nowhere-to-draw-it/prompt.md) is
-  re-pointed at the new rule**, graders rewritten, and renamed to match what it
-  now watches. Its prompt is already the right session — a real before and
-  after, `Write` granted, no publishing tool — and under this change the
-  behaviour it currently fails is the behaviour that is owed.
-- **A new case claims `an-absent-sketch-is-said-rather-than-filled`** on its
-  *nothing the prose cannot carry* example, which is the shape this harness can
-  still reach. Without it that rule goes live and unclaimed, and `trace.py`
-  fails — correctly.
+- **A new case, `33-no-tool-to-publish-with`, claims the new rule.** It inherits
+  the session
+  [`29-nowhere-to-draw-it`](../../evals/29-nowhere-to-draw-it/prompt.md) was
+  written for — a real before and after, `Write` granted, no publishing tool —
+  because under this change the behaviour that case currently fails is the
+  behaviour that is owed.
+- **`29-nowhere-to-draw-it` keeps its name and its rule**, and gets the prompt
+  its rule can still be reached by: a change with no before, no ledger and no
+  count that moves. **This is not what the spec said before it was built.** It
+  said the case would be re-pointed at the new rule and renamed, and that turned
+  out to break two things at once — the rename orphans three links in shipped
+  [`0029`](0029-drawn-before-it-is-built.md), and re-pointing it makes 0029's
+  own table say that case claims a rule it no longer claims. A shipped spec
+  quietly stopping being true is the failure this repository exists to prevent,
+  and it is not worth a tidier directory name.
 
 **Rules added or changed** — the `@rule:` ids in `specs/features/`:
 
@@ -196,8 +202,8 @@ skills it holds — all three move:
 | What moves | What goes stale | What it costs |
 |---|---|---|
 | `skills/refine-spec/SKILL.md` | [`01-solution-shaped-request`](../../evals/01-solution-shaped-request/) — 3 runs, Δ +1.00, measured 2026-09-01 at `773ecd0` for $2.51 | ~$2.50 to re-measure |
-| `29-nowhere-to-draw-it` — prompt kept, graders rewritten, directory renamed, tags re-pointed | nothing; never measured, no row | ~$1.80 to measure |
-| a new case for `an-absent-sketch-is-said-rather-than-filled` | nothing; a new row | ~$1.80 to measure |
+| `29-nowhere-to-draw-it` — new prompt and grader, same name, same rule | nothing; never measured, no row | ~$1.80 to measure |
+| `33-no-tool-to-publish-with`, claiming the new rule | nothing; a new row | ~$1.80 to measure |
 
 **About $6, and it is the maintainer's to approve.** The implementing commit and
 its pull request can be finished with a gap where the numbers go: `verify.py`
@@ -235,10 +241,12 @@ what the board measures rather than a claim that it matters less.
   What is new is the kind of file, not the fact of writing one.
 - **`always-green` is untouched.** No build depends on a sketch, here or in any
   consuming repository.
-- **`ids-are-permanent` is respected.** No rule id is renamed or reused. The
-  directory rename in `evals/` is not an id this promise covers — it is not a
-  rule, workflow or persona, nothing outside this repository points at it, and
-  the board holds no row under the old name.
+- **`ids-are-permanent` is respected**, and an eval case directory turned out to
+  behave like one anyway. No rule id is renamed or reused, and the case
+  directory that was going to be renamed is not: three links in a shipped spec
+  point at it, and the gate that catches a dangling link is what found this.
+  Worth knowing for next time — a case directory is not covered by the promise
+  and is still not free to move.
 
 ## Acceptance checks
 
