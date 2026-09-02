@@ -4,11 +4,10 @@
 - **Issue:** [#78](https://github.com/sargismarkosyan/livespec/issues/78), returning.
   The sketch shipped into one skill body and into nothing a repository keeps.
 - **Depends on:** [`0029`](0029-drawn-before-it-is-built.md), which introduced the
-  sketch. Independent of **0031, *a missing tool is not a missing page***, which
-  is open on its own branch and deliberately not linked here — that one is about
-  the session's mechanism, this one about the repository's record, either can
-  ship first, and a version that links a sibling it does not depend on fails on
-  whichever merges second.
+  sketch. Independent of [`0031`](0031-a-missing-tool-is-not-a-missing-page.md) —
+  that one is about the session's mechanism, this one about the repository's
+  record, and neither depends on the other. They ship together because the
+  maintainer asked for one pull request, not because either needs the other.
 
 ## Who this is for
 
@@ -143,7 +142,8 @@ saving.
   than no answer. Worth its own spec, and worth it soon; this change is what the
   reported gap needs today.
 - **Auditing whether a sitting actually drew one.** Unchanged from
-  0031 and from the issue that raised it: `doctor` reads repository state, and an instruction skipped inside a
+  [`0031`](0031-a-missing-tool-is-not-a-missing-page.md) and from the issue that
+  raised it: `doctor` reads repository state, and an instruction skipped inside a
   session leaves none. What this change does is give it repository state to read.
 - **Making it a gate.** Nothing can check whether a sketch carried evidence, and
   a gate that checks a row exists would be satisfied by a row somebody typed.
