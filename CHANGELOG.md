@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 0.30.0 — 2026-09-02
+
+`setup` §2 now says what the coverage demand comes to. [`0030`](specs/changes/0030-covered-or-named.md) replaced the number with a shape — "the demand over what remains is the whole of it" — which is the right answer and not a figure, so the adopter converted it themselves in the one round where the wrong answer, today's score, arrives already converted. The recommendation now names it: **100% of what is left, once the exclusions are named**, and says it is 100% of what *remains* rather than of the repository, which is the misreading that would make it impossible in any occupied tree and get it dismissed on the spot. The figure lives in the portable half against `0030`'s own refusal to put it there, and the spec argues the case: a **binding** is what is one repository's own, 95 is tuned and means nothing elsewhere, and 100 is the same figure everywhere — the absence of a threshold written as a number. `skills/refine-spec/SKILL.md` already carries "120 lines, 6 rules" on that footing. What lands in the adopter's coverage config is untouched and still theirs, so [`gates.md`](method/gates.md)'s "all three, and the number is the repo's" stays true word for word — a recommendation is not a threshold, and conflating the two is what left `0030` unable to say its own number. `method/testing.md` gains why coverage is worth a gate at all where an agent wrote both the code and the tests that check it, and no number: it is the only mechanical evidence the tests reach the code, reach is all it proves, and that is why it is taken beside traceability rather than instead of it.
+
 ## 0.29.0 — 2026-09-02
 
 The **sketch** a change spec is handed over with now reaches the people it was written for.
