@@ -12,6 +12,104 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.1.0 — 2026-09-02
+
+**`doctor` now holds both sides of the difference it is asked to spot.** Since [`0036`](specs/changes/0036-a-row-that-was-right-once.md) its §1 has read the ledger's stamp and `gates.md` as it now stands, and nothing anywhere said what the method asked *at* the stamp — so the audit re-derived every row or reported nothing. It now reads the other side from the record the plugin already ships: `CHANGELOG.md`, two levels up from the skill file beside the manifest that says which version is installed, from the entry after the stamp up to and including the one for the version installed. **An entry says where to look, never what to do** — entries are prose written for a person, reliable about which skill or page moved and unreliable as a checklist, so what each asks of *this* repository is read from `gates.md`, `claude-md.md` and the skill as they now stand. An entry that is mostly rationale asks nothing the method does not; one that moved nothing the repository holds is passed over in a line. Three ranges are a line each: a stamp at the version installed reports *nothing between to reconcile*, a stamp ahead of it names both versions and reads no range, and a changelog that cannot be reached is said once and the ledger audited without it.
+
+**What the reading finds is corrected where it is record and becomes a row where it is wiring.** The record is the bindings *and* `CLAUDE.md` — the maintainer's instruction on this change, which settles what `0032` left out and `0037` half let in: a loop step or a skill name found behind is corrected in place, shown as it will read, never handed back as a line for `setup` to write; a renamed skill is corrected everywhere the record *instructs* by the old name, and a dated account of what once ran under it is left as written. Wiring the method now asks for and the repository lacks becomes a *deferred* row naming the version of the method that moved it, so it is on the two-change clock, and those rows are what the last line hands to `setup`. **The stamp follows the wiring and never the reading** — kept as `doctor` §4 and `setup` §5 already said, against the recommendation, and the cost is stated in the spec: the range never shrinks by reading, and is read again next time until `setup` brings the wiring level. `method/gates.md` carries the portable half of both, and `spec.md` gains the word *stamp*.
+
+**The record the reading depends on is held to its shape here.** Every shipping version already reached an entry — `version_gate.py` and `release.py` hold that — but nothing held the shape the reading depends on. `releaselib.py` gains `entries()`, which `prepend_entry` now shares; `checks.py` fails a `CHANGELOG.md` that is missing, a heading that is not `## <version> — <date>`, or a manifest `version` with no entry; and `inject.py` proves both with two faults, 51 in all. That the plugin cache carries the file is the packaging's and cannot be gated from here, so the bindings record it as a dated observation. This repository's own ledger is re-stamped **1.1.0** — a gate gained a check, which is `0022`'s test — and the one line of record the range finds behind here, step 4 of this `CLAUDE.md` naming the spec and not the sketch, is corrected in the same change. A typed always-on figure in the bindings (4315) is corrected to what `checks.py` prints (4321); the budget is untouched, and no description moves.
+
+**The live case.** `toil-tracker` is stamped 0.25.0 against a plugin at 1.0.0: seven entries between, four things owed, three of them caught by a rule shipped for each in `0032`, `0036` and `0037`, and the fourth — `CLAUDE.md`'s step 4 — by nothing. This is the mechanism those three are special cases of, and the next change that obliges a repository to hold something ships without a `doctor` rule of its own.
+
+---
+
+The rules that landed, from `specs/features/wiring/what-changed-since-the-stamp.feature`:
+
+```gherkin
+@rule:the-entries-between-are-where-to-look
+Rule: What the method changed between the stamp and the plugin installed is read from the changelog the plugin ships, and each entry says where to look rather than what to do
+
+  Example: the stamp is several releases behind the plugin installed
+    Given a consuming repository whose ledger is stamped several releases behind the plugin installed
+    When the wiring is audited
+    Then every entry after the stamp, up to and including the one for the plugin installed, is read
+    And what each asks of this repository is read from the method and the skill as they now stand, not from the entry
+
+  Example: an entry is mostly the reasoning for a change
+    Given an entry in that range that spends its length on why rather than on what
+    When the wiring is audited
+    Then nothing is asked of the repository that the method as it now stands does not ask
+    And the entry is not repeated back as a list of tasks
+
+  Example: an entry moved nothing this repository holds
+    Given an entry in that range that changed only how this plugin measures itself
+    When the wiring is audited
+    Then the entry is passed over in a line saying so
+    And no finding is reported for it
+
+@rule:a-range-with-nothing-in-it-is-said-not-computed
+Rule: A stamp at the plugin installed, a stamp ahead of it, and a changelog that cannot be reached are each said in a line
+
+  Example: the ledger is stamped at the plugin installed
+    Given a consuming repository whose ledger is stamped at the version of the plugin installed
+    When the wiring is audited
+    Then it reports that there is nothing between the stamp and the plugin installed to reconcile
+    And no empty finding stands in for that
+
+  Example: the stamp is ahead of the plugin installed
+    Given a consuming repository whose ledger is stamped at a version later than the plugin installed
+    When the wiring is audited
+    Then both versions are named and the stamp is reported as ahead of what is installed
+    And no range is read
+
+  Example: the changelog cannot be reached from here
+    Given a session in which the plugin's changelog cannot be read
+    When the wiring is audited
+    Then that is said once, with what would read it
+    And the rest of the ledger is audited as it would have been
+
+@rule:a-reading-leaves-the-stamp-where-it-was @refusal
+Rule: The stamp follows the wiring and never the reading
+
+  Example: the reading corrected only the record
+    Given a reading of the range that found the record behind and the wiring as the method now asks
+    When the audit makes its corrections
+    Then the stamp is left where it was
+
+  Example: the reading found wiring the method now asks for and the repository lacks
+    Given a reading of the range that found a gate demanding what the method no longer asks it to
+    When the audit makes its corrections
+    Then the stamp is left where it was
+    And the ledger does not read as level with the plugin installed
+
+@rule:what-the-reading-finds-is-corrected-as-record-or-written-as-a-row
+Rule: What the reading finds is corrected in place where it is record — the bindings and CLAUDE.md — and becomes a deferred row where it is wiring, never wired by the audit
+
+  Example: an entry moved something the repository's CLAUDE.md is required to carry
+    Given an entry in that range that changed what a step of the loop must say
+    And the repository's CLAUDE.md still reads as it did before
+    When the audit makes its corrections
+    Then CLAUDE.md is corrected in place, shown as it will read
+    And it is not handed back as a line for setup to write
+
+  Example: an entry renamed a skill
+    Given an entry in that range that renamed a skill
+    And the repository's record still instructs by the old name in more than one place
+    When the audit makes its corrections
+    Then every instruction that names it by the old name is corrected in place
+    And a dated account of what once ran under the old name is left as written
+
+  Example: an entry moved what a gate is asked to demand
+    Given an entry in that range that changed what a gate should demand
+    And the config that gate reads still demands what it did before
+    When the audit makes its corrections
+    Then the row for that gate reads deferred, naming the version of the method that moved it
+    And the config is left as it was, and the report ends by naming setup with that row
+```
+
+Claimed by two new cases. **`36-what-moved-since-the-stamp`** — `saltmarsh`, stamped 0.25.0, correct as of it, and behind in four places the method moved since: `CLAUDE.md` step 4 (0.27.0, which no rule catches), a coverage demand read off a report (0.28.0/0.30.0 — a deferred row, the number untouched, `setup` named), no sketch row (0.29.0), and step 2 naming `/livespec:feedback` (1.0.0). Two entries in the range ask nothing of it — 0.26.0 is a floor on this plugin's own board, 0.31.0 is what the audit itself does — and a session that reads entries as tasks will tell a Python repository with no graded cases to add a floor on runs. A dated note that #12 was filed with `/livespec:feedback` is history and must survive; so must the stamp. Claims the first, third and fourth rules. **`37-a-stamp-ahead-of-the-plugin`** — `ridgeline`, stamped 9.4.0: both versions named, no range read, the stamp reported and not corrected, and the rule-bound measure brought out of prose into a row to prove the audit carried on. Claims the second.
+
 ## 1.0.0 — 2026-09-02
 
 **The `feedback` skill is now `todo`.** The word had three owners in one session and only one of them could move: Claude Code's built-in `SendFeedback` tool, whose subject is feedback *about Claude Code* and which leaves the repository entirely; this plugin's skill, whose subject is a finding *about the app being built*; and — recorded in this repository's own persona file and never read as the defect it describes — **the adopter's own hand-built `feedback` skill, kept in the GitLab repository rather than replaced with the plugin's**. A local skill of the same name shadows the plugin's outright, which `method/README.md` already states in the next breath. The two destinations could hardly be further apart, and a single word was the only thing telling them apart; a misfire there does not look wrong, it looks confident and lands where nobody working on the app will look.
