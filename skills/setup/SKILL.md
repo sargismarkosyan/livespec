@@ -85,10 +85,15 @@ yourself and record.
 - **Who is it for?** One sentence, and one sentence on who it is *not* for. This
   is the seed for the persona layer, not the persona — do not write the file from
   this answer, hand it to `refine-personas` afterwards.
-- **What is the verification command, and what are the coverage thresholds?**
-  Recommend what the repo already has. A threshold below what the code already
-  scores is a ratchet that never moves; one far above it fails on day one and
-  gets switched off by Friday.
+- **What is the verification command, and what is the coverage gate over?** Ask
+  what is in scope and what is excluded from it, not what number to put on it,
+  and recommend the whole of what is left. A threshold set at what the code
+  scores today is a ratchet that never moves, and every point between it and the
+  score is regression no build will report. An occupied repository does not get a
+  lower number to fit its untested modules: those are named as exclusions, each
+  with its reason, and the demand over the rest stands. Nothing fails on day one,
+  because the day-one exclusion list is exactly today's uncovered code written
+  down — and it shrinks in a diff instead of creeping in a number.
 - **Is `main` protected, and what is the required check called?** If nobody can
   change repository settings, say so in the bindings — an unenforceable rule
   written as enforced is the worst line in any setup file. **Their answer is
@@ -172,8 +177,14 @@ uses to name its rule.
   gates read, so the native runner arriving later is a bonus, not a migration.
 
 **Coverage** is whatever the language already has. Lines, branches and functions
-if the tool reports all three; the thresholds are the ones agreed in section 2.
-If the tool reports only lines, say so in the bindings and say what that misses.
+if the tool reports all three; the demand and the exclusions are the ones agreed
+in section 2. If the tool reports only lines, say so in the bindings and say what
+that misses.
+
+**The exclusions go where the tool reads them**, in its own config rather than in
+a paragraph beside it. A list only the bindings know about is a second copy of
+the gate, and the two disagree the first time either moves. Where the tool cannot
+exclude anything, the binding names a number and says that is the shape it is on.
 
 **Take it twice.** The gated number is over everything; the second pass is over
 the rule-bound tests alone, and it says how much of the product the specification
@@ -496,7 +507,8 @@ command rather than an act of memory.
   installed the process on top of a persona nobody chose.
 - **Adding a dependency** to make the process fit. If the gate needs a library,
   it is too big.
-- **Copying another repository's numbers.** A 95% threshold that came from
-  somewhere else is a number nobody chose.
+- **A coverage number nobody chose.** Copied from another repository, or
+  subtracted from this one's own score — both arrive without anybody having
+  decided what the points they give away stand for.
 - **Installing over an existing setup without saying what it will overwrite.**
   Show the list first; a CLAUDE.md somebody wrote by hand is context, not clutter.

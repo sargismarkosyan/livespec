@@ -126,6 +126,11 @@ and `specs/setup/README.md` describes it. Two things about it are method:
 
 The thresholds are the repository's. The judgment is not:
 
+- What is not covered is named, or it is a gap. A demand set below the whole of
+  what is in scope hands out an exemption without saying what it is for, and
+  nobody can then tell code that was never covered from code that stopped being.
+  Name the exclusions where the runner reads them and the remainder has an
+  address.
 - Aim at branches first. Lines follow; branches are where the untested paths
   hide, and V8's line counting is generous about function declarations.
 - Error-handling paths in storage reads are real behaviour with real rules behind
