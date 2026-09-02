@@ -46,6 +46,22 @@ def git(*args: str) -> str:
     return result.stdout
 
 
+def last_release() -> str | None:
+    """The tag the previous release left behind, or None before the first one.
+
+    `git describe` walks back from the merge being released, so it answers
+    *where did the last release get to* rather than *what is the newest tag
+    anywhere* — the two differ on a branch, and only the first is what a
+    release is measured from.
+    """
+    result = subprocess.run(
+        ["git", "describe", "--tags", "--abbrev=0", "--match", "livespec--v*"],
+        capture_output=True, text=True, cwd=ROOT,
+    )
+    tag = result.stdout.strip()
+    return tag if result.returncode == 0 and tag else None
+
+
 def emit(**outputs: str) -> None:
     """Hand the workflow what it needs to commit, tag and announce."""
     path = os.environ.get("GITHUB_OUTPUT")
@@ -67,8 +83,21 @@ def main() -> int:
 
     request = json.loads(Path(args.pull_request).read_text())
 
-    changed = [line for line in git("diff", "--name-only", f"{args.sha}^", args.sha).splitlines() if line]
+    # From the last release, not from this merge. A release carries everything
+    # shipping that has landed since the previous one — which is the same thing
+    # as the merge's own diff on an ordinary day, and is not on the day a
+    # release run failed. Diffing the merge against its parent made one failed
+    # run strand its shipping files permanently and silently: no later run ever
+    # looks at them again, `main` goes on naming the old version, and every
+    # install keeps the cached copy. See specs/changes/0034.
+    since = last_release()
+    base = since or f"{args.sha}^"
+    changed = [line for line in git("diff", "--name-only", base, args.sha).splitlines() if line]
     shipping = ships(changed)
+    if since:
+        print(f"• shipping files since {since}: {len(shipping)}")
+    else:
+        print(f"• no release tag yet — reading {args.sha[:8]} against its parent")
     if not shipping:
         print(f"• nothing that ships changed in {args.sha[:8]} — no release")
         emit(released="false")
