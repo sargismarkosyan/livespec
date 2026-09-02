@@ -85,7 +85,7 @@ workflow names it here.
 - **`context-budget`** — every session pays for the always-on descriptions. The
   budget in `checks.py` is a real ceiling, and widening a description is paid for
   in `evals/` with a should-not-fire case, never on a hunch.
-- **`never-implements`** — no skill touches application code. `feedback` files,
+- **`never-implements`** — no skill touches application code. `todo` files,
   `refine-*` specs, `record-clip` records. A change that relaxes this is a change
   to what livespec is and has to be argued as one.
 - **`ids-are-permanent`** — a rule, workflow or persona id, once published, is

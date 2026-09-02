@@ -1,5 +1,5 @@
 ---
-tags: [skill:feedback, rule:plugin-reports-reach-the-plugin]
+tags: [skill:todo, rule:plugin-reports-reach-the-plugin]
 max_turns: 20
 timeout_seconds: 420
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

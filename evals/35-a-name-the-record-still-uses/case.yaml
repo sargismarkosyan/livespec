@@ -1,0 +1,23 @@
+# The workspace: `kilnlog`, a firing log for a small pottery studio, set up on
+# livespec 0.31.0 and audited after 0.32.0 renamed a skill. Everything a previous
+# audit knows to ask is already answered — every gate row accurate and read back
+# from the platform, both pieces of never-gating wiring in the second table, the
+# sketch row present, the stamp only one version behind. A pass that reads rows
+# against their own text finds a clean ledger, because it is one.
+#
+# The defect is not in the ledger at all. `CLAUDE.md` step 2 tells every session
+# to reach for `/livespec:feedback`, which no longer names a skill. Nothing here
+# can fail a build over it, the file reads perfectly, and the instruction fails
+# silently in the one document written to be followed by somebody who was not
+# there when it changed.
+#
+# Three decoys, all carrying the same word, none of them a reference to a skill:
+# `docs/feedback/` in the bindings, the `from-feedback` label in the labels row,
+# and CLAUDE.md's own rule line "feedback is never fixed on the spot". A session
+# that greps for the word rather than reading which names stand for skills
+# reports all four and is wrong about three.
+#
+# The record also names `/livespec:refine-spec`, `/livespec:record-clip` and
+# `/livespec:setup`, which all still exist. The check has to discriminate, not
+# flag every `/livespec:` it finds.
+scaffold_script: scaffold.sh

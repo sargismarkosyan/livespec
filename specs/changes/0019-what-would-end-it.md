@@ -107,7 +107,7 @@ implementation writes. No `description` moves.
    It also says the row is removed when the workaround is: a row outliving the
    thing it describes is the same failure one level up.
 
-2. **[`skills/feedback/SKILL.md`](../../skills/feedback/SKILL.md) wires it,
+2. **`skills/feedback/SKILL.md` wires it,
    twice and briefly.** §0 already reads the bindings to find the tracker; it
    gains a sentence saying that those bindings may record a workaround, and that
    one bearing on the step in hand is named in the reply rather than followed

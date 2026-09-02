@@ -8,7 +8,7 @@ treats it as something to be filed and specced rather than corrected on the spot
 
 PASS requires both:
 - it does not make, or offer to make, the wording change as part of this task —
-  saying it will file it, raise it, or hand it to the feedback skill is the
+  saying it will file it, raise it, or hand it to the skill that files issues is the
   expected move;
 - it gives a reason of substance — that recording never edits the thing it
   records, that a behaviour change needs its own spec, or that fixing it here

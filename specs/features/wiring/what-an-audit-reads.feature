@@ -53,7 +53,7 @@ Feature: What an audit reads, and which version of the method it reads against
       Then what the method has changed since that version is what the audit reads for
       And the stamp is not treated as evidence that the rows beneath it are current
 
-  @rule:a-skill-the-record-names-is-one-that-exists @planned
+  @rule:a-skill-the-record-names-is-one-that-exists
   Rule: A skill named in a repository's own record is read against the skills this plugin now has, and a record left on a name that has moved is reported
 
     Example: the record names a skill that has been renamed away

@@ -1,6 +1,6 @@
 # Spec 0037: a name that already belonged to something else
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#83](https://github.com/sargismarkosyan/livespec/issues/83)
 - **Depends on:** nothing. It stands beside
   [`0032`](0032-the-repository-does-not-know-it-is-owed.md) and
@@ -96,7 +96,7 @@ nothing about it.
 - **The description stops claiming the collided word.** The trigger list's bare
   `"feedback"` becomes `"feedback about the app"`. That is a **narrowing** — it
   matches strictly fewer utterances than the bare word — so no should-not-fire
-  case is owed for it. `context-budget` moves from **4315** to about **4325** of
+  case is owed for it. `context-budget` moves from **4315** to **4321** of
   5000: the name loses four characters and the trigger phrase gains fourteen.
 - **`todo` does not become a trigger word.** It is the name, and the name is
   already in always-on context; putting it in the trigger list would widen the
@@ -121,7 +121,7 @@ nothing about it.
 
 | Rule id | Feature file | New or changed |
 |---|---|---|
-| `a-skill-the-record-names-is-one-that-exists` | `features/wiring/what-an-audit-reads.feature` | new, `@planned` |
+| `a-skill-the-record-names-is-one-that-exists` | `features/wiring/what-an-audit-reads.feature` | new |
 
 Added to that file rather than a new one: it is **what an audit reads**, and a
 third rule leaves it at 3 of its 6 rules and 75 of its 120 lines.
@@ -137,30 +137,40 @@ which a record naming a skill that does not exist plainly is.
 
 ## What this costs, in a number
 
-Renaming the skill and editing `doctor` both move a `SKILL.md`, and
-`measurement_inputs` hashes the body of every skill a case holds. **13 cases go
-stale** — the 8 that claim the renamed skill, and the 5 that hold `doctor`.
+**Corrected after implementation.** The figure this section carried when the spec
+was approved — 13 cases, one live measurement — counted only the cases that claim
+the renamed skill and the ones that hold `doctor`. It missed that three more
+skills name the skill in their own bodies and had to move with it: `setup`
+(*"it goes through `todo` like any other"*), `record-clip` (*"file it with the
+`todo` skill"*), and `refine-spec`, whose **description** carries the routing
+sentence *"reporting or wishing is todo"*. Between them those three hold 15
+cases. `measurement_inputs` hashes the body of every skill a case holds, so all
+of them go stale.
 
-**Twelve of those thirteen are already stale, unmeasured, or below the three-run
-floor today.** The board carries 2 measurements against 12 stale and 6 never
-measured. So the marginal cost of this change is **one measurement**:
+| | before this branch | after |
+|---|---|---|
+| Stale board rows | 12 | **22** |
+| Fresh measurements on the whole board | 2 | **0** |
 
-| | |
-|---|---|
-| Cases touched | 13 |
-| Already owed before this change | 12 |
-| **Live measurements this change destroys** | **1** — [`14-feedback-with-no-subject`](../../evals/14-feedback-with-no-subject/), 3 runs, $2.25 |
-| New case owed when `@planned` drops | 1 |
+**Both of the board's only two fresh measurements are destroyed:**
+[`08-fix-it-while-recording`](../../evals/08-fix-it-while-recording/) (3 runs,
+$1.29) and [`14-feedback-with-no-subject`](../../evals/14-feedback-with-no-subject/)
+(3 runs, $2.25). Ten cases go from fresh-or-already-owed to newly stale: `02`,
+`08`, `13`, `14`, `15`, `18`, `19`, `20`, `21`, `22`.
 
-Re-measuring the whole touched set at the floor is roughly **$27**, at the
-board's own mean of $0.66 a run. That is the price of the backlog, not of this
-change, and it is the maintainer's to spend or defer — the commit and the pull
-request can be finished with a gap where the numbers go, and `verify.py` exits 2
-until they are filled.
+**The three extra edits were not optional.** Leaving them would ship three skills
+instructing a session to reach for a name that does not exist — the exact defect
+this change adds a rule to catch. A cheaper version of this change does not
+exist; a smaller one would have been incoherent.
 
-**Editing a description would have cost exactly the same 13 cases.** The hash
-covers the skill body, so sharpening the wording in place was never the cheaper
-option it looks like. Cost is not an argument against the rename here.
+Re-measuring the 22 stale rows at the three-run floor is roughly **$44**, at the
+board's own mean of $0.66 a run, and the new case adds about $2. That is the
+maintainer's to spend or defer: the commit and the pull request are finished with
+a gap where the numbers go, and `verify.py` exits 2 until they are filled.
+
+**Editing a description in place would have cost the same rows.** The hash covers
+the skill body, so sharpening the wording without renaming was never the cheaper
+option it looks like. Cost is not an argument against the rename.
 
 ## What we are not doing
 
@@ -230,6 +240,17 @@ pretend otherwise.
 - **The audit half only reaches a repository somebody audits.** Named rather
   than hidden — the same limit [`0036`](0036-a-row-that-was-right-once.md)
   recorded. No skill here fires without being asked.
+- **This reads badly against old commits in a consuming repository, and that is
+  why it ships as a major.** [spec.md](../spec.md) requires a change that does to
+  say so here. Every `CLAUDE.md` written by an earlier `setup` names a skill that
+  no longer exists, and every commit that mentions `/livespec:feedback` — in a
+  pull request body, a change spec, a comment — keeps naming it. Nothing records
+  which version of the method built any of them, so none can be told apart from a
+  record written today. What the change does about it is bounded and honest: the
+  new rule catches the **current** record when somebody audits, and says nothing
+  about history, which stays as it was written. Reading an old commit in a
+  consuming repository and finding a skill that does not exist is a cost this
+  change accepts rather than one it removes.
 - **`always-green` is not at risk.** Nothing here runs in anybody's build.
 
 ## Acceptance checks
@@ -238,7 +259,7 @@ There is no app; this repository's deliverable is the pull request description.
 What is checked by hand:
 
 1. `python3 .github/scripts/verify.py` is green apart from exit 2, and the 2 is
-   the 13 stale board rows and nothing else.
+   the 22 stale board rows and nothing else.
 2. `claude plugin validate ./skills --strict` passes with the renamed directory,
    and `checks.py` still reports **eight** skills — the count in `CLAUDE.md`,
    `README.md` and `plugin.json` is unchanged by a rename, and `checks.py` fails
@@ -254,8 +275,12 @@ What is checked by hand:
    reaching no skill and offers the row as it will read.
 6. Run `doctor` against this repository, whose own `CLAUDE.md` names no skill by
    `/livespec:` prefix. It reports nothing about names.
-7. `a-skill-the-record-names-is-one-that-exists` drops `@planned` in the
-   implementing change, claimed by a case tagged with it. Expected to be a new
-   case: `32`'s and `34`'s scaffolds each hold the right fixture but their
-   graders are pointed at other faults, and pointing a second rule at them would
-   make both cases ambiguous about what they proved.
+7. `a-skill-the-record-names-is-one-that-exists` carries no `@planned`, and is
+   claimed by [`35-a-name-the-record-still-uses`](../../evals/35-a-name-the-record-still-uses/).
+   A new case rather than an extension of `32` or `34`: each of those holds a
+   usable fixture but its graders are pointed at another fault, and pointing a
+   second rule at them would make both ambiguous about what they proved. `35`'s
+   workspace is correct in every other respect, so the stale name is the only
+   thing open in it — and it carries three decoys (`docs/feedback/`, the
+   `from-feedback` label, and the word used as ordinary prose) that a session
+   grepping for the word rather than reading it will report and be wrong about.

@@ -15,9 +15,9 @@
 # to settle it. Also absent: the issue itself in any local form — nothing here
 # mirrors the tracker.
 #
-# The word the bindings do NOT use is `feedback`. The first measurement (Δ
+# The word the bindings do NOT use is `todo`. The first measurement (Δ
 # −0.33) named the skill in that row, and the without-plugin arm read it as an
-# instruction: it tried to call `Skill(feedback)`, was told the name is a UI
+# instruction: it tried to call `Skill(todo)`, was told the name is a UI
 # command, and the one bare run that passed reached the second destination by
 # quoting the row back. A fixture is laid down in both arms alike, so anything
 # in it that names the plugin's machinery is handed to the baseline too.

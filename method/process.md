@@ -27,7 +27,7 @@ thing that fixes it.
 
 1. **Human tests and reports.** In Claude chat, in their own words, with
    screenshots. Not in the app, not as a written issue.
-2. **AI files issues** using the [`feedback`](../skills/feedback/SKILL.md) skill. It takes
+2. **AI files issues** using the [`todo`](../skills/todo/SKILL.md) skill. It takes
    the report apart into distinct insights, investigates the code to find what is
    actually happening, and files researched GitHub issues. It does not fix.
 3. **AI writes the spec** using the [`refine-spec`](../skills/refine-spec/SKILL.md) skill.

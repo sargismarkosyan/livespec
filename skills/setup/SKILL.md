@@ -433,7 +433,7 @@ The temptation is to spec what is already built. Do not.
   this process is concerned until a rule exists that they answer to. Say this in
   the bindings, or someone will spend a week retrofitting decorators.
 - The exception is a rule the codebase *already* breaks: that is not
-  documentation, it is a bug, and it goes through `feedback` like any other.
+  documentation, it is a bug, and it goes through `todo` like any other.
 
 ## 8. Enable the plugin, then keep going
 

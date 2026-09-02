@@ -39,7 +39,7 @@ Getting this wrong is how two copies of a method start disagreeing.
 ## The loop
 
 1. The human uses the plugin somewhere else and reports what they found.
-2. `feedback` files researched GitHub issues. It does not fix.
+2. `todo` files researched GitHub issues. It does not fix.
 3. `refine-spec` writes the Gherkin rules and a numbered change spec.
 4. The human approves the spec, or asks for changes.
 5. Implement: drop `@planned`, write the eval case that claims the rule, get
@@ -59,7 +59,7 @@ session here is most likely to miss:
 
 - **The `description` is the expensive field.** It loads in every session, so
   widening one is paid for in `evals/` with a should-not-fire case.
-- **Skills never implement.** `feedback` files, `refine-*` specs, `record-clip`
+- **Skills never implement.** `todo` files, `refine-*` specs, `record-clip`
   records. None of them touch application code.
 - **The gates take no dependencies.** Python 3 standard library only — CI
   installs nothing to run them.

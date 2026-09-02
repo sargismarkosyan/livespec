@@ -28,7 +28,7 @@ Eight skills, and the discipline they enforce.
 
 | Skill | What it does |
 |---|---|
-| `feedback` | Turns a testing session into researched GitHub issues — reproduces the bug, names the file and line, and files it. Fixes nothing. |
+| `todo` | Turns a testing session into researched GitHub issues — reproduces the bug, names the file and line, and files it. Fixes nothing. |
 | `refine-spec` | Turns a request into a spec. Finds the *job* under the proposed solution, checks it against who the product is for, writes the Gherkin rules and the numbered change spec. Implements nothing. |
 | `refine-workflows` | Re-cuts the bounded attempts the product is built out of, when the list stops matching what anybody actually tries. |
 | `refine-personas` | Adds, amends or retires who it is for — and refuses a persona invented to make a wanted feature legal. |
@@ -81,7 +81,7 @@ should do. A gate that has never failed is not known to be a gate.
   before it assumes anything.
 - **It does not generate code from specs.** That is the arrow this exists to
   reverse.
-- **It does not fix things it finds.** `feedback` files. `refine-spec` specs.
+- **It does not fix things it finds.** `todo` files. `refine-spec` specs.
   Neither touches `src/`, ever. Feedback fixed on the spot is the fastest way to
   lose the record of why something changed.
 

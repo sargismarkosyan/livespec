@@ -1,9 +1,9 @@
 ---
-name: feedback
-description: Capture what somebody found or wants about the app they are building, as well-researched issues in that repository's tracker — a bug, something confusing, something missing, an "I wish it did X" or "can it also…", or a screenshot with a complaint. Triggers on "feedback", "report this", "log an issue", "track this", "found a bug". Reporting or wishing lands here; an instruction to build now is refine-spec. Investigates the code before filing; never fixes or specs.
+name: todo
+description: Capture what somebody found or wants about the app they are building, as well-researched issues in that repository's tracker — a bug, something confusing, something missing, an "I wish it did X" or "can it also…", or a screenshot with a complaint. Triggers on "feedback about the app", "report this", "log an issue", "track this", "found a bug". Reporting or wishing lands here; an instruction to build now is refine-spec. Investigates the code before filing; never fixes or specs.
 ---
 
-# Feedback → a tracked issue
+# What somebody found → a tracked issue
 
 The human is the only person who actually *uses* this app, and the only one who
 knows what it still needs. This skill exists so that nothing they found or
@@ -69,7 +69,7 @@ If the repository the session is in *is* this plugin's repository, all of the
 above still applies and gives the same answer. Nothing here requires the two to
 be different places.
 
-## 1. Take the feedback apart
+## 1. Take what they said apart
 
 One message from a human is almost never one issue. Read it and pull out every
 distinct thing worth tracking.

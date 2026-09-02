@@ -1,5 +1,5 @@
 ---
-tags: [skill:feedback, rule:capture-does-not-require-having-used-it, rule:capture-and-build-are-different-destinations]
+tags: [skill:todo, rule:capture-does-not-require-having-used-it, rule:capture-and-build-are-different-destinations]
 max_turns: 20
 timeout_seconds: 420
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

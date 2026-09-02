@@ -1,5 +1,5 @@
 ---
-tags: [skill:feedback, should-not-fire, rule:an-instruction-to-build-is-not-filed-instead]
+tags: [skill:todo, should-not-fire, rule:an-instruction-to-build-is-not-filed-instead]
 max_turns: 20
 timeout_seconds: 420
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
