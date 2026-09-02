@@ -82,14 +82,14 @@
    "inputs": "703e99b2b4145c3d"
   },
   "09-setup-confirms-before-writing": {
-   "delta": 0.5,
+   "delta": 0.0,
    "with": 1.0,
-   "without": 0.5,
+   "without": 1.0,
    "runs": 1,
-   "at": "2026-08-29",
-   "sha": "5f881d1",
-   "cost": 0.28,
-   "inputs": "887be59a268ca82a"
+   "at": "2026-09-01",
+   "sha": "b3d2cbe",
+   "cost": 0.99,
+   "inputs": "8def0b9dfaadc10c"
   },
   "10-gate-deferred-twice": {
    "delta": 0.0,
@@ -106,20 +106,20 @@
    "with": 1.0,
    "without": 1.0,
    "runs": 1,
-   "at": "2026-08-29",
-   "sha": "5f881d1",
-   "cost": 0.12,
-   "inputs": "a9a4d8e8d7087c71"
+   "at": "2026-09-01",
+   "sha": "b3d2cbe",
+   "cost": 0.3,
+   "inputs": "bbf48309625fdea2"
   },
   "12-setup-drives-the-sitting": {
-   "delta": -0.14,
-   "with": 0.29,
-   "without": 0.43,
+   "delta": 0.14,
+   "with": 0.43,
+   "without": 0.29,
    "runs": 1,
-   "at": "2026-08-29",
-   "sha": "5f881d1",
-   "cost": 0.34,
-   "inputs": "4fba9afa3dc5a9a1"
+   "at": "2026-09-01",
+   "sha": "b3d2cbe",
+   "cost": 0.82,
+   "inputs": "a49063e41128558c"
   },
   "13-feedback-about-the-plugin": {
    "delta": 1.0,
@@ -152,24 +152,24 @@
    "inputs": "9cec5e4d44b88db9"
   },
   "16-setup-with-no-app-code": {
-   "delta": 0.5,
+   "delta": 0.0,
    "with": 0.5,
-   "without": 0.0,
+   "without": 0.5,
    "runs": 1,
-   "at": "2026-08-29",
-   "sha": "79a5b39",
-   "cost": 0.17,
-   "inputs": "072e37145ac9efeb"
+   "at": "2026-09-01",
+   "sha": "b3d2cbe",
+   "cost": 0.63,
+   "inputs": "9a610c6cc0fbead3"
   },
   "17-wiring-nobody-watched-run": {
-   "delta": 1.0,
-   "with": 1.0,
-   "without": 0.0,
+   "delta": -0.5,
+   "with": 0.5,
+   "without": 1.0,
    "runs": 1,
-   "at": "2026-08-29",
-   "sha": "79a5b39",
-   "cost": 1.59,
-   "inputs": "2737c73260502ab0"
+   "at": "2026-09-01",
+   "sha": "b3d2cbe",
+   "cost": 1.65,
+   "inputs": "cda206caa6df9c47"
   },
   "18-request-with-no-usage": {
    "delta": 1.0,
@@ -223,13 +223,13 @@
   },
   "23-what-a-change-here-must-show": {
    "delta": -0.5,
-   "with": 0.0,
-   "without": 0.5,
+   "with": 0.5,
+   "without": 1.0,
    "runs": 1,
-   "at": "2026-08-29",
-   "sha": "79a5b39",
-   "cost": 1.43,
-   "inputs": "944d39268f7744f1"
+   "at": "2026-09-01",
+   "sha": "b3d2cbe",
+   "cost": 2.44,
+   "inputs": "87dfc98931cf3935"
   },
   "24-a-ledger-nobody-read-back": {
    "delta": 0.0,
@@ -253,23 +253,23 @@
   },
   "26-two-seconds-before-the-push": {
    "delta": 0.22,
-   "with": 1.0,
-   "without": 0.78,
+   "with": 0.89,
+   "without": 0.67,
    "runs": 3,
-   "at": "2026-08-30",
-   "sha": "f71bb6a",
-   "cost": 4.78,
-   "inputs": "1306507613803e13"
+   "at": "2026-09-01",
+   "sha": "b3d2cbe",
+   "cost": 7.27,
+   "inputs": "10100543eb34350e"
   },
   "27-a-red-nobody-here-can-clear": {
-   "delta": 0.25,
-   "with": 0.25,
+   "delta": 0.75,
+   "with": 0.75,
    "without": 0.0,
-   "runs": 2,
-   "at": "2026-08-29",
-   "sha": "b4d9189",
-   "cost": 6.42,
-   "inputs": "52240ed76673bcd0"
+   "runs": 1,
+   "at": "2026-09-01",
+   "sha": "b3d2cbe",
+   "cost": 2.19,
+   "inputs": "461b399ca65b0c05"
   },
   "28-a-hook-is-not-a-row": {
    "delta": 0.83,
