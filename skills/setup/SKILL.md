@@ -316,6 +316,16 @@ unless the row says how this repository decides, and a repository with no screen
 at all writes **that** down — the method's *nothing to see* line becomes the
 standing case here rather than the exception somebody invokes.
 
+**Then write the second row, and do not let the first one absorb it.** A change
+here also owes a **sketch** before it is approved — the evidence its change spec
+argues from, per
+[`process.md`](../../method/process.md#the-rules). Say which changes here owe
+one. The two rows are one word apart and the exemption only belongs to the
+first: the picture is recorded from the app, the sketch is drawn from the change
+spec, and **a repository with no screen still has change specs.** Writing
+*nothing to see* once and letting it cover both is the failure this row exists
+to stop, and it is likelier than leaving the row out.
+
 It also carries what cannot live in a diff: the branch protection settings, the
 CI wiring, and the record of the fault injection from section 4.
 
