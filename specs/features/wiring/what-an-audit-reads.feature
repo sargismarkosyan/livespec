@@ -52,3 +52,24 @@ Feature: What an audit reads, and which version of the method it reads against
       When the wiring is audited
       Then what the method has changed since that version is what the audit reads for
       And the stamp is not treated as evidence that the rows beneath it are current
+
+  @rule:a-skill-the-record-names-is-one-that-exists @planned
+  Rule: A skill named in a repository's own record is read against the skills this plugin now has, and a record left on a name that has moved is reported
+
+    Example: the record names a skill that has been renamed away
+      Given a consuming repository whose own account of the loop names a skill by a name this plugin no longer has
+      When the wiring is audited
+      Then that name is reported as reaching no skill
+      And the name it now has is offered in its place
+
+    Example: the same word is ordinary prose rather than a skill
+      Given a record describing what the loop does in the same word a skill is named for
+      When the wiring is audited
+      Then nothing is reported about that sentence
+      And only a name standing for a skill is read as one
+
+    Example: every skill the record names exists
+      Given a consuming repository whose record names only skills this plugin has
+      When the wiring is audited
+      Then nothing about the names is reported
+      And no correction is offered that nobody needs
