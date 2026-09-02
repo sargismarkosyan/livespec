@@ -4,12 +4,12 @@ Feature: What the one decision a person holds gets to look at
   @rule:the-decision-gets-what-the-prose-cannot-carry @planned
   Rule: Before approval is asked for, the person deciding is shown the evidence the change spec argues from and cannot carry at reading speed
 
-    # @planned here means *nothing can hold it yet*, not *nobody built it*: the
-    # instruction ships in refine-spec's section 7, and a headless session — the
-    # only kind a case runs in — has no way to render a page at all, so no arm
-    # can watch a sketch being drawn. Softening the Examples until a session
-    # with no such tool could pass them would buy the tag with the exact
-    # dishonesty evals/README.md warns about. See 0029, *What no case reaches*.
+    # @planned here means *nothing holds it yet*, not *nobody built it*: the
+    # instruction ships in refine-spec's section 7. Until 0031 no case could
+    # reach it at all — a headless session had no way to render a page, so no
+    # arm could watch a sketch being drawn. A sketch written to a file is
+    # readable, so what keeps the tag on is only that no case claims this yet.
+    # It comes off when one does. See 0031, *What we are not doing*.
 
     Example: the change alters something that has a before and an after
       Given a change spec proposing a different state for something a person already uses
@@ -32,9 +32,9 @@ Feature: What the one decision a person holds gets to look at
   @rule:what-is-shown-is-not-the-spec-again @planned
   Rule: The sketch carries the evidence and sends the reader to the spec for the reasoning, so nobody is left holding two versions of the same argument
 
-    # @planned for the same reason as the rule above — there is no sketch in a
-    # session that cannot render one, so there is nothing for a case to read.
-    # What *is* watchable is that nothing is put in its place, and that is held
+    # @planned alongside the rule above and now for the same reason: a written
+    # sketch is readable by a case, and no case claims either of them yet.
+    # What *is* watched today is that nothing is put in a sketch's place, held
     # by the rule below rather than softened into this one.
 
     Example: the spec already argues its case under its own headings
@@ -58,9 +58,13 @@ Feature: What the one decision a person holds gets to look at
   @rule:an-absent-sketch-is-said-rather-than-filled
   Rule: Where there is nothing to draw, or nowhere to draw it, that is one line, and nothing is put in its place
 
+    # Its first example is the one shape no case here can take: a session able
+    # to write the spec files is able to write a page, so the harness cannot
+    # produce one that can do neither. The rule is claimed on its others.
+
     Example: this session has no way to render one
       Given a change spec with a before and an after worth showing
-      And a session that cannot render a page at all
+      And a session that can neither publish a page nor write a file
       When the spec is handed back
       Then it says in a line that the sketch could not be drawn here
       And what it hands back is the spec, with nothing written out in the sketch's place
@@ -83,3 +87,26 @@ Feature: What the one decision a person holds gets to look at
       When the spec is handed back
       Then it is drawn anyway
       And the difficulty is not read as the exemption
+
+  @rule:a-missing-tool-is-not-a-missing-page @planned
+  Rule: A sketch takes whichever form the session can produce — a published page where the host has one, a written file where it does not — and only a session that can produce neither says so instead
+
+    Example: the host has no tool that publishes a page
+      Given a change spec with a before and an after worth showing
+      And a session that cannot publish a page but can write a file
+      When the spec is handed back
+      Then the sketch is written as a page the person can open
+      And its path is handed over beside the change spec
+      And one absent tool has not been read as having nowhere to draw it
+
+    Example: the spec is revised after the page was written
+      Given a sketch already written as a file the person has opened
+      When the spec is revised and handed back again
+      Then that same page is rewritten where it already stands
+      And a second file has not appeared beside the first
+
+    Example: the spec is committed
+      Given a sketch written as a file for one decision
+      When the spec is committed
+      Then the page is not part of that commit
+      And the change spec is still the only record the repository keeps
