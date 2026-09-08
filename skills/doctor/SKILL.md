@@ -226,8 +226,16 @@ world the tests never enter, outranks a deferral that is one change old, every
 time.
 
 Then make the corrections you found — **to the record only.** Show the rows as
-they will read, then write them. Where the wiring itself is missing, that is the
-last line of the report and it names `setup`, which does the building.
+they will read, then write them. Where the wiring itself is missing, **the last
+line of the reply is the command that starts the sitting, as somebody would
+type it** — `/livespec:setup`, the prefixed form every record already instructs
+by — followed by the rows it will be asked to wire, one per line. Not the
+skill's name as a noun: *two things are setup's* is a fact about ownership, and
+the person holding this report has to know what to type next without knowing
+the split between the two skills. The same line closes the reading's record in
+the bindings, so the next person to open the ledger sees the command rather
+than the possessive. Where nothing is left for the sitting, no such line: the
+reply ends on what was corrected, and nobody is sent to a sitting nobody needs.
 
 **The record is the bindings and `CLAUDE.md`.** A loop step or a skill name the
 reading found behind is corrected there, in place, shown as it will read — never
@@ -238,7 +246,8 @@ written, because a record edited to agree with the present is not a record.
 Wiring the method now asks for and this repository lacks becomes a row reading
 *deferred* — since which change, and naming the version of the method that moved
 it — so the fact is in the ledger and on the two-change clock rather than in a
-report nobody re-reads. Those rows are what the last line hands to `setup`.
+report nobody re-reads. Those rows are what the last line hands over, after
+the command that starts the sitting.
 
 **Re-stamp the version the ledger was reconciled against only if the wiring
 actually moved.** A ledger re-stamped for an audit that changed nothing has
@@ -256,6 +265,9 @@ paid on purpose.
 - **Wiring anything.** Not a gate, not a report, not a coverage split, not a
   threshold — including the one it just worked out is wrong. It writes the record
   of what is wired; `setup` writes the wiring.
+- **Starting the sitting.** The last line says what to type and does not run
+  it. A setup nobody asked for gets stopped and questioned, and the stop before
+  writing is `setup`'s own first section, not this skill's.
 - **Reading an entry as a task list.** The entry is where to look; what is
   asked is read from the method and the skill as they now stand. A repository
   told to do what a paragraph of rationale mentioned has been audited against

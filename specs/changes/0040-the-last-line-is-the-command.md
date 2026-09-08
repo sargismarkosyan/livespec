@@ -1,6 +1,6 @@
 # Spec 0040: the last line is the command
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** none — a direct request, made in chat on 2026-09-08 after the
   first audit to run under 1.2.0: *"doctor should suggest running
   /livespec:setup if needed."*

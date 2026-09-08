@@ -1,7 +1,7 @@
 @feature:wiring-hand-back @workflow:adopt-the-process
 Feature: How an audit hands over what it could not build
 
-  @rule:the-last-line-is-the-command-to-run @planned
+  @rule:the-last-line-is-the-command-to-run
   Rule: Where the audit leaves wiring to be built, its reply ends with the command that starts the sitting, as somebody would type it, and what that sitting will be asked to wire — never the skill's name as a noun
 
     Example: rows are left deferred
