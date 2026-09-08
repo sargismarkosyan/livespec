@@ -79,4 +79,4 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       And the config that gate reads still demands what it did before
       When the audit makes its corrections
       Then the row for that gate reads deferred, naming the version of the method that moved it
-      And the config is left as it was, and the report ends by naming setup with that row
+      And the config is left as it was, and the reply ends with the command that starts the sitting, with that row after it
