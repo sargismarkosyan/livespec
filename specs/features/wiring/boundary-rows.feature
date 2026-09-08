@@ -1,7 +1,7 @@
 @feature:wiring-boundary-rows @workflow:adopt-the-process
 Feature: What a boundary row is allowed to claim, read against the tests that ran
 
-  @rule:a-real-row-over-a-world-the-tests-never-enter @planned
+  @rule:a-real-row-over-a-world-the-tests-never-enter
   Rule: A row reading real is read against the rule-bound tests and against whether the thing starts from here, and a row the tests contradict is reported and corrected in the record
 
     Example: the bindings say the store is real and the tests never reach it
@@ -25,7 +25,7 @@ Feature: What a boundary row is allowed to claim, read against the tests that ra
       Then nothing about that row is reported
       And no correction is offered that nobody needs
 
-  @rule:a-stand-in-nothing-checks-is-on-the-clock @planned
+  @rule:a-stand-in-nothing-checks-is-on-the-clock
   Rule: A fake row with no suite against the real thing, or a recording older than the bindings allow, is reported as a stand-in nothing checks and put on the two-change clock
 
     Example: a fake row names no suite

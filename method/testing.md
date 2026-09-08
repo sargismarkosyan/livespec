@@ -111,10 +111,28 @@ rule it answers to, it is a unit test — and if you can, it does not belong her
 The gate warns when a unit test claims a rule, which usually means the file is in
 the wrong folder.
 
-## The environment the tests run in
+## The world the tests run in
 
 Whatever it is — a real browser, a headless DOM, no DOM at all — it is a binding,
-and `specs/setup/README.md` describes it. Two things about it are method:
+and `specs/setup/README.md` describes it. **So is everything else the app talks
+to** — the store, the clock, the network and each service on it, whoever it
+signs people in with. Each is a boundary, and the bindings carry a row per
+boundary saying how a test here reaches it:
+[gates.md](gates.md#the-boundaries). Five things about it are method:
+
+- **A test proves a rule in the world its row names, or it proves it nowhere.**
+  A behaviour test that stands a double in for a boundary whose row reads *real*
+  has not tested the rule; it has tested the double, and the gate fails it. Not
+  because doubles are wrong — because the row is the promise, and a test that
+  quietly breaks it costs the row its meaning.
+- **A fake is honest only while something checks it against the real thing.**
+  One suite runs against both, and the row says when the real half was last
+  green. A fake nothing checks is a mock whatever it is called, and its row says
+  *mocked* — which puts it on the same clock as a deferral.
+- **What no test here can reach is said, never simulated.** Such a boundary has
+  a row reading *unreachable*, and every change that touches it says so where
+  the change is decided. A stub written to get past it is the failure this page
+  exists to name.
 
 - **Build the world fresh per test.** Shared state between tests is the commonest
   cause of a suite that passes in order and fails one file at a time, and a

@@ -1,7 +1,7 @@
 @feature:setup-boundary-binding @workflow:adopt-the-process
 Feature: What the app talks to, and how a test here reaches it
 
-  @rule:setup-asks-what-the-app-talks-to @planned
+  @rule:setup-asks-what-the-app-talks-to
   Rule: What the app talks to, and which of those a test here can reach for real, is asked of the human and never derived from the tree
 
     Example: the tests already stand in for the store and the payment provider
@@ -16,7 +16,7 @@ Feature: What the app talks to, and how a test here reaches it
       Then it has a row in the bindings like every other boundary
       And nothing in the row was inferred from what the tree happened to show
 
-  @rule:a-real-row-is-written-after-a-test-reached-it @planned
+  @rule:a-real-row-is-written-after-a-test-reached-it
   Rule: A row reads real only once a test in this repository has reached the thing from here, and reads unreachable, with why, where none could
 
     Example: the store starts here and a test runs through it
@@ -31,7 +31,7 @@ Feature: What the app talks to, and how a test here reaches it
       Then it does not read real
       And it reads unreachable, with why, and what would make it reachable
 
-  @rule:a-stand-in-nobody-chose-is-not-written-as-chosen @planned
+  @rule:a-stand-in-nobody-chose-is-not-written-as-chosen
   Rule: A stand-in nothing checks is written as mocked, dated from the sitting, on a repository that already has tests, and is not offered at all on one that has none
 
     Example: an occupied repository whose tests run over an in-memory store

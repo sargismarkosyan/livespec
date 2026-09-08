@@ -57,7 +57,11 @@ Gaps where neither side is at fault.
   true.** A missing test, an attempt nothing implements, a dangling reference —
   all caught. A description that still fits the shape and no longer describes
   what anybody meant reads as green. That is the failure this whole arc is about,
-  and it is the one the checks are structurally unable to see.
+  and it is the one the checks are structurally unable to see. **Narrowed by
+  [`0039`](../changes/0039-the-world-a-test-runs-in.md) for one kind of
+  untruth:** a test that is green over a stand-in for the thing its rule is
+  about now fails, where before it read as green. **Not closed:** the
+  description that still fits the shape is untouched by it.
 - **The return is trusted without anything having earned it.** Coming back after
   days away and acting on the spec without checking is the peak of the arc — and
   it looks exactly the same whether the spec is still true or quietly is not.
@@ -75,7 +79,7 @@ Gaps where neither side is at fault.
 | Opportunity | What answers it today | How we would know it worked |
 |---|---|---|
 | Knowing the install took | the sitting's own pull request, the ledger rows reading *unobserved*, and a re-reading of that ledger that is a command rather than a memory | Coming out of a sitting able to say which wiring was watched working and which only exists — and being able to ask again later without redoing the sitting |
-| Incompleteness caught, untruth missed | the checks, but only for shape | A spec that no longer describes what was meant stops reading as green |
+| Incompleteness caught, untruth missed | the checks, but only for shape — and, since `0039`, the boundaries table for the one untruth a test can carry: green in the wrong world | A spec that no longer describes what was meant stops reading as green |
 | A return that is safe to trust | **nothing yet** | Coming back cold and acting immediately stops being a gamble that happened to pay |
 | A workaround outliving its reason | the row in the bindings, and the session standing on a workaround saying what would end it | Local patches disappear when the thing they worked around is fixed |
 

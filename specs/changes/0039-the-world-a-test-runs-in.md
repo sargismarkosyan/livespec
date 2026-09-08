@@ -1,6 +1,6 @@
 # Spec 0039: the world a test runs in
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** none — a direct request, standing on two pages written on
   2026-09-08: the research deck *The Mocked World* and the plan *Green Means
   Real*, whose spec A this is. Both are private artifacts of the maintainer's

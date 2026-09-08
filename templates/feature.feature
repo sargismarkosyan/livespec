@@ -71,7 +71,7 @@ Feature: <What this component does — the thing, not the change that added it>
       When <the thing that goes wrong>
       Then <what must still be true>
 
-    Example: <the boundary — the case just inside or just outside the promise>
+    Example: <the edge — the case just inside or just outside the promise>
       Given <state>
       When <action>
       Then <outcome>
