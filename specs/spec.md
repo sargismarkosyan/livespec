@@ -35,6 +35,8 @@ how two documents start meaning slightly different things.
 | **version** | A change spec number. Version 3 is the state of this repository after spec `0003` shipped. |
 | **stamp** | The plugin version a consuming repository's ledger was last reconciled against — *livespec 0.25.0*, a release and never a change number. It follows the wiring: it moves when the wiring is brought level with the method, and a reading that only corrected the record leaves it where it was. What the method changed between it and the plugin installed is read from `CHANGELOG.md`. |
 | **sketch** | What the person deciding on a change spec is shown beside it: the evidence that spec argues from, drawn *from* the spec. Never recorded from an app — that is the **picture** a version ships with, and the two are separate objects arriving at separate steps. |
+| **boundary** | Something the app talks to that is not its own code — the store, the clock, the network and each service on it, the browser or terminal it is used through, the identity it signs people in with. A consuming repository's bindings carry a row per boundary saying how a test there reaches it: *real*, *fake*, *recorded*, *mocked* or *unreachable*. Not the edge of a promise — the case just inside or just outside it — which is the other thing the word used to mean in the feature template. |
+| **stand-in** | Whatever a test uses in place of a boundary — a fake, a stub, a mock, a recording. The word covers all of them so that *mock* can be kept for the one nothing checks against the real thing, and *fake* for the one something does. |
 
 Two words deliberately **not** used: *documentation*, for anything under
 `specs/` — it is a contract, and calling it documentation is how it stops being

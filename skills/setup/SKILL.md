@@ -72,7 +72,7 @@ all, say that too — the process still installs, but the coverage gate has noth
 to stand on yet and the bindings file must admit it rather than name a threshold
 nobody measures.
 
-## 2. Ask the five things you cannot find out
+## 2. Ask the six things you cannot find out
 
 One round, with your recommendation attached to each. Everything else you decide
 yourself and record.
@@ -112,6 +112,22 @@ yourself and record.
   of testing alongside one that works. Where the answer is graded cases, say
   plainly that they prove a weaker thing, so it is chosen rather than drifted
   into.
+- **What does this talk to, and which of those can a test reach for real from a
+  session here?** The store, the clock, the network and each service on it, the
+  browser or terminal it is used through, whoever it signs people in with — one
+  row each, per [`gates.md`](../../method/gates.md#the-boundaries). Ask for the
+  list first, then for each whether the real thing can be started here, and
+  recommend real wherever it can: a store in a container, a headless browser, a
+  pseudo-terminal running the built binary for something used through a
+  terminal, a mail catcher, a provider's sandbox. Where it cannot, the row reads
+  *fake* only if a suite checks the fake against the real thing, and
+  *unreachable* otherwise — never *mocked* on the first day of a fresh
+  repository, because a mock nobody chose is the thing this row exists to stop.
+  **An occupied repository writes down what is true today.** Its tests already
+  run in some world; the day-one rows are that world, named, and a stand-in
+  nothing checks reads *mocked* dated from this sitting rather than from
+  nowhere — the same shape as the day-one coverage exclusions, which are
+  today's uncovered code written down.
 
 ## 3. Put the skeleton in, and nothing more
 
@@ -150,7 +166,10 @@ configured:
 - fail when a live rule has no test, when a test names an id that does not exist,
   when a behaviour test claims nothing at all;
 - then the layer above: features name workflows, workflows name personas and are
-  walked by a test, journeys name workflows that exist.
+  walked by a test, journeys name workflows that exist;
+- then the world those tests ran in: the same sources, read for the stand-ins
+  they use, against the boundary rows — *Then make the real thing reachable*,
+  below.
 
 **Write the smallest thing that does that.** One script, no dependencies, in the
 language already in the repo. It is a few hundred lines at most and it belongs in
@@ -269,6 +288,31 @@ it does not, the gate still runs once and the ledger row **says which part of th
 repository it does not cover**, because a row that stays quiet about that will be
 read as covering everything.
 
+### Then make the real thing reachable, before the gate that assumes it
+
+A row reading *real* is a claim that a test here can start the thing. Wire that
+now — the container the suite brings up, the sandbox key the pipeline holds,
+the mail catcher — in the repository's own tooling, and run one test through it
+before the row is written. This is the suite's tooling rather than the gate, so
+the no-dependency rule does not bind it; what binds it is the same rule as the
+gates: one command runs it, and CI runs that command. Where reaching the real
+thing would need application code written — a seed script inside the app, a
+fixture loader — that is the human's, said in the hand-back, and the row reads
+*unreachable* until it exists. **The suite may gain tooling; the app gains
+nothing.**
+
+Then the gate: the traceability script already reads every rule-bound test
+source for the id it claims. It reads the same sources for the patterns the
+bindings name as doubles, and fails a test that doubles a boundary whose row
+reads *real* — and a *fake* row naming no suite, a *recorded* row past its age,
+and rule-bound tests with no table at all. The patterns are the language's and
+go in the bindings beside the discovery pattern: propose the usual list — the
+mocking, stubbing, fake-timer and interception libraries, and for a terminal
+application the framework's own test harness and the tty, environment and
+subprocess patches — and let the person strike or add. A hand-written stand-in
+the patterns miss is what `doctor` greps for. Add the four rows to the
+injection table and break each.
+
 ### Then break them, one at a time
 
 A gate that has never failed is not known to be a gate. Walk the
@@ -383,6 +427,14 @@ the layer exists and the check does not — writing it where *not applicable* is
 true is how a repository ends up carrying a permanent apology, and writing *not
 applicable* where a gap is real is how it carries an unbuilt gate for a year.
 
+**Then the third table: the boundaries.** One row per thing the app talks to,
+from section 2's sixth answer, in the five states
+[`gates.md`](../../method/gates.md#the-boundaries) names, each saying what
+reaches it from here, what keeps it honest, what it leaves uncovered, and since
+when. Most rows on an occupied repository's first day read *mocked* or
+*unreachable*, and honestly: the point of the table is that they now say so
+with a date, and a *mocked* row is on the two-change clock from this sitting.
+
 **Re-reading this ledger later is [`doctor`](../doctor/SKILL.md)**, which audits
 it against this page without re-running any of the interviews. Say so when you
 hand back: the ledger is the one artefact here that is typed once and trusted for
@@ -447,6 +499,8 @@ Then report, short:
 - which faults you injected and that each one failed the way it should;
 - **which gates are not wired**, read off the ledger rather than remembered, and
   for each whether it is deferred or cannot apply here;
+- **which boundaries read *mocked* or *unreachable***, read off the third
+  table, and for each what would move it;
 - the requirement list from section 6, and anything in CLAUDE.md still missing;
 - **what is still empty** — the personas, the workflows and the journeys.
 

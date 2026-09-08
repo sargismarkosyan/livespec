@@ -190,6 +190,11 @@ somebody reported is the most valuable thing any of these skills does, and it
 ends when it has an answer. What this rules out is looking for a *way to perform
 a step that is not available here*, which ends when the session does.
 
+**A boundary no test here can cross is the same case one layer down.** Its row
+in the bindings reads *unreachable*, with why, and a change that touches it says
+so where the change is decided — never a stand-in written to get past it, which
+is the search this section rules out, made permanent and called a test.
+
 ### A workaround names what would end it
 
 The section above is about a step that cannot be taken here at all. This one is

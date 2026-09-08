@@ -96,6 +96,26 @@ Then the cross-check `gates.md` already asks for: **the tree is the authority on
 what applies.** A row reading *not applicable — no personas exist* in a
 repository that has personas is contradicted by the tree, and the tree wins.
 
+**Then the boundary rows, which are the ones a diff cannot check.** For each:
+does the thing a *real* row names actually start from here — run it, and where
+this session cannot, say so the way §2 says it of the platform; does any
+rule-bound test stand a double in for that boundary — the gate says, and where
+the gate predates the row, read the sources with the bindings' own patterns;
+does a *fake* row's suite exist, and when was it last green against the real
+thing; is a *recorded* row within its age; is a *mocked* row past the two-change
+clock. A row that reads *real* over a world the tests never enter is the false
+green that table exists to stop, and it reads exactly like a true one. The
+tests are the authority on what they reach, the way the tree is on what
+applies: a *real* row the rule-bound tests contradict is corrected to *mocked*,
+naming the tests, and a *fake* row with no suite behind it is corrected the same
+way — a stand-in nothing checks is a mock whatever the row called it. A thing
+that cannot be started from here is a claim not read back, and a row is not
+corrected on that evidence alone.
+
+Those rows arrive with the plugin version that added them, so a ledger stamped
+before it has none — that is a reading in §1, not a gap in §3: the table is
+wiring, and the offer to write it belongs to `setup`.
+
 ## 2. Read back what is not in the tree
 
 This is the half a diff cannot review and the half that goes wrong.
@@ -189,7 +209,10 @@ nothing.
 Then the clock: **a row deferred across two changes is either wired or written
 off.** Read how long each deferral has been sitting there, and say which ones are
 past it. Written off means the row becomes *not applicable* with the reason in
-it — one decision in the open, rather than an apology repeated forever.
+it — one decision in the open, rather than an apology repeated forever. A
+boundary row reading *mocked* is on the same clock, and written off there means
+*unreachable* with the reason in it, after which every change touching that
+boundary says so.
 
 ## 4. Say what is open, concretely
 
@@ -198,8 +221,9 @@ on, each item saying **what is claimed, what is actually true, and what closes
 it**. An audit that ends in *mostly fine* has cost a session and moved nothing.
 
 Sort it by what is dangerous rather than by what is untidy: a row asserting a
-protection the platform does not enforce outranks a deferral that is one change
-old, every time.
+protection the platform does not enforce, or a boundary reading *real* over a
+world the tests never enter, outranks a deferral that is one change old, every
+time.
 
 Then make the corrections you found — **to the record only.** Show the rows as
 they will read, then write them. Where the wiring itself is missing, that is the

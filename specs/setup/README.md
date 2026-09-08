@@ -109,6 +109,11 @@ softened until it always passes still counts here, which is why
 [`evals/README.md`](../../evals/README.md) puts that in writing and
 `evalsuite.py` fails if the documented invocation loses `--ablation with-without`.
 
+**And what a case runs against is a stand-in in two places** — the judge for the
+reader, the scaffold's fixture for a repository — which *The boundaries* under
+*Gate wiring* now says with a state and a date, rather than this paragraph
+saying it once and nothing asking again.
+
 **And it misses whatever needs a tool the runner's sessions do not have.**
 Asked on **2026-09-01** — `claude -p "List the exact names of every tool
 available to you, one per line, no commentary." --model haiku` — a headless
@@ -210,10 +215,12 @@ that gap is the thing a later `setup` run offers to close.
 | coverage — lines, branches, functions | **not applicable** | there is no application code to measure; the eval-suite gate stands in its place, and *What has no gate* above says what that misses |
 | a journey looked at since the workflows under it moved | **not applicable** | a git question, and CI checks out one commit — it would pass forever while looking enforced |
 | features piled up under a workflow since its file was last edited | **not applicable** | same, and `gates.md` leaves both out for that reason |
+| a rule-bound test doubling a boundary declared real | **not applicable** | there are no rule-bound tests here to read — the cases are the tests, and what they run against is *The boundaries* below, added by [`0039`](../changes/0039-the-world-a-test-runs-in.md) |
 
-**No row is deferred**, so nothing here is on the two-change clock. Every
-automated row but the last was wired by the `setup` run in 0.6.0 and predates this
-ledger, which is why they carry no change number.
+**No row is deferred**, so nothing in this table is on the two-change clock; the
+two *mocked* rows in *The boundaries* below are, since 0039. Every automated row
+but the last was wired by the `setup` run in 0.6.0 and predates this ledger,
+which is why they carry no change number.
 
 ### The wiring that must never gate
 
@@ -298,6 +305,28 @@ was right to — a pre-push hook is not a gate and rewired nothing. A ledger
 re-stamped for a change that rewired nothing has learned to lie, and one left
 unstamped through a change that rewired something has learned it the other way
 round.
+
+### The boundaries
+
+The third table [`gates.md`](../../method/gates.md#the-boundaries) asks for,
+added by [`0039`](../changes/0039-the-world-a-test-runs-in.md): what world the
+cases here run in. There are no rule-bound tests in this repository — the cases
+are the tests, and a case runs a real model session against a stand-in for a
+consuming repository, scored by a model standing in for a reader. The rows say
+which of those is which, with a date, which is more than the prose above ever
+did.
+
+| Boundary | Row | Leaves uncovered |
+|---|---|---|
+| the model session | **real** — `claude -p` through promptfoo, started by the documented invocation with the maintainer's flag, paid per run | the account's session limit, which three runs in one sitting have exhausted |
+| the judge | **mocked** since [`0012`](../changes/0012-a-runner-that-runs.md) — a model standing in for the human who would read what came out. What would make it a *fake* is the calibration set [`evals/README.md`](../../evals/README.md#calibration) describes — verdicts a person has scored, re-scored by the judge on a schedule — and it has not been made. Cover: none. On the two-change clock from 0039 | everything a person would have scored differently |
+| the consuming repository a case runs in | **mocked** — a scaffold script's fixture, a stand-in for a repository somebody set up, with no suite against a real one. Cover: the reference repository, by hand, which is a reading rather than a suite | a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
+| the platform | **real** — `gh` against `sargismarkosyan/livespec`, read back 2026-08-29 with the commands under *Branch protection* below | nothing named |
+
+**The stamp stays at 1.1.0 through 0039.** A table was added and nothing was
+rewired — no gate gained a check, because there is no rule-bound test here for
+one to read — which is [`0021`](../changes/0021-asked-not-assumed.md)'s test
+and the same reason the second table did not move it.
 
 ## The fault injection record
 

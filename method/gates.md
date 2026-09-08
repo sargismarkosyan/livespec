@@ -321,6 +321,52 @@ the record and wrote a row for each gap leaves it where it was; it moves when th
 wiring is brought level. A stamp moved for having been looked at would read as
 current over rows that are not.
 
+### The boundaries
+
+The two tables above say what refuses a change. This one says **what world the
+tests that pass those gates ran in** — because both gates are satisfied by a
+test that names its rule and reaches every line over a stand-in for the store,
+and nothing else on this page can tell.
+
+One row per boundary the app crosses: whatever it talks to that is not its own
+code — the store, the clock, the network and each service on it, the browser or
+terminal it is used through, the identity it signs people in with. **The tree
+does not know what these are; the person does**, which is why the rows are
+asked for in the sitting and never derived.
+
+| A row reads | And means |
+|---|---|
+| **real** | tests reach the thing itself, and the row names what starts it here |
+| **fake** | a stand-in with a suite that also runs against the real thing; the row says when that half was last green |
+| **recorded** | replies captured from the real thing; the row says when, and how old they may be |
+| **mocked** | a stand-in nothing checks — since which change, and the larger test that covers the path, if any. On the two-change clock |
+| **unreachable** | no test here crosses it — why, whether it cannot be or was decided against — and every change touching it says so where the change is decided |
+
+And every row says what it leaves uncovered, in the same breath, the way a gate
+row says which part of the repository it does not cover. A real store at test
+volume is not a real store at production volume, and the row says so.
+
+**A row reading *real* is written after a test has reached the thing from here,
+never before**, for the same reason a gate row reads *unobserved* until it has
+refused something: a claim about what the tests reach is evidence or it is a
+memory, and the two look identical on the page.
+
+**The gate reads the rows, and it is the traceability gate rather than a third
+one** — the same script that reads a rule-bound test for the id it claims reads
+it for the stand-ins it uses. A rule-bound test that stands a double in for a
+boundary reading *real* fails; a *fake* row naming no suite against the real
+thing fails; a *recorded* row past its age fails; rule-bound tests present with
+no table at all fail. What counts as a double is a binding — the patterns are
+the language's, and a terminal application's name the framework's own test
+harness beside the mocking libraries — and it is read only over the rule-bound
+tests, because a unit test doubling everything is what unit tests are for.
+
+**A *mocked* row past the two-change clock is either made real, given the suite
+that makes it a fake, or written off** — and written off means *unreachable*
+with the reason in the row, the way a deferred gate becomes *not applicable*: a
+decision made in the open, after which every change touching that boundary says
+so.
+
 ### And what is not wiring at all
 
 A check that runs on somebody's own machine before they push — the
@@ -364,6 +410,10 @@ each one in turn and read the message it produces:
 | workflow naming no journey | warns, does not fail |
 | a module well under the coverage thresholds | fails |
 | a fully covered module | passes |
+| a rule-bound test doubling a boundary whose row reads real | fails |
+| a fake row naming no suite against the real thing | fails |
+| a recorded row past the age the bindings set | fails |
+| rule-bound tests present and no boundaries table | fails |
 
 If you change either gate, re-check it the same way, and keep the results in the
 repository's bindings where somebody can read what was actually tried.

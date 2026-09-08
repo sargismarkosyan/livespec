@@ -45,7 +45,8 @@ written back then still says to every session that opens it.
 **7. The rules worth having in front of you — a subset, not all of them.** Link
 the full set in the method and then list the ones that actually get broken here:
 spec before code, one change per version, feedback is never fixed on the spot,
-never touch `src/` from a skill, rule ids are permanent, every commit green.
+never touch `src/` from a skill, rule ids are permanent, every commit green, a
+rule-bound test runs in the world its boundary row names.
 **A rules list nobody finishes reading enforces nothing.**
 
 **8. The commands.** Verification first, then whatever a session needs to run the
