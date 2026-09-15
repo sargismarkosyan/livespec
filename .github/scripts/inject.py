@@ -43,7 +43,7 @@ The reply does the thing.
 """
 
 FIXTURE: dict[str, str] = {
-    "skills/refine-spec/SKILL.md": "---\nname: refine-spec\ndescription: Turns a request into a spec.\n---\n\n# Refine\n",
+    "skills/refine-spec/SKILL.md": "---\nname: refine-spec\ndescription: Turns a request into a spec.\n---\n\n# Refine\n\nThe gates are in [gates.md](../../method/gates.md).\n",
     "specs/personas/reader.md": "@persona:reader\n\n# Reader — wants the thing in front of them\n",
     "specs/journeys/arc.md": "@journey:arc\n\n# Arriving with a list already in hand\n",
     "specs/workflows/read-it.feature": (
@@ -99,6 +99,15 @@ FIXTURE: dict[str, str] = {
     ),
     # checks.py holds this to the shape an audit reads by, against the manifest.
     "CHANGELOG.md": "# Changelog\n\n## 0.0.0 — 2026-01-01\n\nThe fixture's one release.\n",
+    # checks.py holds the id table to the changelog: every since and retired is a
+    # release. Two rows are enough to break it both ways.
+    "method/gates.md": (
+        "# The gates\n\n## The ids\n\n"
+        "| id | kind | since | severity | retired | aliases | meaning |\n"
+        "|---|---|---|---|---|---|---|\n"
+        "| `gate:rule-to-test` | gate | 0.0.0 | wiring | — | rule → test | a live rule no test claims fails |\n"
+        "| `check:stamp-present` | mechanical | 0.0.0 | record | — | | the stamp line is present |\n"
+    ),
 }
 
 
@@ -455,6 +464,20 @@ FAULTS = [
     ("a manifest version with no changelog entry", CHECKS,
      lambda r: edit(r, ".claude-plugin/plugin.json", '"version": "0.0.0"', '"version": "0.0.1"'),
      "fails", "has no CHANGELOG.md entry"),
+    # The one list an audit is held to. An id whose since names a release nobody
+    # shipped would send an audit reading "arrived after your stamp" to a version
+    # that does not exist; the same id twice is two rows for one promise. See
+    # specs/changes/0041.
+    ("an id whose since names a release the changelog does not have", CHECKS,
+     lambda r: edit(r, "method/gates.md", "| `check:stamp-present` | mechanical | 0.0.0 |",
+                    "| `check:stamp-present` | mechanical | 0.0.9 |"),
+     "fails", "has no CHANGELOG.md entry; an audit would report"),
+    ("the same id twice in the id table", CHECKS,
+     lambda r: edit(r, "method/gates.md",
+                    "| `check:stamp-present` | mechanical | 0.0.0 | record | — | | the stamp line is present |\n",
+                    "| `check:stamp-present` | mechanical | 0.0.0 | record | — | | the stamp line is present |\n"
+                    "| `check:stamp-present` | mechanical | 0.0.0 | record | — | | the stamp line is present |\n"),
+     "fails", "appears twice"),
 ]
 
 

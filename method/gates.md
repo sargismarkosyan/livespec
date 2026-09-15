@@ -231,8 +231,10 @@ correctly left unbuilt. What is not correct is nobody being able to say, a year
 later, which of them were ever built — an answer split across each layer's own
 README is four honest quarters of a fact and no way to add them up.
 
-So the bindings carry a **ledger**: one row per gate named on this page, and
-nothing in it that is not one.
+So the bindings carry a **ledger**: one row per gate named on this page — by
+the id [the list below](#the-ids) gives it — and a row for anything else only
+under the `local:` prefix, which says the repository added it and the method
+does not require it.
 
 | A row reads | And means |
 |---|---|
@@ -386,6 +388,105 @@ If it is written down at all it belongs with the other things that are true of
 one machine rather than of the repository, in the bindings' own prose: what it
 runs, what it deliberately leaves to the pipeline, and the line somebody types to
 opt in. Nothing reads it to decide whether a gate exists.
+
+## The ids
+
+Everything an audit of the ledger is held to is one list, here, and nothing an
+audit checks is enumerated anywhere else. Three tables: the gates a ledger
+carries a row for, the two pieces of wiring that must never gate, and the
+checks an audit makes. **Every id is permanent** — the same promise a rule id
+carries, for the same reason: a ledger in a consuming repository names these
+ids, and a renamed one orphans every ledger at once. A check that is no longer
+asked is retired *in place*, with the version and what replaced it, so an old
+row reads *retired — drop it* rather than *unknown id*. A rename is a
+retirement and a new id. The *aliases* column carries the labels ledgers used
+before ids existed, so an audit can match an old row to its id and write the
+id in.
+
+*kind* says who answers a check: **mechanical** — a script, from the record,
+the same way every time; **judgment** — a person or a model, from the command
+the bindings name. *since* is the plugin release the check or gate arrived in,
+and a consuming repository whose stamp is earlier than a row's *since* has
+never been asked it. *severity* orders what an audit reports — *platform*
+before *boundary* before *wiring* before *record*.
+
+### The gates a ledger carries
+
+| id | kind | since | severity | retired | aliases | meaning |
+|---|---|---|---|---|---|---|
+| `gate:rule-to-test` | gate | 0.6.0 | wiring | — | rule → test · rule → case | a live rule no test claims fails |
+| `gate:test-to-rule` | gate | 0.6.0 | wiring | — | test → rule · case → rule | a test claiming a rule that does not exist fails |
+| `gate:planned-unclaimed` | gate | 0.6.0 | wiring | — | planned rule with a test | a `@planned` rule or workflow that is claimed fails — the tag should have come off |
+| `gate:feature-to-workflow` | gate | 0.6.0 | wiring | — | feature → workflow | a feature naming no workflow, or a workflow that does not exist, fails |
+| `gate:workflow-to-feature` | gate | 0.6.0 | wiring | — | workflow → feature | a workflow claimed by no feature fails |
+| `gate:workflow-walked` | gate | 0.6.0 | wiring | — | workflow → test · workflow → case (walked end to end) | a workflow walked by no test fails |
+| `gate:workflow-to-persona` | gate | 0.6.0 | wiring | — | workflow → persona | a workflow naming no live persona fails |
+| `gate:persona-to-workflow` | gate | 0.6.0 | wiring | — | persona → workflow | a persona named by no workflow fails |
+| `gate:journey-to-workflow` | gate | 0.6.0 | wiring | — | journey → workflow | a journey naming a workflow that does not exist fails |
+| `gate:workflow-to-journey` | gate | 0.6.0 | wiring | — | workflow → journey | a workflow naming no journey warns, and does not fail |
+| `gate:structure` | gate | 0.6.0 | wiring | — | structure | one feature per file, unique ids, every rule with an example, no example outside a rule |
+| `gate:coverage` | gate | 0.6.0 | wiring | — | coverage · coverage — lines, branches, functions | a module under the thresholds fails |
+| `gate:boundary-double` | gate | 1.2.0 | boundary | — | a rule-bound test doubling a boundary declared real | a rule-bound test standing a double in for a boundary reading real fails |
+| `gate:boundary-fake-suite` | gate | 1.2.0 | boundary | — | | a fake row naming no suite against the real thing fails |
+| `gate:boundary-recorded-age` | gate | 1.2.0 | boundary | — | | a recorded row past the age the bindings set fails |
+| `gate:boundaries-table` | gate | 1.2.0 | boundary | — | | rule-bound tests present and no boundaries table fails |
+| `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire |
+
+### The wiring that must never gate
+
+| id | kind | since | severity | retired | aliases | meaning |
+|---|---|---|---|---|---|---|
+| `wiring:pr-report` | wiring | 0.21.0 | wiring | — | the pull-request report | the report on every pull request, unobserved until one was watched arriving |
+| `wiring:rule-bound-measure` | wiring | 0.21.0 | wiring | — | the rule-bound measure | the rule-bound measure reported beside the gated number |
+
+Two prefixes a repository fills itself and this table never lists:
+`boundary:<name>`, one per thing the app talks to, named in the sitting and
+never derived; and `local:<name>`, a gate the repository added that the method
+does not name — held to the same states, required by nothing.
+
+### The checks an audit makes
+
+| id | kind | since | severity | retired | aliases | meaning |
+|---|---|---|---|---|---|---|
+| `check:stamp-present` | mechanical | 0.21.0 | record | — | | the ledger carries the version it was reconciled against |
+| `check:stamp-range` | mechanical | 1.1.0 | record | — | | the entries between the stamp and the plugin installed are listed |
+| `check:stamp-ahead` | mechanical | 1.1.0 | record | — | | a stamp ahead of the plugin installed is said, and no range read |
+| `check:range-empty-said` | mechanical | 1.1.0 | record | — | | a stamp at the plugin installed is said in a line |
+| `check:changelog-reachable` | mechanical | 1.1.0 | record | — | | the plugin's changelog can be read from here |
+| `check:entry-moved-here` | judgment | 1.1.0 | record | — | | each entry in the range moved something this repository holds, or is passed over in a line |
+| `check:row-state-legal` | mechanical | 0.21.0 | record | — | | every ledger row is in one of the four states |
+| `check:row-evidence` | mechanical | 0.21.0 | record | — | | an automated or unobserved row names a command; a deferred row names its change; a row about the outside carries how it was read |
+| `check:row-uncovered` | judgment | 0.21.0 | wiring | — | | what a row leaves uncovered is named, and true |
+| `check:number-from-config` | judgment | 0.31.0 | wiring | — | | a number a gate enforces is read from the config the gate reads |
+| `check:demand-is-a-ratchet` | judgment | 0.31.0 | wiring | — | | a demand equal to today's score is reported as measured rather than chosen, unless it is the whole of what is in scope |
+| `check:exclusions-in-config` | judgment | 0.31.0 | wiring | — | | what the demand does not reach lives in the tool's config, not only in the bindings |
+| `check:na-vs-tree` | mechanical | 0.21.0 | record | — | | a not-applicable row's reason is not contradicted by the tree |
+| `check:row-per-gate` | mechanical | 0.21.0 | wiring | — | | every gate in the table above has a row |
+| `check:real-starts-here` | judgment | 1.2.0 | boundary | — | | what a real row names can be started from here |
+| `check:real-not-doubled` | judgment | 1.2.0 | boundary | — | | no rule-bound test stands a double in for a boundary reading real |
+| `check:fake-suite-green` | judgment | 1.2.0 | boundary | — | | a fake row's suite against the real thing exists, and was last green when the row says |
+| `check:recorded-age` | mechanical | 1.2.0 | boundary | — | | a recorded row is within the age the bindings set |
+| `check:mocked-clock` | mechanical | 1.2.0 | boundary | — | | a mocked row is not past the two-change clock |
+| `check:merge-blocked` | judgment | 0.21.0 | platform | — | | a merge is actually blocked when the required check fails |
+| `check:check-name` | judgment | 0.21.0 | platform | — | | the required check's name is the one the platform has |
+| `check:who-bypasses` | judgment | 0.21.0 | platform | — | | who can bypass is read back, tokens and keys included |
+| `check:credentials-present` | judgment | 0.21.0 | platform | — | | a credential the bindings claim is missing is read back from where the platform keeps it |
+| `check:read-back-or-not` | mechanical | 0.21.0 | record | — | | every judgment line is read back with its command, or not read with why |
+| `check:prose-phrases` | mechanical | 0.21.0 | record | — | | the prose is read for *not built yet*, *to do*, *we should*, *for now* |
+| `check:second-table` | mechanical | 0.21.0 | wiring | — | | the table for wiring that must never gate exists |
+| `check:pr-report-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the pull-request report |
+| `check:rule-bound-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the rule-bound measure |
+| `check:sketch-row` | mechanical | 0.27.0 | record | — | | the bindings say which changes owe a sketch |
+| `check:picture-row` | mechanical | 0.29.0 | record | — | | the bindings say what a change here must show, and it is not the sketch row |
+| `check:skill-names` | mechanical | 1.0.0 | record | — | | every skill the record instructs by exists in this plugin |
+| `check:word-not-a-skill` | judgment | 1.0.0 | record | — | | the same word used as ordinary prose is left alone |
+| `check:loop-per-claude-md` | judgment | 1.1.0 | record | — | | the loop's own account says what the method now asks of each step |
+| `check:deferred-clock` | mechanical | 0.21.0 | wiring | — | | no row is deferred across two changes |
+| `check:hook-no-row` | mechanical | 0.26.0 | record | — | | a local hook has no row in either table |
+| `check:sorted-by-severity` | mechanical | 0.21.0 | record | — | | what is open is reported dangerous first |
+| `check:record-only` | mechanical | 0.21.0 | record | — | | the audit's corrections touched the record and nothing else |
+| `check:last-line-command` | mechanical | 1.3.0 | record | — | | where wiring is left, the last line is the command that starts the sitting, with the rows after it |
+| `check:no-line-when-clear` | mechanical | 1.3.0 | record | — | | where nothing is left for the sitting, no such line |
 
 ## Both gates are verified to fire
 

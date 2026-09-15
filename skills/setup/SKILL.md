@@ -325,11 +325,19 @@ six months with a required check that has been passing on an empty glob.
 
 ## 5. Write `specs/setup/README.md` — the bindings
 
-This is the file every other skill reads. It has to answer, in one table a person
-can scan: what verification is, what runs each gate, where the rule-claiming
-helper lives, how tests are discovered, what the coverage thresholds are, what
-the required check is called, where the app runs, what a pull request has to
-carry, and anything else a skill would otherwise have to guess.
+This is the file every other skill reads, and it is written from
+[`templates/bindings.md`](../../templates/bindings.md) — copy it and fill it,
+the way a persona or a workflow is. The template carries every section a
+bindings file has: the key table a person can scan — what verification is,
+what runs each gate, where the rule-claiming helper lives, how tests are
+discovered, what the coverage thresholds are, what the required check is
+called, where the app runs, what a pull request has to carry — the stamp line,
+the three ledger tables with the id of every gate already in them, the
+workarounds, and the headings the rest goes under. Fill every placeholder or
+say why it is empty; a bindings file with an angle bracket left in it was
+pasted, not written. **Keep the table headers and the stamp line as the
+template has them**: the audit tool reads those and nothing else, and a ledger
+in another shape is reported as one the audit could not read.
 
 **Wire the report too, and say so when you cannot.**
 [`gates.md`](../../method/gates.md#the-report-is-not-a-gate) expects a repository
@@ -395,12 +403,16 @@ how the two copies start to disagree.
 
 ### The gate wiring ledger
 
-One more table, and the one that outlives you: a row for **every** gate named in
-[`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — not only the
-ones you wired — each reading *automated* (naming the command), *unobserved*
-(wired, and nothing has watched it run), *not applicable* (with the reason) or
-*deferred* (since which change, and why). Above it, the date and the version of
-livespec the wiring was reconciled against.
+One more table, and the one that outlives you. The template already holds a
+row for **every** gate [`gates.md`](../../method/gates.md#the-ids) names, by
+id — not only the ones you wired — and each reads *automated* (naming the
+command), *unobserved* (wired, and nothing has watched it run), *not
+applicable* (with the reason) or *deferred* (since which change, and why).
+Above it, the date and the version of livespec the wiring was reconciled
+against. A gate this repository has that the method does not name gets a row
+too, with the `local:` prefix — held to the same states, required by nothing.
+Never invent a `gate:` id: the ids are the method's and permanent, and a row
+under one the table does not list is a row no audit can match.
 
 **A gate you wired in section 4 reads *unobserved*, not *automated*.** Breaking
 it against the injection table proves the gate; it does not prove this
@@ -445,7 +457,14 @@ sitting to do it.
 overwrite it.** Read what it was reconciled against, compare its rows to the
 gates that page names now, and report the difference — rows the method has since
 gained, rows naming a command that no longer exists, deferrals past the
-two-change limit. Then offer to wire what is missing. Re-stamp the version only
+two-change limit. Then offer to wire what is missing. **A ledger written before
+ids existed is matched, not retyped**: each row goes to its id by the labels
+the table's *aliases* column lists, and the id is written into the row; a row
+two ids could claim is shown with both and left for the person; a row no id
+matches is either one of this repository's own — give it `local:` — or a row
+for nothing, which the person decides. Then move the rows, verbatim, into the
+template's tables — the reshaping is this sitting's to do with the person in
+the room, never the audit's to do alone. Re-stamp the version only
 when the wiring actually moved; a ledger re-stamped for a run that changed
 nothing has learned to lie. Rows you cannot date honestly say **predates the
 ledger** rather than getting an invented change number.
