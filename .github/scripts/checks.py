@@ -403,6 +403,76 @@ else:
 for note in notes:
     print(f"  {note}")
 
+
+# --- 8. the ids are one list, and every version in it is a real release --------
+
+# method/gates.md carries the one list an audit is held to: the gates a ledger
+# needs a row for, the wiring that never gates, and the checks. A consuming
+# repository's ledger names these ids, so they are permanent, retired in place,
+# and every *since* or *retired* names a release the changelog actually has —
+# otherwise an audit reading "arrived after your stamp" is reading a version
+# nobody shipped. See specs/changes/0041.
+import releaselib  # noqa: E402
+
+IDS_HEADING = "## The ids"
+ID_PREFIXES = ("gate:", "wiring:", "check:")
+ID_KINDS = {"gate", "wiring", "mechanical", "judgment"}
+ID_SEVERITIES = {"platform", "boundary", "wiring", "record"}
+ID_SHAPE = re.compile(r"^(gate|wiring|check):[a-z0-9]+(?:-[a-z0-9]+)*$")
+
+
+def id_rows(text: str) -> list[dict[str, str]] | None:
+    """Every row of the three id tables, or None when the section is gone."""
+    if IDS_HEADING not in text:
+        return None
+    section = text.split(IDS_HEADING, 1)[1].split("\n## ", 1)[0]
+    rows: list[dict[str, str]] = []
+    for line in section.splitlines():
+        if not line.startswith("|") or line.startswith("|--"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 7 or cells[0] == "id":
+            continue
+        rows.append({
+            "id": cells[0].strip("`"), "kind": cells[1], "since": cells[2],
+            "severity": cells[3], "retired": cells[4], "aliases": cells[5], "meaning": cells[6],
+        })
+    return rows
+
+
+gates_page = ROOT / "method" / "gates.md"
+changelog = ROOT / "CHANGELOG.md"
+if gates_page.exists() and changelog.exists():
+    rows = id_rows(gates_page.read_text())
+    if rows is None:
+        fail(rel(gates_page), f"has no {IDS_HEADING!r} section; it is the one list an audit is held to")
+    else:
+        try:
+            released = {version for version, _ in releaselib.entries(changelog.read_text())}
+        except releaselib.ReleaseInputError:
+            released = set()  # section 6 already fails the heading; do not fail it twice
+        seen: set[str] = set()
+        for row in rows:
+            where = f"{rel(gates_page)} ({row['id']})"
+            if not ID_SHAPE.match(row["id"]):
+                fail(where, f"is not an id: a prefix from {ID_PREFIXES} and a kebab-case name")
+            if row["id"] in seen:
+                fail(where, "appears twice in the id table; an id is one row")
+            seen.add(row["id"])
+            if row["kind"] not in ID_KINDS:
+                fail(where, f"kind {row['kind']!r} is not one of {sorted(ID_KINDS)}")
+            if row["severity"] not in ID_SEVERITIES:
+                fail(where, f"severity {row['severity']!r} is not one of {sorted(ID_SEVERITIES)}")
+            if released and row["since"] not in released:
+                fail(where, f"since {row['since']!r} has no CHANGELOG.md entry; an audit would report a release nobody shipped")
+            retired = row["retired"]
+            if retired not in ("", "—", "-"):
+                version = retired.split()[0]
+                if released and version not in released:
+                    fail(where, f"retired {version!r} has no CHANGELOG.md entry")
+            if not row["meaning"]:
+                fail(where, "has no meaning; an id with no sentence is a name nobody can audit against")
+
 if failures:
     print(f"\n{len(failures)} problem(s):\n", file=sys.stderr)
     for problem in failures:
