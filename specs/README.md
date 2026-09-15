@@ -4,6 +4,10 @@ This repository runs the process it ships. The layers below are the same ones
 livespec asks of any repository — with one substitution that runs through all of
 them: **the tests here are eval cases**, because the product is judgment and the
 only way to hold judgment is to run it against a prompt and grade what came back.
+One exception, since [`0041`](changes/0041-an-audit-that-cannot-stop-early.md):
+the audit tool is code, and code is proved the ordinary way — a unit test that
+names its rule — because a graded case is the answer for judgment and not a
+modern alternative to calling a function.
 
 | Layer | What it holds | Who fills it |
 |---|---|---|
