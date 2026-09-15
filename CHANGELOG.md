@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.4.0 — 2026-09-15
+
+**The list an audit is held to now exists.** `method/gates.md` carries one table of ids — seventeen gates a ledger needs a row for, two pieces of wiring that must never gate, thirty-nine checks an audit makes — each permanent, with the release it arrived in, a severity, and the labels older ledgers used, so an audit can match an old row to its id and a retired check is retired in place rather than reported as unknown. `setup` now writes the bindings from `templates/bindings.md`, the whole skeleton, and never invents a `gate:` id; a gate of the repository's own carries `local:`. `checks.py` holds every version in that table to a `CHANGELOG.md` entry, and `inject.py` breaks it two ways. A consuming repository sees this on its next `setup` or audit as rows it can now be matched against. Part one of [`0041`](specs/changes/0041-an-audit-that-cannot-stop-early.md); the tool that reads the shape is part two, and the record that refuses a thin audit is part three.
+
 ## 1.3.0 — 2026-09-08
 
 **`doctor` ends with the command, not the owner.** Where an audit leaves wiring to be built, its reply now ends with the command that starts the sitting, as somebody would type it — `/livespec:setup` — followed by the rows that sitting will be asked to wire, one per line, and the same line closes the reading's record in the bindings. Where nothing is left for the sitting, no such line. The command is said and never run: a sitting nobody asked for gets stopped and questioned, and that stop is `setup`'s own first section. Where to look: `doctor` §4 and its refusals. The first audit under 1.2.0 ended *two things are setup's* — met the rule that governed it, and was read as the audit having changed nothing; the second invocation `0038` priced was owed and not paid. One example in `wiring/what-changed-since-the-stamp.feature` is reworded in place to match, id kept. Nothing an adopter's ledger holds moves.
