@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.7.3 — 2026-09-16
+
+**The two soft limits on a feature file are proven to warn.** `trace.py` has warned past six rules or 120 lines per file since the first setup here, and stayed green, as `gates.md` says it should — small files are the point and a hard cap on them is not. Until now no fault tripped either warning, so nothing had ever shown it fires. The method's table of injected faults gains two rows — *a feature holding more rules than the soft limit* and *a feature longer than the soft limit*, both *warns, does not fail* — and this repository's injector holds both, 96 faults in all. Nothing becomes a failure, no id is added, and no consuming repository's ledger gains a row; a sitting that wires the traceability gate now has two more faults to inject, in `gates.md`, *Both gates are verified to fire*. Decided against a hard cap on the numbers: of 133 feature files across three real repositories, none is over six rules and three are over 120 lines, so a cap would fail two repositories on day one for files whose length is examples in the persona's terms.
+
 ## 1.7.2 — 2026-09-16
 
 **The method has one answer to a feature that serves no workflow.** A repository's own pipeline — its gates, its release step, the checks that prove them — is not an attempt anybody makes with the product; it is held by the fault table and reserves no rule ids, and a feature naming no workflow is refused rather than given a tag of its own. The five ids `0003` reserved for a release-pipeline feature that the method says should not exist are withdrawn, never having been used.

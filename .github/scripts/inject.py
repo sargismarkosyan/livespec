@@ -515,6 +515,28 @@ def release_control() -> None:
 
 
 # (name, gate, mutation, expected outcome, a phrase the message must contain)
+def seven_rules() -> str:
+    """A feature one rule past the soft limit. Every rule is planned and has an
+    example, so the only thing wrong with the file is its size. See specs/changes/0047."""
+    rules = "".join(
+        f"\n  @rule:seven-{n} @planned\n  Rule: thing {n} is true\n\n"
+        f"    Example: it shows thing {n}\n      Given a list\n      When they look\n      Then thing {n} is there\n"
+        for n in range(1, 8)
+    )
+    return "@feature:seven @workflow:read-it\nFeature: Seven of them\n" + rules
+
+
+def long_feature() -> str:
+    """A feature past the line limit: one planned rule under the kind of comment
+    the template ships with, repeated until the file is longer than the soft limit."""
+    padding = "".join(f"  # line {n} of a file that has grown past the soft limit\n" for n in range(1, 121))
+    return (
+        "@feature:long @workflow:read-it\nFeature: A long one\n\n" + padding
+        + "\n  @rule:long-one @planned\n  Rule: the thing is true\n\n"
+        "    Example: it shows the thing\n      Given a list\n      When they look\n      Then the thing is there\n"
+    )
+
+
 FAULTS = [
     ("live rule with no case", TRACE,
      lambda r: drop(r, "evals/case-rule"), "fails", "no eval case claims it"),
@@ -557,6 +579,13 @@ FAULTS = [
      "warns", "promises a behaviour"),
     ("workflow naming no journey", TRACE,
      lambda r: edit(r, "specs/workflows/read-it.feature", " @journey:arc", ""), "warns", "names no @journey:"),
+    # The two soft limits. Warnings on purpose — small files are the point and a
+    # hard cap is not — and until these two, the one shape check in trace.py
+    # nothing had ever seen speak. See specs/changes/0047.
+    ("a feature holding more rules than the soft limit", TRACE,
+     lambda r: write(r, "specs/features/core/seven.feature", seven_rules()), "warns", "soft limit"),
+    ("a feature longer than the soft limit", TRACE,
+     lambda r: write(r, "specs/features/core/long.feature", long_feature()), "warns", "soft limit"),
     ("case graded only by what fired", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: tool_used\ntool: Skill\nmin: 1\n---\n"),
      "fails", "never by what came out"),
