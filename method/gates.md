@@ -30,6 +30,8 @@ for. It fails on any of:
 | a test outside a `rule()` block in a behaviour file | An untraced behaviour test. Move it inside a block, or into the unit folder. |
 | a behaviour file with no `rule()` at all | Same. This is the check that stops coverage filler. |
 | a `@planned` rule that *does* have a test | The tag should have come off in the change that made it true. |
+| a rule-bound test marked skipped, focused, or expected to fail | It claims nothing. The rule it names is untested, and the gate says so rather than counting the marker as a test. What counts as a marker is the runner's word, and a binding. |
+| fewer rule-bound tests ran than the tree holds | The runner did not see what the gate sees: a harness that stopped early, a file the discovery pattern missed, a class the runner does not collect, or a count somebody edited. Whatever the summary line says, the build fails. More than the tree holds is not a failure. |
 
 It should **warn without failing** when a unit test claims a rule — it probably
 belongs with the behaviour tests — when a test that asserts nothing happened
@@ -480,6 +482,8 @@ before *boundary* before *wiring* before *record*.
 | `gate:boundaries-table` | gate | 1.2.0 | boundary | — | | rule-bound tests present and no boundaries table fails |
 | `gate:context-file-ceiling` | gate | 1.9.0 | wiring | — | | the context file larger than the ceiling the bindings name, a context file with no ceiling row, or a ceiling above the limit the method names, fails |
 | `gate:context-file-shape` | gate | 1.9.0 | wiring | — | | the context file missing, or without its loop, its commands, or its pointer to the bindings, fails |
+| `gate:skipped-test-claims-nothing` | gate | next | wiring | — | | a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails |
+| `gate:fewer-ran-than-exist` | gate | next | wiring | — | | the runner reporting fewer rule-bound tests than the tree holds fails |
 | `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire |
 
 ### The wiring that must never gate
@@ -576,6 +580,8 @@ each one in turn and read the message it produces:
 | a loop of nine steps | fails |
 | a context file with no fenced block | fails |
 | a context file that does not link to the bindings | fails |
+| a skipped rule-bound test claiming a rule | fails |
+| the runner ran fewer rule-bound tests than the tree holds | fails |
 
 If you change either gate, re-check it the same way, and keep the results in the
 repository's bindings where somebody can read what was actually tried.

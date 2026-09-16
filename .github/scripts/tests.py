@@ -20,6 +20,7 @@ that may carry none.
 from __future__ import annotations
 
 import ast
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -34,6 +35,20 @@ def bound(decorators: list[ast.expr]) -> bool:
         if call is not None and getattr(call.func, "id", getattr(call.func, "attr", "")) == "rule":
             return True
     return False
+
+
+def counted_tests(path: Path) -> int:
+    """How many tests the tree holds in this file: every `test_*` method in a
+    class, and every module-level `test_*` function. The runner is held to at
+    least this many. See specs/changes/0051."""
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    held = 0
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            held += sum(1 for item in node.body if isinstance(item, ast.FunctionDef) and item.name.startswith("test_"))
+        elif isinstance(node, ast.FunctionDef) and node.col_offset == 0 and node.name.startswith("test_"):
+            held += 1
+    return held
 
 
 def unbound_tests(path: Path) -> list[str]:
@@ -74,7 +89,21 @@ def main() -> int:
         print("\n✘ the tests are red:\n", file=sys.stderr)
         print("\n".join(tail[-40:]), file=sys.stderr)
         return 1
-    print(f"✔ tests: {len(files)} file(s), every test bound to a rule — {summary}")
+    # A test that did not run claims nothing. The runner says how many it ran;
+    # the tree says how many there are; fewer is a test nobody saw fail — a
+    # class that is not a TestCase, a file the discovery pattern misses, a run
+    # that stopped early. More is inheritance or generation, and not a failure.
+    ran_line = re.search(r"^Ran (\d+) tests?", "\n".join(tail), re.MULTILINE)
+    ran = int(ran_line.group(1)) if ran_line else 0
+    held = sum(counted_tests(path) for path in files)
+    if ran < held:
+        print(
+            f"\n✘ the tree holds {held} test(s) and the runner ran {ran}; a test that did not run claims nothing — "
+            "a class that is not a TestCase, a file the discovery pattern misses, or a run that stopped early\n",
+            file=sys.stderr,
+        )
+        return 1
+    print(f"✔ tests: {len(files)} file(s), every test bound to a rule, {ran} run of {held} held — {summary}")
     return 0
 
 

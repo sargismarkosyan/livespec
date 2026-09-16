@@ -1,7 +1,7 @@
 @feature:wiring-what-ran @workflow:adopt-the-process
 Feature: What the build refuses about a test that did not run
 
-  @rule:a-test-that-did-not-run-claims-nothing @planned
+  @rule:a-test-that-did-not-run-claims-nothing
   Rule: A rule-bound test marked skipped, focused or expected to fail claims no rule, and verification fails naming the marker and the rule it leaves untested
 
     Example: a skip on a rule-bound test
@@ -21,7 +21,7 @@ Feature: What the build refuses about a test that did not run
       When verification runs
       Then nothing is reported for it
 
-  @rule:fewer-ran-than-exist-is-a-failure @planned
+  @rule:fewer-ran-than-exist-is-a-failure
   Rule: When the runner reports fewer rule-bound tests than the tree holds, verification fails with both numbers, whatever the summary line says
 
     Example: a test the runner never discovers
@@ -40,7 +40,7 @@ Feature: What the build refuses about a test that did not run
       When verification runs
       Then the count is not what fails it
 
-  @rule:the-sitting-wires-what-ran @planned
+  @rule:the-sitting-wires-what-ran
   Rule: The sitting wires the gate to read the runner's own per-test report and compare it with the tree, records how that report is read in the bindings, and says so where the runner cannot report per test
 
     Example: the runner can say what it ran

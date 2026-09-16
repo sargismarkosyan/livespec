@@ -83,6 +83,8 @@ GATES = [
     ("gate:boundaries-table", "boundary", "", "rule-bound tests present and no boundaries table fails"),
     ("gate:context-file-ceiling", "wiring", "", "the context file larger than the ceiling the bindings name, a context file with no ceiling row, or a ceiling above the limit the method names, fails"),
     ("gate:context-file-shape", "wiring", "", "the context file missing, or without its loop, its commands, or its pointer to the bindings, fails"),
+    ("gate:skipped-test-claims-nothing", "wiring", "", "a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails"),
+    ("gate:fewer-ran-than-exist", "wiring", "", "the runner reporting fewer rule-bound tests than the tree holds fails"),
     ("gate:verified-to-fire", "wiring", "both gates verified to fire", "every gate is broken on purpose and seen to fire"),
 ]
 

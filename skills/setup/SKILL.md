@@ -226,6 +226,18 @@ one figure twice.
 **One command runs both**, and CI runs that same command. Not a longer list in CI
 than a person can run locally.
 
+**The runner reports what it ran, per test, where the gate can count it.** The
+form is the runner's — a per-test line, a machine-readable report — and it is
+a binding, written beside the discovery pattern. The gate compares that count
+with the rule-bound tests it found in the tree and fails when the runner saw
+fewer; and a rule-bound test carrying the runner's skip, focus or
+expected-failure marker claims nothing, which the same gate says naming the
+marker — [`testing.md`](../../method/testing.md#behaviour-tests). Where the
+runner cannot say per test, say so in the bindings and name what that leaves
+open, rather than reading its summary line as the count. Both go into the
+injection table: a skipped rule-bound test, and a run that saw fewer than the
+tree holds.
+
 ### Then offer to run it before the push
 
 One command that a person can run locally is the precondition for the thing

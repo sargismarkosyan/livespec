@@ -1,6 +1,6 @@
 # Spec 0051: a test that did not run claims nothing
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** none — spec B of the plan *Green Means Real* (2026-09-08), the
   second of four the maintainer ordered A, B, C, D, taken up now that the
   CLAUDE.md report is closed. Spec A shipped as
