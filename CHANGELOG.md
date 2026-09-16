@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.5.0 — 2026-09-16
+
+**A release version is never typed into the id table.** A new row in `method/gates.md`'s id table reads `since: next` — a retirement `retired: next` — and the release writes the version into it in the same commit as `plugin.json` and `CHANGELOG.md`, so the list an audit is held to moves with the release that ships it and nobody remembers to update it. The pull-request gate gains a fourth trigger: a change that moves the audit surface (`skills/doctor/`, `tools/doctor.py`, `templates/bindings.md`, `method/gates.md`) carries an `## Ids` section — *unchanged*, or the ids added and retired — and the gate holds it to the table's actual diff, refusing a typed version on a new row, *unchanged* beside a row that moved, and an id deleted rather than retired. The changelog stays what it was: the record of everything a release changed, written from this section, and the thing every `since` is validated against. Five new faults hold the contract.
+
 ## 1.4.0 — 2026-09-15
 
 **The list an audit is held to now exists.** `method/gates.md` carries one table of ids — seventeen gates a ledger needs a row for, two pieces of wiring that must never gate, thirty-nine checks an audit makes — each permanent, with the release it arrived in, a severity, and the labels older ledgers used, so an audit can match an old row to its id and a retired check is retired in place rather than reported as unknown. `setup` now writes the bindings from `templates/bindings.md`, the whole skeleton, and never invents a `gate:` id; a gate of the repository's own carries `local:`. `checks.py` holds every version in that table to a `CHANGELOG.md` entry, and `inject.py` breaks it two ways. A consuming repository sees this on its next `setup` or audit as rows it can now be matched against. Part one of [`0041`](specs/changes/0041-an-audit-that-cannot-stop-early.md); the tool that reads the shape is part two, and the record that refuses a thin audit is part three.
