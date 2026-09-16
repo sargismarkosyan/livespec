@@ -22,7 +22,7 @@ how two documents start meaning slightly different things.
 | Word | What it means here |
 |---|---|
 | **skill** | One `skills/<name>/SKILL.md`. The only thing Claude Code loads from this repository. |
-| **method** | The portable part, in `method/`. Names no command, threshold, filename or language. |
+| **method** | The portable part, in `method/`. Names no command, filename or language, and no threshold that is a repository's own — the one number it carries is the reader's, and a reader is what every repository shares. |
 | **binding** | The part that is one repository's own — its commands, thresholds and paths. Lives in that repository's `specs/setup/README.md`, never here. |
 | **payload** | `method/`, `templates/`, `tools/`. Ships to every user, loads only when a skill body sends the agent to it. |
 | **component** | What Claude Code loads on its own. Here that is `skills/` and nothing else. |

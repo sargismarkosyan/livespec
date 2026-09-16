@@ -20,6 +20,12 @@ Feature: What the build refuses about the file every session reads first
       When verification runs
       Then it fails, saying the row is missing rather than passing the file unmeasured
 
+    Example: a ceiling written above the reader's own limit
+      Given a consuming repository whose bindings set the ceiling above the most the method allows a context file to be
+      When verification runs
+      Then it fails, naming the ceiling and the limit
+      And the file's own size is not what decided it
+
   @rule:a-context-file-without-its-shape-fails-the-build
   Rule: A CLAUDE.md that is missing, or that carries no loop, no commands, or no pointer to the bindings, fails verification
 
