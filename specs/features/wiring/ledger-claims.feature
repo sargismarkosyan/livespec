@@ -1,7 +1,7 @@
 @feature:wiring-ledger-claims @workflow:adopt-the-process
 Feature: What a gate wiring ledger is allowed to claim
 
-  @rule:a-claim-outside-the-tree-is-read-back
+  @rule:a-claim-outside-the-tree-is-read-back @crosses:platform
   Rule: A row about something the repository cannot see is read from what owns it, or it is not written as fact
 
     Example: the required check is named in CI and enforced by nothing

@@ -32,11 +32,16 @@ for. It fails on any of:
 | a `@planned` rule that *does* have a test | The tag should have come off in the change that made it true. |
 | a rule-bound test marked skipped, focused, or expected to fail | It claims nothing. The rule it names is untested, and the gate says so rather than counting the marker as a test. What counts as a marker is the runner's word, and a binding. |
 | fewer rule-bound tests ran than the tree holds | The runner did not see what the gate sees: a harness that stopped early, a file the discovery pattern missed, a class the runner does not collect, or a count somebody edited. Whatever the summary line says, the build fails. More than the tree holds is not a failure. |
+| a rule crossing a boundary the bindings have no row for | A `@crosses:<id>` names a boundary nobody declared — a dangling reference, like a workflow that does not exist. Add the boundary row, or name one that exists. |
 
 It should **warn without failing** when a unit test claims a rule — it probably
 belongs with the behaviour tests — when a test that asserts nothing happened
-claims a rule not tagged `@refusal`, and when a feature file grows past the
-repo's soft size limits.
+claims a rule not tagged `@refusal`, when a feature file grows past the
+repo's soft size limits, and when a rule that says it crosses a boundary
+carries a single example — one example cannot be both the ordinary case and
+the boundary misbehaving, and a crossing that shows only the happy path has
+specced the demo. Whether the second example is *really* the boundary going
+wrong is a reading, not the gate's; that stays with the spec step and review.
 
 The output worth having is a per-feature matrix — traced, untraced, planned —
 followed by a count. It is worth reading even when green.
@@ -123,6 +128,13 @@ Feature: <what this component does>
   reporting its only honest test as the wrong kind. Without it the choice is a
   permanent warning or a `@planned` tag on built behaviour, and both teach the
   reader to stop believing a tag.
+- **`@crosses:<name>` on a rule names a boundary it cannot be true without** —
+  the store, the network, the clock, a service — by the name after `boundary:`
+  in its row in the bindings' [boundaries table](#the-boundaries), so
+  `@crosses:store` names the `boundary:store` row. A crossing naming a
+  boundary no row declares fails; a crossing rule with a single example warns.
+  It goes on a Rule, never a Feature: a crossing is a property of one promise,
+  and refine-spec asks for the boundary misbehaving when it writes the rule.
 - `@workflow:<id>` on every feature, saying what it serves. It may repeat: one
   feature can serve two workflows.
 - `@persona:<id>` and `@journey:<id>` on every workflow. **Not on features** —
@@ -495,6 +507,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:context-file-shape` | gate | 1.9.0 | wiring | — | | the context file missing, or without its loop, its commands, or its pointer to the bindings, fails |
 | `gate:skipped-test-claims-nothing` | gate | 1.12.0 | wiring | — | | a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails |
 | `gate:fewer-ran-than-exist` | gate | 1.12.0 | wiring | — | | the runner reporting fewer rule-bound tests than the tree holds fails |
+| `gate:crossing-names-a-boundary` | gate | next | boundary | — | | a rule tagged as crossing a boundary the bindings declare no row for fails |
 | `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire |
 
 ### The wiring that must never gate
@@ -595,6 +608,8 @@ each one in turn and read the message it produces:
 | a context file that does not link to the bindings | fails |
 | a skipped rule-bound test claiming a rule | fails |
 | the runner ran fewer rule-bound tests than the tree holds | fails |
+| a rule crossing a boundary the bindings have no row for | fails |
+| a crossing rule with a single example | warns, does not fail |
 
 If you change either gate, re-check it the same way, and keep the results in the
 repository's bindings where somebody can read what was actually tried.

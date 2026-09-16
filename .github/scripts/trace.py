@@ -41,8 +41,24 @@ arguments = [a for a in sys.argv[1:] if a != "--json"]
 AS_JSON = "--json" in sys.argv
 ROOT = Path(arguments[0]).resolve() if arguments else Path(__file__).resolve().parents[2]
 
-NS_TAG = re.compile(r"@(feature|rule|workflow|persona|journey):([A-Za-z0-9][A-Za-z0-9._-]*)")
+NS_TAG = re.compile(r"@(feature|rule|workflow|persona|journey|crosses):([A-Za-z0-9][A-Za-z0-9._-]*)")
 FLAG = re.compile(r"@(planned|retired|refusal)\b")
+
+# The boundaries a @crosses:<name> may name, read from this repository's
+# boundaries table — the `boundary:<name>` cells 0039 writes. The tag carries
+# the name after `boundary:`, the way @workflow: carries a workflow id without
+# repeating its namespace, so `@crosses:store` names the `boundary:store` row.
+# A crossing that names a name no row declares is a dangling reference; a
+# crossing rule with one example has no case of the boundary going wrong.
+# See specs/changes/0053.
+BOUNDARY_NAME = re.compile(r"\|\s*`boundary:([a-z0-9][a-z0-9-]*)`")
+
+
+def boundary_names() -> set[str]:
+    path = ROOT / "specs" / "setup" / "README.md"
+    if not path.is_file():
+        return set()
+    return set(BOUNDARY_NAME.findall(path.read_text(encoding="utf-8")))
 
 # Soft limits: small per-component files are the point, and a hard cap on them
 # is not. Past these, add a file rather than grow one.
@@ -116,6 +132,7 @@ def parse_gherkin(path: Path) -> dict:
                 "name": name,
                 "planned": "planned" in flags,
                 "refusal": "refusal" in flags,
+                "crosses": ids.get("crosses", []),
                 "examples": 0,
                 "line": number,
             }
@@ -184,6 +201,7 @@ for path in journey_files:
     unique("journey", value, rel(path))
     journeys[value] = {"path": path}
 
+crossable = boundary_names()
 live_rules: dict[str, dict] = {}
 planned_rules: dict[str, dict] = {}
 for doc in features:
@@ -207,6 +225,11 @@ for doc in features:
         unique("rule", rule["id"], where)
         if not rule["examples"]:
             fail(where, f"@rule:{rule['id']} has no Example:; a rule with no example is an opinion")
+        for cross in rule["crosses"]:
+            if cross not in crossable:
+                fail(where, f"@rule:{rule['id']} @crosses:{cross}, a boundary the bindings declare no row for; add a boundary row, or name one that exists")
+        if rule["crosses"] and rule["examples"] < 2:
+            warn(where, f"@rule:{rule['id']} crosses {', '.join(rule['crosses'])} and has {rule['examples']} example(s); a crossing with no example of the boundary misbehaving has specced the demo")
         (planned_rules if rule["planned"] else live_rules)[rule["id"]] = {"doc": doc, "rule": rule}
 
 workflow_index: dict[str, dict] = {}

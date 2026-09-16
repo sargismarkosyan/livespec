@@ -95,6 +95,15 @@ serves the job better is the most valuable thing this skill produces.
   decided not to be are listed in `specs/spec.md`. If it collides with one, say
   so plainly and stop for a decision — a boundary is moved on purpose or not at
   all.
+- **Does the request cross a boundary the bindings name?** The store, the
+  network, the clock, a service — the `boundary:<name>` rows the boundaries
+  table carries. If a rule cannot be true without one of them, it is one of the
+  rules an agent handed the happy path will satisfy and call done — so the rule
+  that survives names the row with `@crosses:<id>` and carries an Example of
+  that boundary misbehaving, and §4's round asks what the person must still see
+  when it is down, slow or refusing. A request that needs nothing outside the
+  app's own code crosses nothing and is asked none of this. The build warns a
+  crossing rule written with only the happy path.
 
 ## 3. Work out the end value
 
@@ -153,6 +162,10 @@ The step must be small enough to be one screenshot's worth of change.
   the examples are where it is either kept or quietly dropped.
 - Changing existing behaviour? Edit the Rule in place and keep its id. A reworded
   Rule is the same Rule; a new id orphans every test pointing at it.
+- A rule that cannot be true without a boundary the bindings name carries
+  `@crosses:<id>` — the boundary's row id — and an Example of that boundary
+  misbehaving, not only of it working. The build fails a crossing to a boundary
+  no row declares and warns one written with a single example.
 
 **The change spec** at `specs/changes/NNNN-<slug>.md`, from
 [`templates/change.md`](../../templates/change.md), numbered one past the highest

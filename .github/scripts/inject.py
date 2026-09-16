@@ -199,6 +199,7 @@ def green_bindings(version: str) -> str:
             "| `gate:boundaries-table` | rule-bound tests present and no boundaries table | not applicable | no rule-bound doubles here |",
             "| `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | automated | `python3 gate.py` |",
             "| `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | automated | `python3 gate.py` |",
+            "| `gate:crossing-names-a-boundary` | a rule crossing a boundary the bindings have no row for | automated | `python3 gate.py` |",
             "| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | automated | `python3 gate.py` |",
             "| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | automated | `python3 gate.py test` |",
             "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
@@ -657,6 +658,15 @@ FAULTS = [
     ("a context file that does not link to the bindings", TRACE,
      lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace("(specs/setup/README.md)", "(specs/README.md)")),
      "fails", "does not link to"),
+    # A rule names what it crosses. The green fixture carries no crossing; these
+    # two introduce one. `boundary:store` is a row the fixture's bindings carry,
+    # so the second warns rather than fails. See specs/changes/0053.
+    ("a rule crossing a boundary the bindings have no row for", TRACE,
+     lambda r: edit(r, "specs/features/core/core.feature", "@rule:one\n", "@rule:one @crosses:ghost\n"),
+     "fails", "no row for"),
+    ("a crossing rule with a single example", TRACE,
+     lambda r: edit(r, "specs/features/core/core.feature", "@rule:one\n", "@rule:one @crosses:store\n"),
+     "warns", "boundary misbehaving"),
     ("case graded only by what fired", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: tool_used\ntool: Skill\nmin: 1\n---\n"),
      "fails", "never by what came out"),
