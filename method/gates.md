@@ -407,7 +407,12 @@ id in.
 the same way every time; **judgment** — a person or a model, from the command
 the bindings name. *since* is the plugin release the check or gate arrived in,
 and a consuming repository whose stamp is earlier than a row's *since* has
-never been asked it. *severity* orders what an audit reports — *platform*
+never been asked it. **It is written by the release, never by a person**: a
+new row reads `next` until the merge that ships it, and the release step
+writes the version in the same commit as the manifest and the changelog
+entry. A retirement reads `next` the same way. The pull request that adds or
+retires a row says so in an `## Ids` section, and the gate holds what it says
+to the table's diff. *severity* orders what an audit reports — *platform*
 before *boundary* before *wiring* before *record*.
 
 ### The gates a ledger carries

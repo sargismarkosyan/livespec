@@ -86,7 +86,7 @@ jobs:
         run: |
           git config user.name  "livespec release"
           git config user.email "release@livespec.noreply"
-          git add .claude-plugin/plugin.json CHANGELOG.md
+          git add .claude-plugin/plugin.json CHANGELOG.md method/gates.md
           git commit -m "livespec ${VERSION}" -m "Released from #${NUMBER}. The version and the entry are that pull request's label and body; see .github/scripts/release.py."
           git push origin HEAD:main
 

@@ -190,14 +190,22 @@ and it is the things a machine cannot work out:
    and its Examples, or a link to the `.feature` pinned at a commit SHA rather
    than at the branch. Only when the change touches a `.feature`; a layer README
    is prose about the specs and does not count.
+4. **An `## Ids` section, if you moved the audit surface** — `skills/doctor/`,
+   `tools/doctor.py`, `templates/bindings.md` or `method/gates.md`. It says
+   `unchanged`, or lists the ids added and retired, and the gate holds it to
+   the id table's actual diff. A new row in that table reads `since: next`; a
+   retirement reads `retired: next → superseded-by …`. The release writes the
+   version into both, in the same commit as `plugin.json` and `CHANGELOG.md`
+   — the id list is the third file the release owns, and nobody types a
+   version in any of the three.
 
 The first two are owed by a change that **ships** — `skills/`, `method/`,
 `templates/`, `tools/`, `.claude-plugin/`. The third is owed by a change that
 **moves a promise**, which is a different question with a different answer: most
 spec changes ship nothing, and most shipping changes move no promise.
 `version_gate.py` asks them separately and fails on either. **Do not edit
-`version` or `CHANGELOG.md` in a feature branch** — the release job writes both,
-and a hand-written bump collides with it. Never set `version` in the marketplace
+`version`, `CHANGELOG.md` or a `since` in `gates.md` in a feature branch** — the
+release job writes all three, and a hand-written version collides with it. Never set `version` in the marketplace
 entry either; `plugin.json` silently wins, so the second one can only go stale,
 and CI fails on it.
 

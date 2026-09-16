@@ -240,3 +240,199 @@ def prepend_entry(changelog: str, version: str, date: str, entry: str) -> str:
 
     block = [heading, "", entry, ""]
     return "\n".join([*[line.rstrip() for line in head], *block, *tail]).rstrip() + "\n"
+
+
+# --- the id table, and the one column the release writes ---------------------
+
+# method/gates.md carries the one list an audit is held to. Its `since` column
+# is a release number, and a release number is written by the release, never
+# by a person: a new row reads `next` until the merge that ships it, and
+# `stamp_ids` writes the version in the same step as the manifest and the
+# changelog. See specs/changes/0042.
+IDS_HEADING = "## The ids"
+NEXT = "next"
+AUDIT_SURFACE = ("skills/doctor/", "tools/doctor.py", "templates/bindings.md", "method/gates.md")
+ID_SHAPE = re.compile(r"^(gate|wiring|check):[a-z0-9]+(?:-[a-z0-9]+)*$")
+IDS_SECTION = re.compile(r"^##[ \t]+Ids[ \t]*$", re.IGNORECASE | re.MULTILINE)
+UNRETIRED = ("", "—", "-")
+
+
+def _ids_span(text: str) -> tuple[int, int] | None:
+    """Where the id section starts and ends in gates.md, or None."""
+    start = text.find(IDS_HEADING)
+    if start == -1:
+        return None
+    end = text.find("\n## ", start + len(IDS_HEADING))
+    return start, (len(text) if end == -1 else end)
+
+
+def id_rows(text: str) -> list[dict[str, str]] | None:
+    """Every row of the id tables, or None when the section itself is gone.
+
+    The one reader: checks.py holds the rows to the changelog, version_gate.py
+    diffs them across a pull request, and stamp_ids writes one column of them.
+    """
+    span = _ids_span(text)
+    if span is None:
+        return None
+    rows: list[dict[str, str]] = []
+    for line in text[span[0]:span[1]].splitlines():
+        if not line.startswith("|") or line.startswith("|--"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 7 or cells[0] == "id":
+            continue
+        rows.append({
+            "id": cells[0].strip("`"), "kind": cells[1], "since": cells[2],
+            "severity": cells[3], "retired": cells[4], "aliases": cells[5], "meaning": cells[6],
+        })
+    return rows
+
+
+def moves_audit_surface(paths: Iterable[str]) -> list[str]:
+    """The subset of `paths` on which a check to the audit could have moved."""
+    return [path for path in paths if path.startswith(AUDIT_SURFACE)]
+
+
+def extract_ids(body: str | None) -> dict:
+    """What the `## Ids` section of a pull request says the list did.
+
+    `unchanged` on its own, or lines reading `added: a, b` and `retired: c`
+    (`+ a` and `- c` are read the same way). The section is owed by a change
+    that moves the audit surface, and it is read against the table's actual
+    diff — a person saying *unchanged* next to a row that moved is what this
+    exists to catch.
+    """
+    text = (body or "").replace("\r\n", "\n")
+    match = IDS_SECTION.search(text)
+    if not match:
+        raise ReleaseInputError(
+            "this change moves the audit surface and the body carries no `## Ids` section. "
+            "Say `unchanged`, or list the ids added and retired — the list an audit is held "
+            "to moves only where somebody said so."
+        )
+    section = text[match.end():].split("\n## ", 1)[0]
+    added: list[str] = []
+    retired: list[str] = []
+    unchanged = False
+    for raw in section.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        lowered = line.lower()
+        ids = [token.strip("`,;") for token in re.findall(r"`?(?:gate|wiring|check):[a-z0-9-]+`?", line)]
+        ids = [token.strip("`") for token in ids]
+        if re.fullmatch(r"\*{0,2}unchanged\*{0,2}\.?", lowered):
+            unchanged = True
+        elif lowered.startswith(("added", "+")):
+            added += ids
+        elif lowered.startswith(("retired", "-", "\u2212")):
+            retired += ids
+        elif ids:
+            raise ReleaseInputError(
+                f"`## Ids` lists {', '.join(ids)} without saying whether they were added or retired"
+            )
+    if unchanged and (added or retired):
+        raise ReleaseInputError("`## Ids` says unchanged and lists ids; it is one or the other")
+    if not unchanged and not added and not retired:
+        raise ReleaseInputError(
+            "the `## Ids` section says nothing. `unchanged`, or `added:` and `retired:` lines naming ids."
+        )
+    return {"unchanged": unchanged, "added": added, "retired": retired}
+
+
+def ids_diff(base_text: str, head_text: str) -> dict[str, list[str]]:
+    """What moved in the id table between two versions of gates.md."""
+    base = {row["id"]: row for row in (id_rows(base_text) or [])}
+    head = {row["id"]: row for row in (id_rows(head_text) or [])}
+    added = [i for i in head if i not in base]
+    removed = [i for i in base if i not in head]
+    retired = [
+        i for i in head if i in base
+        and base[i]["retired"] in UNRETIRED and head[i]["retired"] not in UNRETIRED
+    ]
+    return {
+        "added": added, "removed": removed, "retired": retired,
+        "typed_since": [i for i in added if head[i]["since"] != NEXT],
+        "typed_retired": [i for i in retired if not head[i]["retired"].startswith(NEXT)],
+    }
+
+
+def check_ids_section(body: str | None, base_text: str, head_text: str) -> dict[str, list[str]]:
+    """Hold a pull request's `## Ids` section to the table's diff, or refuse."""
+    diff = ids_diff(base_text, head_text)
+    if diff["removed"]:
+        raise ReleaseInputError(
+            f"the id table lost {', '.join(diff['removed'])}. An id is never deleted — "
+            "retire it in place, with `retired: next` and what replaced it."
+        )
+    for i in diff["typed_since"]:
+        head = {row["id"]: row for row in id_rows(head_text) or []}
+        raise ReleaseInputError(
+            f"new row {i} carries since {head[i]['since']!r}. A new row reads next — "
+            "the release writes the version, in the same commit as the changelog entry."
+        )
+    for i in diff["typed_retired"]:
+        raise ReleaseInputError(
+            f"row {i} is retired with a typed version. A retirement reads next — the release writes it."
+        )
+    said = extract_ids(body)
+    moved = diff["added"] + diff["retired"]
+    if said["unchanged"]:
+        if moved:
+            raise ReleaseInputError(
+                "`## Ids` says unchanged, but the table moved: "
+                + ", ".join([f"+{i}" for i in diff["added"]] + [f"retired {i}" for i in diff["retired"]])
+            )
+        return diff
+    head_ids = {row["id"] for row in id_rows(head_text) or []}
+    for i in said["added"] + said["retired"]:
+        if i not in head_ids:
+            raise ReleaseInputError(f"`## Ids` names {i}, which the table does not have")
+    for i in diff["added"]:
+        if i not in said["added"]:
+            raise ReleaseInputError(f"row {i} was added and `## Ids` does not name it under added:")
+    for i in diff["retired"]:
+        if i not in said["retired"]:
+            raise ReleaseInputError(f"row {i} was retired and `## Ids` does not name it under retired:")
+    for i in said["added"]:
+        if i not in diff["added"]:
+            raise ReleaseInputError(f"`## Ids` says {i} was added, and the table's diff does not show it")
+    for i in said["retired"]:
+        if i not in diff["retired"]:
+            raise ReleaseInputError(f"`## Ids` says {i} was retired, and the table's diff does not show it")
+    return diff
+
+
+def stamp_ids(text: str, version: str) -> str:
+    """Every `next` in the since and retired columns becomes the version.
+
+    Pure, and byte-identical everywhere else: only a row that reads `next` is
+    rewritten, and within it only the cell that read it. A version that is not
+    major.minor.patch would leave the row reading next, so it is refused before
+    anything is written.
+    """
+    if not VERSION.match(version):
+        raise ReleaseInputError(
+            f"cannot stamp the id table with {version!r}; a row would still read next after the release"
+        )
+    span = _ids_span(text)
+    if span is None:
+        return text
+    head, section, tail = text[:span[0]], text[span[0]:span[1]], text[span[1]:]
+    out: list[str] = []
+    for line in section.split("\n"):
+        if line.startswith("|") and not line.startswith("|--"):
+            segments = line.split("|")
+            if len(segments) >= 9 and segments[1].strip() != "id":
+                if segments[3].strip() == NEXT:
+                    segments[3] = f" {version} "
+                if segments[5].strip().startswith(NEXT):
+                    segments[5] = " " + segments[5].strip().replace(NEXT, version, 1) + " "
+                line = "|".join(segments)
+        out.append(line)
+    stamped = head + "\n".join(out) + tail
+    for row in id_rows(stamped) or []:
+        if row["since"] == NEXT or row["retired"].startswith(NEXT):
+            raise ReleaseInputError(f"{row['id']} would still read next after the release")
+    return stamped
