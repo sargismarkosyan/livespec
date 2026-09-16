@@ -66,6 +66,15 @@ class TheCeiling(Fixture):
         self.assertEqual(code, 0, out)
 
     @rule("a-context-file-past-its-ceiling-fails-the-build")
+    def test_a_ceiling_above_the_readers_limit_fails_naming_both(self):
+        set_ceiling(self.root, 250)
+        code, out = trace(self.root)
+        self.assertEqual(code, 1, out)
+        self.assertIn("250", out)
+        self.assertIn("200", out)
+        self.assertNotIn("against a ceiling of", out, "the ceiling is refused before the file's size is read")
+
+    @rule("a-context-file-past-its-ceiling-fails-the-build")
     def test_a_number_nobody_wrote_is_not_a_pass(self):
         bindings = self.root / "specs" / "setup" / "README.md"
         bindings.write_text(bindings.read_text().replace(inject.ROW_CEILING + "\n", ""))

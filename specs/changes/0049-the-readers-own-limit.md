@@ -1,6 +1,6 @@
 # Spec 0049: the reader's own limit
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** none — a direct request on 2026-09-16, before the last of the
   three CLAUDE.md issues: *"make a note in that one that CLAUDE.md file can't
   be very long, make a research of what is the optimal length of claude MD

@@ -393,6 +393,7 @@ notice was the next session behaving strangely.
 |---|---|
 | a context file larger than the ceiling the bindings name | Something in it is a pointer that turned into a copy. Move the copy to the bindings and link it — or raise the number in the same change, with the reason beside it, so the growth is a line in a diff. |
 | a context file with no ceiling row | A number nobody wrote is not a pass. The sitting writes the row from the file's size once it has finished with the file. |
+| a ceiling above the limit the method names | The number is the repository's only up to the reader's own limit — [`claude-md.md`](claude-md.md#length), *Length* — and a row above it fails before the file's size is read. |
 | no context file at the root | The file every session reads first is missing. |
 | no numbered list, or one longer than eight steps | The loop is missing, or has grown past what an agent follows at the moment it matters. The loop is the longest numbered run outside fenced blocks. |
 | no fenced block | The commands are missing. |
@@ -477,7 +478,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:boundary-fake-suite` | gate | 1.2.0 | boundary | — | | a fake row naming no suite against the real thing fails |
 | `gate:boundary-recorded-age` | gate | 1.2.0 | boundary | — | | a recorded row past the age the bindings set fails |
 | `gate:boundaries-table` | gate | 1.2.0 | boundary | — | | rule-bound tests present and no boundaries table fails |
-| `gate:context-file-ceiling` | gate | 1.9.0 | wiring | — | | the context file larger than the ceiling the bindings name, or a context file with no ceiling row, fails |
+| `gate:context-file-ceiling` | gate | 1.9.0 | wiring | — | | the context file larger than the ceiling the bindings name, a context file with no ceiling row, or a ceiling above the limit the method names, fails |
 | `gate:context-file-shape` | gate | 1.9.0 | wiring | — | | the context file missing, or without its loop, its commands, or its pointer to the bindings, fails |
 | `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire |
 
@@ -569,6 +570,7 @@ each one in turn and read the message it produces:
 | rule-bound tests present and no boundaries table | fails |
 | a context file past its ceiling | fails |
 | a context file with no ceiling row | fails |
+| a ceiling above the reader's limit | fails |
 | no context file at the root | fails |
 | a context file with no numbered list | fails |
 | a loop of nine steps | fails |

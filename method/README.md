@@ -16,10 +16,13 @@ Alongside them: [the eight skills](../skills/) that run the loop,
 and a feature, and [`setup`](../skills/setup/SKILL.md) — the skill that installs all
 of it into a repository.
 
-**Nothing here names a command, a threshold, a filename or a language.** Those
-are bindings, and every repository writes its own down in
-`specs/setup/README.md`. The test for which is: could this sentence survive a
-repository with pytest and a Makefile?
+**Nothing here names a command, a filename or a language, and no threshold that
+is a repository's own.** Those are bindings, and every repository writes its
+own down in `specs/setup/README.md`. The test for which is: could this sentence
+survive a repository with pytest and a Makefile? The one number the method
+carries — how long a CLAUDE.md may be, in [claude-md.md](claude-md.md#length)
+— passes it, because it is about the reader, and a reader is what every
+repository shares.
 
 ## Adding the marketplace and the plugin
 

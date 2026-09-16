@@ -28,7 +28,7 @@ headers and the stamp line below, so keep those as they are.
 | **Deliverable of a version** | <the picture and its form, or *nothing to see* and what stands in its place> |
 | **What a change here must show** | <which changes owe a picture, in what form, and where it goes> |
 | **A sketch is owed** | <which changes owe one before approval — a repository with no app still has change specs> |
-| **CLAUDE.md ceiling** | <the size the file may not exceed, in a unit the gate reads — written from what the file is when the sitting has finished with it, with the command that reads it and the change that set it; raised only in the change that needs the room> |
+| **CLAUDE.md ceiling** | <the size the file may not exceed, in a unit the gate reads — written from what the file is when the sitting has finished with it, with the command that reads it and the change that set it; raised only in the change that needs the room, and never above the limit the method names> |
 | **What proves a rule** | <an ordinary test suite, or graded cases — and why> |
 | **How a test claims its rule** | <the helper and its import> |
 | **Rule discovery** | <where rules live and what one looks like> |
