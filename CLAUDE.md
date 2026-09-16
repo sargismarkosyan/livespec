@@ -47,8 +47,11 @@ Getting this wrong is how two copies of a method start disagreeing.
    `verify.py` green, commit.
 6. Open the pull request, carrying what the pipeline cannot work out: one
    `patch`/`minor`/`major` label, a `## Changelog` section in the body that
-   becomes the entry verbatim, and — if a `.feature` moved — the Gherkin it
-   moved, quoted or pinned. **Do not touch `version` or `CHANGELOG.md`.**
+   becomes the entry verbatim, — if a `.feature` moved — the Gherkin it
+   moved, quoted or pinned, and — if the audit surface moved — an `## Ids`
+   section saying what the id list did: `unchanged`, or the ids added and
+   retired. **Do not touch `version`, `CHANGELOG.md`, or a `since` in
+   `gates.md`** — a new id row reads `next`, and the release writes the rest.
 7. Both required checks must pass; `main` is protected. Merging releases:
    `release.yml` writes the bump, the entry, the tag and the GitHub Release.
 8. Close the issue with what was asked, what shipped, and why they differ.

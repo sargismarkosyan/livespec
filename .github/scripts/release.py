@@ -30,6 +30,7 @@ from releaselib import (  # noqa: E402
     extract_entry,
     next_version,
     prepend_entry,
+    stamp_ids,
     select_increment,
     ships,
 )
@@ -37,6 +38,7 @@ from releaselib import (  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / ".claude-plugin" / "plugin.json"
 CHANGELOG = ROOT / "CHANGELOG.md"
+GATES = ROOT / "method" / "gates.md"
 
 
 def git(*args: str) -> str:
@@ -121,6 +123,19 @@ def main() -> int:
 
     MANIFEST.write_text(bump_manifest(MANIFEST.read_text(), version))
     CHANGELOG.write_text(prepend_entry(CHANGELOG.read_text(), version, date, entry))
+    # The third file the release writes: every id row that arrived or retired
+    # in this release reads `next` until now. Nobody types a version there, for
+    # the same reason nobody types one in the two files above. See 0042.
+    if GATES.exists():
+        before = GATES.read_text()
+        try:
+            after = stamp_ids(before, version)
+        except ReleaseInputError as error:
+            print(f"\n✘ the id table cannot be stamped for {version}:\n\n  ✘ {error}\n", file=sys.stderr)
+            return 1
+        GATES.write_text(after)
+        stamped = sum(1 for a, b in zip(before.splitlines(), after.splitlines()) if a != b)
+        print(f"• id table: {stamped} row(s) stamped {version}")
 
     print(f"✔ release {current} → {version} ({increment}) for {len(shipping)} shipping file(s)")
     for path in shipping[:10]:

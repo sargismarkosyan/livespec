@@ -107,6 +107,7 @@ FIXTURE: dict[str, str] = {
         "|---|---|---|---|---|---|---|\n"
         "| `gate:rule-to-test` | gate | 0.0.0 | wiring | — | rule → test | a live rule no test claims fails |\n"
         "| `check:stamp-present` | mechanical | 0.0.0 | record | — | | the stamp line is present |\n"
+        "| `check:not-released` | mechanical | next | record | — | | arrived in a change not yet released |\n"
     ),
 }
 
@@ -246,12 +247,32 @@ from releaselib import (  # noqa: E402
     next_version,
     prepend_entry,
     select_increment,
+    stamp_ids,
+    check_ids_section,
+    moves_audit_surface,
+    NEXT,
 )
+
+# The id table, in the three shapes the release contract is held against: as
+# the base has it, with a row that arrived (reading next, as a new row must),
+# and with the same row typed as a version somebody guessed. See 0042.
+TABLE_BASE = (
+    "# The gates\n\n## The ids\n\n"
+    "| id | kind | since | severity | retired | aliases | meaning |\n"
+    "|---|---|---|---|---|---|---|\n"
+    "| `gate:rule-to-test` | gate | 0.0.0 | wiring | — | rule → test | a live rule no test claims fails |\n"
+)
+TABLE_ADDED = TABLE_BASE + "| `check:new-thing` | mechanical | next | record | — | | arrived with this change |\n"
+TABLE_TYPED = TABLE_BASE + "| `check:new-thing` | mechanical | 0.0.0 | record | — | | arrived with this change |\n"
 
 GOOD_BODY = (
     "Intro.\n\n## Changelog\n\nBody of the entry.\n\n## Notes\n\nnot part of it\n\n"
     "```gherkin\n  Rule: it holds\n```\n"
 )
+
+BODY_IDS_ADDED = GOOD_BODY + "\n## Ids\n\nadded: check:new-thing\n"
+BODY_IDS_UNCHANGED = GOOD_BODY + "\n## Ids\n\nunchanged\n"
+BODY_IDS_GHOST = GOOD_BODY + "\n## Ids\n\nadded: check:ghost\n"
 
 # (name, what to try, a phrase the refusal must contain)
 RELEASE_FAULTS = [
@@ -274,6 +295,18 @@ RELEASE_FAULTS = [
      lambda: extract_gherkin("Intro.\n\n## Changelog\n\nBody."), "carries no Gherkin"),
     ("a gherkin block with nothing in it",
      lambda: extract_gherkin("Intro.\n\n```gherkin\n\n```\n"), "gherkin block is empty"),
+    # The list an audit is held to moves only where somebody said so, and the
+    # version it moved in is written by the release, never typed. See 0042.
+    ("a new id row with a typed version",
+     lambda: check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_TYPED), "reads next"),
+    ("the audit surface moved with no ## Ids section",
+     lambda: check_ids_section(GOOD_BODY, TABLE_BASE, TABLE_ADDED), "no `## Ids` section"),
+    ("## Ids reading unchanged while a row was added",
+     lambda: check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_ADDED), "says unchanged"),
+    ("## Ids naming an id the table does not have",
+     lambda: check_ids_section(BODY_IDS_GHOST, TABLE_BASE, TABLE_BASE), "does not have"),
+    ("a row still reading next after the release",
+     lambda: stamp_ids(TABLE_ADDED, NEXT), "still read next"),
 ]
 
 
@@ -329,6 +362,17 @@ def verdict_control() -> None:
 
 def release_control() -> None:
     """The unbroken inputs, which must produce a release rather than a refusal."""
+    stamped = stamp_ids(TABLE_ADDED, "0.9.0")
+    assert "| `check:new-thing` | mechanical | 0.9.0 |" in stamped, "the new row was not stamped"
+    assert NEXT not in stamped, "stamping left a row reading next"
+    untouched = lambda text: [line for line in text.splitlines() if "check:new-thing" not in line]  # noqa: E731
+    assert untouched(stamped) == untouched(TABLE_ADDED), "stamping touched a line it does not own"
+    assert stamp_ids(TABLE_BASE, "0.9.0") == TABLE_BASE, "a table with nothing to stamp was changed"
+    assert check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"]
+    assert check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_BASE)["added"] == []
+    assert moves_audit_surface(["skills/doctor/SKILL.md", "README.md", "method/gates.md"]) == [
+        "skills/doctor/SKILL.md", "method/gates.md",
+    ], "the audit surface is not read from the paths"
     assert select_increment(["bug", "minor"]) == "minor", "the one release label is not read"
     assert extract_entry(GOOD_BODY) == "Body of the entry.", "the entry is not taken verbatim"
     assert next_version("0.8.0", "minor") == "0.9.0", "the increment does not apply"
