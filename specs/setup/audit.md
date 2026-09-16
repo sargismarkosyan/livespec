@@ -1,17 +1,17 @@
 # Audit record
 
-**Audited 2026-09-16 · livespec 1.7.0 · stamp 1.7.0 · HEAD 7ef477b · audit 5**
+**Audited 2026-09-16 · livespec 1.7.1 · stamp 1.7.1 · HEAD 0a50824 · audit 6**
 
 40 checks · 0 open · written by the audit, replaced on every run
 
 | id | state | since | evidence |
 |---|---|---|---|
 | `check:ledger-shape` | clear | 2026-09-16 | three tables with the template's headers; stamp line present |
-| `check:stamp-present` | clear | 2026-09-16 | Reconciled against livespec 1.7.0 on 2026-09-16 |
-| `check:stamp-range` | clear | 2026-09-16 | stamp 1.7.0 is the plugin installed — nothing between |
-| `check:stamp-ahead` | clear | 2026-09-16 | stamp 1.7.0 is not ahead of 1.7.0 |
-| `check:range-empty-said` | clear | 2026-09-16 | nothing between 1.7.0 and the plugin installed to reconcile |
-| `check:changelog-reachable` | clear | 2026-09-16 | 41 entries, newest 1.7.0, at /home/sargis/Projects/livespec/CHANGELOG.md |
+| `check:stamp-present` | clear | 2026-09-16 | Reconciled against livespec 1.7.1 on 2026-09-16 |
+| `check:stamp-range` | clear | 2026-09-16 | stamp 1.7.1 is the plugin installed — nothing between |
+| `check:stamp-ahead` | clear | 2026-09-16 | stamp 1.7.1 is not ahead of 1.7.1 |
+| `check:range-empty-said` | clear | 2026-09-16 | nothing between 1.7.1 and the plugin installed to reconcile |
+| `check:changelog-reachable` | clear | 2026-09-16 | 42 entries, newest 1.7.1, at /home/sargis/Projects/livespec/CHANGELOG.md |
 | `check:entry-moved-here` | n/a | 2026-09-16 | no entries between the stamp and the plugin installed |
 | `check:row-state-legal` | clear | 2026-09-16 | 21 gate rows, 2 wiring rows, 4 boundary rows, every state legal |
 | `check:row-evidence` | clear | 2026-09-16 | every row carries the evidence its state owes |
@@ -43,6 +43,6 @@
 | `check:deferred-clock` | clear | 2026-09-16 | no row reads deferred |
 | `check:hook-no-row` | clear | 2026-09-16 | no row in any table is a hook |
 | `check:sorted-by-severity` | clear | 2026-09-16 | the reply lists what is open platform › boundary › wiring › record |
-| `check:record-only` | clear | 2026-09-16 | the working tree is clean |
+| `check:record-only` | clear | 2026-09-16 | nothing outside the record is changed in the working tree |
 | `check:last-line-command` | n/a | 2026-09-16 | nothing is left for the sitting |
 | `check:no-line-when-clear` | clear | 2026-09-16 | no line sends anybody to a sitting |
