@@ -61,11 +61,18 @@ belongs there, so a new file lands in the right place without an argument.
 
 - **Anything the plugin already says.** A rule stated in two places is a rule
   that will be edited in one.
-- **Explanations of decisions.** Those are `specs/setup/constraints.md`, which is
-  where somebody will look for the reasoning and where it can be argued with.
+- **The reasoning behind a decision.** That is `specs/setup/constraints.md`,
+  where somebody will look for it and where it can be argued with. The rule it
+  produced stays here, with the one line that says why the rule is not
+  aspirational.
 - **Style guides, formatting rules, commit-message templates** the tooling
   already enforces. If a linter can say it, the linter says it.
-- **A history of the project.** `git log` and the change specs are the history.
+- **History that binds nothing.** The test is whether it still changes what the
+  next change may do. A dated account of what this file used to claim, until
+  when, and which change argued wrongly from it, is a rule with its evidence
+  attached, and stays — it is what stops an agent discounting that rule as
+  decorative. An account of something no change is constrained by is history,
+  and `git log` and the change specs are where it goes.
 - **Anything aspirational.** A rule nobody follows teaches an agent that the file
   is decorative, and it will then discount the rules that are real.
 
@@ -93,9 +100,21 @@ reason belongs in `specs/setup/` either way, because the next person will wonder
 
 ## Length
 
-**One screen of scroll, and about a hundred lines.** If it is longer, something
-in it is a pointer that turned into a copy — move it to `specs/setup/` and link
-it.
+**The file has a ceiling, and the number is the repository's.** Its bindings
+name it — in a size its gate can read, with what reads it and which change set
+it. The figure is written from what the file is when the sitting has finished
+with it, and it is raised only in the change that needs the room, with the
+reason beside the number, so that growth is a line in a diff rather than a
+drift nobody sees. The method names no figure: a threshold here is a binding in
+the wrong file, and requirement 4's line between the plugin and the repository
+holds for this page too.
+
+Why a ceiling at all: this file is in front of every request, so it is the
+repository's always-on cost. Past it, something in it is a pointer that turned
+into a copy — move it to `specs/setup/` and link it. The requirements above
+already bound the file — two or three sentences here, eight steps at most,
+four or five lines in one block, a line per directory — so a file that meets
+them is short, and the number is what stops it growing afterwards.
 
 The test to apply before committing it: *if an agent read only this file and the
 bindings, could it make a correct first change?* If yes, stop writing. If no, the
@@ -108,7 +127,7 @@ corrected in the same change that makes it wrong — a moved directory, a rename
 command, a rule that changed. That is a fix, not a change spec: it belongs to
 whatever change made it stale.
 
-**The reference implementation is
-[todo-change's](https://github.com/sargismarkosyan/todo-change/blob/main/CLAUDE.md)**
-— every requirement above, in about a hundred lines. Read it as an example of the
-shape, not as a file to fill in.
+**There is no reference file, on purpose.** The requirements above are the
+contract; a named example is a template with extra steps for anyone in a hurry,
+and a file copied from another repository is the first thing in this one that
+will drift.

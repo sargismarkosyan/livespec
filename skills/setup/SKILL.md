@@ -492,6 +492,14 @@ in section 1). **Do not hand back with #10 unwritten.** Every other requirement
 falls out of work this skill does anyway; that one is only there if you put it
 there.
 
+**Then write the ceiling row in the bindings, from what the file is now.**
+[`claude-md.md`](../../method/claude-md.md#length) puts the number in the
+repository rather than in the method: once the file is written, or the audit's
+edits are made, measure it and write **CLAUDE.md ceiling** with the size, the
+command that reads it and this change — never before the file is finished, and
+never from a figure the method does not have. Raising it later is a line in the
+change that needs the room, with the reason beside it.
+
 ## 7. An existing codebase does not get retroactive specs
 
 The temptation is to spec what is already built. Do not.
