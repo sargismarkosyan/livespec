@@ -1,7 +1,7 @@
 @feature:setup-context-file @workflow:adopt-the-process
 Feature: What CLAUDE.md is held to, and what it is not held to
 
-  @rule:the-ceiling-is-a-number-in-the-bindings @planned
+  @rule:the-ceiling-is-a-number-in-the-bindings
   Rule: The size CLAUDE.md may not exceed is a number in the repository's own bindings, written from what the file is when the sitting has finished with it, and the method names no figure of its own
 
     Example: the sitting writes the number after the file
@@ -15,7 +15,7 @@ Feature: What CLAUDE.md is held to, and what it is not held to
       When the sitting has read it against the requirements and made its edits
       Then the ceiling written is the size the file is after those edits
 
-  @rule:a-dated-account-that-still-binds-is-not-history @planned
+  @rule:a-dated-account-that-still-binds-is-not-history
   Rule: A dated account of what the file used to say stays while it still changes what the next change may do, and is history only once it binds nothing
 
     Example: the paragraph that stops the next wrong argument
@@ -30,7 +30,7 @@ Feature: What CLAUDE.md is held to, and what it is not held to
       Then it is reported as history
       And the change specs and the version history are named as where it goes
 
-  @rule:the-requirements-are-the-only-reference @planned
+  @rule:the-requirements-are-the-only-reference
   Rule: A CLAUDE.md is held to the requirements and to no other repository's file
 
     Example: a file shaped like nobody else's

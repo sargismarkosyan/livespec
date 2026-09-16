@@ -1,0 +1,14 @@
+# The workspace: sluicegate, an occupied Python service with a hand-written
+# CLAUDE.md shaped like nobody else's. Two paragraphs in it are the test. One,
+# under *Where it runs*, is a dated account that still binds — the file said
+# "not deployed" until a date, a change argued from that sentence that an
+# endpoint needed no authentication, a person caught it — and it is the rule
+# that stops the next change making the same argument. The other, under *How
+# it got here*, is a migration finished long ago that constrains nothing now.
+#
+# What is graded is the reading, not the install: the first paragraph reported
+# as a rule with its evidence and kept, the second named as history, the
+# ceiling row in the bindings written from the file's size after the sitting's
+# edits — a command grader measures both and compares — and no other
+# repository's CLAUDE.md offered as the shape this one should take.
+scaffold_script: scaffold.sh

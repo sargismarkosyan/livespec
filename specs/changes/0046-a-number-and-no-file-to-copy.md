@@ -1,6 +1,6 @@
 # Spec 0046: a number, and no file to copy
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#100](https://github.com/sargismarkosyan/livespec/issues/100) —
   one of three split from a single report on 2026-09-15, with
   [#98](https://github.com/sargismarkosyan/livespec/issues/98) (a gate for
