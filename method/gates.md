@@ -503,7 +503,7 @@ before *boundary* before *wiring* before *record*.
 |---|---|---|---|---|---|---|
 | `wiring:pr-report` | wiring | 0.21.0 | wiring | — | the pull-request report | the report on every pull request, unobserved until one was watched arriving |
 | `wiring:rule-bound-measure` | wiring | 0.21.0 | wiring | — | the rule-bound measure | the rule-bound measure reported beside the gated number |
-| `wiring:run-beside-claim` | wiring | next | wiring | — | the run beside the claim | the report re-running the verification command and printing what it saw beside what the body says — unobserved until the two were watched disagreeing |
+| `wiring:run-beside-claim` | wiring | 1.13.0 | wiring | — | the run beside the claim | the report re-running the verification command and printing what it saw beside what the body says — unobserved until the two were watched disagreeing |
 
 Two prefixes a repository fills itself and this table never lists:
 `boundary:<name>`, one per thing the app talks to, named in the sitting and
@@ -543,7 +543,7 @@ does not name — held to the same states, required by nothing.
 | `check:second-table` | mechanical | 0.21.0 | wiring | — | | the table for wiring that must never gate exists |
 | `check:pr-report-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the pull-request report |
 | `check:rule-bound-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the rule-bound measure |
-| `check:run-row` | mechanical | next | wiring | — | | it holds the row for the run beside the claim |
+| `check:run-row` | mechanical | 1.13.0 | wiring | — | | it holds the row for the run beside the claim |
 | `check:sketch-row` | mechanical | 0.27.0 | record | — | | the bindings say which changes owe a sketch |
 | `check:picture-row` | mechanical | 0.29.0 | record | — | | the bindings say what a change here must show, and it is not the sketch row |
 | `check:skill-names` | mechanical | 1.0.0 | record | — | | every skill the record instructs by exists in this plugin |
