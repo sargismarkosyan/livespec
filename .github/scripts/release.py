@@ -31,6 +31,7 @@ from releaselib import (  # noqa: E402
     next_version,
     prepend_entry,
     stamp_ids,
+    stamp_ledger,
     select_increment,
     ships,
 )
@@ -39,6 +40,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / ".claude-plugin" / "plugin.json"
 CHANGELOG = ROOT / "CHANGELOG.md"
 GATES = ROOT / "method" / "gates.md"
+BINDINGS = ROOT / "specs" / "setup" / "README.md"
 
 
 def git(*args: str) -> str:
@@ -136,6 +138,16 @@ def main() -> int:
         GATES.write_text(after)
         stamped = sum(1 for a, b in zip(before.splitlines(), after.splitlines()) if a != b)
         print(f"• id table: {stamped} row(s) stamped {version}")
+    # The fourth file, and the plugin's own only: its ledger is level with every
+    # release by construction, and the stamp line is the one thing that lagged.
+    # See specs/changes/0044.
+    if BINDINGS.exists():
+        try:
+            BINDINGS.write_text(stamp_ledger(BINDINGS.read_text(), version, date))
+        except ReleaseInputError as error:
+            print(f"\n✘ the ledger cannot be stamped for {version}:\n\n  ✘ {error}\n", file=sys.stderr)
+            return 1
+        print(f"• ledger: stamped {version} on {date}")
 
     print(f"✔ release {current} → {version} ({increment}) for {len(shipping)} shipping file(s)")
     for path in shipping[:10]:

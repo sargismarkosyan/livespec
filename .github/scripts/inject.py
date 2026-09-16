@@ -360,6 +360,7 @@ from releaselib import (  # noqa: E402
     prepend_entry,
     select_increment,
     stamp_ids,
+    stamp_ledger,
     check_ids_section,
     moves_audit_surface,
     NEXT,
@@ -421,6 +422,8 @@ RELEASE_FAULTS = [
      lambda: check_ids_section(BODY_IDS_GHOST, TABLE_BASE, TABLE_BASE), "does not have"),
     ("a row still reading next after the release",
      lambda: stamp_ids(TABLE_ADDED, NEXT), "still read next"),
+    ("a ledger whose stamp the release cannot find",
+     lambda: stamp_ledger("# Bindings\n\nno stamp here\n", "0.9.0", "2026-01-02"), "no stamp line"),
     ("a bullet list that retires what the table added",
      lambda: check_ids_section(BODY_IDS_BULLET_RETIRES, TABLE_BASE, TABLE_ADDED), "was added and `## Ids` does not name it"),
 ]
@@ -487,6 +490,10 @@ def release_control() -> None:
     assert check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"]
     assert check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_BASE)["added"] == []
     assert check_ids_section(BODY_IDS_BULLETS, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"], "a bullet list is refused"
+    ledger = "# Bindings\n\nReconciled against livespec **0.8.0** (`method/`) on **2026-01-01** — the sitting.\n\n| a | b |\n"
+    stamped = stamp_ledger(ledger, "0.9.0", "2026-01-02")
+    assert "livespec **0.9.0** (`method/`) on **2026-01-02** — the sitting." in stamped, "the stamp was not moved in place"
+    assert stamped.replace("0.9.0", "0.8.0").replace("2026-01-02", "2026-01-01") == ledger, "stamping the ledger touched something else"
     assert moves_audit_surface(["skills/doctor/SKILL.md", "README.md", "method/gates.md"]) == [
         "skills/doctor/SKILL.md", "method/gates.md",
     ], "the audit surface is not read from the paths"

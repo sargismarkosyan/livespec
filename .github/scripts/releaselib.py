@@ -441,3 +441,36 @@ def stamp_ids(text: str, version: str) -> str:
         if row["since"] == NEXT or row["retired"].startswith(NEXT):
             raise ReleaseInputError(f"{row['id']} would still read next after the release")
     return stamped
+
+
+# --- the plugin's own ledger, stamped by its release -------------------------
+
+# In the plugin's own repository the wiring is the plugin's, so the ledger is
+# level with every release by construction; only the stamp line lags, because
+# the release commit bumps the version after the audit ran. So the release
+# writes it, the way it writes the version, the entry and the id table — one
+# more file, same step. Runs nowhere else: release.py runs here. See 0044.
+LEDGER_STAMP = re.compile(
+    r"Reconciled against livespec\W{0,4}(\d+\.\d+\.\d+)\**[^\n]{0,60}?\bon\W{0,4}(\d{4}-\d{2}-\d{2})"
+)
+
+
+def stamp_ledger(text: str, version: str, date: str) -> str:
+    """The ledger's stamp line reads the version and date given; nothing else moves.
+
+    Only the two values are replaced, in place, so bold, a parenthetical or any
+    other typing around them survives byte for byte. A text with no stamp line
+    is refused: a ledger without one is not a ledger the release should touch.
+    """
+    if not VERSION.match(version):
+        raise ReleaseInputError(f"cannot stamp the ledger with {version!r}; not major.minor.patch")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
+        raise ReleaseInputError(f"cannot stamp the ledger with {date!r}; not a date")
+    match = LEDGER_STAMP.search(text)
+    if not match:
+        raise ReleaseInputError(
+            "the ledger has no stamp line — no `Reconciled against livespec <version> on <date>` — "
+            "so the release cannot say what its wiring is level with"
+        )
+    out = text[: match.start(1)] + version + text[match.end(1): match.start(2)] + date + text[match.end(2):]
+    return out
