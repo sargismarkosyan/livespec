@@ -37,7 +37,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks every gate in it one fault at a time, then breaks the release inputs, which need no fixture. *The fault injection record* below is generated from its three lists and checked against them by `checks.py`, so it cannot fall behind. Two of the three are pure and need no fixture: the release inputs, and `verify.py`'s `verdict()`. It also holds three **controls**: that the unbroken release inputs release, that `report.py` exits zero on every degenerate input, which is what `always-green` rests on, and that a run whose only failure is the board reads as a bill rather than a defect |
 | **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body. Since [`0042`](../changes/0042-the-release-writes-the-list.md) it also fails a change on the audit surface with no `## Ids` section, one that says *unchanged* while the id table moved, a new id row with a typed version, or an id deleted rather than retired |
 | **Spec-surface check** | the same gate, asked separately. Fails a change to a `.feature` under `specs/features/` or `specs/workflows/` whose body carries no ` ```gherkin ` block and no link to a `.feature` pinned at a 40-character SHA. A layer README is not a `.feature` and does not trigger it |
-| **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, stamps every `next` in `method/gates.md`'s id table with the version — the third file it owns, since [`0042`](../changes/0042-the-release-writes-the-list.md) — runs `verify.py --local`, commits all three, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
+| **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, stamps every `next` in `method/gates.md`'s id table with the version — the third file it owns, since [`0042`](../changes/0042-the-release-writes-the-list.md) — stamps this ledger's *Reconciled against* line with the version and the date — the fourth, since [`0044`](../changes/0044-the-release-stamps-its-own-ledger.md) — runs `verify.py --local`, commits all four, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
 | **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate, the release job and the changelog-shape check share, and pure, so `inject.py` can break it |
 | **Repository checks** | `.github/scripts/checks.py [root]` — manifests, skill frontmatter, always-on budget, link and payload checks, the two enumerations in this file that restate what another script owns, and — since [`0038`](../changes/0038-the-other-side-of-the-difference.md) — that `CHANGELOG.md` keeps the shape an audit in a consuming repository reads by: at the plugin root, every heading `## <version> — <date>`, the manifest's `version` with an entry. It takes a root so `inject.py` can break it |
 | **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. Since [`0025`](../changes/0025-which-red-it-is.md) each is guarded `!cancelled()` rather than left to stop with the job, so the report is built and posted **on a red build too** — the run where its *Stale* row is the thing worth reading, and the run it was previously skipped on. No coverage section: there is no coverage gate here, and *What has no gate* says why |
@@ -348,10 +348,12 @@ release** — 1.6.0, 1.7.0, 1.7.1 — because in this repository the wiring is
 the plugin's own: a release that moves the method moves the gates here in
 the same merge, so the ledger is level with the plugin by construction. What
 is not level is the *line*: the release commit bumps the version after the
-audit, so the moment a release lands the stamp reads one behind, and the next
-audit moves it by hand — three times so far, each time finding nothing else.
-That is a fact about this repository, not about the method, and the next
-change to the release step is where it ends. The record of each audit is
+audit, so the moment a release landed the stamp read one behind, and the next
+audit moved it by hand — three times in one day, each time finding nothing
+else. **Since [`0044`](../changes/0044-the-release-stamps-its-own-ledger.md)
+the release writes it**, in the same commit as the version, the entry and the
+id table; a fact about this repository, not about the method, because here
+the wiring is the plugin's own. The record of each audit is
 `specs/setup/audit.md`.
 
 ## The fault injection record
@@ -432,6 +434,7 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | ## Ids reading unchanged while a row was added | fails | ✔ |
 | ## Ids naming an id the table does not have | fails | ✔ |
 | a row still reading next after the release | fails | ✔ |
+| a ledger whose stamp the release cannot find | fails | ✔ |
 | a bullet list that retires what the table added | fails | ✔ |
 | a broken gate underneath a stale measurement | fails | ✔ |
 | a ledger in the shape it had before ids | fails | ✔ |
