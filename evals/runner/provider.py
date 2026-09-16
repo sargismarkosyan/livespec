@@ -156,5 +156,6 @@ def call_api(prompt, options, context):
             "transcript": str(session_dir / "transcript.jsonl"),
             "tools": str(session_dir / "tools.json"),
             "files": files,
+            "workspace": str(session_dir / "workspace"),
         },
     }

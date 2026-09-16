@@ -41,7 +41,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate, the release job and the changelog-shape check share, and pure, so `inject.py` can break it |
 | **Repository checks** | `.github/scripts/checks.py [root]` — manifests, skill frontmatter, always-on budget, link and payload checks, the two enumerations in this file that restate what another script owns, and — since [`0038`](../changes/0038-the-other-side-of-the-difference.md) — that `CHANGELOG.md` keeps the shape an audit in a consuming repository reads by: at the plugin root, every heading `## <version> — <date>`, the manifest's `version` with an entry. It takes a root so `inject.py` can break it |
 | **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. Since [`0025`](../changes/0025-which-red-it-is.md) each is guarded `!cancelled()` rather than left to stop with the job, so the report is built and posted **on a red build too** — the run where its *Stale* row is the thing worth reading, and the run it was previously skipped on. No coverage section: there is no coverage gate here, and *What has no gate* says why |
-| **Audit record** | `specs/setup/audit.md` — **not written yet.** The row is here so the shape [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) reads by is complete; the file arrives with that spec's third part, written by the audit and replaced on every run |
+| **Audit record** | `specs/setup/audit.md` — written by `tools/doctor.py --validate` on every audit, one line per check with the date it last changed state, replaced each run; git history is the archive. First written by the audit that closed [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part three |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. A `case.yaml` may name a `scaffold_script` — bash in the case directory, run by `run.py --scaffold` in the session's fresh workspace, both arms alike. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
 | **Always-on budget** | 5000 chars across model-invocable skills; currently 4321 across 8 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
@@ -78,6 +78,7 @@ runs: 3
 | `rule:<id>` on a `should-not-fire` case | only legitimate where the rule is tagged `@refusal` | `trace.py` — otherwise a warning, because a case asserting nothing fires cannot verify a rule that promises a behaviour |
 | `workflow:<id>` | this case walks that workflow end to end | `trace.py` — a workflow nothing walks fails |
 | `should-not-fire` | this case asserts nothing fires | `evalsuite.py` — the suite must always keep at least one |
+| a `command` grader | this case is scored by a script run in the session's workspace, exit 0 to pass — the deterministic grader, since [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part three | `evalsuite.py` — counts as an outcome grader; one with no `command:` fails |
 
 **A case is not required to claim a rule**, and the cases that predate this layer
 do not — see *The spec layer starts today* in [`../README.md`](../README.md). The direction that
@@ -445,6 +446,13 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a row deferred across two changes | fails | ✔ |
 | a local hook given a row | fails | ✔ |
 | a change outside the record in the working tree | fails | ✔ |
+| a record one line short | fails | ✔ |
+| a judgment nobody made | fails | ✔ |
+| a state of somebody's own | fails | ✔ |
+| an open line naming nothing that closes it | fails | ✔ |
+| a not-read line with no reason | fails | ✔ |
+| a judgment clear with no command beside it | fails | ✔ |
+| a fix that strayed into the wiring | fails | ✔ |
 
 **Three controls sit alongside the table and are not faults.** One checks the unbroken release inputs still release; one checks the report cannot fail a build — there is nothing to break there, because the whole promise is that nothing breaks, so what is asserted is that every degenerate input still exits zero. It was confirmed by making `report.py` able to fail and watching the control report it. The third, added by [`0025`](../changes/0025-which-red-it-is.md), asserts the two reds from the side no fault can reach: a green run says nothing, and a run whose only failure is the board exits 2, does not say *verification failed*, and names who can approve the run that clears it.
 

@@ -12,8 +12,13 @@ Three kinds, matching what the suite contains:
   through `claude -p --json-schema`, which returns `{pass, reason}` and nothing
   else. `focus: full_transcript` sends a digest of the whole session;
   `last_message` sends the final text.
-- `regex` — over the files the session wrote (`target: files`), the only
-  target in use. A scaffold's fixture is excluded before the list reaches here.
+- `regex` — over the paths of the files the session wrote (`target: files`), or
+  over their contents (`target: contents`). A scaffold's fixture is excluded
+  before the list reaches here.
+- `command` — runs `command:` in the session's workspace, with `LIVESPEC_ROOT`
+  set, and passes on exit 0. The deterministic grader: what it runs is a
+  script, so a case can be graded by the tool it is about rather than by a
+  judge. See specs/changes/0041.
 - `tool_used` — with `max:` set it is a scored should-not-fire assertion, which
   can only ever cost the plugin arm points. With `min:` alone it is the
   plugin-fired indicator from the ablation contract: reported, weight zero,
@@ -136,11 +141,35 @@ def get_assert(output, context):
     if kind == "regex":
         pattern = re.compile(_unquote(body), re.I if "i" in fields.get("flags", "") else 0)
         files = metadata.get("files") or []
-        hits = [f for f in files if pattern.search(f)]
+        if fields.get("target", "files") == "contents":
+            workspace = Path(metadata.get("workspace") or "")
+            hits = []
+            for name in files:
+                try:
+                    if pattern.search((workspace / name).read_text(errors="replace")):
+                        hits.append(name)
+                except OSError:
+                    continue
+        else:
+            hits = [f for f in files if pattern.search(f)]
         wanted = fields.get("match", "contains") != "not_contains"
         ok = bool(hits) if wanted else not hits
         return {"pass": ok, "score": 1.0 if ok else 0.0,
                 "reason": f"{len(hits)} of {len(files)} session-written file(s) match" + (f": {hits[:5]}" if hits else "")}
+
+    if kind == "command":
+        command = _unquote(fields.get("command", ""))
+        workspace = metadata.get("workspace")
+        if not command or not workspace:
+            return {"pass": False, "score": 0.0, "reason": "command grader with no command, or no workspace to run it in"}
+        env = dict(os.environ, LIVESPEC_ROOT=str(root))
+        try:
+            proc = subprocess.run(command, shell=True, cwd=workspace, env=env, capture_output=True, text=True, timeout=120)
+        except subprocess.TimeoutExpired:
+            return {"pass": False, "score": 0.0, "reason": f"`{command}` did not finish in 120s"}
+        tail = (proc.stdout + proc.stderr).strip().splitlines()[-3:]
+        return {"pass": proc.returncode == 0, "score": 1.0 if proc.returncode == 0 else 0.0,
+                "reason": f"`{command}` exited {proc.returncode}" + (": " + " / ".join(tail) if tail else "")}
 
     if kind == "tool_used":
         tools = json.loads(Path(metadata["tools"]).read_text()) if metadata.get("tools") else []

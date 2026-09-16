@@ -43,8 +43,8 @@ Getting this wrong is how two copies of a method start disagreeing.
 3. `refine-spec` writes the Gherkin rules and a numbered change spec.
 4. The human approves the spec, holding the sketch drawn from it, or asks for
    changes.
-5. Implement: drop `@planned`, write the eval case that claims the rule, get
-   `verify.py` green, commit.
+5. Implement: drop `@planned`, write the eval case — or, for the code under
+   `tools/`, the test — that claims the rule, get `verify.py` green, commit.
 6. Open the pull request, carrying what the pipeline cannot work out: one
    `patch`/`minor`/`major` label, a `## Changelog` section in the body that
    becomes the entry verbatim, — if a `.feature` moved — the Gherkin it
@@ -105,7 +105,7 @@ python3 .github/scripts/verify.py                 # everything that can pass her
 claude plugin validate . --strict                 # marketplace manifest
 claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
 claude plugin validate ./skills --strict
-python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold  # maintainer step
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold  # maintainer step
 ```
 
 The last one refuses unless the maintainer adds `--i-approve-the-cost`, per the

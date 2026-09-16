@@ -1,7 +1,7 @@
 @feature:audit-the-reply @workflow:adopt-the-process
 Feature: What an audit says, generated from the record rather than remembered
 
-  @rule:the-reply-is-generated-from-the-record @planned
+  @rule:the-reply-is-generated-from-the-record
   Rule: What is open is listed in the order of the severity each id carries, then what was not read, then the decisions, and the reply is what the record says rather than what the session recalls
 
     Example: the dangerous thing first
@@ -15,7 +15,7 @@ Feature: What an audit says, generated from the record rather than remembered
       Then it says what was read and what was decided
       And no line sends anybody to a sitting
 
-  @rule:a-decided-exception-is-reported-once-and-never-relitigated @planned
+  @rule:a-decided-exception-is-reported-once-and-never-relitigated
   Rule: A row marked as decided is listed among the decisions and never among the findings, the tree is not read against it, and a contradiction goes to a mind as evidence
 
     Example: a step this repository chose not to have

@@ -1,0 +1,15 @@
+# The workspace: tidelog, a small service whose ledger has a fault planted in
+# every section the audit reads — the stamp behind the plugin, a row in a state
+# of its own, a deferral past the two-change clock, a mocked boundary past it
+# too, a gap left as a sentence in the prose, a skill named by a name this
+# plugin no longer has, a gate with no row, and one row marked `decided:` that
+# the tree contradicts. Nine, across the record, the tables, the prose and the
+# loop's own account.
+#
+# What is graded is not whether each is found — a session that reads the
+# record the tool prints finds all of them for free — but whether the audit
+# *ends*: the record is validated, every line accounted for, the decided row
+# listed once and not re-litigated, the reply generated rather than recalled.
+# The command grader runs the tool's own --validate on what the session left;
+# the content graders read the record for each planted fault's line at open.
+scaffold_script: scaffold.sh

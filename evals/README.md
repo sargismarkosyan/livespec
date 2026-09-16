@@ -7,7 +7,7 @@ checkable by reading the files. This suite is how a change to a skill is held
 against it.
 
 ```
-python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold
 ```
 
 > **This refuses to run, and that is the design.** Every run drives six real
@@ -100,6 +100,7 @@ came out.
 | `37-a-stamp-ahead-of-the-plugin` | **`doctor` says a stamp ahead of the plugin installed is ahead, and computes nothing** — `ridgeline`, stamped 9.4.0: both versions named, no range read, the stamp left as it is, and the rest of the ledger audited as before — the rule-bound measure comes out of prose and into a row | the high number is read as the ledger being current, a range is invented, the stamp is rewritten, or the audit stops at the version and never reaches the sentence on no clock |
 | `38-what-does-it-talk-to` | **`setup` asks what the app talks to before writing a row about it** — `tidewatch`, a Python service whose behaviour tests stand in for its store and its payment provider; the real thing is recommended for each, and with nothing here able to start either, the rows read *mocked since this sitting* or *unreachable*, never *real* | the table is written from the tree without asking, a row reads *real* on the strength of a compose file existing, or the unchecked stand-ins are written as *fake* |
 | `39-a-real-row-over-a-stub` | **`doctor` reads a boundary row against the tests that ran** — `mooring`, whose bindings say the store is real while every behaviour test runs over an in-memory one the pattern list misses, whose mail fake has no suite behind it, and whose sign-in recordings are ten months past their age; the real row is corrected to *mocked* naming the tests, the fake to *mocked*, the recording is dated, nothing is wired, and the reply ends with `/livespec:setup` and what it will be asked to wire | the row is accepted because a container is named, the fake is accepted because a class called a fake exists, the session edits the tests or the pattern list to close the gap itself, or the hand-back ends by naming setup as a noun rather than as the command to type |
+| `40-every-line-or-nothing` | **`doctor` ends, or does not end** — `tidelog`, whose ledger has one fault in every section the audit reads: the stamp behind the plugin, a row in a state of its own, a deferral and a mocked row past the clock, a gap left in the prose, a skill named by an old name, a gate with no row, and one `decided:` row the tree contradicts. The tool prints the record, the session answers every line, `--validate` accepts it and writes it, and the reply is generated: open by severity, the decision listed once and not argued, `/livespec:setup` and its rows last | the session hands back a paragraph and no record, leaves a line unanswered, re-litigates the decided row, or the tool refuses what it left — graded by the tool's own `--validate` and a grep per planted fault, with a judge only for the decision and the reply's shape |
 
 **`02`, `13`, `14` and `15` are the four that hold where an issue goes.** They
 are one rule seen from four sides: the ordinary report that resolves without
@@ -237,7 +238,7 @@ of that grader would still catch a real regression.
 Pilot before trusting a full run:
 
 ```
-python3 evals/runner/run.py --runs 1 --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold
+python3 evals/runner/run.py --runs 1 --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold
 ```
 
 Then, against the run directory it prints (`evals/results/<stamp>/`):
@@ -282,7 +283,7 @@ and the board gate — `.github/scripts/board.py`, run by `verify.py` — fails 
 build naming the cases and the one command that heals them:
 
 ```
-python3 evals/runner/run.py --changed --ablation with-without --judge-model sonnet --allow-tools Write Edit --scaffold
+python3 evals/runner/run.py --changed --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold
 ```
 
 `--changed` selects exactly the cases without a fresh measurement — a reworded

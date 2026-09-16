@@ -25,7 +25,9 @@ If `$CLAUDE_PLUGIN_ROOT` is not set, it is `tools/doctor.py` two levels up from
 this file. It prints **the record**: one line per check the method names — the
 list is [the id table in `gates.md`](../../method/gates.md#the-ids), and it is
 enumerated nowhere else — with a state from `clear · open · n/a · unanswered`
-and the evidence beside it. The lines marked *script* are answered: the stamp
+and the evidence beside it. **Save what it printed to a scratch file** — not
+over the path the bindings name as the audit record, which is the previous
+run's and is what the next pass compares against — and work in that file. The lines marked *script* are answered: the stamp
 and the range between it and the plugin installed, every row's state and
 evidence, the clocks, the tables the method requires, the skill names the
 record instructs by. They are answered the same way every time, from the
@@ -56,7 +58,9 @@ starts it*, the coverage row's config. For each:
 A line that could not be read is `not-read`, with why — no credentials, no
 network, no permission. That is a legitimate answer and it validates.
 **Silence does not.** A run that leaves a line `unanswered` has not finished,
-and once the record's own step ships it cannot end at all.
+and §3 will refuse to let it end. An `open` line ends with what closes it; a
+`clear` or `open` judgment keeps the command it was answered by beside the
+result.
 
 Where a row names no command — a claim about the platform with nothing after
 it — the line already says so: the row must name one, and that is a
@@ -140,25 +144,39 @@ template's shape for the sitting to apply, and the sitting is `setup`'s.
   the reading; a ledger re-stamped for an audit that changed nothing has
   learned to lie.
 
-## 3. Say what is open, concretely
+## 3. Let the tool decide whether the audit is finished
 
-Until the record's own step ships, the four lines marked *reply* are yours
-to answer by hand, and they say how:
+```sh
+python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --validate <the scratch file>
+```
 
-- **What is open, sorted by the severity each id carries** — *platform*, then
-  *boundary*, then *wiring*, then *record*. A row asserting a protection the
-  platform does not enforce, or a *real* row over a world the tests never
-  enter, outranks a deferral one change old, every time. Each item: what is
-  claimed, what is actually true, and what closes it. Not a health score.
-- **Then what was not read**, in the same order, with why. A row that was
-  checked and a row that was assumed must not come out looking the same.
-- **Then the decisions**, once — the rows marked `decided:` — listed and not
-  argued with.
-- **The last line, where wiring is left for the sitting, is the command as
-  somebody would type it** — `/livespec:setup` — followed by the rows it will
-  be asked to wire, one per line. The same line closes the reading's record in
-  the bindings. Where nothing is left for the sitting, no such line: the reply
-  ends on what was corrected, and nobody is sent to a sitting nobody needs.
+It refuses the record — exit 1, naming the line — if any id is missing, any
+line still reads `unanswered`, any state is off the vocabulary, an `open` line
+names nothing that closes it, a `not-read` line gives no reason, a judgment
+reads `clear` with no command beside it, or the working tree changed anything
+but the record. **A refused record is an audit that has not finished**: go
+back to the line it names. Nothing else is a way through — not a paragraph
+explaining the gap, not a subagent, not a second scratch file.
+
+Where it accepts the record, it answers the four lines the reply generates,
+**writes the record at the path the bindings name** — replaced on every run,
+each line carrying the date it last changed state, so the next audit can say
+what opened and what closed — and prints **the reply**. That reply is the
+hand-back, verbatim, with nothing after it:
+
+- what is open, sorted by the severity each id carries — *platform*, then
+  *boundary*, then *wiring*, then *record*; a row asserting a protection the
+  platform does not enforce outranks a deferral one change old, every time;
+- then what was not read, with why — a row that was checked and a row that
+  was assumed never come out looking the same;
+- then the decisions, once — the rows marked `decided:` — with the tree's
+  contradiction, where there is one, offered as evidence and not argued;
+- then, only where an open line names wiring, `/livespec:setup` and the rows
+  the sitting will be asked to wire, one per line. Where nothing is left for
+  the sitting, no such line, and nobody is sent to a sitting nobody needs.
+
+Commit the record with the corrections. The same last line closes the
+reading's record in the bindings.
 
 ## What this skill refuses
 
@@ -170,7 +188,9 @@ to answer by hand, and they say how:
 - **Reading an entry as a task list.** The entry is where to look.
 - **Re-stamping for having read.** The stamp follows the wiring.
 - **Leaving a line `unanswered`.** `not-read` with why is an answer; a blank
-  is a check nobody made.
+  is a check nobody made, and `--validate` will not let it end.
+- **Handing back without the record.** The reply is what pass two printed;
+  a reply recalled from the session is the thing this skill exists to stop.
 - **Writing application code**, which no skill here does.
 - **Running the interviews.** An empty layer is `setup` section 8's.
 - **Flipping every row to *unobserved* to be safe.** A row somebody watched
