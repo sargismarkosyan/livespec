@@ -40,6 +40,7 @@ how two documents start meaning slightly different things.
 | **check** | One thing an audit of a consuming repository's wiring is held to, with a permanent id in the method — a kind (a script answers it, or a mind does), the version it arrived in, and a severity. The list is one table; nothing an audit checks is enumerated anywhere else. |
 | **audit record** | What an audit writes in a consuming repository, at the path its bindings name: one line per check, in a state from a fixed vocabulary, with the date the line last changed. Replaced on every run; refused, and the audit with it, if a line is missing. |
 | **decided** | The one word that marks a ledger row as a choice rather than a gap — *not applicable, decided: …*. Listed among the decisions, never among the findings; the tree is not read against it. |
+| **audit surface** | The files a change to the audit lives in — `skills/doctor/`, `tools/doctor.py`, `templates/bindings.md`, and the id section of `method/gates.md`. A pull request that moves any of them says in its body what the list of ids did, and the gate holds that to the table's diff. |
 
 Two words deliberately **not** used: *documentation*, for anything under
 `specs/` — it is a contract, and calling it documentation is how it stops being
