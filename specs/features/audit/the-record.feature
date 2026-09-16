@@ -63,7 +63,7 @@ Feature: The audit record — one line per check, or the audit does not end
       Then it is refused, naming the file
       And the reply says that wiring is the sitting's
 
-  @rule:a-record-can-be-checked-without-being-rewritten @planned
+  @rule:a-record-can-be-checked-without-being-rewritten
   Rule: Whether a finished record validates can be asked without the record being written or the reply generated, so a grader can ask it of what a session left
 
     Example: a grader asks

@@ -114,11 +114,16 @@ The questions worth the judgment, and what decides them:
   and is not right now announces nothing — present, accurate, and stale —
   and having been correct when written is not a reason to leave it.
 - **The names** (`word-not-a-skill`, `loop-per-claude-md`). The tool has
-  already flagged a skill name the record instructs by that this plugin no
-  longer has, with the name it now has. What it hands you is the rest: the
-  same word as ordinary prose, to be left alone — reporting one is how this
-  check becomes noise on its second run — and the loop's own account, read
-  against what `claude-md.md` now asks of each step.
+  already flagged an instruction — `/livespec:<name>` — by a name this plugin
+  no longer has, with the name it now has. What it hands you is the rest: an
+  old name in prose, which is an instruction to correct or a dated account to
+  leave as written; the same word as ordinary prose, to be left alone —
+  reporting one is how this check becomes noise on its second run — and the
+  loop's own account, read against what `claude-md.md` now asks of each step.
+- **The prose** (`prose-phrases`). The tool lists every *not built yet*,
+  *to do*, *we should*, *for now* with its line. Each is a row on the clock or
+  it is nothing — *nothing to do at release time* is nothing — and that is
+  yours to say, not the script's.
 
 ## 2. Correct the record — and only the record
 
@@ -176,7 +181,9 @@ hand-back, verbatim, with nothing after it:
   the sitting, no such line, and nobody is sent to a sitting nobody needs.
 
 Commit the record with the corrections. The same last line closes the
-reading's record in the bindings.
+reading's record in the bindings. Anybody who only wants the answer — a
+grader, a reviewer — asks `--check <record>` instead: the same exit, and
+nothing written.
 
 ## What this skill refuses
 

@@ -320,6 +320,11 @@ def extract_ids(body: str | None) -> dict:
         if not line:
             continue
         lowered = line.lower()
+        # A markdown bullet in front of `added:` or `retired:` is a bullet, not a
+        # retirement. Only a bare `- <id>` is read as one.
+        if re.match(r"^[-*+]\s+(added|retired)\b", lowered):
+            line = re.sub(r"^[-*+]\s+", "", line)
+            lowered = line.lower()
         ids = [token.strip("`,;") for token in re.findall(r"`?(?:gate|wiring|check):[a-z0-9-]+`?", line)]
         ids = [token.strip("`") for token in ids]
         if re.fullmatch(r"\*{0,2}unchanged\*{0,2}\.?", lowered):

@@ -47,7 +47,7 @@ Feature: The shape a ledger has, so that one tool can read every repository's
       Then the ids are in the rows and the columns are where they were
       And the reply ends with the command that starts the sitting, which reshapes it
 
-  @rule:the-record-is-read-as-typed-not-as-templated @planned
+  @rule:the-record-is-read-as-typed-not-as-templated
   Rule: A ledger typed by a person is read by what its stamp and headings say, not by their exact wording, and only a table the tool cannot find at all reads as missing
 
     Example: a stamp written in bold with a note after the version

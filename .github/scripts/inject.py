@@ -385,6 +385,8 @@ GOOD_BODY = (
 BODY_IDS_ADDED = GOOD_BODY + "\n## Ids\n\nadded: check:new-thing\n"
 BODY_IDS_UNCHANGED = GOOD_BODY + "\n## Ids\n\nunchanged\n"
 BODY_IDS_GHOST = GOOD_BODY + "\n## Ids\n\nadded: check:ghost\n"
+BODY_IDS_BULLETS = GOOD_BODY + "\n## Ids\n\n- added: check:new-thing\n- retired: none\n"
+BODY_IDS_BULLET_RETIRES = GOOD_BODY + "\n## Ids\n\n- retired: check:new-thing\n"
 
 # (name, what to try, a phrase the refusal must contain)
 RELEASE_FAULTS = [
@@ -419,6 +421,8 @@ RELEASE_FAULTS = [
      lambda: check_ids_section(BODY_IDS_GHOST, TABLE_BASE, TABLE_BASE), "does not have"),
     ("a row still reading next after the release",
      lambda: stamp_ids(TABLE_ADDED, NEXT), "still read next"),
+    ("a bullet list that retires what the table added",
+     lambda: check_ids_section(BODY_IDS_BULLET_RETIRES, TABLE_BASE, TABLE_ADDED), "was added and `## Ids` does not name it"),
 ]
 
 
@@ -482,6 +486,7 @@ def release_control() -> None:
     assert stamp_ids(TABLE_BASE, "0.9.0") == TABLE_BASE, "a table with nothing to stamp was changed"
     assert check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"]
     assert check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_BASE)["added"] == []
+    assert check_ids_section(BODY_IDS_BULLETS, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"], "a bullet list is refused"
     assert moves_audit_surface(["skills/doctor/SKILL.md", "README.md", "method/gates.md"]) == [
         "skills/doctor/SKILL.md", "method/gates.md",
     ], "the audit surface is not read from the paths"
@@ -717,8 +722,6 @@ DOCTOR_FAULTS = [
      lambda r: edit(r, "specs/setup/README.md", ROW_CLOCK, "| `boundary:clock` | the clock | recorded | 0001 | recordings from 2020-01-01, allowed 30 days |"), "open"),
     ("a mocked row two changes old", "check:mocked-clock",
      lambda r: write(r, "specs/changes/0003-later.md", "# Spec 0003\n"), "open"),
-    ("a gap left in the prose", "check:prose-phrases",
-     lambda r: edit(r, "specs/setup/README.md", "## Notes from the sitting\n\n", "## Notes from the sitting\n\nThe report is not built yet.\n\n"), "open"),
     ("no table for the wiring that must never gate", "check:second-table",
      lambda r: edit(r, "specs/setup/README.md", WIRING_HEADING, "### Two rows that used to be a table"), "open"),
     ("the second table losing the report's row", "check:pr-report-row",
