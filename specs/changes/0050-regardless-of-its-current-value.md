@@ -1,6 +1,6 @@
 # Spec 0050: regardless of its current value
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#99](https://github.com/sargismarkosyan/livespec/issues/99) —
   the last of three split from the CLAUDE.md report of 2026-09-15, after
   [`0046`](0046-a-number-and-no-file-to-copy.md) settled what the file is held

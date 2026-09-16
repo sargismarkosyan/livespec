@@ -488,8 +488,24 @@ like one, and the agent that has to trust it can tell.
 somebody wrote by hand — and it is also the file every agent trusts by default,
 so it gets read against the ten requirements rather than counted. Go through them
 in order and mark each **met**, **missing** or **stale**; a pointer to a path that
-moved is worse than no pointer. Say that list out loud before touching anything,
-then show the edit and make it.
+moved is worse than no pointer. Say that list out loud before touching anything.
+Then the remedy follows the finding, per
+[`claude-md.md`](../../method/claude-md.md#when-it-is-out-of-line):
+
+- **Where the only finding is a line** — a pointer at a path that moved — fix
+  the line, show it, and move on.
+- **Where anything is missing, or anything the method rules out is present** —
+  the plugin's loop or rules copied in, an aspirational rule, history that
+  binds nothing — the file is rewritten, whatever it is currently worth, and
+  never patched into shape. **Harvest first**: list every fact only this file
+  knows, the way you just listed the requirements. Write the new file from the
+  requirements, carrying each harvested fact or naming it as dropped with the
+  reason and where it lives instead. **Show it whole**, beside what was kept
+  and what was dropped, **and stop.** The yes that started this sitting covered
+  writing files; it did not cover replacing one somebody wrote by hand, which
+  the first section lists as the thing to name before overwriting. The file on
+  disk stays as it was until the answer comes; a no leaves it, with the
+  line-level fixes made and the rest reported.
 
 The ones an occupied repository's own file is usually missing, because nothing
 ever made anybody write them: **#2** (who writes what), **#4** (the line between

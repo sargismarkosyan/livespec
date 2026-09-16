@@ -145,6 +145,13 @@ template's shape for the sitting to apply, and the sitting is `setup`'s.
   the clock is the same: real, given a suite, or *unreachable* with the reason.
 - A gap the prose names — *not built yet*, *to do*, *we should*, *for now* —
   is a row or it is nothing; the tool listed every hit.
+- A `CLAUDE.md` out of line beyond its lines — a requirement missing, the
+  plugin's own rules copied into it — is **not rewritten here**. Correct the
+  lines that are record, a loop step or a skill name, and leave
+  `check:loop-per-claude-md` open with the rewrite as what closes it and the
+  sitting as whose it is. The audit changes the record; a new file is the
+  sitting's kind of change —
+  [`claude-md.md`](../../method/claude-md.md#when-it-is-out-of-line).
 - **Re-stamp only if the wiring moved.** The stamp follows the wiring and never
   the reading; a ledger re-stamped for an audit that changed nothing has
   learned to lie.

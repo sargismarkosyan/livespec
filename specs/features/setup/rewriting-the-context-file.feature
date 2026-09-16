@@ -1,7 +1,7 @@
 @feature:setup-rewriting-the-context-file @workflow:adopt-the-process
 Feature: What the sitting does with a CLAUDE.md that is out of line
 
-  @rule:a-file-out-of-line-is-offered-whole @planned
+  @rule:a-file-out-of-line-is-offered-whole
   Rule: When the reading finds a requirement missing, or anything the method rules out, the sitting offers the file rewritten from the requirements and shown whole — whatever the file is currently worth — and repairs a line only where a line is the whole finding
 
     Example: a filled template with the plugin's rules copied into it
@@ -22,7 +22,7 @@ Feature: What the sitting does with a CLAUDE.md that is out of line
       Then the line is corrected
       And no rewrite is offered
 
-  @rule:what-only-the-file-knows-survives-the-rewrite @planned
+  @rule:what-only-the-file-knows-survives-the-rewrite
   Rule: Before a rewrite is shown, every fact only the existing file carries is listed, and each is in the new file or named as dropped with the reason
 
     Example: the paragraph that stops the next wrong argument
@@ -36,7 +36,7 @@ Feature: What the sitting does with a CLAUDE.md that is out of line
       When the rewrite is shown
       Then the fact is named as dropped, with the reason and where it goes instead
 
-  @rule:a-rewrite-lands-only-on-a-yes @planned @refusal
+  @rule:a-rewrite-lands-only-on-a-yes @refusal
   Rule: A rewrite is shown whole and waits; a yes given at the start of the sitting does not cover replacing a file somebody wrote by hand, and nothing is written to it before the answer
 
     Example: the sitting was told to go ahead at the start

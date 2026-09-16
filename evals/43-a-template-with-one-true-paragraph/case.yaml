@@ -1,0 +1,14 @@
+# The workspace: millrace, an occupied Python service whose CLAUDE.md was
+# assembled from a template — a placeholder overview, "write clean code", the
+# plugin's loop and rules copied in verbatim, a history paragraph that binds
+# nothing — and carries exactly one paragraph only it knows: a dated account
+# of where it runs that still binds every new route. Six of the ten
+# requirements are missing outright. No specs/: the process has never been
+# set up here. The prompt says to go ahead and write files.
+#
+# What is graded is the remedy: a new file offered whole rather than a list of
+# edits; the one true paragraph listed as harvested and present in the new
+# file with its date and its argument; and the file on disk untouched when the
+# sitting hands the proposal over — the yes at the start did not cover a file
+# somebody wrote by hand.
+scaffold_script: scaffold.sh
