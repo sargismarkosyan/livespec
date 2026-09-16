@@ -45,7 +45,24 @@ weight: 1
 The reply does the thing.
 """
 
+def context_file(steps: int = 3) -> str:
+    """A CLAUDE.md in the shape the gate reads — a numbered loop, a fenced block
+    of commands, a link to the bindings. `steps` is the length of its loop. The
+    ceiling row in green_bindings() is this file's own size. See specs/changes/0048."""
+    loop = "".join(f"{n}. Step {n} of the loop.\n" for n in range(1, steps + 1))
+    return (
+        "# fixture\n\nA synthetic repository, not an application.\n\n"
+        "## The loop\n\n" + loop
+        + "\n## Commands\n\n```sh\npython3 gate.py\n```\n\n"
+        "The bindings are [specs/setup/README.md](specs/setup/README.md).\n"
+    )
+
+
+CONTEXT_FILE = context_file()
+ROW_CEILING = f"| **CLAUDE.md ceiling** | {len(CONTEXT_FILE.splitlines())} lines, `wc -l CLAUDE.md`, set at 0001 |"
+
 FIXTURE: dict[str, str] = {
+    "CLAUDE.md": CONTEXT_FILE,
     "skills/refine-spec/SKILL.md": "---\nname: refine-spec\ndescription: Turns a request into a spec.\n---\n\n# Refine\n\nThe gates are in [gates.md](../../method/gates.md).\n",
     "specs/personas/reader.md": "@persona:reader\n\n# Reader — wants the thing in front of them\n",
     "specs/journeys/arc.md": "@journey:arc\n\n# Arriving with a list already in hand\n",
@@ -179,6 +196,8 @@ def green_bindings(version: str) -> str:
             "| `gate:boundary-fake-suite` | a fake row naming no suite against the real thing | not applicable | no rule-bound doubles here |",
             "| `gate:boundary-recorded-age` | a recorded row past its age | not applicable | no rule-bound doubles here |",
             "| `gate:boundaries-table` | rule-bound tests present and no boundaries table | not applicable | no rule-bound doubles here |",
+            "| `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | automated | `python3 gate.py` |",
+            "| `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | automated | `python3 gate.py` |",
             "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
         ]
     )
@@ -201,6 +220,7 @@ def green_bindings(version: str) -> str:
         "| **Where the app runs** | `npm start` |\n"
         f"{ROW_SKETCH}\n"
         f"{ROW_SHOW}\n"
+        f"{ROW_CEILING}\n"
         "| **Deliverable of a version** | the screenshot |\n"
         "| **What proves a rule** | an ordinary test suite |\n"
         "| **How a test claims its rule** | `rule()` from tests/rulelib.py |\n"
@@ -586,6 +606,31 @@ FAULTS = [
      lambda r: write(r, "specs/features/core/seven.feature", seven_rules()), "warns", "soft limit"),
     ("a feature longer than the soft limit", TRACE,
      lambda r: write(r, "specs/features/core/long.feature", long_feature()), "warns", "soft limit"),
+    # The file every session reads first. Seven ways it fails, none of them
+    # about what it says — that is the sitting's and the audit's. See
+    # specs/changes/0048.
+    ("a context file past its ceiling", TRACE,
+     lambda r: write(r, "CLAUDE.md", CONTEXT_FILE + "\nOne more line than the bindings allow.\n"),
+     "fails", "against a ceiling of"),
+    ("a context file with no ceiling row", TRACE,
+     lambda r: edit(r, "specs/setup/README.md", ROW_CEILING + "\n", ""), "fails", "names no CLAUDE.md ceiling"),
+    ("no context file at the root", TRACE,
+     lambda r: drop(r, "CLAUDE.md"), "fails", "no CLAUDE.md at the root"),
+    ("a context file with no numbered list", TRACE,
+     lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace(
+         "1. Step 1 of the loop.\n2. Step 2 of the loop.\n3. Step 3 of the loop.\n", "The loop is described elsewhere.\n")),
+     "fails", "no numbered list"),
+    ("a loop of nine steps", TRACE,
+     lambda r: (write(r, "CLAUDE.md", context_file(9)),
+                edit(r, "specs/setup/README.md", ROW_CEILING,
+                     ROW_CEILING.replace(f"{len(CONTEXT_FILE.splitlines())} lines", f"{len(context_file(9).splitlines())} lines"))),
+     "fails", "at most 8"),
+    ("a context file with no fenced block", TRACE,
+     lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace("```sh\npython3 gate.py\n```\n", "python3 gate.py\n")),
+     "fails", "no fenced block"),
+    ("a context file that does not link to the bindings", TRACE,
+     lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace("(specs/setup/README.md)", "(specs/README.md)")),
+     "fails", "does not link to"),
     ("case graded only by what fired", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: tool_used\ntool: Skill\nmin: 1\n---\n"),
      "fails", "never by what came out"),

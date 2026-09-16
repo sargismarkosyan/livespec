@@ -169,7 +169,13 @@ configured:
   walked by a test, journeys name workflows that exist;
 - then the world those tests ran in: the same sources, read for the stand-ins
   they use, against the boundary rows — *Then make the real thing reachable*,
-  below.
+  below;
+- then the file that points at all of it: CLAUDE.md within the ceiling the
+  bindings name — failing where there is no row — at the root, with its loop
+  as a numbered list of at most eight steps, a block of commands, and a link
+  to the bindings that resolves. **Nothing about its prose**: a stale pointer
+  or a copied paragraph is section 6's to catch and the audit's to re-read —
+  [`gates.md`](../../method/gates.md#the-file-every-session-reads-first).
 
 **Write the smallest thing that does that.** One script, no dependencies, in the
 language already in the repo. It is a few hundred lines at most and it belongs in
@@ -498,7 +504,9 @@ repository rather than in the method: once the file is written, or the audit's
 edits are made, measure it and write **CLAUDE.md ceiling** with the size, the
 command that reads it and this change — never before the file is finished, and
 never from a figure the method does not have. Raising it later is a line in the
-change that needs the room, with the reason beside it.
+change that needs the room, with the reason beside it. From this sitting on,
+the gate wired in section 4 reads that number, so the file you leave behind has
+to pass it — and the rest of what that gate reads — before the hand-back.
 
 ## 7. An existing codebase does not get retroactive specs
 

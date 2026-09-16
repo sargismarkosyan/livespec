@@ -1,0 +1,11 @@
+# The workspace: penstock, an occupied Python service whose CLAUDE.md is a
+# title, a test command and a branch convention — the file #98 showed passing
+# every check identically to a real one. No specs/: the process has never
+# been set up here.
+#
+# What is graded is the wiring, not the file's prose: the gate script the
+# sitting writes reads CLAUDE.md for its ceiling and its shape; the fault
+# record it leaves lists the faults that prove that gate fires; and the
+# CLAUDE.md the sitting leaves behind passes the gate it wired — a command
+# grader applies the same five checks to what is left in the workspace.
+scaffold_script: scaffold.sh

@@ -1,7 +1,7 @@
 @feature:wiring-context-file @workflow:adopt-the-process
 Feature: What the build refuses about the file every session reads first
 
-  @rule:a-context-file-past-its-ceiling-fails-the-build @planned
+  @rule:a-context-file-past-its-ceiling-fails-the-build
   Rule: A CLAUDE.md larger than the ceiling its own bindings name fails verification, and a context file with no ceiling row fails it too
 
     Example: the file has grown past the number
@@ -20,7 +20,7 @@ Feature: What the build refuses about the file every session reads first
       When verification runs
       Then it fails, saying the row is missing rather than passing the file unmeasured
 
-  @rule:a-context-file-without-its-shape-fails-the-build @planned
+  @rule:a-context-file-without-its-shape-fails-the-build
   Rule: A CLAUDE.md that is missing, or that carries no loop, no commands, or no pointer to the bindings, fails verification
 
     Example: three lines pass nothing
@@ -38,7 +38,7 @@ Feature: What the build refuses about the file every session reads first
       When verification runs
       Then it fails
 
-  @rule:what-only-a-mind-can-read-is-left-to-the-sitting @planned @refusal
+  @rule:what-only-a-mind-can-read-is-left-to-the-sitting @refusal
   Rule: The gate reads nothing a script cannot decide — a stale pointer, a copied paragraph, an aspirational rule pass it, and are read by the sitting and the audit
 
     Example: a file in shape, with a pointer that has gone stale
@@ -48,7 +48,7 @@ Feature: What the build refuses about the file every session reads first
       Then it passes
       And neither the copy nor the stale path is reported by the gate
 
-  @rule:the-sitting-wires-the-context-file-check @planned
+  @rule:the-sitting-wires-the-context-file-check
   Rule: The sitting wires the context-file check into the repository's own gate, beside the shape checks over the spec layer, and the file it leaves behind passes it
 
     Example: an occupied repository with a thin file

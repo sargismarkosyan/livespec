@@ -45,7 +45,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. A `case.yaml` may name a `scaffold_script` — bash in the case directory, run by `run.py --scaffold` in the session's fresh workspace, both arms alike. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
 | **Always-on budget** | 5000 chars across model-invocable skills; currently 4321 across 8 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
-| **What proves a rule** | **graded cases** for the skills — the product is judgment, so behaviour is run against a prompt and scored; the full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md), and [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of. **Ordinary tests** for the one thing here that is code, `tools/doctor.py`: standard-library `unittest` under `tests/`, since [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part two |
+| **What proves a rule** | **graded cases** for the skills — the product is judgment, so behaviour is run against a prompt and scored; the full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md), and [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of. **Ordinary tests** for the one thing here that is code, `tools/doctor.py`: standard-library `unittest` under `tests/`, since [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part two — and, since [`0048`](../changes/0048-the-file-every-session-reads-first.md), for the context-file checks in `trace.py`, held by `tests/test_context_file.py`, which runs the gate against the injector's fixture |
 | **How a case names its rule** | `tags: [rule:<id>]` in the case's frontmatter, read by `caselib.py`. A test names its rule with `@rule("<id>")` from `tests/rulelib.py`, which refuses an id that does not exist or is still `@planned`; `trace.py` reads both as claims, and `.github/scripts/tests.py` refuses a test bound to no rule |
 | **Spec-bound coverage** | **not applicable.** It is a split of a coverage run, and there is no coverage gate here to split |
 | **Coverage thresholds** | none — see below |
@@ -53,7 +53,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Tracker** | GitHub Issues on `sargismarkosyan/livespec`, via `gh`. No `--repo` is passed: `gh` resolves it from the working directory, which is this repository. **This is the degenerate case** — the repository a session works in and the plugin's own repository are the same place here, and a skill must not read that as the normal shape |
 | **Where the app runs** | nowhere. There is no app |
 | **A sketch is owed** | by every change spec, before approval — there is no app here, and the sketch is drawn from the spec, never recorded; *What does not apply here* below says why the two rows are not one |
-| **CLAUDE.md ceiling** | **138 lines**, read with `wc -l CLAUDE.md`; set at [`0046`](../changes/0046-a-number-and-no-file-to-copy.md) to the size the file was that day, per [`claude-md.md`](../../method/claude-md.md#length). Raised only in the change that needs the room, with the reason written here beside the number. Nothing reads it yet: the gate is [#98](https://github.com/sargismarkosyan/livespec/issues/98)'s, and until it lands `check:loop-per-claude-md` hands the file to a mind, which compares against this number rather than against a figure of its own |
+| **CLAUDE.md ceiling** | **138 lines**, read with `wc -l CLAUDE.md`; set at [`0046`](../changes/0046-a-number-and-no-file-to-copy.md) to the size the file was that day, per [`claude-md.md`](../../method/claude-md.md#length). Raised only in the change that needs the room, with the reason written here beside the number. Read by `trace.py` since [`0048`](../changes/0048-the-file-every-session-reads-first.md): a file past it fails the build, and so does this table without the row. `check:loop-per-claude-md` still hands the prose to a mind |
 | **Deliverable of a version** | the pull request description. No picture in any form — see *What does not apply* |
 | **Manifest validation** | `claude plugin validate . --strict`, `./.claude-plugin/plugin.json`, `./skills` — offline, no credentials |
 | **What a contributor owes a release** | one `patch`/`minor`/`major` label on the pull request, and a `## Changelog` section in its body — plus the Gherkin block when the change moves a `.feature`, and an `## Ids` section when it moves the audit surface (`skills/doctor/`, `tools/doctor.py`, `templates/bindings.md`, `method/gates.md`): *unchanged*, or the ids added and retired, held to the id table's diff. Nothing else — `version`, `CHANGELOG.md` and every `since` in `gates.md` are written by the pipeline and must not be typed in a branch; a new id row reads `next`. Since [`0042`](../changes/0042-the-release-writes-the-list.md) |
@@ -225,13 +225,15 @@ that gap is the thing a later `setup` run offers to close.
 | `gate:boundary-fake-suite` | a fake row naming no suite against the real thing | **not applicable** | there are no rule-bound tests here for the gate to read — the cases are the tests, and *The boundaries* below is what they run against |
 | `gate:boundary-recorded-age` | a recorded row past its age | **not applicable** | same — and no row below reads *recorded* |
 | `gate:boundaries-table` | rule-bound tests present and no boundaries table | **not applicable** | same; the table exists since [`0039`](../changes/0039-the-world-a-test-runs-in.md) and nothing here is a rule-bound test that would fail for its absence |
+| `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | automated | `trace.py`, since [`0048`](../changes/0048-the-file-every-session-reads-first.md) — reads *CLAUDE.md ceiling* in *The table* above, in lines, and fails a file past it or a table without the row; broken by *a context file past its ceiling* and *a context file with no ceiling row* |
+| `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | automated | `trace.py`, since [`0048`](../changes/0048-the-file-every-session-reads-first.md) — the root, the longest numbered run outside fenced blocks between one and eight, at least one fenced block, a relative link resolving to this file; broken by five faults. What it leaves unread is the prose, which `check:loop-per-claude-md` hands to a mind |
 
 **No row is deferred**, so nothing in this table is on the two-change clock; the
 two rows in *The boundaries* below that read *mocked* from 0039 passed it at
 0042 and were written off as *unreachable — decided* at the audit of
 2026-09-16, so nothing is on the clock now. Every automated row
-but the last was wired by the `setup` run in 0.6.0 and predates this ledger,
-which is why they carry no change number.
+that carries no change number was wired by the `setup` run in 0.6.0 and
+predates this ledger.
 
 **The ids arrived with [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md),
 part one**, matched to these rows by the labels they carried. Four rows carry
@@ -391,6 +393,13 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | workflow naming no journey | **warns, does not fail** | ✔ |
 | a feature holding more rules than the soft limit | **warns, does not fail** | ✔ |
 | a feature longer than the soft limit | **warns, does not fail** | ✔ |
+| a context file past its ceiling | fails | ✔ |
+| a context file with no ceiling row | fails | ✔ |
+| no context file at the root | fails | ✔ |
+| a context file with no numbered list | fails | ✔ |
+| a loop of nine steps | fails | ✔ |
+| a context file with no fenced block | fails | ✔ |
+| a context file that does not link to the bindings | fails | ✔ |
 | case graded only by what fired | fails | ✔ |
 | case run fewer times than the floor | fails | ✔ |
 | the last should-not-fire case removed | fails | ✔ |

@@ -1,6 +1,6 @@
 # Spec 0048: the file every session reads first
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#98](https://github.com/sargismarkosyan/livespec/issues/98) —
   the second of three split from the CLAUDE.md report of 2026-09-15, after
   [`0046`](0046-a-number-and-no-file-to-copy.md) settled the number it reads

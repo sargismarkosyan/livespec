@@ -69,6 +69,8 @@ tree carries how it was read back: the command, and when.
 | `gate:boundary-fake-suite` | a fake row naming no suite against the real thing | | |
 | `gate:boundary-recorded-age` | a recorded row past its age | | |
 | `gate:boundaries-table` | rule-bound tests present and no boundaries table | | |
+| `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | |
+| `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | |
 | `gate:verified-to-fire` | every gate broken on purpose and seen to fire | | |
 
 ### The wiring that must never gate
