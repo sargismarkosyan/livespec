@@ -103,3 +103,9 @@ it is in.
 - **The form is reported, not slipped in.** Say which one this version got and
   why, in the same breath as handing the file over. A still that arrives without
   its reason is indistinguishable from a recording somebody gave up on.
+- **So is the world.** Say which boundary rows the app was served over when the
+  picture was taken — the store the bindings call real or the stand-in, a real
+  sign-in or a seeded session — in the same breath as the form. A picture over
+  a stand-in is a picture of the stand-in, and nothing in the frames tells the
+  reviewer which they are looking at. Where the bindings carry no boundary
+  rows yet, say which world you assumed.

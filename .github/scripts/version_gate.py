@@ -19,6 +19,9 @@ somebody to ask.
     moves the spec           the Gherkin it moved, quoted or pinned
     moves the audit surface  an `## Ids` section — unchanged, or the ids
                              added and retired — held to the id table's diff
+    touches the tests, or    the run: a fenced block opening with the
+    what runs them           verification command as the bindings name it,
+                             the runner's own output beneath
 
 The triggers are separate. A spec moves without anything shipping far more often
 than not, and a wording fix in a skill ships without touching a promise.
@@ -46,10 +49,13 @@ from releaselib import (  # noqa: E402
     check_ids_section,
     extract_entry,
     extract_gherkin,
+    extract_run,
     moves_audit_surface,
     moves_spec,
     select_increment,
     ships,
+    touches_the_run,
+    verification_command,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -83,9 +89,10 @@ changed = [line for line in git("diff", "--name-only", f"{BASE}...HEAD").splitli
 shipping = ships(changed)
 moving = moves_spec(changed)
 surface = moves_audit_surface(changed)
+running = touches_the_run(changed)
 
-if not shipping and not moving and not surface:
-    print(f"✔ release inputs: nothing that ships, moves the spec or moves the audit surface changed against {BASE}")
+if not shipping and not moving and not surface and not running:
+    print(f"✔ release inputs: nothing that ships, moves the spec, moves the audit surface or touches the tests changed against {BASE}")
     raise SystemExit(0)
 
 request = pull_request()
@@ -94,8 +101,8 @@ if request is None:
     # a verdict from its absence would make this command mean two different
     # things depending on where it ran.
     print(
-        f"• {len(shipping)} file(s) that ship, {len(moving)} that move the spec and "
-        f"{len(surface)} on the audit surface changed against\n"
+        f"• {len(shipping)} file(s) that ship, {len(moving)} that move the spec, "
+        f"{len(surface)} on the audit surface and {len(running)} touching the tests changed against\n"
         f"  {BASE}, but there is no pull-request payload here, so the body was not\n"
         f"  checked. This gate runs on pull requests in CI; see specs/setup/README.md."
     )
@@ -104,7 +111,7 @@ if request is None:
 body = request.get("body")
 labels = [label.get("name", "") for label in request.get("labels", [])]
 problems: list[str] = []
-increment = entry = gherkin = None
+increment = entry = gherkin = run_block = None
 
 # The two questions are asked separately because they have different triggers. A
 # spec usually moves without anything shipping, and a wording fix in a skill
@@ -125,6 +132,16 @@ if moving:
     except ReleaseInputError as error:
         problems.append(str(error))
 
+# The run the claim of green rests on: the body quotes the verification
+# command as the bindings name it, with the runner's output beneath. The
+# report prints the pipeline's own run beside it; this only asks that the
+# block is there. See specs/changes/0052.
+if running:
+    try:
+        run_block = extract_run(body, verification_command((ROOT / "specs" / "setup" / "README.md").read_text()))
+    except ReleaseInputError as error:
+        problems.append(str(error))
+
 ids = None
 if surface:
     # The table as it was where this branch left the base, not as the base is
@@ -137,7 +154,10 @@ if surface:
 
 if problems:
     print("\n✘ this pull request cannot merge as it stands:\n", file=sys.stderr)
-    for label, paths in (("ship", shipping), ("move the spec", moving), ("move the audit surface", surface)):
+    for label, paths in (
+        ("ship", shipping), ("move the spec", moving), ("move the audit surface", surface),
+        ("touch the tests, or what runs them", running),
+    ):
         if not paths:
             continue
         print(f"  {len(paths)} file(s) that {label}:", file=sys.stderr)
@@ -172,4 +192,6 @@ if surface:
         f"`## Ids` held to the table for {len(surface)} audit-surface file(s): "
         + (", ".join(moved) if moved else "unchanged")
     )
+if running:
+    said.append(f"{len(run_block.splitlines())} line(s) of run for {len(running)} file(s) touching the tests or what runs them")
 print(f"✔ release inputs: {'; '.join(said)}")

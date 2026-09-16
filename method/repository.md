@@ -151,6 +151,29 @@ depends on the author remembering it is a convention that decays in the directio
 of silence. What a gate can prove is that the block is *there*; whether it is the
 right Gherkin is a reading, and the reading is what review is for.
 
+### And the run it rests on
+
+**A pull request that claims green carries the run.** The verification command
+as the bindings name it, its output as the runner printed it — the last lines
+at least, the verdict among them — and, for a change crossing a boundary, the
+state read back afterwards: the row that exists, the file on disk, the reply
+the real service gave. Not a summary of the run. Every fabricated result on
+record was a summary; none was a transcript.
+
+The report reads the same command's output from the pipeline's own run and
+prints it beside the block, so a body that says one thing and a pipeline that
+says another disagree where the reviewer is looking. The report never gates on
+the difference; what it does is make it visible.
+
+Conditional, like the picture and the Gherkin: a change that touches the tests,
+or what runs them, owes the block; a change to a page of prose does not,
+because a run block for a change the verification does not read is ceremony,
+and ceremony is what gets skipped on the pull request that needed it. What a
+gate can prove is that the block is there and opens with the command the
+bindings name — the same check the Gherkin block gets, for the same reason.
+Whether the output is real is a reading, and the report is what makes the
+reading cheap.
+
 ## Commits
 
 One change spec, one commit. Message format:

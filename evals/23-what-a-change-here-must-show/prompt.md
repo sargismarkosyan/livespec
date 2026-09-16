@@ -1,5 +1,5 @@
 ---
-tags: [skill:setup, rule:the-bindings-say-what-a-change-here-must-show]
+tags: [skill:setup, rule:the-bindings-say-what-a-change-here-must-show, rule:a-claim-of-green-carries-the-run]
 max_turns: 25
 timeout_seconds: 660
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

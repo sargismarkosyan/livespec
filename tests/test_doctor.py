@@ -504,7 +504,7 @@ class BindingsSomebodyElseTyped(unittest.TestCase):
     @rule("the-record-is-read-as-typed-not-as-templated")
     def test_the_reference_repository_reads_without_a_crash_and_truthfully(self):
         lines = audit(fixture_repo("todo-change-c89e9dc.md"))
-        self.assertEqual(len(lines), 40)
+        self.assertEqual(len(lines), len(doctor.CHECKS), "one line per check the method has, however many that is today")
         self.assertIn("gates: missing", lines["check:ledger-shape"]["evidence"])
         self.assertEqual(lines["check:stamp-present"]["state"], "open")
         self.assertEqual(lines["check:second-table"]["state"], "open")

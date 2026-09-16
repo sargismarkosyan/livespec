@@ -11,13 +11,16 @@ of the gate's logic, correct on the day it was written and drifting after.
 What it reports is **what moved**, not what exists. "12 live rules" tells a
 reviewer nothing about the change in front of them; "+1" is the whole point.
 
-    python3 .github/scripts/report.py <branch.json> [base.json] [branch-board.json] [base-board.json]
+    python3 .github/scripts/report.py <branch.json> [base.json] [branch-board.json] [base-board.json] [run.txt] [body.md]
 
 The first two files are `trace.py --json` output — the branch's, and the base
 ref's. Without the second it prints the totals and says the comparison was
-unavailable, which is honest and still worth reading. The last two are
+unavailable, which is honest and still worth reading. The next two are
 `board.py --json` — the eval board's counts; missing, the board section is
-skipped rather than guessed.
+skipped rather than guessed. The last two are the pipeline's own verification
+output and the pull request's body: the report prints the last lines of the
+one beside the run block in the other, and gates on nothing there, the two
+disagreeing included. See specs/changes/0052.
 
 Nothing here may exit non-zero for any reason. See `always-green` in
 specs/spec.md: a report that can fail a build is a gate nobody declared.
@@ -29,11 +32,49 @@ import json
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
+TAIL_LINES = 14
+
 FOOTER = (
     "<sub>Posted by `.github/scripts/report.py`. Reporting only — it cannot fail "
     "a build, and it recomputes nothing: every number here comes from "
-    "`trace.py --json` and `board.py --json`.</sub>"
+    "`trace.py --json` and `board.py --json`, and the run is the `Verify` step's own output.</sub>"
 )
+
+
+def run_section(run_text: str | None, body_text: str | None, command: str | None) -> list[str]:
+    """The run beside the claim. The body's run block on one side, the last lines
+    of the pipeline's own verification on the other; a difference is printed,
+    never judged. Nothing here may raise — see the module docstring."""
+    lines = ["## The run", ""]
+    if command is None:
+        lines += ["**What the body says** — could not be read: the bindings name no verification command.", ""]
+    else:
+        block = None
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            from releaselib import extract_run  # noqa: E402
+
+            block = extract_run(body_text, command)
+        except Exception:  # noqa: BLE001 — a body with no block is a line here, not a failure
+            block = None
+        if block:
+            lines += [f"**What the body says** — the block under `{command}`:", "", "```text", *block.splitlines()[-TAIL_LINES:], "```", ""]
+        else:
+            lines += [
+                "**What the body says** — no run block. Whether one was owed is the release-inputs "
+                "gate's to say, not this report's.", "",
+            ]
+    if run_text and run_text.strip():
+        tail = run_text.strip().splitlines()[-TAIL_LINES:]
+        lines += ["**What the pipeline saw** — the last lines of the `Verify` step, `verify.py --local`:", "", "```text", *tail, "```", ""]
+    else:
+        lines += ["**What the pipeline saw** — the run was not available to the report.", ""]
+    lines += [
+        "<sub>Two commands, when they differ by one line: a person runs the whole of verification, "
+        "which exits 2 for the board; the required check runs `--local` and leaves the board to its own job.</sub>", "",
+    ]
+    return lines
 
 # (heading, [(label, path-into-the-json)]). The order is the order somebody
 # reads it in: who it is for, then what they attempt, then what is promised.
@@ -103,11 +144,16 @@ def board_section(head: dict | None, base: dict | None) -> list[str]:
     return lines
 
 
-def build(head: dict, base: dict | None, board_head: dict | None = None, board_base: dict | None = None) -> str:
+def build(
+    head: dict, base: dict | None, board_head: dict | None = None, board_base: dict | None = None,
+    run_text: str | None = None, body_text: str | None = None, command: str | None = None,
+) -> str:
     lines: list[str] = []
     for heading, rows in SECTIONS:
         lines += [f"## {heading}", ""] + table(rows, base, head) + [""]
     lines += board_section(board_head, board_base)
+    if run_text is not None or body_text is not None:
+        lines += run_section(run_text, body_text, command)
 
     planned = dig(head, ("rules", "planned")) or 0
     if planned:
@@ -136,8 +182,24 @@ def main() -> int:
         except Exception:  # noqa: BLE001 — a missing input is a blank column, not a failure
             optional.append(None)
     base, board_head, board_base = optional
+    texts = []
+    for index in (5, 6):
+        try:
+            texts.append(Path(sys.argv[index]).read_text(encoding="utf-8", errors="replace"))
+        except Exception:  # noqa: BLE001 — no run or no body is a line in the section, not a failure
+            texts.append(None)
+    run_text, body_text = texts
+    command = None
+    if run_text is not None or body_text is not None:
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            from releaselib import verification_command  # noqa: E402
+
+            command = verification_command((ROOT / "specs" / "setup" / "README.md").read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            command = None
     try:
-        print(build(head, base, board_head, board_base))
+        print(build(head, base, board_head, board_base, run_text, body_text, command))
     except Exception as error:  # noqa: BLE001
         print(f"<!-- report: could not be built ({error}) -->")
     return 0

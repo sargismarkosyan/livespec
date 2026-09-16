@@ -447,7 +447,9 @@ over part of this repository is not recorded as covering it.
 report and the rule-bound coverage measure are both expected here and neither can
 fail a build, which is exactly why both go missing quietly. They get
 [their own short table](../../method/gates.md#the-wiring-that-must-never-gate),
-same four states, same two-change clock. Writing *not built yet* about either one
+same four states, same two-change clock — and a third row beside them: the
+report printing the pipeline's own run next to the run block a pull request
+carries, *unobserved* until the two have been watched disagreeing. Writing *not built yet* about either one
 in a sentence somewhere puts it on no clock at all, and nothing will ever ask
 again.
 
@@ -605,7 +607,10 @@ anything here has been more than configured.
 
 What is on trial is not the specs. It is the wiring, so report what came back:
 whether the required check ran and what it said, and whether the report arrived
-on the pull request. A check that **refuses** it is the wiring working — say
+on the pull request. Where the change touched a test — the sitting's own rarely
+does — the body carries the run under the command as the bindings name it, per
+[`repository.md`](../../method/repository.md#and-the-run-it-rests-on), and the
+report prints the pipeline's own beside it. A check that **refuses** it is the wiring working — say
 which of the two happened in as many words, because a red tick nobody explains
 reads as an install that broke something.
 
