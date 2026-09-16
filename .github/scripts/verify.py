@@ -39,6 +39,7 @@ SCRIPTS = Path(__file__).resolve().parent
 GATES = [
     ("repository checks", "checks.py"),
     ("traceability", "trace.py"),
+    ("unit tests", "tests.py"),
     ("eval suite", "evalsuite.py"),
     ("measurement board", "board.py"),
     ("gate fault injection", "inject.py"),

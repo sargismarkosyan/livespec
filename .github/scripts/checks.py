@@ -271,8 +271,8 @@ corpus = "\n".join(p.read_text() for p in markdown_files())
 
 for directory in ("method", "templates", "tools"):
     for payload in sorted((ROOT / directory).rglob("*")):
-        if not payload.is_file() or payload.name == "README.md":
-            continue
+        if not payload.is_file() or payload.name == "README.md" or "__pycache__" in payload.parts:
+            continue  # a compiled cache is the interpreter's, not payload
         if payload.resolve() in linked or rel(payload) in corpus:
             continue
         fail(rel(payload), "is referenced by no skill, method doc, or README — it ships to every user unread")
@@ -452,6 +452,32 @@ if gates_page.exists() and changelog.exists():
                     fail(where, f"retired {version!r} has no CHANGELOG.md entry")
             if not row["meaning"]:
                 fail(where, "has no meaning; an id with no sentence is a name nobody can audit against")
+
+
+# --- 9. the tool and the table are one list ----------------------------------
+
+# tools/doctor.py carries a registry of the same ids — it never parses gates.md
+# at runtime — so the two are held equal here on every column but the two the
+# release writes. A check the tool performs that the table does not name, or a
+# row in the table no function answers, is red in this repository and never in
+# a consuming one. See specs/changes/0041.
+sys.path.insert(0, str(SCRIPTS.parents[1] / "tools"))
+try:
+    import doctor  # noqa: E402
+except ImportError:
+    doctor = None
+
+if doctor is not None and gates_page.exists():
+    table = {row["id"]: row for row in (releaselib.id_rows(gates_page.read_text()) or [])}
+    tool = {row["id"]: row for row in doctor.registry()}
+    for missing in sorted(set(tool) - set(table)):
+        fail(rel(gates_page), f"the tool performs {missing} and the id table does not name it; the list is one list")
+    for extra in sorted(set(table) - set(tool)):
+        fail(rel(gates_page), f"names {extra} and no function in tools/doctor.py answers it")
+    for row_id in sorted(set(tool) & set(table)):
+        for column in ("kind", "severity", "aliases", "meaning"):
+            if table[row_id][column] != tool[row_id][column]:
+                fail(rel(gates_page), f"{row_id} {column} reads {table[row_id][column]!r} in the table and {tool[row_id][column]!r} in the tool")
 
 if failures:
     print(f"\n{len(failures)} problem(s):\n", file=sys.stderr)

@@ -1,7 +1,7 @@
 @feature:audit-the-list @workflow:adopt-the-process
 Feature: The list of checks an audit is held to, and the ids that make it one list
 
-  @rule:every-check-has-a-permanent-id @planned
+  @rule:every-check-has-a-permanent-id
   Rule: Every check an audit makes, and every gate a ledger needs a row for, has an id in the method that is never renamed and never reused
 
     Example: the ids are one table
@@ -23,7 +23,7 @@ Feature: The list of checks an audit is held to, and the ids that make it one li
       Then the old id is retired in place and names the new one
       And no row in any consuming repository stops resolving
 
-  @rule:the-table-and-the-tool-agree @planned
+  @rule:the-table-and-the-tool-agree
   Rule: The list the method publishes and the checks the tool performs are held equal by this repository's own checks, so drift fails here and never in a consuming repository
 
     Example: a check added to the tool and not the table
@@ -37,7 +37,7 @@ Feature: The list of checks an audit is held to, and the ids that make it one li
       When this repository is verified
       Then verification is red
 
-  @rule:a-repository-may-add-rows-of-its-own @planned
+  @rule:a-repository-may-add-rows-of-its-own
   Rule: A ledger row for a gate the method does not name carries the local prefix, is held to the same states as any row, and is required by nothing
 
     Example: a repository's own gate

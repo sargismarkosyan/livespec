@@ -121,7 +121,9 @@ cases passed.
 skills/<name>/SKILL.md   the only thing Claude Code loads. Eight of them
 method/                  the portable rules. Names no command or threshold
 templates/               copied into a consuming repository's specs/
-tools/                   invoked from a skill body via $CLAUDE_PLUGIN_ROOT
+tools/                   invoked from a skill body via $CLAUDE_PLUGIN_ROOT. doctor.py is the
+                         audit's script; the only code this repository ships
+tests/                   the tests for that code — standard library, each naming its rule
 evals/<NN-case>/         one prompt, its graders, and the tags saying what it holds
 specs/                   this repository's own spec layer
 .github/scripts/         the gates. verify.py is the one command; release.py

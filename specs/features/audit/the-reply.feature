@@ -37,7 +37,7 @@ Feature: What an audit says, generated from the record rather than remembered
       When the wiring is audited
       Then the row is reported as open
 
-  @rule:a-check-newer-than-the-stamp-is-reported-until-the-wiring-catches-up @planned
+  @rule:a-check-newer-than-the-stamp-is-reported-until-the-wiring-catches-up
   Rule: Every check that arrived after the ledger's stamp is reported as new, open where the ledger has no row for it, on every audit until the sitting brings the wiring level
 
     Example: a gate the method gained
@@ -54,7 +54,7 @@ Feature: What an audit says, generated from the record rather than remembered
       Then the row is read under the check as it now stands
       And having been clear once is not offered as a reason to leave it
 
-  @rule:the-tree-is-inventoried-and-the-rows-are-held-to-it @planned
+  @rule:the-tree-is-inventoried-and-the-rows-are-held-to-it
   Rule: The tool lists what the repository is made of — its manifests, its dependencies, its top-level packages — and writes the contradiction with a row on the judgment line that decides it
 
     Example: two languages and one coverage row

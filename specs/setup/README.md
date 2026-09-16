@@ -28,7 +28,7 @@ wherever the method says *test*, this repository means **eval case**:
 |---|---|
 | **Verification** | `python3 .github/scripts/verify.py` |
 | **What it returns** | 0 green; **1** a gate is broken; **2** nothing is broken and a measurement run somebody pays for is owed. The split is `COSTS_MONEY` in `verify.py`, the same constant `--local` filters on, and the decision is `verdict()` — pure, so `inject.py` can break it without a fixture. A mixed failure is **1**: a defect never reports as a bill. `run.py` already exits 2 for the same sentence from the other side. **CI runs the two halves as two jobs** — `repository checks` runs `--local` and gates; `measurement board` runs the rest, fails visibly and is required by nothing. See [`0033`](../changes/0033-a-bill-nobody-approved-does-not-block.md) |
-| **What it runs** | `checks.py`, `trace.py`, `evalsuite.py`, `board.py`, `inject.py`, in that order |
+| **What it runs** | `checks.py`, `trace.py`, `tests.py`, `evalsuite.py`, `board.py`, `inject.py`, in that order |
 | **Before the push** | `.githooks/pre-push` — one line, `exec verify.py --local`. **Off by default**: `git config core.hooksPath .githooks` turns it on in a clone, `git config --unset core.hooksPath` turns it off, and `git push --no-verify` walks past it. `--local` runs every gate but `board.py`, whose only cure is an eval run the maintainer pays for — see *The wiring that must never gate* below for why it has no row anywhere |
 | **Language** | Python 3.12, standard library only. **No dependency may be added** — CI installs nothing to run the gates |
 | **Package manager** | none |
@@ -45,13 +45,14 @@ wherever the method says *test*, this repository means **eval case**:
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. A `case.yaml` may name a `scaffold_script` — bash in the case directory, run by `run.py --scaffold` in the session's fresh workspace, both arms alike. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
 | **Always-on budget** | 5000 chars across model-invocable skills; currently 4321 across 8 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
-| **What proves a rule** | **graded cases.** There is no application code to call — the product is judgment, so behaviour is run against a prompt and scored. The full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md); [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of |
-| **How a case names its rule** | `tags: [rule:<id>]` in the case's frontmatter, read by `caselib.py`. **Not** a `rule()` helper — there is no test runner here to wrap |
+| **What proves a rule** | **graded cases** for the skills — the product is judgment, so behaviour is run against a prompt and scored; the full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md), and [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of. **Ordinary tests** for the one thing here that is code, `tools/doctor.py`: standard-library `unittest` under `tests/`, since [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part two |
+| **How a case names its rule** | `tags: [rule:<id>]` in the case's frontmatter, read by `caselib.py`. A test names its rule with `@rule("<id>")` from `tests/rulelib.py`, which refuses an id that does not exist or is still `@planned`; `trace.py` reads both as claims, and `.github/scripts/tests.py` refuses a test bound to no rule |
 | **Spec-bound coverage** | **not applicable.** It is a split of a coverage run, and there is no coverage gate here to split |
 | **Coverage thresholds** | none — see below |
 | **Required checks** | `repository checks` and `plugin validate` — the `name:` of each job in `.github/workflows/checks.yml` |
 | **Tracker** | GitHub Issues on `sargismarkosyan/livespec`, via `gh`. No `--repo` is passed: `gh` resolves it from the working directory, which is this repository. **This is the degenerate case** — the repository a session works in and the plugin's own repository are the same place here, and a skill must not read that as the normal shape |
 | **Where the app runs** | nowhere. There is no app |
+| **A sketch is owed** | by every change spec, before approval — there is no app here, and the sketch is drawn from the spec, never recorded; *What does not apply here* below says why the two rows are not one |
 | **Deliverable of a version** | the pull request description. No picture in any form — see *What does not apply* |
 | **Manifest validation** | `claude plugin validate . --strict`, `./.claude-plugin/plugin.json`, `./skills` — offline, no credentials |
 | **What a contributor owes a release** | one `patch`/`minor`/`major` label on the pull request, and a `## Changelog` section in its body — plus the Gherkin block when the change moves a `.feature`, and an `## Ids` section when it moves the audit surface (`skills/doctor/`, `tools/doctor.py`, `templates/bindings.md`, `method/gates.md`): *unchanged*, or the ids added and retired, held to the id table's diff. Nothing else — `version`, `CHANGELOG.md` and every `since` in `gates.md` are written by the pipeline and must not be typed in a branch; a new id row reads `next`. Since [`0042`](../changes/0042-the-release-writes-the-list.md) |
@@ -73,6 +74,7 @@ runs: 3
 |---|---|---|
 | `skill:<name>` | this case holds that skill's judgment | `evalsuite.py` — a skill no case names fails the gate |
 | `rule:<id>` | this case is the answer to that Gherkin rule | `trace.py`, both directions |
+| `@rule("<id>")` on a test under `tests/` | this test is the answer to that rule — the same claim, for the code this repository ships | `trace.py`, both directions; `tests.py` fails a test bound to no rule |
 | `rule:<id>` on a `should-not-fire` case | only legitimate where the rule is tagged `@refusal` | `trace.py` — otherwise a warning, because a case asserting nothing fires cannot verify a rule that promises a behaviour |
 | `workflow:<id>` | this case walks that workflow end to end | `trace.py` — a workflow nothing walks fails |
 | `should-not-fire` | this case asserts nothing fires | `evalsuite.py` — the suite must always keep at least one |
@@ -200,8 +202,8 @@ that gap is the thing a later `setup` run offers to close.
 
 | id | gate | state | evidence |
 |---|---|---|---|
-| `gate:rule-to-test` | rule → case | automated | `trace.py` — a live rule no case claims fails |
-| `gate:test-to-rule` | case → rule | automated | `trace.py` — a case claiming an id that does not exist fails |
+| `gate:rule-to-test` | rule → case | automated | `trace.py` — a live rule no case and no test claims fails; tests claim through `rule()` since [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part two |
+| `gate:test-to-rule` | case → rule | automated | `trace.py` — a case or a test claiming an id that does not exist fails |
 | `gate:feature-to-workflow` | feature → workflow | automated | `trace.py` |
 | `gate:workflow-to-feature` | workflow → feature | automated | `trace.py` |
 | `gate:workflow-walked` | workflow → case (walked end to end) | automated | `trace.py` |
@@ -333,7 +335,7 @@ did.
 | id | boundary | state | since | evidence |
 |---|---|---|---|---|
 | `boundary:model-session` | the model session | **real** | 0012 | `claude -p` through promptfoo, started by the documented invocation with the maintainer's flag, paid per run. Leaves uncovered: the account's session limit, which three runs in one sitting have exhausted |
-| `boundary:judge` | the judge | **mocked** | 0012 | a model standing in for the human who would read what came out. What would make it a *fake* is the calibration set [`evals/README.md`](../../evals/README.md#calibration) describes — verdicts a person has scored, re-scored by the judge on a schedule — and it has not been made. Cover: none. On the two-change clock from 0039. Leaves uncovered: everything a person would have scored differently |
+| `boundary:judge` | the judge | **mocked** | 0039 | a model standing in for the human who would read what came out. What would make it a *fake* is the calibration set [`evals/README.md`](../../evals/README.md#calibration) describes — verdicts a person has scored, re-scored by the judge on a schedule — and it has not been made. Cover: none. On the two-change clock from 0039. Leaves uncovered: everything a person would have scored differently |
 | `boundary:consuming-repository` | the consuming repository a case runs in | **mocked** | 0039 | a scaffold script's fixture, a stand-in for a repository somebody set up, with no suite against a real one. Cover: the reference repository, by hand, which is a reading rather than a suite. Dated from the reading that wrote this table. Leaves uncovered: a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
 | `boundary:platform` | the platform | **real** | 0021 | `gh` against `sargismarkosyan/livespec`, read back 2026-08-29 with the commands under *Branch protection* below. Leaves uncovered: nothing named |
 
@@ -400,6 +402,12 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a manifest version with no changelog entry | fails | ✔ |
 | an id whose since names a release the changelog does not have | fails | ✔ |
 | the same id twice in the id table | fails | ✔ |
+| a check the tool answers that the id table does not name | fails | ✔ |
+| an id in the table no function answers | fails | ✔ |
+| a test claiming a rule that does not exist | fails | ✔ |
+| a test outside any rule | fails | ✔ |
+| a failing test | fails | ✔ |
+| a test naming a rule that is still @planned | fails | ✔ |
 | shipping change with no release label | fails | ✔ |
 | two release labels at once | fails | ✔ |
 | pull request body with no changelog section | fails | ✔ |
@@ -415,6 +423,28 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | ## Ids naming an id the table does not have | fails | ✔ |
 | a row still reading next after the release | fails | ✔ |
 | a broken gate underneath a stale measurement | fails | ✔ |
+| a ledger in the shape it had before ids | fails | ✔ |
+| a ledger with no stamp line | fails | ✔ |
+| a stamp behind the plugin installed | fails | ✔ |
+| a stamp ahead of the plugin installed | fails | ✔ |
+| a stamp that is not at the plugin installed | fails | ✔ |
+| a changelog the tool cannot read | fails | ✔ |
+| a row in a state of somebody's own | fails | ✔ |
+| an automated row naming no command | fails | ✔ |
+| a not-applicable reason the tree contradicts | fails | ✔ |
+| a gate with no row | fails | ✔ |
+| a recording past its age | fails | ✔ |
+| a mocked row two changes old | fails | ✔ |
+| a gap left in the prose | fails | ✔ |
+| no table for the wiring that must never gate | fails | ✔ |
+| the second table losing the report's row | fails | ✔ |
+| the second table losing the measure's row | fails | ✔ |
+| no row saying a sketch is owed | fails | ✔ |
+| the sketch row and the picture row saying one thing | fails | ✔ |
+| a record instructing by a skill this plugin no longer has | fails | ✔ |
+| a row deferred across two changes | fails | ✔ |
+| a local hook given a row | fails | ✔ |
+| a change outside the record in the working tree | fails | ✔ |
 
 **Three controls sit alongside the table and are not faults.** One checks the unbroken release inputs still release; one checks the report cannot fail a build — there is nothing to break there, because the whole promise is that nothing breaks, so what is asserted is that every degenerate input still exits zero. It was confirmed by making `report.py` able to fail and watching the control report it. The third, added by [`0025`](../changes/0025-which-red-it-is.md), asserts the two reds from the side no fault can reach: a green run says nothing, and a run whose only failure is the board exits 2, does not say *verification failed*, and names who can approve the run that clears it.
 

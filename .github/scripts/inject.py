@@ -32,6 +32,9 @@ CHECKS = SCRIPTS / "checks.py"
 TRACE = SCRIPTS / "trace.py"
 SUITE = SCRIPTS / "evalsuite.py"
 BOARD = SCRIPTS / "board.py"
+TESTS = SCRIPTS / "tests.py"
+DOCTOR = SCRIPTS.parents[1] / "tools" / "doctor.py"
+REPO = SCRIPTS.parents[1]
 REPORT = SCRIPTS / "report.py"
 
 GRADER = """---
@@ -99,15 +102,19 @@ FIXTURE: dict[str, str] = {
     ),
     # checks.py holds this to the shape an audit reads by, against the manifest.
     "CHANGELOG.md": "# Changelog\n\n## 0.0.0 — 2026-01-01\n\nThe fixture's one release.\n",
-    # checks.py holds the id table to the changelog: every since and retired is a
-    # release. Two rows are enough to break it both ways.
-    "method/gates.md": (
-        "# The gates\n\n## The ids\n\n"
-        "| id | kind | since | severity | retired | aliases | meaning |\n"
-        "|---|---|---|---|---|---|---|\n"
-        "| `gate:rule-to-test` | gate | 0.0.0 | wiring | — | rule → test | a live rule no test claims fails |\n"
-        "| `check:stamp-present` | mechanical | 0.0.0 | record | — | | the stamp line is present |\n"
-        "| `check:not-released` | mechanical | next | record | — | | arrived in a change not yet released |\n"
+    # The latest change number, for the two-change clocks the tool reads.
+    "specs/changes/0001-first.md": "# Spec 0001: the first\n",
+    # The one test: standard library, bound to a rule through rulelib.rule().
+    # tests.py holds every test to a rule; trace.py reads the call as a claim.
+    "tests/__init__.py": "",
+    "tests/test_thing.py": (
+        "import sys\nimport unittest\nfrom pathlib import Path\n\n"
+        "sys.path.insert(0, str(Path(__file__).resolve().parent))\n"
+        "from rulelib import rule  # noqa: E402\n\n\n"
+        "class Thing(unittest.TestCase):\n"
+        "    @rule(\"two\")\n"
+        "    def test_nothing_happens(self):\n"
+        "        self.assertTrue(True)\n"
     ),
 }
 
@@ -124,34 +131,136 @@ def record_rows() -> list[tuple[str, str]]:
         [(f[0], f[3]) for f in FAULTS]
         + [(f[0], "fails") for f in RELEASE_FAULTS]
         + [(f[0], "fails") for f in VERDICT_FAULTS]
+        + [(f[0], "fails") for f in DOCTOR_FAULTS]
     )
 
 
-def bindings(root: Path) -> None:
-    """The two enumerations checks.py reads back, generated from what owns them.
+ROW_STRUCTURE = "| `gate:structure` | one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `python3 gate.py` |"
+ROW_COVERAGE = "| `gate:coverage` | lines, branches, functions | not applicable | no coverage here |"
+ROW_PR_REPORT = "| `wiring:pr-report` | the pull-request report | unobserved | `report.py`, posted by CI |"
+ROW_RULE_BOUND = "| `wiring:rule-bound-measure` | the rule-bound measure, reported beside the gated number | not applicable | no coverage here |"
+ROW_STORE = "| `boundary:store` | the store | real | 0001 | `docker compose up db` starts it; leaves uncovered: production volume |"
+ROW_CLOCK = "| `boundary:clock` | the clock | mocked | 0001 | a fake clock nothing checks; cover: none |"
+ROW_SKETCH = "| **A sketch is owed** | by every change spec, before approval |"
+ROW_SHOW = "| **What a change here must show** | a screenshot of the list, on docs/screenshots/ |"
+GATE_HEADER = "| id | gate | state | evidence |\n|---|---|---|---|"
+WIRING_HEADING = "### The wiring that must never gate"
 
-    `checks.py` compares the fault injection record against `record_rows()` and the
-    *What it runs* row against verify.py's gate list. Generating both here means
-    the unbroken fixture is green by construction — and, less obviously, that a
-    fault added below is recorded in the fixture without anybody remembering to,
-    which is the same property the check exists to give the real bindings.
+
+def green_bindings(version: str) -> str:
+    """templates/bindings.md, filled so that every line the audit tool answers reads clear or n/a.
+
+    The one bindings text three things read: the fixture the faults are injected
+    into, the tests under tests/, and — through the tool — the shape a consuming
+    repository's ledger is held to. Generated, so the fault injection record and
+    the *What it runs* row cannot fall behind what owns them.
     """
-    table = "\n".join(
+    record = "\n".join(
         f"| {name} | {'**warns, does not fail**' if outcome == 'warns' else 'fails'} | \u2714 |"
         for name, outcome in record_rows()
     )
     runs = ", ".join(f"`{script}`" for _, script in VERIFY_GATES)
-    path = root / "specs" / "setup" / "README.md"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
+    gates = "\n".join(
+        [
+            "| `gate:rule-to-test` | a live rule no test claims | automated | `python3 gate.py` |",
+            "| `gate:test-to-rule` | a test claiming a rule that does not exist | automated | `python3 gate.py` |",
+            "| `gate:planned-unclaimed` | a `@planned` rule or workflow that is claimed | automated | `python3 gate.py` |",
+            "| `gate:feature-to-workflow` | a feature naming no workflow, or one that does not exist | automated | `python3 gate.py` |",
+            "| `gate:workflow-to-feature` | a workflow claimed by no feature | automated | `python3 gate.py` |",
+            "| `gate:workflow-walked` | a workflow walked by no test | automated | `python3 gate.py` |",
+            "| `gate:workflow-to-persona` | a workflow naming no live persona | automated | `python3 gate.py` |",
+            "| `gate:persona-to-workflow` | a persona named by no workflow | automated | `python3 gate.py` |",
+            "| `gate:journey-to-workflow` | a journey naming a workflow that does not exist | automated | `python3 gate.py` |",
+            "| `gate:workflow-to-journey` | a workflow naming no journey — warns | automated | `python3 gate.py` |",
+            ROW_STRUCTURE,
+            ROW_COVERAGE,
+            "| `gate:boundary-double` | a rule-bound test doubling a boundary declared real | not applicable | no rule-bound doubles here |",
+            "| `gate:boundary-fake-suite` | a fake row naming no suite against the real thing | not applicable | no rule-bound doubles here |",
+            "| `gate:boundary-recorded-age` | a recorded row past its age | not applicable | no rule-bound doubles here |",
+            "| `gate:boundaries-table` | rule-bound tests present and no boundaries table | not applicable | no rule-bound doubles here |",
+            "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
+        ]
+    )
+    return (
         "# Bindings\n\n"
+        "The bindings of a synthetic fixture. Nothing here is a real repository.\n\n"
         "## The table\n\n"
         "| | |\n|---|---|\n"
-        f"| **What it runs** | {runs}, in that order |\n\n"
+        "| **Verification** | `python3 gate.py` |\n"
+        "| **What it returns** | 0 green, 1 red |\n"
+        f"| **What it runs** | {runs} |\n"
+        "| **Language** | JavaScript |\n"
+        "| **Package manager** | npm |\n"
+        "| **Traceability gate** | `python3 gate.py trace` |\n"
+        "| **Coverage gate** | none — see *What has no gate* |\n"
+        "| **Coverage thresholds** | none |\n"
+        "| **Fault injection** | `python3 gate.py inject` — the record is below |\n"
+        "| **Required checks** | `checks` |\n"
+        "| **Tracker** | GitHub Issues, via `gh issue create` |\n"
+        "| **Where the app runs** | `npm start` |\n"
+        f"{ROW_SKETCH}\n"
+        f"{ROW_SHOW}\n"
+        "| **Deliverable of a version** | the screenshot |\n"
+        "| **What proves a rule** | an ordinary test suite |\n"
+        "| **How a test claims its rule** | `rule()` from tests/rulelib.py |\n"
+        "| **Rule discovery** | specs/features/**/*.feature |\n"
+        "| **Spec-bound coverage** | not applicable — no coverage here |\n"
+        "| **Pull-request report** | `report.py`, posted by CI |\n"
+        "| **Audit record** | `specs/setup/audit.md` |\n"
+        "| **What a contributor owes a release** | a label and a changelog section |\n\n"
+        "## Gate wiring\n\n"
+        f"**Reconciled against livespec {version} on 2026-01-01.**\n\n"
+        f"{GATE_HEADER}\n{gates}\n\n"
+        f"{WIRING_HEADING}\n\n"
+        "| id | wiring | state | evidence |\n|---|---|---|---|\n"
+        f"{ROW_PR_REPORT}\n{ROW_RULE_BOUND}\n\n"
+        "### The boundaries\n\n"
+        "| id | boundary | state | since | evidence |\n|---|---|---|---|---|\n"
+        f"{ROW_STORE}\n{ROW_CLOCK}\n\n"
+        "### Workarounds\n\n"
+        "| instead | gap | filed | ends when |\n|---|---|---|---|\n\n"
         "## The fault injection record\n\n"
         "| Injected fault | Expected | Result |\n|---|---|---|\n"
-        f"{table}\n"
+        f"{record}\n\n"
+        "## Branch protection\n\n"
+        "Read back with `gh api repos/o/r/rulesets` on 2026-01-01: a merge is blocked when `checks` fails, and one deploy key can bypass.\n\n"
+        "## What has no gate, and what that misses\n\n"
+        "No coverage gate: the fixture has three lines of code, and a threshold over them would measure nothing.\n\n"
+        "## Notes from the sitting\n\n"
+        "Nothing runs on one machine that the pipeline does not.\n"
     )
+
+
+def bindings(root: Path) -> None:
+    """The bindings the fixture carries: the template filled green, at the fixture's own version."""
+    path = root / "specs" / "setup" / "README.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(green_bindings("0.0.0"))
+
+
+def id_table(root: Path) -> None:
+    """The plugin's own id table, with every version rewritten to the fixture's one release.
+
+    checks.py holds the table equal to the tool's registry, so the fixture must
+    carry the real list rather than a stand-in for it; only the two columns the
+    release writes are rewritten, to the version the fixture's changelog has.
+    """
+    real = (REPO / "method" / "gates.md").read_text()
+    start = real.index("## The ids")
+    end = real.find("\n## ", start + 10)
+    lines: list[str] = []
+    for line in real[start: end if end != -1 else len(real)].splitlines():
+        if line.startswith("|") and not line.startswith("|--"):
+            segments = line.split("|")
+            if len(segments) >= 9 and segments[1].strip() != "id":
+                segments[3] = " 0.0.0 "
+                if segments[5].strip() not in ("", "—", "-"):
+                    segments[5] = " 0.0.0 " + segments[5].strip().split(" ", 1)[1] + " " if " " in segments[5].strip() else " 0.0.0 "
+                line = "|".join(segments)
+        lines.append(line)
+    path = root / "method" / "gates.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("# The gates\n\n" + "\n".join(lines) + "\n")
 
 
 def build(root: Path) -> None:
@@ -184,6 +293,8 @@ def build(root: Path) -> None:
         + "\n"
     )
     bindings(root)
+    id_table(root)
+    (root / "tests" / "rulelib.py").write_text((REPO / "tests" / "rulelib.py").read_text())
 
 
 def drop_board_entry(root: Path, name: str) -> None:
@@ -488,8 +599,8 @@ FAULTS = [
      lambda r: edit(r, "specs/setup/README.md", "| live rule with no case | fails | \u2714 |\n", ""),
      "fails", "has no row for"),
     ("the record naming a fault nobody injects", CHECKS,
-     lambda r: edit(r, "specs/setup/README.md", "|---|---|---|\n",
-                    "|---|---|---|\n| a fault nobody injects | fails | \u2714 |\n"),
+     lambda r: edit(r, "specs/setup/README.md", "| Injected fault | Expected | Result |\n|---|---|---|\n",
+                    "| Injected fault | Expected | Result |\n|---|---|---|\n| a fault nobody injects | fails | \u2714 |\n"),
      "fails", "which inject.py does not hold"),
     ("a recorded fault whose expected result was flipped", CHECKS,
      lambda r: edit(r, "specs/setup/README.md",
@@ -517,12 +628,152 @@ FAULTS = [
                     "| `check:stamp-present` | mechanical | 0.0.9 |"),
      "fails", "has no CHANGELOG.md entry; an audit would report"),
     ("the same id twice in the id table", CHECKS,
-     lambda r: edit(r, "method/gates.md",
-                    "| `check:stamp-present` | mechanical | 0.0.0 | record | — | | the stamp line is present |\n",
-                    "| `check:stamp-present` | mechanical | 0.0.0 | record | — | | the stamp line is present |\n"
-                    "| `check:stamp-present` | mechanical | 0.0.0 | record | — | | the stamp line is present |\n"),
+     lambda r: duplicate_row(r, "method/gates.md", "| `check:stamp-present` |"),
      "fails", "appears twice"),
+    # The tool and the table are one list, and the tests are bound to rules.
+    # See specs/changes/0041, part two.
+    ("a check the tool answers that the id table does not name", CHECKS,
+     lambda r: drop_row(r, "method/gates.md", "| `check:ledger-shape` |"),
+     "fails", "the tool performs check:ledger-shape and the id table does not name it"),
+    ("an id in the table no function answers", CHECKS,
+     lambda r: edit(r, "method/gates.md", "| `check:stamp-present` |", "| `check:ghost` | mechanical | 0.0.0 | record | — | | nobody answers this |\n| `check:stamp-present` |"),
+     "fails", "names check:ghost and no function"),
+    ("a test claiming a rule that does not exist", TRACE,
+     lambda r: edit(r, "tests/test_thing.py", 'rule("two")', 'rule("nope")'),
+     "fails", "does not exist"),
+    ("a test outside any rule", TESTS,
+     lambda r: edit(r, "tests/test_thing.py", '    @rule("two")\n', ""),
+     "fails", "names no rule"),
+    ("a failing test", TESTS,
+     lambda r: edit(r, "tests/test_thing.py", "assertTrue(True)", "assertTrue(False)"),
+     "fails", "the tests are red"),
+    ("a test naming a rule that is still @planned", TESTS,
+     lambda r: edit(r, "specs/features/core/core.feature", "@rule:two @refusal", "@rule:two @refusal @planned"),
+     "fails", "the tests are red"),
 ]
+
+
+def duplicate_row(root: Path, relative: str, prefix: str) -> None:
+    path = root / relative
+    lines = path.read_text().splitlines(keepends=True)
+    hit = next((line for line in lines if line.startswith(prefix)), None)
+    if hit is None:
+        raise SystemExit(f"inject: {relative} has no row starting {prefix!r}")
+    path.write_text("".join(line + hit if line == hit else line for line in lines))
+
+
+def drop_row(root: Path, relative: str, prefix: str) -> None:
+    path = root / relative
+    lines = path.read_text().splitlines(keepends=True)
+    if not any(line.startswith(prefix) for line in lines):
+        raise SystemExit(f"inject: {relative} has no row starting {prefix!r}")
+    path.write_text("".join(line for line in lines if not line.startswith(prefix)))
+
+
+def git_in(root: Path, *args: str) -> None:
+    subprocess.run(["git", "-c", "user.name=fixture", "-c", "user.email=fixture@example.test", *args], cwd=root, capture_output=True, check=True)
+
+
+def as_git_repo_with_a_stray_change(root: Path) -> None:
+    git_in(root, "init", "-q")
+    git_in(root, "add", "-A")
+    git_in(root, "commit", "-q", "-m", "fixture")
+    (root / "src").mkdir(exist_ok=True)
+    (root / "src" / "app.js").write_text("// a fix that strayed into the wiring\n")
+    git_in(root, "add", "-A")
+    (root / "src" / "app.js").write_text("// changed after being added\n")
+
+
+# (name, the check whose line must move, how to break the fixture, the state it must read)
+#
+# One fault per check the tool answers from a file. A check no fault flips is
+# red here — doctor_control() below holds this list to the tool's own registry
+# — because a check that has never been made to fail is not known to be a
+# check. See specs/changes/0041, every-mechanical-check-is-proven-to-fire.
+DOCTOR_FAULTS = [
+    ("a ledger in the shape it had before ids", "check:ledger-shape",
+     lambda r: edit(r, "specs/setup/README.md", GATE_HEADER, "| Gate | State | Wired by, or why not |\n|---|---|---|"), "open"),
+    ("a ledger with no stamp line", "check:stamp-present",
+     lambda r: edit(r, "specs/setup/README.md", "**Reconciled against livespec 0.0.0 on 2026-01-01.**", ""), "open"),
+    ("a stamp behind the plugin installed", "check:stamp-range",
+     lambda r: (edit(r, ".claude-plugin/plugin.json", '"version": "0.0.0"', '"version": "0.0.1"'),
+                edit(r, "CHANGELOG.md", "## 0.0.0 — 2026-01-01", "## 0.0.1 — 2026-01-02\n\nA later release.\n\n## 0.0.0 — 2026-01-01")), "open"),
+    ("a stamp ahead of the plugin installed", "check:stamp-ahead",
+     lambda r: edit(r, "specs/setup/README.md", "livespec 0.0.0 on", "livespec 9.9.9 on"), "open"),
+    ("a stamp that is not at the plugin installed", "check:range-empty-said",
+     lambda r: edit(r, "specs/setup/README.md", "livespec 0.0.0 on", "livespec 9.9.9 on"), "n/a"),
+    ("a changelog the tool cannot read", "check:changelog-reachable",
+     lambda r: edit(r, "CHANGELOG.md", "## 0.0.0 — 2026-01-01", "## 0.0.0"), "open"),
+    ("a row in a state of somebody's own", "check:row-state-legal",
+     lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE, ROW_STRUCTURE.replace("| automated |", "| maybe |")), "open"),
+    ("an automated row naming no command", "check:row-evidence",
+     lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE, ROW_STRUCTURE.replace("`python3 gate.py`", "the gate")), "open"),
+    ("a not-applicable reason the tree contradicts", "check:na-vs-tree",
+     lambda r: edit(r, "specs/setup/README.md", ROW_COVERAGE, ROW_COVERAGE.replace("no coverage here", "no personas exist")), "open"),
+    ("a gate with no row", "check:row-per-gate",
+     lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE + "\n", ""), "open"),
+    ("a recording past its age", "check:recorded-age",
+     lambda r: edit(r, "specs/setup/README.md", ROW_CLOCK, "| `boundary:clock` | the clock | recorded | 0001 | recordings from 2020-01-01, allowed 30 days |"), "open"),
+    ("a mocked row two changes old", "check:mocked-clock",
+     lambda r: write(r, "specs/changes/0003-later.md", "# Spec 0003\n"), "open"),
+    ("a gap left in the prose", "check:prose-phrases",
+     lambda r: edit(r, "specs/setup/README.md", "## Notes from the sitting\n\n", "## Notes from the sitting\n\nThe report is not built yet.\n\n"), "open"),
+    ("no table for the wiring that must never gate", "check:second-table",
+     lambda r: edit(r, "specs/setup/README.md", WIRING_HEADING, "### Two rows that used to be a table"), "open"),
+    ("the second table losing the report's row", "check:pr-report-row",
+     lambda r: edit(r, "specs/setup/README.md", ROW_PR_REPORT + "\n", ""), "open"),
+    ("the second table losing the measure's row", "check:rule-bound-row",
+     lambda r: edit(r, "specs/setup/README.md", ROW_RULE_BOUND + "\n", ""), "open"),
+    ("no row saying a sketch is owed", "check:sketch-row",
+     lambda r: edit(r, "specs/setup/README.md", ROW_SKETCH + "\n", ""), "open"),
+    ("the sketch row and the picture row saying one thing", "check:picture-row",
+     lambda r: edit(r, "specs/setup/README.md", ROW_SKETCH, "| **A sketch is owed** | a screenshot of the list, on docs/screenshots/ |"), "open"),
+    ("a record instructing by a skill this plugin no longer has", "check:skill-names",
+     lambda r: write(r, "CLAUDE.md", "# The loop\n\nReport what you found with `/livespec:feedback`.\n"), "open"),
+    ("a row deferred across two changes", "check:deferred-clock",
+     lambda r: (edit(r, "specs/setup/README.md", ROW_STRUCTURE, "| `gate:structure` | structure | deferred | since 0001 — later |"),
+                write(r, "specs/changes/0003-later.md", "# Spec 0003\n")), "open"),
+    ("a local hook given a row", "check:hook-no-row",
+     lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE, ROW_STRUCTURE + "\n| `local:hook` | the pre-push hook | automated | `.githooks/pre-push` |"), "open"),
+    ("a change outside the record in the working tree", "check:record-only",
+     as_git_repo_with_a_stray_change, "open"),
+]
+
+
+def audit_fixture(root: Path) -> dict[str, str]:
+    """The state the tool gives every check, reading the fixture as both repository and plugin."""
+    result = subprocess.run(
+        [sys.executable, str(DOCTOR), "specs/setup/README.md", "--plugin", str(root)],
+        cwd=root, capture_output=True, text=True,
+    )
+    states: dict[str, str] = {}
+    for line in result.stdout.splitlines():
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) >= 2 and cells[0].startswith("`check:"):
+            states[cells[0].strip("`")] = cells[1]
+    if not states:
+        raise AssertionError(f"the tool printed no record (exit {result.returncode}):\n{result.stdout}{result.stderr}")
+    return states
+
+
+def doctor_control(root: Path) -> None:
+    """The green fixture reads green, the tool runs nothing it read, and every mechanical check has a fault."""
+    sys.path.insert(0, str(DOCTOR.parent))
+    import doctor  # noqa: E402
+
+    states = audit_fixture(root)
+    for check_id in doctor.MECHANICAL:
+        assert states.get(check_id) in ("clear", "n/a"), f"the green fixture reads {check_id}: {states.get(check_id)}"
+    assert set(doctor.MECHANICAL) == {fault[1] for fault in DOCTOR_FAULTS}, (
+        "a check the tool answers has no fault that flips it: "
+        + ", ".join(sorted(set(doctor.MECHANICAL) ^ {fault[1] for fault in DOCTOR_FAULTS}))
+    )
+    mark = root / "pwned"
+    edit(root, "specs/setup/README.md", "`python3 gate.py trace`", f"`touch {mark}`")
+    states = audit_fixture(root)
+    assert not mark.exists(), "the tool ran a command it read from the bindings"
+    assert "unanswered" == states.get("check:real-not-doubled"), "the planted command was not handed to a mind"
+
 
 
 # The third pure list. Like the release faults it needs no fixture — verify.py's
@@ -554,7 +805,7 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="livespec-inject-") as workspace:
         control = Path(workspace) / "control"
         build(control)
-        for gate in (CHECKS, TRACE, SUITE):
+        for gate in (CHECKS, TRACE, TESTS, SUITE):
             code, output = run(gate, control)
             if code != 0:
                 problems.append(f"the unbroken fixture fails {gate.name}:\n{output}")
@@ -574,6 +825,25 @@ def main() -> int:
             print(f"    {'✔' if ok else '✘'} {name:<48} {expected}")
             if not ok:
                 problems.append(f"{name}: expected it to {expected} naming {phrase!r}; exit {code}\n{output}")
+
+        baseline = Path(workspace) / "doctor-control"
+        build(baseline)
+        try:
+            doctor_control(baseline)
+        except AssertionError as error:
+            problems.append(f"the audit tool is not as it claims: {error}")
+        for index, (name, check_id, mutate, expected) in enumerate(DOCTOR_FAULTS):
+            root = Path(workspace) / f"doctor{index:02d}"
+            build(root)
+            mutate(root)
+            try:
+                got = audit_fixture(root).get(check_id, "missing")
+            except AssertionError as error:
+                got = f"no record ({error})"
+            ok = got == expected
+            print(f"    {'✔' if ok else '✘'} {name:<48} {check_id} → {expected}")
+            if not ok:
+                problems.append(f"{name}: expected {check_id} to read {expected}; it reads {got}")
 
     try:
         report_control()
@@ -614,7 +884,7 @@ def main() -> int:
         for problem in problems:
             print(f"  ✘ {problem}\n", file=sys.stderr)
         return 1
-    total = len(FAULTS) + len(RELEASE_FAULTS) + len(VERDICT_FAULTS)
+    total = len(FAULTS) + len(RELEASE_FAULTS) + len(VERDICT_FAULTS) + len(DOCTOR_FAULTS)
     print(f"✔ gate fault injection: {total}/{total} faults caught")
     return 0
 
