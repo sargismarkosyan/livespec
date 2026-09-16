@@ -69,6 +69,16 @@ scarce, and adopt the norm that **a warning surviving two versions either become
 an error or gets deleted** — four new warning kinds at once turn the output into
 wallpaper in one version, and wallpaper is indistinguishable from green.
 
+**A repository's own pipeline is not an attempt anybody makes with the
+product.** The gates on this page, the step that releases, the checks that
+prove them — none of it is something the persona does, so no feature file
+describes it and no rule id is reserved for it. It is held by the fault table
+this page ends with, and read back from the record of that table in the
+bindings. A feature naming no workflow is refused, and the answer to that
+refusal is never a second kind of tag: it is either an attempt missing from
+the workflows, or a contract of the repository's own, which belongs in the
+faults.
+
 **Two checks worth wanting and worth leaving out:** whether a journey has been
 looked at since the workflows under it changed, and whether features have piled
 up under a workflow since its file was last edited. Both are git questions rather
