@@ -453,7 +453,7 @@ does not name — held to the same states, required by nothing.
 
 | id | kind | since | severity | retired | aliases | meaning |
 |---|---|---|---|---|---|---|
-| `check:ledger-shape` | mechanical | next | record | — | | the three tables and the stamp line are in the shape the template gives them |
+| `check:ledger-shape` | mechanical | 1.6.0 | record | — | | the three tables and the stamp line are in the shape the template gives them |
 | `check:stamp-present` | mechanical | 0.21.0 | record | — | | the ledger carries the version it was reconciled against |
 | `check:stamp-range` | mechanical | 1.1.0 | record | — | | the entries between the stamp and the plugin installed are listed |
 | `check:stamp-ahead` | mechanical | 1.1.0 | record | — | | a stamp ahead of the plugin installed is said, and no range read |
