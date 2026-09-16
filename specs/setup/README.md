@@ -194,7 +194,7 @@ what moved was what the numbers were allowed to be called.
 
 ## Gate wiring
 
-**Reconciled against livespec 1.1.0 on 2026-09-02.** One row per gate named in
+**Reconciled against livespec 1.6.0 on 2026-09-16.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
@@ -335,15 +335,18 @@ did.
 
 | id | boundary | state | since | evidence |
 |---|---|---|---|---|
-| `boundary:model-session` | the model session | **real** | 0012 | `claude -p` through promptfoo, started by the documented invocation with the maintainer's flag, paid per run. Leaves uncovered: the account's session limit, which three runs in one sitting have exhausted |
+| `boundary:model-session` | the model session | **real** | 0012 | `claude -p` through promptfoo, started by `python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold --i-approve-the-cost` — the maintainer's to run, paid per run. Leaves uncovered: the account's session limit, which three runs in one sitting have exhausted |
 | `boundary:judge` | the judge | **mocked** | 0039 | a model standing in for the human who would read what came out. What would make it a *fake* is the calibration set [`evals/README.md`](../../evals/README.md#calibration) describes — verdicts a person has scored, re-scored by the judge on a schedule — and it has not been made. Cover: none. On the two-change clock from 0039. Leaves uncovered: everything a person would have scored differently |
 | `boundary:consuming-repository` | the consuming repository a case runs in | **mocked** | 0039 | a scaffold script's fixture, a stand-in for a repository somebody set up, with no suite against a real one. Cover: the reference repository, by hand, which is a reading rather than a suite. Dated from the reading that wrote this table. Leaves uncovered: a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
 | `boundary:platform` | the platform | **real** | 0021 | `gh` against `sargismarkosyan/livespec`, read back 2026-08-29 with the commands under *Branch protection* below. Leaves uncovered: nothing named |
 
-**The stamp stays at 1.1.0 through 0039.** A table was added and nothing was
-rewired — no gate gained a check, because there is no rule-bound test here for
-one to read — which is [`0021`](../changes/0021-asked-not-assumed.md)'s test
-and the same reason the second table did not move it.
+**The stamp stayed at 1.1.0 through 0039**, because a table was added and
+nothing was rewired. **It moved to 1.6.0 with the first audit run through the
+tool**, on 2026-09-16, because by then the wiring here had moved: `checks.py`
+gained the id-table and registry checks, `tests.py` became a gate, and
+`version_gate.py` gained its fourth trigger — every one of them wired in this
+repository, which is the plugin, and level with it by construction. The record
+of that audit is `specs/setup/audit.md`.
 
 ## The fault injection record
 
