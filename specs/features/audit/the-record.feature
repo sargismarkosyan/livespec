@@ -62,3 +62,17 @@ Feature: The audit record — one line per check, or the audit does not end
       When the record is validated
       Then it is refused, naming the file
       And the reply says that wiring is the sitting's
+
+  @rule:a-record-can-be-checked-without-being-rewritten @planned
+  Rule: Whether a finished record validates can be asked without the record being written or the reply generated, so a grader can ask it of what a session left
+
+    Example: a grader asks
+      Given a record a session left at the path the bindings name
+      When it is checked rather than validated
+      Then the answer is the same exit the validation would give
+      And the file is byte-identical afterwards and no reply is printed
+
+    Example: a refused record, checked
+      Given a record with a line still unanswered
+      When it is checked
+      Then it is refused naming the line
