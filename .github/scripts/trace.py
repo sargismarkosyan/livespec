@@ -340,6 +340,84 @@ for value, entry in sorted(personas.items()):
             f"@persona:{value} is named by no workflow; nobody does anything as them. Give them a workflow, or tag the file @retired.",
         )
 
+# --- the file every session reads first -------------------------------------
+#
+# CLAUDE.md is read by every session before anything under specs/, and until
+# 0048 nothing refused a change that gutted it or grew it into a copy of the
+# method. What is read here is only what a script can decide: the size against
+# the ceiling the bindings name, that it is at the root, that it carries the
+# loop as a numbered list of at most eight steps, a block of commands, and a
+# link to the bindings that resolves. What it says is a mind's to read — setup
+# §6 at the sitting, the audit after — and nothing here pretends otherwise.
+
+CONTEXT_FILE = "CLAUDE.md"
+BINDINGS = Path("specs") / "setup" / "README.md"
+MAX_LOOP_STEPS = 8
+CEILING_ROW = re.compile(r"^\|\s*\*\*CLAUDE\.md ceiling\*\*\s*\|(.*)\|\s*$", re.IGNORECASE)
+FENCE = re.compile(r"^\s*(```|~~~)")
+ORDERED = re.compile(r"^\s*(\d+)\.\s")
+LINK_TARGET = re.compile(r"\]\((?!https?:|#|mailto:)([^)\s]+)\)")
+
+
+def ceiling_in(bindings_text: str) -> int | None:
+    """The first number in the bindings' CLAUDE.md ceiling row, or None where there is no row."""
+    for line in bindings_text.splitlines():
+        match = CEILING_ROW.match(line)
+        if match:
+            number = re.search(r"\d[\d,]*", match.group(1))
+            return int(number.group(0).replace(",", "")) if number else None
+    return None
+
+
+def longest_numbered_run(lines: list[str]) -> int:
+    """The longest run of consecutive 1., 2., 3. … items outside fenced blocks —
+    the loop, if there is one. Blank and indented lines inside a run continue it."""
+    longest = run = expected = 0
+    fenced = False
+    for raw in lines:
+        if FENCE.match(raw):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        match = ORDERED.match(raw)
+        if match and int(match.group(1)) == 1:
+            run, expected = 1, 2
+        elif match and int(match.group(1)) == expected:
+            run, expected = run + 1, expected + 1
+        elif match or (raw.strip() and not raw.startswith((" ", "\t"))):
+            run, expected = 0, 0
+        longest = max(longest, run)
+    return longest
+
+
+context_path = ROOT / CONTEXT_FILE
+if not context_path.is_file():
+    fail(CONTEXT_FILE, "no CLAUDE.md at the root; the file every session reads first is missing")
+else:
+    context_lines = context_path.read_text(encoding="utf-8").splitlines()
+    bindings_path = ROOT / BINDINGS
+    ceiling = ceiling_in(bindings_path.read_text(encoding="utf-8")) if bindings_path.is_file() else None
+    if ceiling is None:
+        fail(str(BINDINGS), "names no CLAUDE.md ceiling; a number nobody wrote is not a pass — write the row from the file's size")
+    elif len(context_lines) > ceiling:
+        fail(
+            CONTEXT_FILE,
+            f"is {len(context_lines)} lines against a ceiling of {ceiling} in {BINDINGS}; move a copy to the "
+            "bindings and link it, or raise the number in this change with the reason beside it",
+        )
+    steps = longest_numbered_run(context_lines)
+    if steps == 0:
+        fail(CONTEXT_FILE, "carries no numbered list; the loop, numbered, is what an agent follows")
+    elif steps > MAX_LOOP_STEPS:
+        fail(CONTEXT_FILE, f"carries a numbered list of {steps} steps; the loop is at most {MAX_LOOP_STEPS}")
+    if sum(1 for line in context_lines if FENCE.match(line)) < 2:
+        fail(CONTEXT_FILE, "carries no fenced block; the commands go in one")
+    targets = LINK_TARGET.findall("\n".join(context_lines))
+    resolved = {(context_path.parent / target.split("#", 1)[0]).resolve() for target in targets}
+    if bindings_path.resolve() not in resolved:
+        fail(CONTEXT_FILE, f"does not link to {BINDINGS}, the bindings; every command a session runs is read from there")
+
 # --- the map, generated, never typed ----------------------------------------
 
 if AS_JSON:

@@ -379,6 +379,38 @@ with the reason in the row, the way a deferred gate becomes *not applicable*: a
 decision made in the open, after which every change touching that boundary says
 so.
 
+### The file every session reads first
+
+CLAUDE.md is read by every session before anything under `specs/`, written by
+the sitting and corrected by the audit — and, until now, refused by nothing. A
+change that gutted it to three lines, or grew it into a copy of the method,
+reached the default branch with every check green, and the first thing to
+notice was the next session behaving strangely.
+
+**The gate reads only what a script can decide**, and says so:
+
+| Failure | What it means |
+|---|---|
+| a context file larger than the ceiling the bindings name | Something in it is a pointer that turned into a copy. Move the copy to the bindings and link it — or raise the number in the same change, with the reason beside it, so the growth is a line in a diff. |
+| a context file with no ceiling row | A number nobody wrote is not a pass. The sitting writes the row from the file's size once it has finished with the file. |
+| no context file at the root | The file every session reads first is missing. |
+| no numbered list, or one longer than eight steps | The loop is missing, or has grown past what an agent follows at the moment it matters. The loop is the longest numbered run outside fenced blocks. |
+| no fenced block | The commands are missing. |
+| no link to the bindings that resolves | The one pointer every other command depends on is missing or points at nothing. |
+
+What it does not read is prose. A stale pointer, a paragraph copied from the
+plugin, a rule nobody follows — [`claude-md.md`](claude-md.md) rules all three
+out, and only a mind can see them. They stay with the sitting that writes the
+file and the audit that re-reads it, and a gate that claimed them would be
+wallpaper by its second run.
+
+**The traceability gate reads it, and it is not a third one**, for the reason
+the boundaries were folded in: the same script that reads the spec layer for
+its shape reads the file that points at it, and a third gate renames *both
+gates* in every ledger, every injector and every bindings file already
+written. Two rows in the ledger, one for the ceiling and one for the shape,
+because a repository can have the file in shape and no number yet.
+
 ### And what is not wiring at all
 
 A check that runs on somebody's own machine before they push — the
@@ -445,6 +477,8 @@ before *boundary* before *wiring* before *record*.
 | `gate:boundary-fake-suite` | gate | 1.2.0 | boundary | — | | a fake row naming no suite against the real thing fails |
 | `gate:boundary-recorded-age` | gate | 1.2.0 | boundary | — | | a recorded row past the age the bindings set fails |
 | `gate:boundaries-table` | gate | 1.2.0 | boundary | — | | rule-bound tests present and no boundaries table fails |
+| `gate:context-file-ceiling` | gate | next | wiring | — | | the context file larger than the ceiling the bindings name, or a context file with no ceiling row, fails |
+| `gate:context-file-shape` | gate | next | wiring | — | | the context file missing, or without its loop, its commands, or its pointer to the bindings, fails |
 | `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire |
 
 ### The wiring that must never gate
@@ -533,6 +567,13 @@ each one in turn and read the message it produces:
 | a fake row naming no suite against the real thing | fails |
 | a recorded row past the age the bindings set | fails |
 | rule-bound tests present and no boundaries table | fails |
+| a context file past its ceiling | fails |
+| a context file with no ceiling row | fails |
+| no context file at the root | fails |
+| a context file with no numbered list | fails |
+| a loop of nine steps | fails |
+| a context file with no fenced block | fails |
+| a context file that does not link to the bindings | fails |
 
 If you change either gate, re-check it the same way, and keep the results in the
 repository's bindings where somebody can read what was actually tried.
