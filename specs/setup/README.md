@@ -212,7 +212,7 @@ that gap is the thing a later `setup` run offers to close.
 | `gate:persona-to-workflow` | persona → workflow | automated | `trace.py` |
 | `gate:journey-to-workflow` | journey → workflow | automated | `trace.py` |
 | `gate:workflow-to-journey` | workflow → journey | automated | `trace.py`, as a **warning** — where an attempt sits in the arc is a judgment |
-| `gate:structure` | structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` |
+| `gate:structure` | structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` — and the soft limits, six rules and 120 lines per file, **warn and do not fail**, broken by two faults since [`0047`](../changes/0047-a-warning-that-has-never-fired.md), each expected to warn |
 | `gate:verified-to-fire` | both gates verified to fire | automated | `inject.py` — every gate broken in a fixture and the release inputs broken as pure functions, re-run by every `verify.py`. **`checks.py` is in that set only since [`0022`](../changes/0022-nobody-types-the-record.md)**, which is when it first took a root and could be pointed at a fixture at all; before that it was the one gate here never known to fire |
 | `local:enumerations-read-back` | the enumerations in this file read back from what owns them | automated | `checks.py`, added by [`0022`](../changes/0022-nobody-types-the-record.md) — *The fault injection record* against `inject.py`, *What it runs* against `verify.py`. Both were typed, and both had drifted |
 | `local:record-shape` | the record an audit reads by keeps its shape | automated | `checks.py`, added by [`0038`](../changes/0038-the-other-side-of-the-difference.md) — `CHANGELOG.md` at the plugin root, every heading a release and a date, the manifest's `version` with an entry. Read through `releaselib.py`, which is also what writes it, and broken by two faults in `inject.py`. Every version *reaching* an entry was already held by the release faults; this holds the shape the reading depends on |
@@ -388,6 +388,8 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | example outside any rule | fails | ✔ |
 | refusal rule losing the tag that makes its case legitimate | **warns, does not fail** | ✔ |
 | workflow naming no journey | **warns, does not fail** | ✔ |
+| a feature holding more rules than the soft limit | **warns, does not fail** | ✔ |
+| a feature longer than the soft limit | **warns, does not fail** | ✔ |
 | case graded only by what fired | fails | ✔ |
 | case run fewer times than the floor | fails | ✔ |
 | the last should-not-fire case removed | fails | ✔ |

@@ -1,6 +1,6 @@
 # Spec 0047: a warning that has never fired
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** none — a direct request on 2026-09-16. Asked whether a gate holds
   a feature file to six rules, and told *"add a gate if you think we need
   one."* This is the answer: no hard gate, and a warning that is proven and

@@ -525,6 +525,8 @@ each one in turn and read the message it produces:
 | persona named by no workflow, tag removed | fails |
 | journey naming a workflow that does not exist | fails |
 | workflow naming no journey | warns, does not fail |
+| a feature holding more rules than the soft limit | warns, does not fail |
+| a feature longer than the soft limit | warns, does not fail |
 | a module well under the coverage thresholds | fails |
 | a fully covered module | passes |
 | a rule-bound test doubling a boundary whose row reads real | fails |
