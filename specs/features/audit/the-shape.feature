@@ -46,3 +46,24 @@ Feature: The shape a ledger has, so that one tool can read every repository's
       When the audit makes its corrections
       Then the ids are in the rows and the columns are where they were
       And the reply ends with the command that starts the sitting, which reshapes it
+
+  @rule:the-record-is-read-as-typed-not-as-templated
+  Rule: A ledger typed by a person is read by what its stamp and headings say, not by their exact wording, and only a table the tool cannot find at all reads as missing
+
+    Example: a stamp written in bold with a note after the version
+      Given a consuming repository whose stamp reads livespec 1.3.0 in bold, with a parenthetical before the date
+      When the wiring is audited
+      Then the stamp is read as 1.3.0 on that date
+      And the range is computed from it
+
+    Example: a heading longer than the template's
+      Given a consuming repository whose gate table sits under a heading reading "The gate wiring ledger"
+      When the wiring is audited
+      Then the table is found and its rows are read
+      And nothing reports the table as missing
+
+    Example: a second-table row labelled in its own words
+      Given a wiring table whose row for the rule-bound measure calls it the rule-bound coverage measure
+      When the wiring is audited
+      Then the row is found
+      And it is not reported as absent

@@ -32,6 +32,9 @@ Two steps, in Claude Code:
 
 The first registers this repository as a marketplace; the second installs the
 plugin from it. `/plugin` on its own opens the browser if you would rather click.
+**A skill's body is loaded once, when a session starts** — after `/plugin
+update`, start a new session, or the session goes on running the skill it
+loaded before the update.
 
 **To check it took**, start a session and look at the skill names: they arrive
 prefixed, as `livespec:refine-spec`, `livespec:todo`, `livespec:setup` and so

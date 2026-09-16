@@ -100,7 +100,13 @@ def markdown_files() -> list[Path]:
     Where git cannot answer — `inject.py` points this at a plain temporary
     directory — every file is read, which is what the injected faults need.
     """
-    found = sorted(p for p in ROOT.rglob("*.md") if ".git" not in p.parts)
+    # tests/fixtures/ holds copies of other repositories' files as they were
+    # typed; their links point into trees that are not here. They are held by
+    # tests, never read as documents. See specs/changes/0043.
+    found = sorted(
+        p for p in ROOT.rglob("*.md")
+        if ".git" not in p.parts and p.relative_to(ROOT).parts[:2] != ("tests", "fixtures")
+    )
     try:
         ignored = subprocess.run(
             ["git", "check-ignore", "--stdin"],

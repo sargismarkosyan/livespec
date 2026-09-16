@@ -9,6 +9,7 @@ at a fixture standing in for one.
 from __future__ import annotations
 
 import json
+import re
 from datetime import date
 import shutil
 import subprocess
@@ -463,3 +464,118 @@ class TheExit(unittest.TestCase):
         accepted = subprocess.run([sys.executable, str(ROOT / "tools" / "doctor.py"), "--validate", str(finished(root))], cwd=root, capture_output=True, text=True)
         self.assertEqual(accepted.returncode, 0, accepted.stderr)
         self.assertTrue(accepted.stdout.startswith("# Audit — "))
+
+
+FIXTURES = ROOT / "tests" / "fixtures" / "bindings"
+
+
+def fixture_repo(name: str, latest: str = "0040") -> Path:
+    """A consuming repository carrying a bindings file somebody else typed, at a plausible change number."""
+    return repo((FIXTURES / name).read_text(encoding="utf-8"), files={f"specs/changes/{latest}-later.md": "# later\n"})
+
+
+def live_repo() -> Path:
+    """This repository's own bindings as they stand, in a temporary root."""
+    return repo((ROOT / "specs" / "setup" / "README.md").read_text(encoding="utf-8"), files={"specs/changes/0043-later.md": "# later\n"})
+
+
+class BindingsSomebodyElseTyped(unittest.TestCase):
+    @rule("the-record-is-read-as-typed-not-as-templated")
+    def test_toil_trackers_bold_stamp_with_a_parenthetical_is_read(self):
+        lines = audit(fixture_repo("toil-tracker-3cd5b19.md"))
+        self.assertEqual(lines["check:stamp-present"]["state"], "clear", lines["check:stamp-present"]["evidence"])
+        self.assertIn("1.3.0 on 2026-09-08", lines["check:stamp-present"]["evidence"])
+        self.assertEqual(lines["check:stamp-range"]["state"], "open", "1.3.0 is behind the plugin installed")
+
+    @rule("the-record-is-read-as-typed-not-as-templated")
+    def test_toil_trackers_longer_heading_still_finds_the_table(self):
+        evidence = audit(fixture_repo("toil-tracker-3cd5b19.md"))["check:ledger-shape"]["evidence"]
+        self.assertIn("gates: pre-template", evidence)
+        self.assertNotIn("gates: missing", evidence)
+        matched = int(re.search(r"(\d+) row\(s\) match an id by alias", evidence).group(1))
+        self.assertGreaterEqual(matched, 10, evidence)
+
+    @rule("the-record-is-read-as-typed-not-as-templated")
+    def test_toil_trackers_second_table_rows_are_found_in_their_own_words(self):
+        lines = audit(fixture_repo("toil-tracker-3cd5b19.md"))
+        self.assertEqual(lines["check:rule-bound-row"]["state"], "clear", lines["check:rule-bound-row"]["evidence"])
+        self.assertEqual(lines["check:pr-report-row"]["state"], "clear", lines["check:pr-report-row"]["evidence"])
+
+    @rule("the-record-is-read-as-typed-not-as-templated")
+    def test_the_reference_repository_reads_without_a_crash_and_truthfully(self):
+        lines = audit(fixture_repo("todo-change-c89e9dc.md"))
+        self.assertEqual(len(lines), 40)
+        self.assertIn("gates: missing", lines["check:ledger-shape"]["evidence"])
+        self.assertEqual(lines["check:stamp-present"]["state"], "open")
+        self.assertEqual(lines["check:second-table"]["state"], "open")
+
+    @rule("the-record-is-read-as-typed-not-as-templated")
+    def test_this_repository_at_1_3_0_is_matched_by_alias(self):
+        lines = audit(fixture_repo("livespec-1.3.0.md"))
+        self.assertIn("pre-template", lines["check:ledger-shape"]["evidence"])
+        matched = int(re.search(r"(\d+) row\(s\) match an id by alias", lines["check:ledger-shape"]["evidence"]).group(1))
+        self.assertGreaterEqual(matched, 13)
+        self.assertEqual(lines["check:stamp-range"]["state"], "open")
+        self.assertIn("gate:boundary-double", lines["check:stamp-range"]["evidence"])
+
+    @rule("a-judgment-line-arrives-with-its-command")
+    def test_the_command_in_toil_trackers_fenced_block_reaches_the_platform_line(self):
+        lines = audit(fixture_repo("toil-tracker-3cd5b19.md"))
+        self.assertIn("run: gh api repos/sargismarkosyan/toil-tracker/branches/main/protection", lines["check:merge-blocked"]["evidence"])
+
+    @rule("a-judgment-line-arrives-with-its-command")
+    def test_this_repositorys_block_wins_over_the_inline_mention_said_to_fail(self):
+        evidence = audit(live_repo())["check:merge-blocked"]["evidence"]
+        handed = evidence.split(" — ")[0]
+        self.assertIn("run: gh api repos/sargismarkosyan/livespec/rules/branches/main", handed, evidence)
+        self.assertNotIn("branches/main/protection", handed, "the inline mention the section says will 404 was handed over")
+
+    @rule("a-judgment-line-arrives-with-its-command")
+    def test_a_step_that_needs_no_credential_is_not_a_missing_one(self):
+        self.assertEqual(audit(live_repo())["check:credentials-present"]["state"], "n/a")
+        text = inject.green_bindings(INSTALLED).replace("## Notes from the sitting\n\n", "## Notes from the sitting\n\nThe report token is not set in CI.\n\n")
+        line = audit(repo(text))["check:credentials-present"]
+        self.assertEqual(line["state"], "unanswered")
+        self.assertIn("claim a credential is missing", line["evidence"])
+
+    @rule("a-judgment-line-arrives-with-its-command")
+    def test_a_phrase_in_the_prose_is_a_question_not_a_finding(self):
+        text = inject.green_bindings(INSTALLED).replace("## Notes from the sitting\n\n", "## Notes from the sitting\n\nThere is nothing to do at release time.\n\n")
+        line = audit(repo(text))["check:prose-phrases"]
+        self.assertEqual(line["state"], "unanswered")
+        self.assertIn("'to do'", line["evidence"])
+
+    @rule("a-skill-the-record-names-is-one-that-exists")
+    def test_only_the_instruction_form_of_an_old_name_is_the_scripts_to_report(self):
+        prose = repo(files={"CLAUDE.md": "# loop\n\nThe `feedback` skill was renamed to `todo` in 0.19.0.\n"})
+        lines = audit(prose)
+        self.assertEqual(lines["check:skill-names"]["state"], "clear", lines["check:skill-names"]["evidence"])
+        self.assertIn("dated account", lines["check:word-not-a-skill"]["evidence"])
+        instruction = repo(files={"CLAUDE.md": "# loop\n\nReport what you found with `/livespec:feedback`.\n"})
+        line = audit(instruction)["check:skill-names"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("now /livespec:todo", line["evidence"])
+
+
+class CheckOnly(unittest.TestCase):
+    @rule("a-record-can-be-checked-without-being-rewritten")
+    def test_check_leaves_the_record_byte_identical_and_prints_no_reply(self):
+        root = repo()
+        problems, _, _ = validate(root, finished(root))
+        self.assertEqual(problems, [])
+        record = doctor.record_path_of(doctor.context(root, root / "specs" / "setup" / "README.md"))
+        before = record.read_bytes()
+        result = subprocess.run([sys.executable, str(ROOT / "tools" / "doctor.py"), "--check", str(record)], cwd=root, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(result.stdout.startswith("✔ the record"), result.stdout)
+        self.assertNotIn("# Audit —", result.stdout)
+        self.assertEqual(record.read_bytes(), before, "check rewrote the record")
+
+    @rule("a-record-can-be-checked-without-being-rewritten")
+    def test_a_refused_record_checked_names_the_line(self):
+        root = repo()
+        path = finished(root)
+        edited(path, "| `check:merge-blocked` | clear |", "| `check:merge-blocked` | unanswered |")
+        result = subprocess.run([sys.executable, str(ROOT / "tools" / "doctor.py"), "--check", str(path)], cwd=root, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("still unanswered: check:merge-blocked", result.stderr)

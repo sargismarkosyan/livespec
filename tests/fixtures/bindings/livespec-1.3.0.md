@@ -28,34 +28,32 @@ wherever the method says *test*, this repository means **eval case**:
 |---|---|
 | **Verification** | `python3 .github/scripts/verify.py` |
 | **What it returns** | 0 green; **1** a gate is broken; **2** nothing is broken and a measurement run somebody pays for is owed. The split is `COSTS_MONEY` in `verify.py`, the same constant `--local` filters on, and the decision is `verdict()` — pure, so `inject.py` can break it without a fixture. A mixed failure is **1**: a defect never reports as a bill. `run.py` already exits 2 for the same sentence from the other side. **CI runs the two halves as two jobs** — `repository checks` runs `--local` and gates; `measurement board` runs the rest, fails visibly and is required by nothing. See [`0033`](../changes/0033-a-bill-nobody-approved-does-not-block.md) |
-| **What it runs** | `checks.py`, `trace.py`, `tests.py`, `evalsuite.py`, `board.py`, `inject.py`, in that order |
+| **What it runs** | `checks.py`, `trace.py`, `evalsuite.py`, `board.py`, `inject.py`, in that order |
 | **Before the push** | `.githooks/pre-push` — one line, `exec verify.py --local`. **Off by default**: `git config core.hooksPath .githooks` turns it on in a clone, `git config --unset core.hooksPath` turns it off, and `git push --no-verify` walks past it. `--local` runs every gate but `board.py`, whose only cure is an eval run the maintainer pays for — see *The wiring that must never gate* below for why it has no row anywhere |
 | **Language** | Python 3.12, standard library only. **No dependency may be added** — CI installs nothing to run the gates |
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
 | **Eval-suite gate** | `.github/scripts/evalsuite.py [root]` |
 | **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks every gate in it one fault at a time, then breaks the release inputs, which need no fixture. *The fault injection record* below is generated from its three lists and checked against them by `checks.py`, so it cannot fall behind. Two of the three are pure and need no fixture: the release inputs, and `verify.py`'s `verdict()`. It also holds three **controls**: that the unbroken release inputs release, that `report.py` exits zero on every degenerate input, which is what `always-green` rests on, and that a run whose only failure is the board reads as a bill rather than a defect |
-| **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body. Since [`0042`](../changes/0042-the-release-writes-the-list.md) it also fails a change on the audit surface with no `## Ids` section, one that says *unchanged* while the id table moved, a new id row with a typed version, or an id deleted rather than retired |
+| **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body |
 | **Spec-surface check** | the same gate, asked separately. Fails a change to a `.feature` under `specs/features/` or `specs/workflows/` whose body carries no ` ```gherkin ` block and no link to a `.feature` pinned at a 40-character SHA. A layer README is not a `.feature` and does not trigger it |
-| **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, stamps every `next` in `method/gates.md`'s id table with the version — the third file it owns, since [`0042`](../changes/0042-the-release-writes-the-list.md) — runs `verify.py --local`, commits all three, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
+| **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, runs `verify.py --local`, commits, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
 | **Release reader** | `.github/scripts/releaselib.py` — the one reader the gate, the release job and the changelog-shape check share, and pure, so `inject.py` can break it |
 | **Repository checks** | `.github/scripts/checks.py [root]` — manifests, skill frontmatter, always-on budget, link and payload checks, the two enumerations in this file that restate what another script owns, and — since [`0038`](../changes/0038-the-other-side-of-the-difference.md) — that `CHANGELOG.md` keeps the shape an audit in a consuming repository reads by: at the plugin root, every heading `## <version> — <date>`, the manifest's `version` with an entry. It takes a root so `inject.py` can break it |
 | **Pull-request report** | `.github/scripts/report.py <head.json> <base.json>`, fed by `trace.py --json` run against this tree and against a worktree of the base. Posted by `.github/workflows/checks.yml` as one comment per pull request, `--edit-last --create-if-none`. **Every report step is `continue-on-error`** — it is not a gate and may never fail the build. Since [`0025`](../changes/0025-which-red-it-is.md) each is guarded `!cancelled()` rather than left to stop with the job, so the report is built and posted **on a red build too** — the run where its *Stale* row is the thing worth reading, and the run it was previously skipped on. No coverage section: there is no coverage gate here, and *What has no gate* says why |
-| **Audit record** | `specs/setup/audit.md` — written by `tools/doctor.py --validate` on every audit, one line per check with the date it last changed state, replaced each run; git history is the archive. First written by the audit that closed [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part three |
 | **Case discovery** | `evals/*/` holding `prompt.md` or `case.yaml`, plus `graders/*.md`. A `case.yaml` may name a `scaffold_script` — bash in the case directory, run by `run.py --scaffold` in the session's fresh workspace, both arms alike. `evals/results/` is ignored and gitignored |
 | **Rule claiming** | `tags:` in the case's frontmatter. `caselib.py` is the one reader the gates and the runner use |
 | **Always-on budget** | 5000 chars across model-invocable skills; currently 4321 across 8 — every skill is model-invocable, and `USER_INVOKED_ONLY` in `checks.py` is empty and checked both ways |
-| **What proves a rule** | **graded cases** for the skills — the product is judgment, so behaviour is run against a prompt and scored; the full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md), and [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of. **Ordinary tests** for the one thing here that is code, `tools/doctor.py`: standard-library `unittest` under `tests/`, since [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part two |
-| **How a case names its rule** | `tags: [rule:<id>]` in the case's frontmatter, read by `caselib.py`. A test names its rule with `@rule("<id>")` from `tests/rulelib.py`, which refuses an id that does not exist or is still `@planned`; `trace.py` reads both as claims, and `.github/scripts/tests.py` refuses a test bound to no rule |
+| **What proves a rule** | **graded cases.** There is no application code to call — the product is judgment, so behaviour is run against a prompt and scored. The full argument is *The substitution* above and [`0011`](../changes/0011-how-a-test-claims-a-rule.md); [`testing.md`](../../method/testing.md#first-what-proves-a-rule-is-true-here) states what that proves less of |
+| **How a case names its rule** | `tags: [rule:<id>]` in the case's frontmatter, read by `caselib.py`. **Not** a `rule()` helper — there is no test runner here to wrap |
 | **Spec-bound coverage** | **not applicable.** It is a split of a coverage run, and there is no coverage gate here to split |
 | **Coverage thresholds** | none — see below |
 | **Required checks** | `repository checks` and `plugin validate` — the `name:` of each job in `.github/workflows/checks.yml` |
 | **Tracker** | GitHub Issues on `sargismarkosyan/livespec`, via `gh`. No `--repo` is passed: `gh` resolves it from the working directory, which is this repository. **This is the degenerate case** — the repository a session works in and the plugin's own repository are the same place here, and a skill must not read that as the normal shape |
 | **Where the app runs** | nowhere. There is no app |
-| **A sketch is owed** | by every change spec, before approval — there is no app here, and the sketch is drawn from the spec, never recorded; *What does not apply here* below says why the two rows are not one |
 | **Deliverable of a version** | the pull request description. No picture in any form — see *What does not apply* |
 | **Manifest validation** | `claude plugin validate . --strict`, `./.claude-plugin/plugin.json`, `./skills` — offline, no credentials |
-| **What a contributor owes a release** | one `patch`/`minor`/`major` label on the pull request, and a `## Changelog` section in its body — plus the Gherkin block when the change moves a `.feature`, and an `## Ids` section when it moves the audit surface (`skills/doctor/`, `tools/doctor.py`, `templates/bindings.md`, `method/gates.md`): *unchanged*, or the ids added and retired, held to the id table's diff. Nothing else — `version`, `CHANGELOG.md` and every `since` in `gates.md` are written by the pipeline and must not be typed in a branch; a new id row reads `next`. Since [`0042`](../changes/0042-the-release-writes-the-list.md) |
+| **What a contributor owes a release** | one `patch`/`minor`/`major` label on the pull request, and a `## Changelog` section in its body — plus the Gherkin block when the change moves a `.feature`. Nothing else — `version` and `CHANGELOG.md` are written by the pipeline and must not be edited in a branch |
 
 ## The tag contract
 
@@ -74,11 +72,9 @@ runs: 3
 |---|---|---|
 | `skill:<name>` | this case holds that skill's judgment | `evalsuite.py` — a skill no case names fails the gate |
 | `rule:<id>` | this case is the answer to that Gherkin rule | `trace.py`, both directions |
-| `@rule("<id>")` on a test under `tests/` | this test is the answer to that rule — the same claim, for the code this repository ships | `trace.py`, both directions; `tests.py` fails a test bound to no rule |
 | `rule:<id>` on a `should-not-fire` case | only legitimate where the rule is tagged `@refusal` | `trace.py` — otherwise a warning, because a case asserting nothing fires cannot verify a rule that promises a behaviour |
 | `workflow:<id>` | this case walks that workflow end to end | `trace.py` — a workflow nothing walks fails |
 | `should-not-fire` | this case asserts nothing fires | `evalsuite.py` — the suite must always keep at least one |
-| a `command` grader | this case is scored by a script run in the session's workspace, exit 0 to pass — the deterministic grader, since [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part three | `evalsuite.py` — counts as an outcome grader; one with no `command:` fails |
 
 **A case is not required to claim a rule**, and the cases that predate this layer
 do not — see *The spec layer starts today* in [`../README.md`](../README.md). The direction that
@@ -194,52 +190,37 @@ what moved was what the numbers were allowed to be called.
 
 ## Gate wiring
 
-**Reconciled against livespec 1.7.0 on 2026-09-16.** One row per gate named in
+**Reconciled against livespec 1.1.0 on 2026-09-02.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
 as the method it was reconciled against; anywhere else the two move apart, and
 that gap is the thing a later `setup` run offers to close.
 
-| id | gate | state | evidence |
-|---|---|---|---|
-| `gate:rule-to-test` | rule → case | automated | `trace.py` — a live rule no case and no test claims fails; tests claim through `rule()` since [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md) part two |
-| `gate:test-to-rule` | case → rule | automated | `trace.py` — a case or a test claiming an id that does not exist fails |
-| `gate:feature-to-workflow` | feature → workflow | automated | `trace.py` |
-| `gate:workflow-to-feature` | workflow → feature | automated | `trace.py` |
-| `gate:workflow-walked` | workflow → case (walked end to end) | automated | `trace.py` |
-| `gate:workflow-to-persona` | workflow → persona | automated | `trace.py`, live personas only — a `@retired` one does not count |
-| `gate:persona-to-workflow` | persona → workflow | automated | `trace.py` |
-| `gate:journey-to-workflow` | journey → workflow | automated | `trace.py` |
-| `gate:workflow-to-journey` | workflow → journey | automated | `trace.py`, as a **warning** — where an attempt sits in the arc is a judgment |
-| `gate:structure` | structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` |
-| `gate:verified-to-fire` | both gates verified to fire | automated | `inject.py` — every gate broken in a fixture and the release inputs broken as pure functions, re-run by every `verify.py`. **`checks.py` is in that set only since [`0022`](../changes/0022-nobody-types-the-record.md)**, which is when it first took a root and could be pointed at a fixture at all; before that it was the one gate here never known to fire |
-| `local:enumerations-read-back` | the enumerations in this file read back from what owns them | automated | `checks.py`, added by [`0022`](../changes/0022-nobody-types-the-record.md) — *The fault injection record* against `inject.py`, *What it runs* against `verify.py`. Both were typed, and both had drifted |
-| `local:record-shape` | the record an audit reads by keeps its shape | automated | `checks.py`, added by [`0038`](../changes/0038-the-other-side-of-the-difference.md) — `CHANGELOG.md` at the plugin root, every heading a release and a date, the manifest's `version` with an entry. Read through `releaselib.py`, which is also what writes it, and broken by two faults in `inject.py`. Every version *reaching* an entry was already held by the release faults; this holds the shape the reading depends on |
-| `gate:coverage` | coverage — lines, branches, functions | **not applicable** | there is no application code to measure; the eval-suite gate stands in its place, and *What has no gate* above says what that misses |
-| `local:journey-freshness` | a journey looked at since the workflows under it moved | **not applicable** | a git question, and CI checks out one commit — it would pass forever while looking enforced |
-| `local:features-piled-up` | features piled up under a workflow since its file was last edited | **not applicable** | same, and `gates.md` leaves both out for that reason |
-| `gate:boundary-double` | a rule-bound test doubling a boundary declared real | **not applicable** | there are no rule-bound tests here to read — the cases are the tests, and what they run against is *The boundaries* below, added by [`0039`](../changes/0039-the-world-a-test-runs-in.md) |
-| `gate:planned-unclaimed` | a `@planned` rule or workflow that is claimed | automated | `trace.py` — the tag should have come off in the change that made it true; broken by *@planned rule that has a case* |
-| `gate:boundary-fake-suite` | a fake row naming no suite against the real thing | **not applicable** | there are no rule-bound tests here for the gate to read — the cases are the tests, and *The boundaries* below is what they run against |
-| `gate:boundary-recorded-age` | a recorded row past its age | **not applicable** | same — and no row below reads *recorded* |
-| `gate:boundaries-table` | rule-bound tests present and no boundaries table | **not applicable** | same; the table exists since [`0039`](../changes/0039-the-world-a-test-runs-in.md) and nothing here is a rule-bound test that would fail for its absence |
+| Gate | State | Wired by, or why not |
+|---|---|---|
+| rule → case | automated | `trace.py` — a live rule no case claims fails |
+| case → rule | automated | `trace.py` — a case claiming an id that does not exist fails |
+| feature → workflow | automated | `trace.py` |
+| workflow → feature | automated | `trace.py` |
+| workflow → case (walked end to end) | automated | `trace.py` |
+| workflow → persona | automated | `trace.py`, live personas only — a `@retired` one does not count |
+| persona → workflow | automated | `trace.py` |
+| journey → workflow | automated | `trace.py` |
+| workflow → journey | automated | `trace.py`, as a **warning** — where an attempt sits in the arc is a judgment |
+| structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` |
+| both gates verified to fire | automated | `inject.py` — every gate broken in a fixture and the release inputs broken as pure functions, re-run by every `verify.py`. **`checks.py` is in that set only since [`0022`](../changes/0022-nobody-types-the-record.md)**, which is when it first took a root and could be pointed at a fixture at all; before that it was the one gate here never known to fire |
+| the enumerations in this file read back from what owns them | automated | `checks.py`, added by [`0022`](../changes/0022-nobody-types-the-record.md) — *The fault injection record* against `inject.py`, *What it runs* against `verify.py`. Both were typed, and both had drifted |
+| the record an audit reads by keeps its shape | automated | `checks.py`, added by [`0038`](../changes/0038-the-other-side-of-the-difference.md) — `CHANGELOG.md` at the plugin root, every heading a release and a date, the manifest's `version` with an entry. Read through `releaselib.py`, which is also what writes it, and broken by two faults in `inject.py`. Every version *reaching* an entry was already held by the release faults; this holds the shape the reading depends on |
+| coverage — lines, branches, functions | **not applicable** | there is no application code to measure; the eval-suite gate stands in its place, and *What has no gate* above says what that misses |
+| a journey looked at since the workflows under it moved | **not applicable** | a git question, and CI checks out one commit — it would pass forever while looking enforced |
+| features piled up under a workflow since its file was last edited | **not applicable** | same, and `gates.md` leaves both out for that reason |
+| a rule-bound test doubling a boundary declared real | **not applicable** | there are no rule-bound tests here to read — the cases are the tests, and what they run against is *The boundaries* below, added by [`0039`](../changes/0039-the-world-a-test-runs-in.md) |
 
 **No row is deferred**, so nothing in this table is on the two-change clock; the
-two rows in *The boundaries* below that read *mocked* from 0039 passed it at
-0042 and were written off as *unreachable — decided* at the audit of
-2026-09-16, so nothing is on the clock now. Every automated row
+two *mocked* rows in *The boundaries* below are, since 0039. Every automated row
 but the last was wired by the `setup` run in 0.6.0 and predates this ledger,
 which is why they carry no change number.
-
-**The ids arrived with [`0041`](../changes/0041-an-audit-that-cannot-stop-early.md),
-part one**, matched to these rows by the labels they carried. Four rows carry
-`local:` because [`gates.md`](../../method/gates.md#the-ids) names no such gate
-— they are this repository's own, held to the same states and required by
-nothing. Four rows were added for gates this ledger had been missing —
-`planned-unclaimed`, and the three boundary gates `0039` named without giving
-rows — which is the first thing the id column found, and the reason it exists.
-The stamp did not move: the record moved, the wiring did not.
 
 ### The wiring that must never gate
 
@@ -248,10 +229,10 @@ asks for, added by [`0021`](../changes/0021-asked-not-assumed.md). Neither line 
 it is a gate — that is the point of it being a separate table, and the reason
 both were previously tracked by nothing.
 
-| id | wiring | state | evidence |
-|---|---|---|---|
-| `wiring:pr-report` | the pull-request report | automated | [`report.py`](../../.github/scripts/report.py), posted by [`checks.yml`](../../.github/workflows/checks.yml). **Watched arriving on [#55](https://github.com/sargismarkosyan/livespec/pull/55)**, read back with `gh pr view 55 --json comments` rather than inferred from the workflow file. It takes its counts from `board.py --json` and recomputes nothing. **Watched arriving on a *red* build on [#69](https://github.com/sargismarkosyan/livespec/pull/69)**, read back with `gh run view 33245320389 --json jobs`: `Verify` failed with exit 2 and *Build the report* and *Comment it on the pull request* both ran, where run `33140790702` had skipped both. The comment carried `Stale — inputs changed since | 0 | 7 | +7`, a row that had never once been reachable before [`0025`](../changes/0025-which-red-it-is.md) guarded the steps `!cancelled()` |
-| `wiring:rule-bound-measure` | the rule-bound measure, beside the gated number | **not applicable** | there is no coverage here at all, gated or otherwise — *What has no gate* above says what stands in its place and what that misses |
+| Wiring | State | How, or why not |
+|---|---|---|
+| the pull-request report | automated | [`report.py`](../../.github/scripts/report.py), posted by [`checks.yml`](../../.github/workflows/checks.yml). **Watched arriving on [#55](https://github.com/sargismarkosyan/livespec/pull/55)**, read back with `gh pr view 55 --json comments` rather than inferred from the workflow file. It takes its counts from `board.py --json` and recomputes nothing. **Watched arriving on a *red* build on [#69](https://github.com/sargismarkosyan/livespec/pull/69)**, read back with `gh run view 33245320389 --json jobs`: `Verify` failed with exit 2 and *Build the report* and *Comment it on the pull request* both ran, where run `33140790702` had skipped both. The comment carried `Stale — inputs changed since | 0 | 7 | +7`, a row that had never once been reachable before [`0025`](../changes/0025-which-red-it-is.md) guarded the steps `!cancelled()` |
+| the rule-bound measure, beside the gated number | **not applicable** | there is no coverage here at all, gated or otherwise — *What has no gate* above says what stands in its place and what that misses |
 
 **The pre-push hook is in neither table, and that is the decision rather than an
 omission.** It runs the free four fifths of `verify.py` before a push, it is off
@@ -335,25 +316,17 @@ consuming repository, scored by a model standing in for a reader. The rows say
 which of those is which, with a date, which is more than the prose above ever
 did.
 
-| id | boundary | state | since | evidence |
-|---|---|---|---|---|
-| `boundary:model-session` | the model session | **real** | 0012 | `claude -p` through promptfoo, started by `python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold --i-approve-the-cost` — the maintainer's to run, paid per run. Leaves uncovered: the account's session limit, which three runs in one sitting have exhausted |
-| `boundary:judge` | the judge | **unreachable** — decided | 0042 | a model standing in for the human who would read what came out. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16 rather than left as an apology: the calibration set that would make it a *fake* — verdicts a person has scored, re-scored by the judge on a schedule, [`evals/README.md`](../../evals/README.md#calibration) — is real work nobody has scheduled, and every change touching the judge says so where the change is decided. Leaves uncovered: everything a person would have scored differently |
-| `boundary:consuming-repository` | the consuming repository a case runs in | **unreachable** — decided | 0042 | a scaffold script's fixture, a stand-in for a repository somebody set up. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16: a case against a live remote, CI and a real tracker is a repository nobody has set aside for it, the reference repository is read by hand, and every change touching the runner says so where the change is decided. Leaves uncovered: a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
-| `boundary:platform` | the platform | **real** | 0021 | `gh` against `sargismarkosyan/livespec`, read back 2026-08-29 with the commands under *Branch protection* below. Leaves uncovered: nothing named |
+| Boundary | Row | Leaves uncovered |
+|---|---|---|
+| the model session | **real** — `claude -p` through promptfoo, started by the documented invocation with the maintainer's flag, paid per run | the account's session limit, which three runs in one sitting have exhausted |
+| the judge | **mocked** since [`0012`](../changes/0012-a-runner-that-runs.md) — a model standing in for the human who would read what came out. What would make it a *fake* is the calibration set [`evals/README.md`](../../evals/README.md#calibration) describes — verdicts a person has scored, re-scored by the judge on a schedule — and it has not been made. Cover: none. On the two-change clock from 0039 | everything a person would have scored differently |
+| the consuming repository a case runs in | **mocked** — a scaffold script's fixture, a stand-in for a repository somebody set up, with no suite against a real one. Cover: the reference repository, by hand, which is a reading rather than a suite | a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
+| the platform | **real** — `gh` against `sargismarkosyan/livespec`, read back 2026-08-29 with the commands under *Branch protection* below | nothing named |
 
-**The stamp stayed at 1.1.0 through 0039**, because a table was added and
-nothing was rewired. **It moved to 1.6.0 with the first audit run through the
-tool**, on 2026-09-16, because by then the wiring here had moved: `checks.py`
-gained the id-table and registry checks, `tests.py` became a gate, and
-`version_gate.py` gained its fourth trigger — every one of them wired in this
-repository, which is the plugin, and level with it by construction. **And to
-1.7.0 with the second audit, the same day**, for the same reason: 1.7.0 wired
-the `command` grader into `evalsuite.py` and seven refusal faults into
-`inject.py`. In this repository the stamp reads one release behind the moment
-a release lands — the release commit bumps the version after the audit — and
-the next audit moves it, as this one did. The record of each audit is
-`specs/setup/audit.md`.
+**The stamp stays at 1.1.0 through 0039.** A table was added and nothing was
+rewired — no gate gained a check, because there is no rule-bound test here for
+one to read — which is [`0021`](../changes/0021-asked-not-assumed.md)'s test
+and the same reason the second table did not move it.
 
 ## The fault injection record
 
@@ -411,14 +384,6 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | the bindings losing a gate verify.py runs | fails | ✔ |
 | a changelog heading the reader cannot parse | fails | ✔ |
 | a manifest version with no changelog entry | fails | ✔ |
-| an id whose since names a release the changelog does not have | fails | ✔ |
-| the same id twice in the id table | fails | ✔ |
-| a check the tool answers that the id table does not name | fails | ✔ |
-| an id in the table no function answers | fails | ✔ |
-| a test claiming a rule that does not exist | fails | ✔ |
-| a test outside any rule | fails | ✔ |
-| a failing test | fails | ✔ |
-| a test naming a rule that is still @planned | fails | ✔ |
 | shipping change with no release label | fails | ✔ |
 | two release labels at once | fails | ✔ |
 | pull request body with no changelog section | fails | ✔ |
@@ -428,41 +393,7 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a version that is not major.minor.patch | fails | ✔ |
 | spec-moving change whose body carries no gherkin | fails | ✔ |
 | a gherkin block with nothing in it | fails | ✔ |
-| a new id row with a typed version | fails | ✔ |
-| the audit surface moved with no ## Ids section | fails | ✔ |
-| ## Ids reading unchanged while a row was added | fails | ✔ |
-| ## Ids naming an id the table does not have | fails | ✔ |
-| a row still reading next after the release | fails | ✔ |
-| a bullet list that retires what the table added | fails | ✔ |
 | a broken gate underneath a stale measurement | fails | ✔ |
-| a ledger in the shape it had before ids | fails | ✔ |
-| a ledger with no stamp line | fails | ✔ |
-| a stamp behind the plugin installed | fails | ✔ |
-| a stamp ahead of the plugin installed | fails | ✔ |
-| a stamp that is not at the plugin installed | fails | ✔ |
-| a changelog the tool cannot read | fails | ✔ |
-| a row in a state of somebody's own | fails | ✔ |
-| an automated row naming no command | fails | ✔ |
-| a not-applicable reason the tree contradicts | fails | ✔ |
-| a gate with no row | fails | ✔ |
-| a recording past its age | fails | ✔ |
-| a mocked row two changes old | fails | ✔ |
-| no table for the wiring that must never gate | fails | ✔ |
-| the second table losing the report's row | fails | ✔ |
-| the second table losing the measure's row | fails | ✔ |
-| no row saying a sketch is owed | fails | ✔ |
-| the sketch row and the picture row saying one thing | fails | ✔ |
-| a record instructing by a skill this plugin no longer has | fails | ✔ |
-| a row deferred across two changes | fails | ✔ |
-| a local hook given a row | fails | ✔ |
-| a change outside the record in the working tree | fails | ✔ |
-| a record one line short | fails | ✔ |
-| a judgment nobody made | fails | ✔ |
-| a state of somebody's own | fails | ✔ |
-| an open line naming nothing that closes it | fails | ✔ |
-| a not-read line with no reason | fails | ✔ |
-| a judgment clear with no command beside it | fails | ✔ |
-| a fix that strayed into the wiring | fails | ✔ |
 
 **Three controls sit alongside the table and are not faults.** One checks the unbroken release inputs still release; one checks the report cannot fail a build — there is nothing to break there, because the whole promise is that nothing breaks, so what is asserted is that every degenerate input still exits zero. It was confirmed by making `report.py` able to fail and watching the control report it. The third, added by [`0025`](../changes/0025-which-red-it-is.md), asserts the two reds from the side no fault can reach: a green run says nothing, and a run whose only failure is the board exits 2, does not say *verification failed*, and names who can approve the run that clears it.
 

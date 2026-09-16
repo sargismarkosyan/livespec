@@ -39,6 +39,18 @@ Feature: The part of an audit a script does, and what it must never do
       Then the line reads unanswered and says the row must name one
       And the audit cannot end until it does
 
+    Example: the command is in a fenced block
+      Given bindings whose branch-protection section carries its read-back commands in a fenced code block
+      And mentions inline an older command that is expected to fail
+      When the tool reads the bindings
+      Then the platform lines carry the commands from the block
+      And not the one the section says to expect nothing from
+
+    Example: a step that needs no credential is not a missing one
+      Given bindings whose table says a step runs offline with no credentials
+      When the tool reads the bindings
+      Then the credential line does not claim a credential is missing
+
   @rule:the-outcome-is-readable-from-the-exit-alone
   Rule: The tool's exit says which of three things happened, and never that a bill is owed
 

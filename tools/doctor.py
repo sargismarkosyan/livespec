@@ -5,6 +5,7 @@
     python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --reshape   # the ledger, in the template's shape
     python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --registry  # the checks this tool knows, as id rows
     python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --validate <finished-record>   # pass two: refuse, or write and reply
+    python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --check <record>               # the same exit, nothing written
 
 Reads a consuming repository's bindings, its spec tree's listing, the latest
 change number, the loop's own account of itself, and the plugin's own files;
@@ -45,7 +46,7 @@ NEXT = "next"
 UNRETIRED = ("", "—", "-")
 LEDGER_STATES = ("automated", "not applicable", "unobserved", "deferred")
 BOUNDARY_STATES = ("real", "fake", "recorded", "mocked", "unreachable")
-STAMP = re.compile(r"Reconciled against livespec (\d+\.\d+\.\d+) on (\d{4}-\d{2}-\d{2})")
+STAMP = re.compile(r"Reconciled against livespec\W{0,4}(\d+\.\d+\.\d+)\**[^\n]{0,60}?\bon\W{0,4}(\d{4}-\d{2}-\d{2})")
 ENTRY = re.compile(r"^## (\d+\.\d+\.\d+) — (\d{4}-\d{2}-\d{2})$")
 CHANGE = re.compile(r"^(\d{4})-")
 PROSE_PHRASES = ("not built yet", "to do", "we should", "for now")
@@ -115,7 +116,7 @@ CHECKS = [
     ("check:who-bypasses", "judgment", "platform", "who can bypass is read back, tokens and keys included"),
     ("check:credentials-present", "judgment", "platform", "a credential the bindings claim is missing is read back from where the platform keeps it"),
     ("check:read-back-or-not", "mechanical", "record", "every judgment line is read back with its command, or not read with why"),
-    ("check:prose-phrases", "mechanical", "record", "the prose is read for *not built yet*, *to do*, *we should*, *for now*"),
+    ("check:prose-phrases", "judgment", "record", "the prose is read for *not built yet*, *to do*, *we should*, *for now*"),
     ("check:second-table", "mechanical", "wiring", "the table for wiring that must never gate exists"),
     ("check:pr-report-row", "mechanical", "wiring", "it holds the row for the pull-request report"),
     ("check:rule-bound-row", "mechanical", "wiring", "it holds the row for the rule-bound measure"),
@@ -163,7 +164,7 @@ def cells_of(line: str) -> list[str]:
 
 def section(text: str, heading: str) -> str:
     """The text under a heading, up to the next heading of the same or a higher level."""
-    match = re.search(rf"^(#{{1,6}})\s+{re.escape(heading)}\b.*$", text, re.MULTILINE | re.IGNORECASE)
+    match = re.search(rf"^(#{{1,6}})\s+.*\b{re.escape(heading)}\b.*$", text, re.MULTILINE | re.IGNORECASE)
     if not match:
         return ""
     level = len(match.group(1))
@@ -622,7 +623,8 @@ def c_deferred_clock(ctx: dict) -> tuple[str, str]:
     return clock(ctx, [row for row in ctx["gates"] + ctx["wiring"] if row["state"] == "deferred"], "deferred")
 
 
-def c_prose_phrases(ctx: dict) -> tuple[str, str]:
+def j_prose_phrases(ctx: dict) -> tuple[str, str]:
+    """The four phrases, grepped; whether a hit is a gap is a mind's to say."""
     hits: list[str] = []
     for number, line in enumerate(ctx["text"].splitlines(), 1):
         if line.startswith("|"):
@@ -632,8 +634,8 @@ def c_prose_phrases(ctx: dict) -> tuple[str, str]:
             if phrase in lowered:
                 hits.append(f"L{number} '{phrase}'")
     if hits:
-        return "open", f"{len(hits)} hit(s) in prose, each a row or nothing: " + ", ".join(hits[:8]) + (" …" if len(hits) > 8 else "")
-    return "clear", "none of the four phrases in the prose"
+        return "unanswered", f"read: {len(hits)} hit(s) in the prose — " + ", ".join(hits[:8]) + (" …" if len(hits) > 8 else "") + " — each is a row on the clock, or nothing: which?"
+    return "clear", "read: none of the four phrases in the prose"
 
 
 def c_second_table(ctx: dict) -> tuple[str, str]:
@@ -642,21 +644,22 @@ def c_second_table(ctx: dict) -> tuple[str, str]:
     return "clear", f"present, {len(ctx['wiring'])} row(s)"
 
 
-def wiring_row(ctx: dict, row_id: str, alias: str) -> tuple[str, str]:
+def wiring_row(ctx: dict, row_id: str, *aliases: str) -> tuple[str, str]:
     if ctx["shapes"]["wiring"] == "missing":
         return "n/a", "no second table — check:second-table"
     for row in ctx["wiring"]:
-        if row["id"] == row_id or alias in row["label"].lower() or alias in row["text"].lower():
+        label = row["label"].lower()
+        if row["id"] == row_id or any(alias in label for alias in aliases):
             return "clear", f"{row['state'] or 'state unreadable'} — {row['evidence'][:60]}"
     return "open", f"the second table has no row for {row_id}"
 
 
 def c_pr_report_row(ctx: dict) -> tuple[str, str]:
-    return wiring_row(ctx, "wiring:pr-report", "pull-request report")
+    return wiring_row(ctx, "wiring:pr-report", "pull-request report", "pull request report", "the report")
 
 
 def c_rule_bound_row(ctx: dict) -> tuple[str, str]:
-    return wiring_row(ctx, "wiring:rule-bound-measure", "rule-bound measure")
+    return wiring_row(ctx, "wiring:rule-bound-measure", "rule-bound", "spec-bound")
 
 
 def c_sketch_row(ctx: dict) -> tuple[str, str]:
@@ -686,16 +689,31 @@ def skill_hits(ctx: dict) -> list[tuple[str, int, str]]:
     return hits
 
 
+def instructs_by(ctx: dict) -> list[tuple[str, int, str]]:
+    """The instruction form only: /livespec:<name>, which is what a record tells a session to type."""
+    hits: list[tuple[str, int, str]] = []
+    for name, text in (("CLAUDE.md", ctx["claude_md"]), (str(ctx["bindings_path"].name), ctx["text"])):
+        for number, line in enumerate(text.splitlines(), 1):
+            for match in re.finditer(r"/livespec:([a-z][a-z-]*)", line):
+                hits.append((name, number, match.group(1)))
+    return hits
+
+
 def c_skill_names(ctx: dict) -> tuple[str, str]:
     stale = [
-        f"{file}:{line} `{word}` — now `{FORMER_SKILLS[word]}`"
-        for file, line, word in skill_hits(ctx)
+        f"{file}:{line} /livespec:{word} — now /livespec:{FORMER_SKILLS[word]}"
+        for file, line, word in instructs_by(ctx)
         if word in FORMER_SKILLS and word not in ctx["skills"]
     ]
-    if stale:
-        return "open", "; ".join(stale)
-    named = sorted({word for _, _, word in skill_hits(ctx) if word in ctx["skills"]})
-    return "clear", f"{len(named)} skill name(s) in the record, all exist: {', '.join(named)}" if named else "the record instructs by no skill name"
+    unknown = [
+        f"{file}:{line} /livespec:{word}"
+        for file, line, word in instructs_by(ctx)
+        if word not in ctx["skills"] and word not in FORMER_SKILLS
+    ]
+    if stale or unknown:
+        return "open", "; ".join(stale + [u + " — no such skill" for u in unknown])
+    named = sorted({word for _, _, word in instructs_by(ctx) if word in ctx["skills"]})
+    return "clear", f"{len(named)} skill(s) instructed by, all exist: {', '.join(named)}" if named else "the record instructs by no skill name"
 
 
 def c_hook_no_row(ctx: dict) -> tuple[str, str]:
@@ -731,7 +749,6 @@ MECHANICAL = {
     "check:row-per-gate": c_row_per_gate,
     "check:recorded-age": c_recorded_age,
     "check:mocked-clock": c_mocked_clock,
-    "check:prose-phrases": c_prose_phrases,
     "check:second-table": c_second_table,
     "check:pr-report-row": c_pr_report_row,
     "check:rule-bound-row": c_rule_bound_row,
@@ -747,8 +764,19 @@ MECHANICAL = {
 # --- the judgment lines, pre-filled -----------------------------------------
 
 
+COMMAND_VERB = re.compile(r"^(gh|glab|git|curl|az|aws|docker|npm|npx|pnpm|yarn|make|python3?|pytest|go|cargo|bundle|mvn|gradle|dotnet)\b")
+FENCE = re.compile(r"```[^\n]*\n(.*?)```", re.DOTALL)
+
+
 def commands_in(text: str) -> list[str]:
-    return [c for c in re.findall(r"`([^`\n]+)`", text) if re.match(r"^(gh|glab|git|curl|az|aws|docker|npm|npx|pnpm|yarn|make|python3?|pytest|go|cargo|bundle|mvn|gradle|dotnet)\b", c)]
+    """The commands a piece of the bindings names — a fenced block first, inline mentions after.
+
+    A fenced block is the read-back; an inline mention is prose about it, and
+    the prose is where a section says which older command to expect nothing from.
+    """
+    fenced = [line.strip().split("  #", 1)[0].strip() for block in FENCE.findall(text) for line in block.splitlines()]
+    inline = re.findall(r"`([^`\n]+)`", re.sub(FENCE, "", text))
+    return [c for c in fenced + inline if COMMAND_VERB.match(c)]
 
 
 def j_entry_moved_here(ctx: dict) -> tuple[str, str]:
@@ -851,17 +879,24 @@ def j_who_bypasses(ctx: dict) -> tuple[str, str]:
 
 
 def j_credentials_present(ctx: dict) -> tuple[str, str]:
-    claims = [f"L{n}" for n, line in enumerate(ctx["text"].splitlines(), 1) if re.search(r"no token|no credential|no secret|is not set", line.lower())]
+    missing = re.compile(r"\b(token|credential|secret|key)s?\b[^.|]{0,40}\b(is missing|is not set|does not exist|is absent|unset)\b|\b(missing|no)\s+(token|secret)\b")
+    claims = [f"L{n}" for n, line in enumerate(ctx["text"].splitlines(), 1) if missing.search(line.lower())]
     if not claims:
         return "n/a", "the bindings claim no credential is missing"
     return platform_line(ctx, f"the bindings claim a credential is missing at {', '.join(claims[:4])} — is it present where the platform keeps it?")
 
 
 def j_word_not_a_skill(ctx: dict) -> tuple[str, str]:
+    old_names = [f"{f}:{n} `{w}` (now `{FORMER_SKILLS[w]}`)" for f, n, w in skill_hits(ctx) if w in FORMER_SKILLS and w not in ctx["skills"]]
     prose = [f"{f}:{n} `{w}`" for f, n, w in skill_hits(ctx) if w in ctx["skills"] and not re.search(rf"/livespec:{w}\b", (ctx["claude_md"] if f == "CLAUDE.md" else ctx["text"]).splitlines()[n - 1])]
-    if not prose:
+    if not old_names and not prose:
         return "n/a", "no skill name appears as ordinary prose"
-    return "unanswered", "confirm these are the word as prose, not an instruction, and leave them alone: " + ", ".join(prose[:8])
+    parts = []
+    if old_names:
+        parts.append("a name this plugin no longer has, in prose: " + ", ".join(old_names[:6]) + " — an instruction to correct, or a dated account to leave as written?")
+    if prose:
+        parts.append("confirm these are the word as prose and leave them alone: " + ", ".join(prose[:8]))
+    return "unanswered", " · ".join(parts)
 
 
 def j_loop_per_claude_md(ctx: dict) -> tuple[str, str]:
@@ -876,6 +911,7 @@ def j_generated(ctx: dict) -> tuple[str, str]:
 
 JUDGMENT = {
     "check:entry-moved-here": j_entry_moved_here,
+    "check:prose-phrases": j_prose_phrases,
     "check:row-uncovered": j_row_uncovered,
     "check:number-from-config": j_number_from_config,
     "check:demand-is-a-ratchet": j_demand_is_a_ratchet,
@@ -1107,13 +1143,17 @@ def reply(ctx: dict, lines: list[dict[str, str]], previous: list[dict[str, str]]
     return "\n".join(out) + "\n"
 
 
-def validate(ctx: dict, finished: Path) -> tuple[list[str], str, str]:
-    """Refuse the finished record, or write it where the bindings say and return the reply."""
+def validate(ctx: dict, finished: Path, write: bool = True) -> tuple[list[str], str, str]:
+    """Refuse the finished record, or write it where the bindings say and return the reply.
+
+    With `write` false — `--check` — the same refusals and the same exit, and
+    nothing touched: what a grader asks of the record a session left.
+    """
     today = date.today().isoformat()
     _, lines = parse_record(read(finished) or "")
     rows = {row["id"]: row for row in lines}
     problems = refusals(ctx, rows, record_path_of(ctx))
-    if problems:
+    if problems or not write:
         return problems, "", ""
     _, answers = generated_lines(rows)
     for check_id, (state, evidence) in answers.items():
@@ -1136,10 +1176,13 @@ def main(argv: list[str]) -> int:
         PLUGIN = Path(argv[at + 1]).resolve()
         argv = argv[:at] + argv[at + 2:]
     finished: Path | None = None
-    if "--validate" in argv:
-        at = argv.index("--validate")
-        finished = Path(argv[at + 1]).resolve()
-        argv = argv[:at] + argv[at + 2:]
+    write = True
+    for flag in ("--validate", "--check"):
+        if flag in argv:
+            at = argv.index(flag)
+            finished = Path(argv[at + 1]).resolve()
+            write = flag == "--validate"
+            argv = argv[:at] + argv[at + 2:]
     args = [a for a in argv if not a.startswith("--")]
     flags = {a for a in argv if a.startswith("--")}
     if "--registry" in flags:
@@ -1159,12 +1202,15 @@ def main(argv: list[str]) -> int:
         if not finished.exists():
             print(f"no record at {finished} to validate", file=sys.stderr)
             return 1
-        problems, _, answer = validate(ctx, finished)
+        problems, _, answer = validate(ctx, finished, write=write)
         if problems:
             print("✘ the record is refused — the audit has not finished:\n", file=sys.stderr)
             for problem in problems:
                 print(f"  ✘ {problem}", file=sys.stderr)
             return 1
+        if not write:
+            print(f"✔ the record at {finished} validates — nothing written")
+            return 0
         print(answer, end="")
         return 0
     print(render(ctx, emit(ctx)), end="")

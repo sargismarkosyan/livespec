@@ -478,7 +478,7 @@ does not name — held to the same states, required by nothing.
 | `check:who-bypasses` | judgment | 0.21.0 | platform | — | | who can bypass is read back, tokens and keys included |
 | `check:credentials-present` | judgment | 0.21.0 | platform | — | | a credential the bindings claim is missing is read back from where the platform keeps it |
 | `check:read-back-or-not` | mechanical | 0.21.0 | record | — | | every judgment line is read back with its command, or not read with why |
-| `check:prose-phrases` | mechanical | 0.21.0 | record | — | | the prose is read for *not built yet*, *to do*, *we should*, *for now* |
+| `check:prose-phrases` | judgment | 0.21.0 | record | — | | the prose is read for *not built yet*, *to do*, *we should*, *for now* |
 | `check:second-table` | mechanical | 0.21.0 | wiring | — | | the table for wiring that must never gate exists |
 | `check:pr-report-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the pull-request report |
 | `check:rule-bound-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the rule-bound measure |
