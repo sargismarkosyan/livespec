@@ -1,7 +1,7 @@
 @feature:wiring-what-a-rule-crosses @workflow:adopt-the-process
 Feature: What the build and the spec step hold a rule to when it crosses a boundary
 
-  @rule:a-crossing-names-a-row @planned
+  @rule:a-crossing-names-a-row
   Rule: A rule that says what boundary it crosses names a row in the bindings' boundaries table, and a crossing that names no row fails verification
 
     Example: the row is there
@@ -21,7 +21,7 @@ Feature: What the build and the spec step hold a rule to when it crosses a bound
       When verification runs
       Then nothing about boundaries is asked of it
 
-  @rule:a-crossing-has-its-boundary-misbehaving @planned
+  @rule:a-crossing-has-its-boundary-misbehaving
   Rule: A crossing rule carries more than one example — the ordinary case and the boundary misbehaving — and one with a single example is warned about rather than failed
 
     Example: the crossing has only one example
@@ -35,7 +35,7 @@ Feature: What the build and the spec step hold a rule to when it crosses a bound
       When verification runs
       Then no warning is reported for it
 
-  @rule:refine-spec-asks-for-the-boundary-misbehaving @planned
+  @rule:refine-spec-asks-for-the-boundary-misbehaving
   Rule: When a request cannot be met without a boundary, the spec step asks what must still be true when that boundary misbehaves before the spec is written, and the rule it writes carries the crossing and the misbehaving example
 
     Example: a request that crosses a service

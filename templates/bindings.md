@@ -69,6 +69,7 @@ tree carries how it was read back: the command, and when.
 | `gate:boundary-fake-suite` | a fake row naming no suite against the real thing | | |
 | `gate:boundary-recorded-age` | a recorded row past its age | | |
 | `gate:boundaries-table` | rule-bound tests present and no boundaries table | | |
+| `gate:crossing-names-a-boundary` | a rule tagged `@crosses:` a boundary the bindings have no row for | | |
 | `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | |
 | `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | |
 | `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | | |

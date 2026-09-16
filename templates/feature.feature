@@ -15,6 +15,13 @@ Feature: <What this component does — the thing, not the change that added it>
   # **No @persona: and no @journey: here.** Every feature reaches a persona
   # through its workflow. A second path to the same fact is a second thing to
   # keep true.
+  #
+  # @crosses:<id> goes on a Rule, not here, when the promise cannot be true
+  # without a boundary the bindings name — the store, the network, the clock, a
+  # service — by the id its row carries in the boundaries table. The build fails
+  # a crossing to a boundary no row declares, and warns a crossing rule with a
+  # single example: one example cannot be both the ordinary case and the
+  # boundary going wrong. Most rules cross nothing and carry no such tag.
 
   # ── Scope ───────────────────────────────────────────────────────────────────
   # One component or behaviour per file, and small — soft limits are 120 lines
@@ -55,7 +62,7 @@ Feature: <What this component does — the thing, not the change that added it>
       When <the one action>
       Then <the observable outcome>
 
-  @rule:<id> @planned
+  @rule:<id> @crosses:<boundary-id> @planned
   Rule: <what must still be true when it goes wrong>
 
     # The rule most worth writing, and the one most often missing. A feature file
@@ -65,11 +72,15 @@ Feature: <What this component does — the thing, not the change that added it>
     # staying out of something it was not asked for. Only a test asserting
     # absence can verify one, and the tag is what tells the gate that such a test
     # is the right kind rather than a mistagged one.
+    #
+    # @crosses:<boundary-id> is shown here because a rule that goes wrong at a
+    # boundary is exactly the rule that names it. Drop the tag where the promise
+    # needs nothing outside the app's own code.
 
-    Example: <the failure, named for what survives it>
+    Example: <the boundary misbehaving — down, slow, refusing, or two at once>
       Given <state>
-      When <the thing that goes wrong>
-      Then <what must still be true>
+      When <the boundary does something other than succeed>
+      Then <what the persona must still see>
 
     Example: <the edge — the case just inside or just outside the promise>
       Given <state>

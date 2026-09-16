@@ -1,0 +1,10 @@
+# The workspace: tideboard, a small service with a real specs/ tree whose
+# bindings carry a boundaries table — the gauge service is a `boundary:network`
+# row. The request, a Refresh button that pulls from that service, cannot be
+# met without the network: it crosses a boundary. What is graded is whether
+# refine-spec sees that and asks what the harbourmaster must still see when the
+# gauge service is down, slow or refusing — before it writes the spec — and
+# writes a rule tagged @crosses:network with an Example of the service
+# misbehaving, not only of it working. A request that crossed nothing would be
+# asked none of this; this one crosses the network, and the spec has to say so.
+scaffold_script: scaffold.sh

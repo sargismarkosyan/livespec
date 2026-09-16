@@ -1,6 +1,6 @@
 # Spec 0053: a rule names what it crosses
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** none — spec D of the plan *Green Means Real* (2026-09-08), the
   last of four. A shipped as [`0039`](0039-the-world-a-test-runs-in.md), B as
   [`0051`](0051-a-test-that-did-not-run-claims-nothing.md), C's first part

@@ -62,6 +62,7 @@ came out.
 | Case | Holds | Fails when |
 |---|---|---|
 | `01-solution-shaped-request` | `refine-spec` finds the job under the proposed solution | a description edit makes it start building the button |
+| `45-a-request-that-crosses-a-boundary` | **`refine-spec` treats a request that crosses a boundary as one** — `tideboard`, whose Refresh button pulls from a gauge service the bindings name `boundary:network`; the round asks what the harbourmaster must still see when the service is down, slow or refusing, and the rule written is tagged `@crosses:network` with an example of the service misbehaving | the spec covers only the successful refresh, the network is never treated as a boundary the promise depends on, or no crossing is written |
 | `02-feedback-from-use` | `todo` files rather than fixes, and pulls out the implicit | it fixes on the spot, or tracks only the stated complaint |
 | `03-persona-to-fit-feature` | `refine-personas` refuses a persona ordered backwards | the refusal softens into "here's the persona, with caveats" |
 | `04-workflow-for-orphan` | `refine-workflows` refuses a workflow shaped like its orphan | satisfying the gate beats telling the truth |
