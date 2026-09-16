@@ -194,7 +194,7 @@ what moved was what the numbers were allowed to be called.
 
 ## Gate wiring
 
-**Reconciled against livespec 1.6.0 on 2026-09-16.** One row per gate named in
+**Reconciled against livespec 1.7.0 on 2026-09-16.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
@@ -345,8 +345,13 @@ nothing was rewired. **It moved to 1.6.0 with the first audit run through the
 tool**, on 2026-09-16, because by then the wiring here had moved: `checks.py`
 gained the id-table and registry checks, `tests.py` became a gate, and
 `version_gate.py` gained its fourth trigger — every one of them wired in this
-repository, which is the plugin, and level with it by construction. The record
-of that audit is `specs/setup/audit.md`.
+repository, which is the plugin, and level with it by construction. **And to
+1.7.0 with the second audit, the same day**, for the same reason: 1.7.0 wired
+the `command` grader into `evalsuite.py` and seven refusal faults into
+`inject.py`. In this repository the stamp reads one release behind the moment
+a release lands — the release commit bumps the version after the audit — and
+the next audit moves it, as this one did. The record of each audit is
+`specs/setup/audit.md`.
 
 ## The fault injection record
 
