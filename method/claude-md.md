@@ -150,3 +150,27 @@ whatever change made it stale.
 contract; a named example is a template with extra steps for anyone in a hurry,
 and a file copied from another repository is the first thing in this one that
 will drift.
+
+## When it is out of line
+
+A stale path is a fix: the line moves, in the change that moved the path. A
+file missing a requirement, or carrying what must stay out, is not fixed by
+the line. It is rewritten from the requirements, whatever it is currently
+worth, because a patch made requirement by requirement preserves exactly the
+property that made it bad — it was assembled from somebody else's blanks, and
+a patched template is a template.
+
+Before the rewrite, harvest. List every fact only this file knows — the
+deployment that makes every route somebody else's to call, the convention no
+tool enforces, the account of what this file used to claim and which change
+argued wrongly from it — and carry each into the new file or name it as
+dropped, with the reason and where it lives instead. A rewrite that loses one
+of these is a regression with a tidy diff.
+
+Show the new file whole, beside what was kept and what was dropped, and wait.
+A yes given at the start of a sitting does not cover replacing a file somebody
+wrote by hand; a rewrite that lands unasked is worse than the patch it
+replaced. The sitting does this. The audit corrects a line where a line is the
+finding and, where the file needs rewriting, leaves that open with the sitting
+named — it changes the record and never the wiring, and a new file is the
+sitting's kind of change.

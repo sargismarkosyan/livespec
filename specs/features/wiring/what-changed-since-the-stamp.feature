@@ -80,3 +80,9 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       When the audit makes its corrections
       Then the row for that gate reads deferred, naming the version of the method that moved it
       And the config is left as it was, and the reply ends with the command that starts the sitting, with that row after it
+
+    Example: the file is out of line beyond what a line corrects
+      Given a repository's CLAUDE.md that reads as a filled template, with the plugin's own rules copied into it
+      When the audit makes its corrections
+      Then the lines that are record are corrected in place
+      And the file is not rewritten by the audit: its line stays open, naming the rewrite as what closes it and the sitting as whose it is

@@ -1,0 +1,16 @@
+# The workspace: weirhouse, set up at livespec 1.10.0 with a ledger in the
+# template's shape and green. Its CLAUDE.md is a filled template — placeholder
+# overview, generic style rules, the plugin's loop and rules copied in, a
+# history paragraph — with one paragraph only it knows, and two lines that are
+# record and behind: step 2 instructs by `/livespec:feedback`, a name the
+# plugin has not had since 1.0.0, and step 4 reads *Human approves* with
+# nothing about the sketch.
+#
+# What is graded is the line the audit draws. The two lines are corrected in
+# place; the template around them is left standing, because a new file is
+# the sitting's kind of change and the audit changes the record and never the
+# wiring; `check:loop-per-claude-md` stays open, naming the rewrite as what
+# closes it and the sitting as whose it is; and the record validates. A
+# command grader reads the file for both halves — the corrections made, the
+# rewrite not — and the tool's own `--check` reads the record.
+scaffold_script: scaffold.sh
