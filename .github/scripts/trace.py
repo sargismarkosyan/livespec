@@ -28,6 +28,7 @@ what the gate proved is a second copy of the gate's logic waiting to drift.
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 import sys
@@ -239,13 +240,63 @@ for case in suite:
 
 # The second kind of claim: a test under tests/ names its rule through
 # rulelib.rule("<id>"), the method's ordinary shape, for the code this
-# repository ships. The call is the claim. See specs/changes/0041.
-TEST_CLAIM = re.compile(r"""rule\(\s*["']([a-z0-9]+(?:-[a-z0-9]+)*)["']\s*\)""")
+# repository ships. The call is the claim — read off the syntax, so that a
+# marker beside it can empty it: a test the runner skips, or expects to fail,
+# did not run, and a test that did not run claims nothing. The markers are
+# this repository's binding, unittest's own. See specs/changes/0041 and 0051.
+SKIP_MARKERS = {"skip", "skipIf", "skipUnless", "expectedFailure"}
+
+
+def decorator_name(node: ast.expr) -> str:
+    target = node.func if isinstance(node, ast.Call) else node
+    return getattr(target, "attr", getattr(target, "id", ""))
+
+
+def rule_of(decorators: list[ast.expr]) -> str | None:
+    for node in decorators:
+        if isinstance(node, ast.Call) and decorator_name(node) == "rule" and node.args and isinstance(node.args[0], ast.Constant):
+            return str(node.args[0].value)
+    return None
+
+
+def marker_of(decorators: list[ast.expr]) -> str | None:
+    for node in decorators:
+        if decorator_name(node) in SKIP_MARKERS:
+            return decorator_name(node)
+    return None
+
+
+def test_claims(path: Path) -> list[tuple[str, str, str | None]]:
+    """(test, rule id, marker) for every rule-bound test in a file. A rule or a
+    marker on the class applies to every test method in it."""
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    found: list[tuple[str, str, str | None]] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            class_rule, class_marker = rule_of(node.decorator_list), marker_of(node.decorator_list)
+            for item in node.body:
+                if isinstance(item, ast.FunctionDef) and item.name.startswith("test_"):
+                    value = rule_of(item.decorator_list) or class_rule
+                    if value:
+                        found.append((f"{node.name}.{item.name}", value, marker_of(item.decorator_list) or class_marker))
+        elif isinstance(node, ast.FunctionDef) and node.col_offset == 0 and node.name.startswith("test_"):
+            value = rule_of(node.decorator_list)
+            if value:
+                found.append((node.name, value, marker_of(node.decorator_list)))
+    return found
+
+
 tests_claiming = 0
 for path in (sorted((ROOT / "tests").rglob("test_*.py")) if (ROOT / "tests").exists() else []):
     where = rel(path)
-    for match in TEST_CLAIM.finditer(path.read_text(encoding="utf-8")):
-        value = match.group(1)
+    for name, value, marker in test_claims(path):
+        if marker:
+            fail(
+                where,
+                f"{name} is marked @{marker} and claims @rule:{value}; a test that did not run claims nothing, "
+                "and the rule is untested until the marker comes off",
+            )
+            continue
         tests_claiming += 1
         claimed_rules.setdefault(value, []).append(where)
         if value not in live_rules and value not in planned_rules:

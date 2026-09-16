@@ -198,6 +198,8 @@ def green_bindings(version: str) -> str:
             "| `gate:boundaries-table` | rule-bound tests present and no boundaries table | not applicable | no rule-bound doubles here |",
             "| `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | automated | `python3 gate.py` |",
             "| `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | automated | `python3 gate.py` |",
+            "| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | automated | `python3 gate.py` |",
+            "| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | automated | `python3 gate.py test` |",
             "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
         ]
     )
@@ -741,6 +743,21 @@ FAULTS = [
     ("a test naming a rule that is still @planned", TESTS,
      lambda r: edit(r, "specs/features/core/core.feature", "@rule:two @refusal", "@rule:two @refusal @planned"),
      "fails", "the tests are red"),
+    # A test that did not run claims nothing. The marker empties the claim in
+    # the traceability gate; the count is the runner's gate's. See specs/changes/0051.
+    ("a skipped rule-bound test claiming a rule", TRACE,
+     lambda r: edit(r, "tests/test_thing.py", '    @rule("two")\n', '    @unittest.skip("not today")\n    @rule("two")\n'),
+     "fails", "claims nothing"),
+    ("the runner ran fewer rule-bound tests than the tree holds", TESTS,
+     lambda r: write(r, "tests/test_more.py",
+                     "import sys\nfrom pathlib import Path\n\n"
+                     "sys.path.insert(0, str(Path(__file__).resolve().parent))\n"
+                     "from rulelib import rule  # noqa: E402\n\n\n"
+                     "class More:  # not a TestCase: the runner never collects it\n"
+                     "    @rule(\"one\")\n"
+                     "    def test_the_thing_is_true(self):\n"
+                     "        assert True\n"),
+     "fails", "the runner ran"),
 ]
 
 

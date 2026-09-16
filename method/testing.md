@@ -87,6 +87,15 @@ One rule may have several tests, and one file may cover several rules — but a
 file should stay recognisably about one component, like the feature file it
 mirrors.
 
+**A test that did not run claims nothing.** A skip, an only, an expected
+failure — whatever the runner calls it — leaves the rule it names untested,
+and the gate reads it that way: the claim is empty, and the failure names the
+marker. And the runner says what it ran, per test, in a form the gate can
+count: fewer tests run than the tree holds is a failure, whatever the summary
+line says, and more is not. Both exist because the summary line is what gets
+quoted, and every fabricated result on record was a summary. What counts as a
+marker, and the form of the report, are bindings.
+
 ### Write them against the rule, not the implementation
 
 The Gherkin `Example:` blocks are the specification of what to assert. If the

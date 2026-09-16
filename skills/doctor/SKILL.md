@@ -124,6 +124,12 @@ The questions worth the judgment, and what decides them:
   *to do*, *we should*, *for now* with its line. Each is a row on the clock or
   it is nothing — *nothing to do at release time* is nothing — and that is
   yours to say, not the script's.
+- **What ran** (`gate:skipped-test-claims-nothing`, `gate:fewer-ran-than-exist`).
+  A row reading *automated* names how the runner reports per test and what
+  counts as a marker here; it reads *unobserved* until somebody has skipped a
+  rule-bound test and watched the gate refuse it. A bindings sentence saying
+  the runner cannot report per test is a decision to leave as written, with
+  what it leaves open beside it.
 
 ## 2. Correct the record — and only the record
 

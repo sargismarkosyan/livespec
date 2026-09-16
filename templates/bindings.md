@@ -71,6 +71,8 @@ tree carries how it was read back: the command, and when.
 | `gate:boundaries-table` | rule-bound tests present and no boundaries table | | |
 | `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | |
 | `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | |
+| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | | |
+| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | | |
 | `gate:verified-to-fire` | every gate broken on purpose and seen to fire | | |
 
 ### The wiring that must never gate
