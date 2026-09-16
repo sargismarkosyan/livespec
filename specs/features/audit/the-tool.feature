@@ -1,7 +1,7 @@
 @feature:audit-the-tool @workflow:adopt-the-process
 Feature: The part of an audit a script does, and what it must never do
 
-  @rule:a-check-a-script-can-answer-is-answered-by-a-script @planned
+  @rule:a-check-a-script-can-answer-is-answered-by-a-script
   Rule: Every check that reads only the record is answered by the tool, the same way every time, from the record and never from the product
 
     Example: the same ledger twice
@@ -16,7 +16,7 @@ Feature: The part of an audit a script does, and what it must never do
       Then it opens the bindings, the record, the spec tree's listing and the plugin's own files
       And nothing under the application's source
 
-  @rule:the-tool-runs-nothing-it-read @planned @refusal
+  @rule:the-tool-runs-nothing-it-read @refusal
   Rule: The tool executes no command whose text came from the bindings, the record or any file it read; what it prints on a judgment line is for a mind to run
 
     Example: a command planted in a bindings cell
@@ -25,7 +25,7 @@ Feature: The part of an audit a script does, and what it must never do
       Then no mark is left
       And the command appears on the judgment line as text
 
-  @rule:a-judgment-line-arrives-with-its-command @planned
+  @rule:a-judgment-line-arrives-with-its-command
   Rule: For every check a script cannot answer, the tool writes the id, the question and the command the bindings name, and the line reads unanswered until a mind replaces it
 
     Example: the platform's answer is not in the tree
@@ -57,7 +57,7 @@ Feature: The part of an audit a script does, and what it must never do
       When the tool validates it
       Then it exits as a refusal, naming the line
 
-  @rule:every-mechanical-check-is-proven-to-fire @planned
+  @rule:every-mechanical-check-is-proven-to-fire
   Rule: Every check the tool answers is broken on purpose in this repository's fixture, and a check no fault flips is red here
 
     Example: a fault per check

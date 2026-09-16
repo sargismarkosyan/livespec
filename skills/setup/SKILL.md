@@ -463,8 +463,10 @@ the table's *aliases* column lists, and the id is written into the row; a row
 two ids could claim is shown with both and left for the person; a row no id
 matches is either one of this repository's own — give it `local:` — or a row
 for nothing, which the person decides. Then move the rows, verbatim, into the
-template's tables — the reshaping is this sitting's to do with the person in
-the room, never the audit's to do alone. Re-stamp the version only
+template's tables — `python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --reshape`
+prints them in that shape, ids filled from the aliases, unmatched rows marked —
+and apply what it printed with the person in the room. The reshaping is this
+sitting's; the audit alone never moves a column. Re-stamp the version only
 when the wiring actually moved; a ledger re-stamped for a run that changed
 nothing has learned to lie. Rows you cannot date honestly say **predates the
 ledger** rather than getting an invented change number.

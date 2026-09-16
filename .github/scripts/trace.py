@@ -237,6 +237,20 @@ for case in suite:
     for value in case["claims"]["workflows"]:
         claimed_workflows.setdefault(value, []).append(case["name"])
 
+# The second kind of claim: a test under tests/ names its rule through
+# rulelib.rule("<id>"), the method's ordinary shape, for the code this
+# repository ships. The call is the claim. See specs/changes/0041.
+TEST_CLAIM = re.compile(r"""rule\(\s*["']([a-z0-9]+(?:-[a-z0-9]+)*)["']\s*\)""")
+tests_claiming = 0
+for path in (sorted((ROOT / "tests").rglob("test_*.py")) if (ROOT / "tests").exists() else []):
+    where = rel(path)
+    for match in TEST_CLAIM.finditer(path.read_text(encoding="utf-8")):
+        value = match.group(1)
+        tests_claiming += 1
+        claimed_rules.setdefault(value, []).append(where)
+        if value not in live_rules and value not in planned_rules:
+            fail(where, f"claims @rule:{value}, which does not exist. Rule ids are permanent; this is usually a typo or a rename.")
+
 for value, entry in sorted(live_rules.items()):
     if value not in claimed_rules:
         fail(
