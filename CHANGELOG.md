@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.7.2 — 2026-09-16
+
+**The method has one answer to a feature that serves no workflow.** A repository's own pipeline — its gates, its release step, the checks that prove them — is not an attempt anybody makes with the product; it is held by the fault table and reserves no rule ids, and a feature naming no workflow is refused rather than given a tag of its own. The five ids `0003` reserved for a release-pipeline feature that the method says should not exist are withdrawn, never having been used.
+
 ## 1.7.1 — 2026-09-16
 
 **The audit tool reads a ledger as it was typed, not as its author would have typed it.** A stamp in bold, a longer heading, a second-table row in the repository's own words and read-back commands in a fenced block are all read now; the first three ledgers the tool met that it did not write found each of these, and copies of them are the tests the parser is held to from here. Two checks that were never a script's to decide — the four phrases in the prose, an old skill name in prose — go to the mind with the hits listed, and only `/livespec:<old-name>` is reported as an instruction by a name the plugin no longer has. `doctor.py --check` asks whether a record validates and writes nothing, which is what a grader should ask. A pull request's `## Ids` section may be a bullet list. After `/plugin update`, start a new session — a skill body is loaded once.
