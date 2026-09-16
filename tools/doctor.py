@@ -91,6 +91,7 @@ GATES = [
 WIRING = [
     ("wiring:pr-report", "wiring", "the pull-request report", "the report on every pull request, unobserved until one was watched arriving"),
     ("wiring:rule-bound-measure", "wiring", "the rule-bound measure", "the rule-bound measure reported beside the gated number"),
+    ("wiring:run-beside-claim", "wiring", "the run beside the claim", "the report re-running the verification command and printing what it saw beside what the body says — unobserved until the two were watched disagreeing"),
 ]
 
 # (id, kind, severity, meaning) — kind is mechanical or judgment.
@@ -124,6 +125,7 @@ CHECKS = [
     ("check:second-table", "mechanical", "wiring", "the table for wiring that must never gate exists"),
     ("check:pr-report-row", "mechanical", "wiring", "it holds the row for the pull-request report"),
     ("check:rule-bound-row", "mechanical", "wiring", "it holds the row for the rule-bound measure"),
+    ("check:run-row", "mechanical", "wiring", "it holds the row for the run beside the claim"),
     ("check:sketch-row", "mechanical", "record", "the bindings say which changes owe a sketch"),
     ("check:picture-row", "mechanical", "record", "the bindings say what a change here must show, and it is not the sketch row"),
     ("check:skill-names", "mechanical", "record", "every skill the record instructs by exists in this plugin"),
@@ -666,6 +668,10 @@ def c_rule_bound_row(ctx: dict) -> tuple[str, str]:
     return wiring_row(ctx, "wiring:rule-bound-measure", "rule-bound", "spec-bound")
 
 
+def c_run_row(ctx: dict) -> tuple[str, str]:
+    return wiring_row(ctx, "wiring:run-beside-claim", "run beside", "the run")
+
+
 def c_sketch_row(ctx: dict) -> tuple[str, str]:
     for key, value in ctx["keys"].items():
         if "sketch" in key:
@@ -756,6 +762,7 @@ MECHANICAL = {
     "check:second-table": c_second_table,
     "check:pr-report-row": c_pr_report_row,
     "check:rule-bound-row": c_rule_bound_row,
+    "check:run-row": c_run_row,
     "check:sketch-row": c_sketch_row,
     "check:picture-row": c_picture_row,
     "check:skill-names": c_skill_names,

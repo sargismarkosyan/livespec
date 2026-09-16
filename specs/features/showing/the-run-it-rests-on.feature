@@ -1,7 +1,7 @@
 @feature:showing-the-run-it-rests-on @workflow:adopt-the-process
 Feature: What a pull request carries about the run its claim of green rests on
 
-  @rule:a-claim-of-green-carries-the-run @planned
+  @rule:a-claim-of-green-carries-the-run
   Rule: A pull request that changes the tests, or what runs them, carries the run — the verification command as the bindings name it, and the runner's own output under it — and one that carries none, or one quoting a different command, cannot merge
 
     Example: the run is quoted under the command the bindings name
@@ -26,7 +26,7 @@ Feature: What a pull request carries about the run its claim of green rests on
       When the release inputs are checked
       Then no run block is asked for
 
-  @rule:the-report-prints-its-own-run-beside-the-claim @planned
+  @rule:the-report-prints-its-own-run-beside-the-claim
   Rule: The report on a pull request prints the tail of the pipeline's own verification run beside what the body's run block says, and gates on nothing, including the two disagreeing
 
     Example: two runs, side by side
@@ -46,7 +46,7 @@ Feature: What a pull request carries about the run its claim of green rests on
       When it is built
       Then it says the pipeline's run was not available and prints the rest
 
-  @rule:the-picture-names-its-world @planned
+  @rule:the-picture-names-its-world
   Rule: The hand-back that delivers a version's picture says which boundary rows the app was served over when it was taken, in the same breath as the form the picture took
 
     Example: a clip over the real store and a seeded session

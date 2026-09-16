@@ -39,8 +39,12 @@ jobs:
       # holds exactly one name; every other gate still runs here and still
       # blocks. The freshness check it leaves out has its own job below.
       # See specs/changes/0033-a-bill-nobody-approved-does-not-block.md.
+      # The output is kept: the report prints its last lines beside the run
+      # block the pull request's body carries. `shell: bash` runs with pipefail,
+      # so the tee does not hide verify.py's exit. See specs/changes/0052.
       - name: Verify
-        run: python3 .github/scripts/verify.py --local
+        shell: bash
+        run: python3 .github/scripts/verify.py --local 2>&1 | tee "$RUNNER_TEMP/run.txt"
       # A property of a pull request, not of a tree — which is why it is not part
       # of verify.py, and why it only runs here. It checks the two things the
       # release job cannot work out for itself: how big the change is, and what
@@ -96,6 +100,9 @@ jobs:
           # row matters most. The gating already happened in verify.py above.
           python3 .github/scripts/board.py --json > "$RUNNER_TEMP/head-board.json"
           python3 .github/scripts/board.py "$RUNNER_TEMP/base" --json > "$RUNNER_TEMP/base-board.json"
+          # The body as the event carries it, so the report can print the run
+          # block it holds beside the Verify step's own output. See 0052.
+          jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH" > "$RUNNER_TEMP/body.md"
 
       - name: Build the report
         if: ${{ !cancelled() && github.event_name == 'pull_request' }}
@@ -103,6 +110,7 @@ jobs:
         run: |
           python3 .github/scripts/report.py "$RUNNER_TEMP/head.json" "$RUNNER_TEMP/base.json" \
               "$RUNNER_TEMP/head-board.json" "$RUNNER_TEMP/base-board.json" \
+              "$RUNNER_TEMP/run.txt" "$RUNNER_TEMP/body.md" \
             | tee "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment it on the pull request

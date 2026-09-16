@@ -157,6 +157,7 @@ ROW_STRUCTURE = "| `gate:structure` | one feature per file, unique ids, every ru
 ROW_COVERAGE = "| `gate:coverage` | lines, branches, functions | not applicable | no coverage here |"
 ROW_PR_REPORT = "| `wiring:pr-report` | the pull-request report | unobserved | `report.py`, posted by CI |"
 ROW_RULE_BOUND = "| `wiring:rule-bound-measure` | the rule-bound measure, reported beside the gated number | not applicable | no coverage here |"
+ROW_RUN = "| `wiring:run-beside-claim` | the run beside the claim | unobserved | `report.py` prints the pipeline's run beside the body's block |"
 ROW_STORE = "| `boundary:store` | the store | real | 0001 | `docker compose up db` starts it; leaves uncovered: production volume |"
 ROW_CLOCK = "| `boundary:clock` | the clock | mocked | 0001 | a fake clock nothing checks; cover: none |"
 ROW_SKETCH = "| **A sketch is owed** | by every change spec, before approval |"
@@ -236,7 +237,7 @@ def green_bindings(version: str) -> str:
         f"{GATE_HEADER}\n{gates}\n\n"
         f"{WIRING_HEADING}\n\n"
         "| id | wiring | state | evidence |\n|---|---|---|---|\n"
-        f"{ROW_PR_REPORT}\n{ROW_RULE_BOUND}\n\n"
+        f"{ROW_PR_REPORT}\n{ROW_RULE_BOUND}\n{ROW_RUN}\n\n"
         "### The boundaries\n\n"
         "| id | boundary | state | since | evidence |\n|---|---|---|---|---|\n"
         f"{ROW_STORE}\n{ROW_CLOCK}\n\n"
@@ -377,7 +378,10 @@ from releaselib import (  # noqa: E402
     entries,
     extract_entry,
     extract_gherkin,
+    extract_run,
     moves_spec,
+    touches_the_run,
+    verification_command,
     next_version,
     prepend_entry,
     select_increment,
@@ -448,7 +452,18 @@ RELEASE_FAULTS = [
      lambda: stamp_ledger("# Bindings\n\nno stamp here\n", "0.9.0", "2026-01-02"), "no stamp line"),
     ("a bullet list that retires what the table added",
      lambda: check_ids_section(BODY_IDS_BULLET_RETIRES, TABLE_BASE, TABLE_ADDED), "was added and `## Ids` does not name it"),
+    # The run a claim of green rests on: the body quotes the verification
+    # command as the bindings name it, with the runner's output beneath, or a
+    # change touching the tests cannot merge. See specs/changes/0052.
+    ("a change to the tests whose body carries no run block",
+     lambda: extract_run(GOOD_BODY, "python3 gate.py"), "carries no run block"),
+    ("a run block quoting a different command",
+     lambda: extract_run(GOOD_BODY + "\n```\n$ npm test\nok\n```\n", "python3 gate.py"), "not the verification command"),
+    ("a run block with no output under the command",
+     lambda: extract_run(GOOD_BODY + "\n```\n$ python3 gate.py\n```\n", "python3 gate.py"), "no output under it"),
 ]
+
+BODY_WITH_RUN = GOOD_BODY + "\n```\n$ python3 gate.py\n✔ 3 tests, every gate green\n```\n"
 
 
 def report_control() -> None:
@@ -534,6 +549,11 @@ def release_control() -> None:
     assert moves_spec(["specs/workflows/README.md", "specs/features/a.feature"]) == [
         "specs/features/a.feature"
     ], "the spec surface is not what triggers the Gherkin check"
+    assert extract_run(BODY_WITH_RUN, "python3 gate.py").splitlines()[0] == "$ python3 gate.py", "the run block is not read"
+    assert touches_the_run(["tests/test_x.py", "evals/README.md", "evals/case-rule/prompt.md", "method/gates.md"]) == [
+        "tests/test_x.py", "evals/case-rule/prompt.md"
+    ], "the run surface is not read from the paths"
+    assert verification_command("| **Verification** | `python3 gate.py` |\n") == "python3 gate.py", "the verification command is not read from the bindings"
 
 
 # (name, gate, mutation, expected outcome, a phrase the message must contain)
@@ -830,6 +850,8 @@ DOCTOR_FAULTS = [
      lambda r: edit(r, "specs/setup/README.md", ROW_PR_REPORT + "\n", ""), "open"),
     ("the second table losing the measure's row", "check:rule-bound-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_RULE_BOUND + "\n", ""), "open"),
+    ("the second table losing the run's row", "check:run-row",
+     lambda r: edit(r, "specs/setup/README.md", ROW_RUN + "\n", ""), "open"),
     ("no row saying a sketch is owed", "check:sketch-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_SKETCH + "\n", ""), "open"),
     ("the sketch row and the picture row saying one thing", "check:picture-row",

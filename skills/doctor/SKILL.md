@@ -130,6 +130,11 @@ The questions worth the judgment, and what decides them:
   rule-bound test and watched the gate refuse it. A bindings sentence saying
   the runner cannot report per test is a decision to leave as written, with
   what it leaves open beside it.
+- **The run beside the claim** (`wiring:run-beside-claim`, `check:run-row`).
+  The row reads *unobserved* until somebody has watched the pipeline's run and
+  a pull request's run block disagree on the page; where the repository's pull
+  requests carry no comment it reads *not applicable* with the reason, as the
+  report's own row does.
 
 ## 2. Correct the record — and only the record
 

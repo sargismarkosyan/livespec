@@ -111,6 +111,72 @@ def extract_gherkin(body: str | None) -> str:
     )
 
 
+# The run a claim of green rests on. A fenced block whose first line is the
+# verification command as the bindings name it, with the runner's own output
+# beneath — not a summary of it. Owed by a change that touches the tests or
+# what runs them, the way the Gherkin block is owed by a change that touches a
+# .feature. See specs/changes/0052.
+RUN_SURFACE = ("tests/", "evals/", ".github/scripts/")
+ANY_FENCE = re.compile(r"```+[^\n]*\r?\n(.*?)```", re.DOTALL)
+VERIFICATION_ROW = re.compile(r"^\|\s*\*\*Verification\*\*\s*\|\s*`([^`]+)`", re.MULTILINE)
+
+
+def touches_the_run(paths: Iterable[str]) -> list[str]:
+    """The subset of `paths` that changes the tests, or what runs them."""
+    return [path for path in paths if path.startswith(RUN_SURFACE) and path != "evals/README.md"]
+
+
+def verification_command(bindings: str | None) -> str:
+    """The verification command as the bindings name it: the first backticked
+    command in the *Verification* row of their table."""
+    match = VERIFICATION_ROW.search(bindings or "")
+    if not match:
+        raise ReleaseInputError(
+            "the bindings name no verification command; the *Verification* row of "
+            "specs/setup/README.md is where the run block's first line comes from"
+        )
+    return match.group(1).strip()
+
+
+def extract_run(body: str | None, command: str) -> str:
+    """The run a pull request's claim of green rests on.
+
+    A fenced block whose first line is `command` — a leading `$ ` prompt is
+    allowed — with the runner's own output beneath it. What this cannot check
+    is whether the output is real; the report prints the pipeline's own run
+    beside it so that reading is cheap. What it stops is the body that says
+    the tests pass and quotes nothing.
+    """
+    text = (body or "").replace("\r\n", "\n")
+    opened_with: list[str] = []
+    for block in ANY_FENCE.findall(text):
+        lines = block.strip("\n").splitlines()
+        if not lines or not lines[0].strip():
+            continue
+        first = lines[0].strip()
+        bare = first[1:].strip() if first.startswith("$") else first
+        if bare.startswith(command):
+            if not "".join(lines[1:]).strip():
+                raise ReleaseInputError(
+                    f"the run block quotes `{command}` and no output under it. The block is "
+                    "the runner's own output, not the command alone."
+                )
+            return "\n".join(lines)
+        if first.startswith("$"):
+            opened_with.append(bare)
+    if opened_with:
+        raise ReleaseInputError(
+            f"the run block opens with `{opened_with[0]}`, which is not the verification "
+            f"command the bindings name — `{command}`. The run that counts is that command's."
+        )
+    raise ReleaseInputError(
+        "this change touches the tests, or what runs them, and the body carries no run "
+        f"block. Paste the run in a fenced block: `{command}` on the first line, the "
+        "runner's own output beneath. A sentence saying the tests pass is a summary, and "
+        "every fabricated result on record was a summary."
+    )
+
+
 def select_increment(labels: Iterable[str]) -> str:
     """The one release label on the pull request.
 

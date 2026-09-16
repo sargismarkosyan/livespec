@@ -1,6 +1,6 @@
 # Spec 0052: the run beside the claim
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** none — spec C of the plan *Green Means Real* (2026-09-08), the
   third of four, in the order the maintainer set; A shipped as
   [`0039`](0039-the-world-a-test-runs-in.md) and B as

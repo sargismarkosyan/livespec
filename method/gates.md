@@ -204,6 +204,16 @@ on a red build cannot turn it green, and one that cannot be built still says
 nothing and still fails nothing. What it must not become is a second opinion — it
 reports which failure happened, and never whether the failure counts.
 
+**And it carries its own run beside the claim.** A pull request that changes
+the tests, or what runs them, carries the run in its body — the verification
+command as the bindings name it, the runner's output beneath; see
+[repository.md](repository.md#and-the-run-it-rests-on). The report prints the
+last lines of the pipeline's own run next to that block, so a body that says
+one thing and a pipeline that says another disagree where the reviewer is
+looking. It gates on nothing there, the difference included: a report that
+failed a build for a log line would be a gate nobody declared, and a
+fabricated run is caught by being read, not by being refused.
+
 ## A gate that does not depend on a failing one
 
 The same wiring hides more than the report. A run stops at its first failing
@@ -314,6 +324,7 @@ same four states, for wiring that is expected and cannot gate:
 |---|---|
 | the pull-request report | one of the four states, and *unobserved* until somebody has watched one arrive |
 | the rule-bound measure, reported beside the gated number | one of the four states |
+| the run beside the claim — the report printing the last lines of the pipeline's own verification run next to the run block the pull request carries | one of the four states, and *unobserved* until somebody has watched the two disagree |
 
 The same two-change clock applies, for the same reason. **Their absence is
 harder to notice than a gate's, not easier** — a gate that is missing eventually
@@ -492,6 +503,7 @@ before *boundary* before *wiring* before *record*.
 |---|---|---|---|---|---|---|
 | `wiring:pr-report` | wiring | 0.21.0 | wiring | — | the pull-request report | the report on every pull request, unobserved until one was watched arriving |
 | `wiring:rule-bound-measure` | wiring | 0.21.0 | wiring | — | the rule-bound measure | the rule-bound measure reported beside the gated number |
+| `wiring:run-beside-claim` | wiring | next | wiring | — | the run beside the claim | the report re-running the verification command and printing what it saw beside what the body says — unobserved until the two were watched disagreeing |
 
 Two prefixes a repository fills itself and this table never lists:
 `boundary:<name>`, one per thing the app talks to, named in the sitting and
@@ -531,6 +543,7 @@ does not name — held to the same states, required by nothing.
 | `check:second-table` | mechanical | 0.21.0 | wiring | — | | the table for wiring that must never gate exists |
 | `check:pr-report-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the pull-request report |
 | `check:rule-bound-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the rule-bound measure |
+| `check:run-row` | mechanical | next | wiring | — | | it holds the row for the run beside the claim |
 | `check:sketch-row` | mechanical | 0.27.0 | record | — | | the bindings say which changes owe a sketch |
 | `check:picture-row` | mechanical | 0.29.0 | record | — | | the bindings say what a change here must show, and it is not the sketch row |
 | `check:skill-names` | mechanical | 1.0.0 | record | — | | every skill the record instructs by exists in this plugin |

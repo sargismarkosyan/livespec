@@ -35,7 +35,7 @@ headers and the stamp line below, so keep those as they are.
 | **Spec-bound coverage** | <the rule-bound measure, or *not applicable* and why> |
 | **Pull-request report** | <what produces it and where it posts; never a gate> |
 | **Audit record** | `specs/setup/audit.md` — written by the audit, one line per check, replaced on every run |
-| **What a contributor owes a release** | <label, changelog, picture, Gherkin — whatever the pipeline cannot work out for itself> |
+| **What a contributor owes a release** | <label, changelog, picture, Gherkin, and the run under the verification command when the change touches the tests — whatever the pipeline cannot work out for itself> |
 
 ## Gate wiring
 
@@ -81,6 +81,7 @@ tree carries how it was read back: the command, and when.
 |---|---|---|---|
 | `wiring:pr-report` | the pull-request report | <state> | <what produces it — unobserved until one was watched arriving> |
 | `wiring:rule-bound-measure` | the rule-bound measure, reported beside the gated number | <state> | <how, or why not> |
+| `wiring:run-beside-claim` | the run beside the claim — the report printing the pipeline's own run next to the run block the pull request carries | <state> | <what prints it — unobserved until the two were watched disagreeing> |
 
 ### The boundaries
 
