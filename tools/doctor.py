@@ -81,7 +81,7 @@ GATES = [
     ("gate:boundary-fake-suite", "boundary", "", "a fake row naming no suite against the real thing fails"),
     ("gate:boundary-recorded-age", "boundary", "", "a recorded row past the age the bindings set fails"),
     ("gate:boundaries-table", "boundary", "", "rule-bound tests present and no boundaries table fails"),
-    ("gate:context-file-ceiling", "wiring", "", "the context file larger than the ceiling the bindings name, or a context file with no ceiling row, fails"),
+    ("gate:context-file-ceiling", "wiring", "", "the context file larger than the ceiling the bindings name, a context file with no ceiling row, or a ceiling above the limit the method names, fails"),
     ("gate:context-file-shape", "wiring", "", "the context file missing, or without its loop, its commands, or its pointer to the bindings, fails"),
     ("gate:verified-to-fire", "wiring", "both gates verified to fire", "every gate is broken on purpose and seen to fire"),
 ]

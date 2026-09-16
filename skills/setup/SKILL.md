@@ -502,9 +502,11 @@ there.
 [`claude-md.md`](../../method/claude-md.md#length) puts the number in the
 repository rather than in the method: once the file is written, or the audit's
 edits are made, measure it and write **CLAUDE.md ceiling** with the size, the
-command that reads it and this change — never before the file is finished, and
-never from a figure the method does not have. Raising it later is a line in the
-change that needs the room, with the reason beside it. From this sitting on,
+command that reads it and this change — never before the file is finished,
+never from a figure the method does not have, and never above the one it does:
+two hundred lines, the reader's own limit, per
+[`claude-md.md`](../../method/claude-md.md#length). Raising it later is a line
+in the change that needs the room, with the reason beside it. From this sitting on,
 the gate wired in section 4 reads that number, so the file you leave behind has
 to pass it — and the rest of what that gate reads — before the hand-back.
 

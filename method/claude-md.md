@@ -116,6 +116,25 @@ already bound the file — two or three sentences here, eight steps at most,
 four or five lines in one block, a line per directory — so a file that meets
 them is short, and the number is what stops it growing afterwards.
 
+**And never above two hundred lines.** That is the target the reader's own
+documentation gives for one of these files, past which it says adherence
+drops, and it is the one number this method carries: it is about the reader,
+not the repository, so it survives every repository with pytest and a
+Makefile, which is the test. A threshold that is a repository's own still
+belongs in its bindings. A ceiling written above the limit fails the build
+before the file's own size is read.
+
+What the length costs, in a sentence each, is why the number is low. The file
+is paid on every turn, again after compaction, and again by every subagent
+that starts; a model's attention is a budget that every token draws on; and
+instructions earlier in a file are followed more reliably than those after
+them. So: only what is critical — a line stays if removing it would cause a
+mistake, and goes if it would not; the rules most often broken come first;
+count instructions rather than lines, since one line can hold three; emphasis
+on one line at most, because emphasis on many is emphasis on none; and what
+applies to one part of the codebase goes into a rule that loads only with the
+files it applies to, not here.
+
 The test to apply before committing it: *if an agent read only this file and the
 bindings, could it make a correct first change?* If yes, stop writing. If no, the
 missing thing is usually a pointer, not a paragraph.

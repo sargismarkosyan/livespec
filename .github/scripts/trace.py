@@ -353,6 +353,10 @@ for value, entry in sorted(personas.items()):
 CONTEXT_FILE = "CLAUDE.md"
 BINDINGS = Path("specs") / "setup" / "README.md"
 MAX_LOOP_STEPS = 8
+# The one number the method carries: the reader's own target for a CLAUDE.md,
+# past which its documentation says adherence drops. A repository's ceiling is
+# its own only up to here. See method/claude-md.md, Length, and specs/changes/0049.
+MAX_CONTEXT_FILE_LINES = 200
 CEILING_ROW = re.compile(r"^\|\s*\*\*CLAUDE\.md ceiling\*\*\s*\|(.*)\|\s*$", re.IGNORECASE)
 FENCE = re.compile(r"^\s*(```|~~~)")
 ORDERED = re.compile(r"^\s*(\d+)\.\s")
@@ -400,6 +404,12 @@ else:
     ceiling = ceiling_in(bindings_path.read_text(encoding="utf-8")) if bindings_path.is_file() else None
     if ceiling is None:
         fail(str(BINDINGS), "names no CLAUDE.md ceiling; a number nobody wrote is not a pass — write the row from the file's size")
+    elif ceiling > MAX_CONTEXT_FILE_LINES:
+        fail(
+            str(BINDINGS),
+            f"names a CLAUDE.md ceiling of {ceiling} lines, above the {MAX_CONTEXT_FILE_LINES} the reader's own "
+            "documentation allows; the number is the repository's only up to there",
+        )
     elif len(context_lines) > ceiling:
         fail(
             CONTEXT_FILE,
