@@ -9,6 +9,7 @@ at a fixture standing in for one.
 from __future__ import annotations
 
 import json
+from datetime import date
 import shutil
 import subprocess
 import sys
@@ -246,3 +247,219 @@ class WhenThingsMove(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def finished(root: Path, answer: str = "clear", why: str = "run: gh api → required: [checks]") -> Path:
+    """The record the tool printed, with every judgment line answered, saved beside the repository."""
+    lines = doctor.emit(doctor.context(root, root / "specs" / "setup" / "README.md"))
+    for line in lines:
+        if line["state"] == "unanswered" and line["id"] in doctor.JUDGMENT_IDS:
+            line["state"], line["evidence"] = answer, why
+    text = doctor.render(doctor.context(root, root / "specs" / "setup" / "README.md"), lines)
+    path = Path(tempfile.mkdtemp(prefix="finished-")) / "audit.md"
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
+def edited(path: Path, old: str, new: str) -> Path:
+    path.write_text(path.read_text().replace(old, new, 1), encoding="utf-8")
+    return path
+
+
+def validate(root: Path, path: Path) -> tuple[list[str], str, str]:
+    return doctor.validate(doctor.context(root, root / "specs" / "setup" / "README.md"), path)
+
+
+class TheRecord(unittest.TestCase):
+    @rule("one-line-per-check-or-it-does-not-end")
+    def test_one_line_short_is_refused_naming_the_id(self):
+        root = repo()
+        path = finished(root)
+        edited(path, "| `check:mocked-clock` |", "| `check:mocked-clocks` |")
+        problems, _, _ = validate(root, path)
+        self.assertTrue(any("missing: check:mocked-clock" in p for p in problems), problems)
+        self.assertFalse(doctor.record_path_of(doctor.context(root, root / "specs" / "setup" / "README.md")).exists(), "a refused record was written")
+
+    @rule("one-line-per-check-or-it-does-not-end")
+    def test_a_judgment_nobody_made_is_refused(self):
+        root = repo()
+        path = finished(root)
+        edited(path, "| `check:merge-blocked` | clear |", "| `check:merge-blocked` | unanswered |")
+        problems, _, _ = validate(root, path)
+        self.assertTrue(any("still unanswered: check:merge-blocked" in p for p in problems), problems)
+
+    @rule("one-line-per-check-or-it-does-not-end")
+    def test_a_state_of_somebodys_own_is_refused(self):
+        root = repo()
+        path = finished(root)
+        edited(path, "| `check:merge-blocked` | clear |", "| `check:merge-blocked` | done |")
+        problems, _, _ = validate(root, path)
+        self.assertTrue(any("unknown state 'done' on check:merge-blocked" in p for p in problems), problems)
+
+    @rule("a-finding-carries-what-closes-it-and-a-skip-carries-why")
+    def test_open_with_nothing_after_it_is_refused(self):
+        root = repo()
+        path = finished(root)
+        edited(path, "| `check:merge-blocked` | clear | ", "| `check:merge-blocked` | open | ")
+        text = path.read_text()
+        head, _, tail = text.partition("| `check:merge-blocked` | open |")
+        rest = tail.split("|", 3)  # since, evidence, remainder
+        path.write_text(head + "| `check:merge-blocked` | open |" + rest[1] + "|  |" + "\n" + rest[3].split("\n", 1)[1], encoding="utf-8")
+        problems, _, _ = validate(root, path)
+        self.assertTrue(any("open with nothing that closes it" in p for p in problems), problems)
+
+    @rule("a-finding-carries-what-closes-it-and-a-skip-carries-why")
+    def test_not_read_with_why_validates_and_the_reply_says_so(self):
+        root = repo()
+        path = finished(root, answer="not-read", why="gh: not logged in — run from a machine with credentials")
+        problems, _, answer = validate(root, path)
+        self.assertEqual(problems, [])
+        self.assertIn("## Not read — ", answer)
+        self.assertIn("`check:merge-blocked` — gh: not logged in", answer)
+
+    @rule("a-finding-carries-what-closes-it-and-a-skip-carries-why")
+    def test_clear_with_no_receipt_is_refused(self):
+        root = repo()
+        path = finished(root, answer="clear", why="looked fine")
+        problems, _, _ = validate(root, path)
+        self.assertTrue(any("no command beside it" in p for p in problems), problems)
+
+    @rule("the-record-is-kept-where-the-bindings-say")
+    def test_a_line_that_did_not_change_keeps_its_date_and_one_that_did_resets(self):
+        root = repo()
+        record = doctor.record_path_of(doctor.context(root, root / "specs" / "setup" / "README.md"))
+        first = finished(root)
+        problems, text, _ = validate(root, first)
+        self.assertEqual(problems, [])
+        self.assertTrue(record.exists())
+        old_date = "2025-01-01"
+        record.write_text(record.read_text().replace(f"| `check:stamp-present` | clear | {date.today().isoformat()} |", f"| `check:stamp-present` | clear | {old_date} |"), encoding="utf-8")
+        second = finished(root, answer="not-read", why="no network today")
+        problems, text, answer = validate(root, second)
+        self.assertEqual(problems, [])
+        self.assertIn(f"| `check:stamp-present` | clear | {old_date} |", text, "an unchanged line lost its date")
+        self.assertIn(f"| `check:merge-blocked` | not-read | {date.today().isoformat()} |", text, "a changed line kept an old date")
+        self.assertIn("· audit 2**", text)
+        self.assertIn("Since ", answer)
+
+    @rule("the-record-is-kept-where-the-bindings-say")
+    def test_a_line_that_closed_is_named_once_in_the_reply(self):
+        root = repo(inject.green_bindings("0.6.0"))
+        path = finished(root)
+        problems, _, first = validate(root, path)
+        self.assertEqual(problems, [])
+        self.assertIn("`check:stamp-range` (record)", first)
+        bindings = root / "specs" / "setup" / "README.md"
+        bindings.write_text(bindings.read_text().replace("livespec 0.6.0 on", f"livespec {INSTALLED} on"), encoding="utf-8")
+        problems, _, second = validate(root, finished(root))
+        self.assertEqual(problems, [])
+        self.assertIn("closed: check:stamp-range", second)
+
+    @rule("corrections-touch-only-the-record")
+    def test_a_fix_that_strayed_is_refused_naming_the_file(self):
+        root = repo()
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.test", "add", "-A"], cwd=root, check=True)
+        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.test", "commit", "-q", "-m", "x"], cwd=root, check=True)
+        (root / "src").mkdir()
+        (root / "src" / "app.js").write_text("// wiring\n")
+        subprocess.run(["git", "add", "src/app.js"], cwd=root, check=True)
+        (root / "src" / "app.js").write_text("// changed\n")
+        path = finished(root)
+        problems, _, _ = validate(root, path)
+        self.assertTrue(any("src/app.js" in p and "doctor wires nothing" in p for p in problems), problems)
+
+    @rule("corrections-touch-only-the-record")
+    def test_a_change_to_the_bindings_alone_validates(self):
+        root = repo()
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.test", "add", "-A"], cwd=root, check=True)
+        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.test", "commit", "-q", "-m", "x"], cwd=root, check=True)
+        bindings = root / "specs" / "setup" / "README.md"
+        bindings.write_text(bindings.read_text() + "\nA corrected sentence.\n", encoding="utf-8")
+        problems, _, _ = validate(root, finished(root))
+        self.assertEqual(problems, [])
+
+
+class TheReply(unittest.TestCase):
+    @rule("the-reply-is-generated-from-the-record")
+    def test_the_dangerous_thing_comes_first_and_the_sitting_line_only_when_wiring_is_left(self):
+        text = inject.green_bindings(INSTALLED)
+        text = "\n".join(line for line in text.splitlines() if "gate:structure" not in line) + "\n"  # wiring left: no row
+        root = repo(text)
+        path = finished(root, answer="open", why="run: gh api → merges are not blocked; closes: require the check in the ruleset")
+        problems, _, answer = validate(root, path)
+        self.assertEqual(problems, [])
+        opened = [line for line in answer.splitlines() if line.startswith("- `check:")]
+        self.assertTrue(opened[0].startswith("- `check:check-name` (platform)") or opened[0].startswith("- `check:credentials-present` (platform)") or opened[0].startswith("- `check:merge-blocked` (platform)"), opened[:3])
+        self.assertLess(answer.index("(platform)"), answer.index("(wiring)"))
+        self.assertIn("/livespec:setup", answer)
+        tail = answer.rstrip().splitlines()
+        command_at = next(i for i, line in enumerate(tail) if line == "/livespec:setup")
+        self.assertTrue(all(line.strip().startswith("check:") for line in tail[command_at + 1:]), "the rows for the sitting follow the command, one per line")
+        self.assertIn("check:row-per-gate", "\n".join(tail[command_at + 1:]))
+
+    @rule("the-reply-is-generated-from-the-record")
+    def test_nothing_open_ends_on_what_was_read_and_sends_nobody_anywhere(self):
+        root = repo()
+        problems, _, answer = validate(root, finished(root))
+        self.assertEqual(problems, [])
+        self.assertIn("## Open — 0", answer)
+        self.assertNotIn("/livespec:setup", answer)
+
+    @rule("a-decided-exception-is-reported-once-and-never-relitigated")
+    def test_a_decided_row_is_listed_once_and_is_not_a_finding(self):
+        text = inject.green_bindings(INSTALLED).replace(
+            "| `gate:coverage` | lines, branches, functions | not applicable | no coverage here |",
+            "| `gate:coverage` | lines, branches, functions | not applicable | decided: three lines of code, nothing to measure |", 1,
+        )
+        root = repo(text)
+        lines = audit(root)
+        self.assertEqual(lines["check:na-vs-tree"]["state"], "clear")
+        problems, _, answer = validate(root, finished(root))
+        self.assertEqual(problems, [])
+        self.assertIn("## Decided — 1", answer)
+        self.assertEqual(answer.count("gate:coverage"), 1)
+
+    @rule("a-decided-exception-is-reported-once-and-never-relitigated")
+    def test_the_tree_disagreeing_with_a_decision_goes_to_a_mind_as_evidence(self):
+        text = inject.green_bindings(INSTALLED).replace(
+            "| `gate:coverage` | lines, branches, functions | not applicable | no coverage here |",
+            "| `gate:coverage` | lines, branches, functions | not applicable | decided: no personas here, the audience is inline |", 1,
+        )
+        root = repo(text, files={"specs/personas/reader.md": "@persona:reader\n"})
+        lines = audit(root)
+        self.assertEqual(lines["check:na-vs-tree"]["state"], "clear", "a decided row was re-litigated by the tool")
+        problems, _, answer = validate(root, finished(root))
+        self.assertEqual(problems, [])
+        self.assertIn("evidence for a mind: specs/personas/ has 1 file(s)", answer)
+
+    @rule("a-decided-exception-is-reported-once-and-never-relitigated")
+    def test_a_gap_nobody_decided_is_open(self):
+        text = inject.green_bindings(INSTALLED).replace("| not applicable | no coverage here |", "| not applicable | no personas exist |", 1)
+        lines = audit(repo(text, files={"specs/personas/reader.md": "@persona:reader\n"}))
+        self.assertEqual(lines["check:na-vs-tree"]["state"], "open")
+
+
+class TheExit(unittest.TestCase):
+    @rule("the-outcome-is-readable-from-the-exit-alone")
+    def test_no_bindings_exits_three_and_offers_the_sitting(self):
+        empty = Path(tempfile.mkdtemp(prefix="none-"))
+        result = subprocess.run([sys.executable, str(ROOT / "tools" / "doctor.py")], cwd=empty, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 3)
+        self.assertIn("/livespec:setup", result.stdout)
+
+    @rule("the-outcome-is-readable-from-the-exit-alone")
+    def test_open_findings_are_exit_zero_and_a_refused_record_is_one(self):
+        root = repo(inject.green_bindings("0.6.0"))
+        printed = subprocess.run([sys.executable, str(ROOT / "tools" / "doctor.py")], cwd=root, capture_output=True, text=True)
+        self.assertEqual(printed.returncode, 0)
+        self.assertIn("| `check:stamp-range` | open |", printed.stdout)
+        path = root / "unfinished.md"
+        path.write_text(printed.stdout, encoding="utf-8")
+        refused = subprocess.run([sys.executable, str(ROOT / "tools" / "doctor.py"), "--validate", str(path)], cwd=root, capture_output=True, text=True)
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("still unanswered: check:merge-blocked", refused.stderr)
+        accepted = subprocess.run([sys.executable, str(ROOT / "tools" / "doctor.py"), "--validate", str(finished(root))], cwd=root, capture_output=True, text=True)
+        self.assertEqual(accepted.returncode, 0, accepted.stderr)
+        self.assertTrue(accepted.stdout.startswith("# Audit — "))

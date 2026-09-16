@@ -132,6 +132,7 @@ def record_rows() -> list[tuple[str, str]]:
         + [(f[0], "fails") for f in RELEASE_FAULTS]
         + [(f[0], "fails") for f in VERDICT_FAULTS]
         + [(f[0], "fails") for f in DOCTOR_FAULTS]
+        + [(f[0], "fails") for f in VALIDATE_FAULTS]
     )
 
 
@@ -740,6 +741,90 @@ DOCTOR_FAULTS = [
 ]
 
 
+def finished_record(root: Path) -> Path:
+    """The record the tool prints for the fixture, with every judgment line answered as a mind would."""
+    result = subprocess.run(
+        [sys.executable, str(DOCTOR), "specs/setup/README.md", "--plugin", str(root)],
+        cwd=root, capture_output=True, text=True,
+    )
+    lines = []
+    for line in result.stdout.splitlines():
+        if line.startswith("| `check:") and "| unanswered |" in line and "← model" in line:
+            cells = line.split("|")
+            cells[2] = " clear "
+            cells[4] = " run: gh api repos/o/r/rulesets → required: [checks], strict "
+            line = "|".join(cells)
+        lines.append(line)
+    path = root / "finished.md"
+    path.write_text("\n".join(lines) + "\n")
+    return path
+
+
+def run_validate(root: Path, finished: Path) -> tuple[int, str]:
+    result = subprocess.run(
+        [sys.executable, str(DOCTOR), "specs/setup/README.md", "--plugin", str(root), "--validate", str(finished)],
+        cwd=root, capture_output=True, text=True,
+    )
+    return result.returncode, result.stdout + result.stderr
+
+
+def with_record_line(root: Path, old: str, new: str) -> None:
+    path = root / "finished.md"
+    text = path.read_text()
+    if old not in text:
+        raise SystemExit(f"inject: the finished record no longer contains {old!r}")
+    path.write_text(text.replace(old, new, 1))
+
+
+# (name, how to break the finished record, a phrase the refusal must contain)
+#
+# Pass two of the tool. A record that is refused is an audit that has not
+# finished, and each of these is one way to hand back early. See 0041,
+# one-line-per-check-or-it-does-not-end and the two rules after it.
+VALIDATE_FAULTS = [
+    ("a record one line short",
+     lambda r: with_record_line(r, "| `check:mocked-clock` |", "| `check:mocked-clocks` |"), "missing: check:mocked-clock"),
+    ("a judgment nobody made",
+     lambda r: with_record_line(r, "| `check:merge-blocked` | clear |", "| `check:merge-blocked` | unanswered |"), "still unanswered: check:merge-blocked"),
+    ("a state of somebody's own",
+     lambda r: with_record_line(r, "| `check:merge-blocked` | clear |", "| `check:merge-blocked` | done |"), "unknown state 'done'"),
+    ("an open line naming nothing that closes it",
+     lambda r: blank_line(r, "check:merge-blocked", "open"), "open with nothing that closes it"),
+    ("a not-read line with no reason",
+     lambda r: blank_line(r, "check:merge-blocked", "not-read"), "gives no reason"),
+    ("a judgment clear with no command beside it",
+     lambda r: with_record_line(r, "run: gh api repos/o/r/rulesets → required: [checks], strict", "looked fine"), "no command beside it"),
+    ("a fix that strayed into the wiring",
+     as_git_repo_with_a_stray_change, "doctor wires nothing"),
+]
+
+
+def blank_line(root: Path, check_id: str, state: str) -> None:
+    """One record line rewritten to a state with nothing after it."""
+    path = root / "finished.md"
+    out = []
+    for line in path.read_text().splitlines():
+        if line.startswith(f"| `{check_id}` |"):
+            cells = line.split("|")
+            cells[2], cells[4] = f" {state} ", "  "
+            line = "|".join(cells)
+        out.append(line)
+    path.write_text("\n".join(out) + "\n")
+
+
+def validate_control(root: Path) -> None:
+    """The finished fixture record validates, is written where the bindings say, and the reply is generated."""
+    finished = finished_record(root)
+    code, output = run_validate(root, finished)
+    assert code == 0, f"the finished fixture record was refused:\n{output}"
+    record = root / "specs" / "setup" / "audit.md"
+    assert record.exists(), "the record was not written where the bindings say"
+    assert "| `check:read-back-or-not` | clear |" in record.read_text(), "the generated line was not answered"
+    assert output.startswith("# Audit — "), "the reply is not generated from the record"
+    assert "## Decided — " in output and "## Open — 0" in output, "the reply's sections are missing"
+    assert "/livespec:setup" not in output, "the green fixture was sent to a sitting"
+
+
 def audit_fixture(root: Path) -> dict[str, str]:
     """The state the tool gives every check, reading the fixture as both repository and plugin."""
     result = subprocess.run(
@@ -845,6 +930,23 @@ def main() -> int:
             if not ok:
                 problems.append(f"{name}: expected {check_id} to read {expected}; it reads {got}")
 
+        finished_root = Path(workspace) / "validate-control"
+        build(finished_root)
+        try:
+            validate_control(finished_root)
+        except AssertionError as error:
+            problems.append(f"pass two is not as it claims: {error}")
+        for index, (name, mutate, phrase) in enumerate(VALIDATE_FAULTS):
+            root = Path(workspace) / f"validate{index:02d}"
+            build(root)
+            finished = finished_record(root)
+            mutate(root)
+            code, output = run_validate(root, finished)
+            ok = code == 1 and phrase in output
+            print(f"    {'✔' if ok else '✘'} {name:<48} refused")
+            if not ok:
+                problems.append(f"{name}: expected a refusal naming {phrase!r}; exit {code}\n{output}")
+
     try:
         report_control()
     except AssertionError as error:
@@ -884,7 +986,7 @@ def main() -> int:
         for problem in problems:
             print(f"  ✘ {problem}\n", file=sys.stderr)
         return 1
-    total = len(FAULTS) + len(RELEASE_FAULTS) + len(VERDICT_FAULTS) + len(DOCTOR_FAULTS)
+    total = len(FAULTS) + len(RELEASE_FAULTS) + len(VERDICT_FAULTS) + len(DOCTOR_FAULTS) + len(VALIDATE_FAULTS)
     print(f"✔ gate fault injection: {total}/{total} faults caught")
     return 0
 

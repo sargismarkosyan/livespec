@@ -39,7 +39,7 @@ Feature: The part of an audit a script does, and what it must never do
       Then the line reads unanswered and says the row must name one
       And the audit cannot end until it does
 
-  @rule:the-outcome-is-readable-from-the-exit-alone @planned
+  @rule:the-outcome-is-readable-from-the-exit-alone
   Rule: The tool's exit says which of three things happened, and never that a bill is owed
 
     Example: the ordinary run

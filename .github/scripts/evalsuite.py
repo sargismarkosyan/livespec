@@ -31,7 +31,7 @@ ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).reso
 # Graders that score what came out. `tool_used` says only that something fired —
 # and under ablation it is excluded from the score entirely, so a case graded by
 # nothing else scores zero in both arms and measures nothing at all.
-OUTCOME_TYPES = {"llm", "regex", "file_exists", "baseline", "tool_order"}
+OUTCOME_TYPES = {"llm", "regex", "file_exists", "baseline", "tool_order", "command"}
 
 # The invocation the suite is meaningless without. A score with no baseline is
 # not a measurement, and the agent's own model prefers its own output.
@@ -72,6 +72,8 @@ for case in suite:
             fail(f"{where}/graders/{name}", "has no type: in its frontmatter")
         if grader["type"] == "llm" and not grader["body"]:
             fail(f"{where}/graders/{name}", "is an llm grader with an empty rubric; it will pass on anything")
+        if grader["type"] == "command" and not grader["fields"].get("command", "").strip():
+            fail(f"{where}/graders/{name}", "is a command grader with no command:; it can run nothing and passes nothing")
     if not any(g["type"] in OUTCOME_TYPES for g in case["graders"]):
         fail(
             where,

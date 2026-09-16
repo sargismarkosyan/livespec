@@ -1,7 +1,7 @@
 @feature:audit-the-record @workflow:adopt-the-process
 Feature: The audit record — one line per check, or the audit does not end
 
-  @rule:one-line-per-check-or-it-does-not-end @planned
+  @rule:one-line-per-check-or-it-does-not-end
   Rule: An audit accounts for every check the method names, one line each in a state from the vocabulary, or it is refused and cannot hand back
 
     Example: one line short
@@ -20,7 +20,7 @@ Feature: The audit record — one line per check, or the audit does not end
       When it is validated
       Then it is refused, naming the state
 
-  @rule:a-finding-carries-what-closes-it-and-a-skip-carries-why @planned
+  @rule:a-finding-carries-what-closes-it-and-a-skip-carries-why
   Rule: A line that is open names what closes it, a line not read names why, and a judgment answered carries the command that answered it
 
     Example: open with nothing after it
@@ -39,7 +39,7 @@ Feature: The audit record — one line per check, or the audit does not end
       When it is validated
       Then it is refused
 
-  @rule:the-record-is-kept-where-the-bindings-say @planned
+  @rule:the-record-is-kept-where-the-bindings-say
   Rule: The record is committed at the path the bindings name, replaced on every run, and every line carries the date it last changed state, read from the previous record
 
     Example: a line that did not change
@@ -54,7 +54,7 @@ Feature: The audit record — one line per check, or the audit does not end
       Then the reply names it as closed
       And the next record carries the new date
 
-  @rule:corrections-touch-only-the-record @planned @refusal
+  @rule:corrections-touch-only-the-record @refusal
   Rule: What an audit changes in a consuming repository is the bindings, the loop's own account of itself and the audit record, and nothing else
 
     Example: a fix that strayed
