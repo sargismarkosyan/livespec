@@ -226,7 +226,9 @@ that gap is the thing a later `setup` run offers to close.
 | `gate:boundaries-table` | rule-bound tests present and no boundaries table | **not applicable** | same; the table exists since [`0039`](../changes/0039-the-world-a-test-runs-in.md) and nothing here is a rule-bound test that would fail for its absence |
 
 **No row is deferred**, so nothing in this table is on the two-change clock; the
-two *mocked* rows in *The boundaries* below are, since 0039. Every automated row
+two rows in *The boundaries* below that read *mocked* from 0039 passed it at
+0042 and were written off as *unreachable — decided* at the audit of
+2026-09-16, so nothing is on the clock now. Every automated row
 but the last was wired by the `setup` run in 0.6.0 and predates this ledger,
 which is why they carry no change number.
 
@@ -336,8 +338,8 @@ did.
 | id | boundary | state | since | evidence |
 |---|---|---|---|---|
 | `boundary:model-session` | the model session | **real** | 0012 | `claude -p` through promptfoo, started by `python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold --i-approve-the-cost` — the maintainer's to run, paid per run. Leaves uncovered: the account's session limit, which three runs in one sitting have exhausted |
-| `boundary:judge` | the judge | **mocked** | 0039 | a model standing in for the human who would read what came out. What would make it a *fake* is the calibration set [`evals/README.md`](../../evals/README.md#calibration) describes — verdicts a person has scored, re-scored by the judge on a schedule — and it has not been made. Cover: none. On the two-change clock from 0039. Leaves uncovered: everything a person would have scored differently |
-| `boundary:consuming-repository` | the consuming repository a case runs in | **mocked** | 0039 | a scaffold script's fixture, a stand-in for a repository somebody set up, with no suite against a real one. Cover: the reference repository, by hand, which is a reading rather than a suite. Dated from the reading that wrote this table. Leaves uncovered: a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
+| `boundary:judge` | the judge | **unreachable** — decided | 0042 | a model standing in for the human who would read what came out. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16 rather than left as an apology: the calibration set that would make it a *fake* — verdicts a person has scored, re-scored by the judge on a schedule, [`evals/README.md`](../../evals/README.md#calibration) — is real work nobody has scheduled, and every change touching the judge says so where the change is decided. Leaves uncovered: everything a person would have scored differently |
+| `boundary:consuming-repository` | the consuming repository a case runs in | **unreachable** — decided | 0042 | a scaffold script's fixture, a stand-in for a repository somebody set up. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16: a case against a live remote, CI and a real tracker is a repository nobody has set aside for it, the reference repository is read by hand, and every change touching the runner says so where the change is decided. Leaves uncovered: a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
 | `boundary:platform` | the platform | **real** | 0021 | `gh` against `sargismarkosyan/livespec`, read back 2026-08-29 with the commands under *Branch protection* below. Leaves uncovered: nothing named |
 
 **The stamp stayed at 1.1.0 through 0039**, because a table was added and

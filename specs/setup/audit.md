@@ -1,8 +1,8 @@
 # Audit record
 
-**Audited 2026-09-16 · livespec 1.7.0 · stamp 1.7.0 · HEAD 170af5d · audit 3**
+**Audited 2026-09-16 · livespec 1.7.0 · stamp 1.7.0 · HEAD cdcb3a0 · audit 4**
 
-40 checks · 1 open · written by the audit, replaced on every run
+40 checks · 0 open · written by the audit, replaced on every run
 
 | id | state | since | evidence |
 |---|---|---|---|
@@ -25,7 +25,7 @@
 | `check:real-not-doubled` | clear | 2026-09-16 | run: `python3 .github/scripts/trace.py` → green, 78 live rules; no rule-bound tests here — the cases are the tests, and gate:boundary-double reads not applicable for that reason |
 | `check:fake-suite-green` | n/a | 2026-09-16 | no boundary row reads fake |
 | `check:recorded-age` | n/a | 2026-09-16 | no boundary row reads recorded |
-| `check:mocked-clock` | open | 2026-09-16 | boundary:judge mocked since 0039, latest change 0042 — 3 changes, past the clock; boundary:consuming-repository mocked since 0039, latest change 0042 — 3 changes, past the clock |
+| `check:mocked-clock` | n/a | 2026-09-16 | no row reads mocked |
 | `check:merge-blocked` | clear | 2026-09-16 | run: `gh api repos/sargismarkosyan/livespec/branches/main/protection` → 404 Branch not protected, the answer the bindings say to expect since the migration to a ruleset; run: `gh api repos/sargismarkosyan/livespec/rules/branches/main` → deletion, non_fast_forward, pull_request, required_status_checks apply to main; run: `gh api repos/sargismarkosyan/livespec/rulesets/21391215` → active; required_status_checks strict: repository checks, plugin validate; bypass_actors DeployKey:always — a merge is blocked when either check fails |
 | `check:check-name` | clear | 2026-09-16 | run: `gh api repos/sargismarkosyan/livespec/rulesets/21391215` → active; required_status_checks strict: repository checks, plugin validate; bypass_actors DeployKey:always — the jobs' name: in checks.yml, as the bindings say |
 | `check:who-bypasses` | clear | 2026-09-16 | run: `gh api repos/sargismarkosyan/livespec/rulesets/21391215` → active; required_status_checks strict: repository checks, plugin validate; bypass_actors DeployKey:always; run: `gh api repos/sargismarkosyan/livespec/keys` → one key, livespec release, read_only=false — the one entry the bindings record |
@@ -43,6 +43,6 @@
 | `check:deferred-clock` | clear | 2026-09-16 | no row reads deferred |
 | `check:hook-no-row` | clear | 2026-09-16 | no row in any table is a hook |
 | `check:sorted-by-severity` | clear | 2026-09-16 | the reply lists what is open platform › boundary › wiring › record |
-| `check:record-only` | clear | 2026-09-16 | the working tree is clean |
+| `check:record-only` | clear | 2026-09-16 | nothing outside the record is changed in the working tree |
 | `check:last-line-command` | n/a | 2026-09-16 | nothing is left for the sitting |
 | `check:no-line-when-clear` | clear | 2026-09-16 | no line sends anybody to a sitting |
