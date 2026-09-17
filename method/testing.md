@@ -96,6 +96,14 @@ line says, and more is not. Both exist because the summary line is what gets
 quoted, and every fabricated result on record was a summary. What counts as a
 marker, and the form of the report, are bindings.
 
+**A test given no world tests nothing.** A behaviour test that presupposes
+state it was not given — a row, a file, a branch, a service — measures whether
+the assumption held, not whether the rule does, and it measures that in both
+directions: a quiet pass over a missing fixture is as empty as a failure over
+one. Say what world a test runs in, and make its absence a failure rather than
+a number. The suite that holds this method learned it twice, a month apart,
+from cases whose prompts promised a repository and whose sessions found none.
+
 ### Write them against the rule, not the implementation
 
 The Gherkin `Example:` blocks are the specification of what to assert. If the

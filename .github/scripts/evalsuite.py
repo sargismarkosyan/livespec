@@ -88,6 +88,24 @@ for case in suite:
             f"declares scaffold_script: {case['scaffold'].name}, which does not exist in the case directory — "
             "the case would run against an empty workspace and measure the stall, not the judgment",
         )
+    # Every case says which world it runs in. A scaffold lays one down; the
+    # only world without a scaffold is an empty directory, and that is a
+    # decision only when its reason is written where this gate reads it. #123:
+    # five cases presupposed a repository, got an empty directory, and both
+    # arms stopped — the numbers measured the stall. See specs/changes/0054.
+    workspace = (case.get("workspace") or "").strip()
+    if case["scaffold"] is None and not workspace:
+        fail(
+            where,
+            "declares no workspace: no scaffold_script and no `workspace: empty — <why>`. An empty "
+            "directory nobody chose measures the stall, not the judgment; say which world this case runs in (#123)",
+        )
+    elif case["scaffold"] is None and (not workspace.startswith("empty") or not workspace[len("empty"):].strip(" —-–:,.")):
+        fail(
+            where,
+            f"says `workspace: {workspace}` and not why; the only workspace without a scaffold is "
+            "`empty — <why>`, and a decision with no reason beside it is an omission wearing its clothes (#123)",
+        )
     for skill in case["claims"]["skills"]:
         if skill not in skills:
             fail(where, f"is tagged skill:{skill}, which is not a skill in skills/")

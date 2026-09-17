@@ -1,0 +1,3 @@
+# The fixture for 05: ticklist, 01's todo app, with a persona and a workflow to draw an arc over and an empty journeys layer. The case grades refusing the all-good arc; the fixture leaves the journey unwritten.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh

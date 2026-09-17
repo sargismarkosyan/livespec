@@ -358,3 +358,14 @@ Two of them show what a scaffold may leave out on purpose. `15`'s omits the
 screenshot its prompt names, because saying so plainly is part of what the case
 grades. `14`'s omits anything that would say who wrote the badly titled issue —
 a fixture that settled that would answer the question the case asks.
+
+**Since [`0054`](../specs/changes/0054-a-case-names-the-world-it-runs-in.md), every
+case says which world it runs in**, and `evalsuite.py` fails one that does not: a
+`scaffold_script:`, or `workspace: empty — <why>` in the prompt's frontmatter,
+with the reason the empty directory is the fixture. The sitting of 2026-09-17
+found five cases — 03, 04, 08, 10, 12 — that presupposed a repository and got
+an empty directory in both arms, so Δ compared two refusals and the board
+carried the stall as a measurement (#123). The rule does not force a fixture on a
+conversation; it forces the sentence. Twelve cases were converted in that change
+and six declared empty, each after reading its prompt. The runner also says, after
+its table, when a skill-tagged case's plugin arm never fired.

@@ -176,7 +176,7 @@ def mean(values: list[float]) -> float:
     return sum(values) / len(values)
 
 
-def print_summary(stats: dict, sessions: int) -> None:
+def print_summary(stats: dict, sessions: int, negatives: frozenset[str] | set[str] = frozenset()) -> None:
     print(f"\n  {'case':<34} {'with':>5} {'w/out':>6} {'Δ':>6}   fired")
     total = []
     for name in sorted(n for n in stats if stats[n]["with"] or stats[n]["without"]):
@@ -188,6 +188,11 @@ def print_summary(stats: dict, sessions: int) -> None:
         print(f"  {name:<34} {mean(with_arm):>5.2f} {mean(without):>6.2f} {delta:>+6.2f}   {flame}")
     for name in sorted(n for n in stats if stats[n]["errors"]):
         print(f"  ✘ {name}: {stats[name]['errors']} session(s) errored — see the run's sessions/ directory")
+    # A skill-tagged case whose plugin arm never fired measured nothing about
+    # that skill. A line, never a gate: it would have named 08 and 10 on
+    # 2026-09-17 and not 12, where setup fired and then stalled (#123).
+    for name in sorted(n for n in stats if stats[n]["fired"] and not any(stats[n]["fired"]) and n not in negatives):
+        print(f"  ⚠ {name}: the skill under test never fired in the plugin arm — the case may not reach it (#123)")
     if total:
         cost = sum(s["cost"] for s in stats.values())
         print(f"\n  suite Δ {mean(total):+.2f} over {len(total)} case(s), {sessions} session(s), ${cost:.2f}")
@@ -335,7 +340,7 @@ def main() -> int:
         print("✘ promptfoo produced no results — harness failure, nothing was measured", file=sys.stderr)
         return 1
     stats, measured, sessions = collect(results_path)
-    print_summary(stats, sessions)
+    print_summary(stats, sessions, negatives={c['name'] for c in suite if c['negative']})
     record(measured, suite)
     return 0
 

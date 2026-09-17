@@ -4,6 +4,7 @@ max_turns: 12
 timeout_seconds: 300
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
+workspace: empty — the prompt says the repository has none of it yet; what is graded is that setup stops before writing, which an empty directory tests as well as a full one
 ---
 We've just turned the livespec plugin on for this repository. There's no specs/
 folder, no CLAUDE.md, and nothing wired into CI yet.
