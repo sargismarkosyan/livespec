@@ -1,0 +1,3 @@
+# The fixture for 25: a repository on livespec whose `make check` is red because one rule has no test. The case grades debugging the red rather than running an audit; the fixture carries the trace script the log names, the unclaimed rule, and the tests that claim the others.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh

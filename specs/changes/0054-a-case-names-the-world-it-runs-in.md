@@ -1,6 +1,6 @@
 # Spec 0054: a case names the world it runs in
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#123](https://github.com/sargismarkosyan/livespec/issues/123) —
   cases 08, 10 and 12 stall on an empty workspace in both arms; #38's scaffold
   was never swept across the suite. Found by reading the transcripts of the

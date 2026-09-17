@@ -81,6 +81,7 @@ def cases(root: Path) -> list[dict]:
         allowed_tools: list[str] = []
         runs: int | None = None
         scaffold: Path | None = None
+        workspace: str | None = None
         for source in sources:
             fields = fields_of(source)
             tags += tag_values(fields.get("tags", ""))
@@ -89,6 +90,8 @@ def cases(root: Path) -> list[dict]:
                 runs = int(fields["runs"].strip())
             if fields.get("scaffold_script", "").strip():
                 scaffold = directory / fields["scaffold_script"].strip()
+            if fields.get("workspace", "").strip():
+                workspace = fields["workspace"].strip()
         graders = []
         for grader in sorted((directory / "graders").glob("*.md")):
             fields, body = frontmatter(grader)
@@ -104,6 +107,9 @@ def cases(root: Path) -> list[dict]:
                 "allowed_tools": allowed_tools,
                 "runs": 3 if runs is None else runs,
                 "scaffold": scaffold,
+                # The world the case runs in, when it is not a scaffold: `empty — <why>`.
+                # Read here so the suite gate and the runner agree on what was declared.
+                "workspace": workspace,
                 "graders": graders,
                 "claims": {
                     "rules": [t.split(":", 1)[1] for t in tags if t.startswith("rule:")],

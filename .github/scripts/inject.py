@@ -95,12 +95,12 @@ FIXTURE: dict[str, str] = {
         "```\npython3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write\n```\n"
     ),
     "evals/case-rule/prompt.md": (
-        "---\ntags: [skill:refine-spec, rule:one]\nallowed_tools: [Skill, Write]\nruns: 3\n---\nDo the thing.\n"
+        "---\ntags: [skill:refine-spec, rule:one]\nallowed_tools: [Skill, Write]\nruns: 3\nworkspace: empty — the fixture's cases run in no repository\n---\nDo the thing.\n"
     ),
     "evals/case-rule/graders/outcome.md": GRADER,
-    "evals/case-walk/prompt.md": "---\ntags: [skill:refine-spec, workflow:read-it]\nruns: 3\n---\nWalk it.\n",
+    "evals/case-walk/prompt.md": "---\ntags: [skill:refine-spec, workflow:read-it]\nruns: 3\nworkspace: empty — the fixture's cases run in no repository\n---\nWalk it.\n",
     "evals/case-walk/graders/outcome.md": GRADER,
-    "evals/case-neg/prompt.md": "---\ntags: [should-not-fire, rule:two]\nruns: 3\n---\nWrite me a commit message.\n",
+    "evals/case-neg/prompt.md": "---\ntags: [should-not-fire, rule:two]\nruns: 3\nworkspace: empty — the fixture's cases run in no repository\n---\nWrite me a commit message.\n",
     "evals/case-neg/graders/outcome.md": GRADER,
     # checks.py reads these two against each other. Minimal on purpose: the
     # fixture is here to be broken, not to be a second copy of the plugin.
@@ -672,6 +672,11 @@ FAULTS = [
      "fails", "never by what came out"),
     ("case run fewer times than the floor", SUITE,
      lambda r: edit(r, "evals/case-rule/prompt.md", "runs: 3", "runs: 1"), "fails", "the floor is 3"),
+    # A case names the world it runs in. See specs/changes/0054 and #123.
+    ("a case that declares no workspace", SUITE,
+     lambda r: edit(r, "evals/case-rule/prompt.md", "workspace: empty — the fixture's cases run in no repository\n", ""), "fails", "declares no workspace"),
+    ("a case that says empty and not why", SUITE,
+     lambda r: edit(r, "evals/case-rule/prompt.md", "workspace: empty — the fixture's cases run in no repository", "workspace: empty"), "fails", "not why"),
     ("the last should-not-fire case removed", SUITE,
      lambda r: drop(r, "evals/case-neg"), "fails", "no should-not-fire case"),
     ("a skill held by no case", SUITE,

@@ -4,6 +4,7 @@ max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
+workspace: empty — a report from use is a conversation; with no bindings naming a tracker, naming where it goes is what the case grades
 ---
 I was using the app just now. I hit delete on a task and it just vanished — I
 assumed it would ask me first. Also I had to scroll right to the bottom to find
