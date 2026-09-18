@@ -143,7 +143,7 @@ happened to come out right.
 moment this case is deleted. It is the longest and most expensive case here, and
 the first one to suspect when the suite gets slow or a run hits `max_turns`.
 
-**It now carries eight graders and seven rule claims**, which is more than any
+**It now carries ten graders and nine rule claims**, which is more than any
 other case and is worth watching rather than growing. Everything on it is a
 promise about what one sitting leaves behind, so it is coherent — but the moment
 a claim lands there because `12` was the convenient place rather than the right
@@ -229,11 +229,18 @@ These are not negotiable when the suite is edited:
   without the grant and a case that *could* have edited a file never gets the
   chance — so a grader asserting it edited nothing passes without proving
   anything, in both arms. `evalsuite.py` checks this one rather than trusting it.
+  A case whose skill runs a tool asks for `Bash` by naming what it may run —
+  *When a case needs a shell*, below.
 
-**No case grants `Bash`.** These cases are about filing issues and writing specs,
-`gh` is authenticated wherever the suite runs, and a case that files a real
-GitHub issue while being graded is not a test. If a case ever needs a shell, it
-needs a `case.yaml` scaffold and a sandbox first.
+**A case that needs a shell says which commands.** Until
+[`0058`](../specs/changes/0058-a-case-is-a-sitting-not-a-turn.md) no case
+granted `Bash` at all, because `gh` is authenticated wherever the suite runs and
+a case that files a real GitHub issue while being graded is not a test. That
+reason still holds, and the allow-list is how: a case names the command
+prefixes its skill runs in `shell:`, the runner lends `Bash` as `Bash(<prefix>:*)`
+rules and nothing wider, and a command outside them is refused by the headless
+session. `evalsuite.py` fails an entry that names an exit — `gh`, `curl`,
+`git push` and their kind. See *When a case needs a shell* below.
 
 The first five of those are checked by the gates in `.github/scripts/` —
 `evalsuite.py` for the suite's shape, `trace.py` for what a case claims — and
@@ -267,6 +274,17 @@ Then, against the run directory it prints (`evals/results/<stamp>/`):
 3. Read every judge verdict — each one is a `reason` in the run's
    `results.json`, or `npx promptfoo@0.122.0 view` shows them in a browser. If
    you would have scored even one differently, the rubric is not ready.
+4. Read the `⚠ <case>: n verdict(s) errored` lines. A judge that returned
+   nothing three times is not a verdict: since
+   [`0058`](../specs/changes/0058-a-case-is-a-sitting-not-a-turn.md) it is left
+   out of that session's fraction and counted here, never read as the agent
+   failing the rubric — nine of them in the sitting of 2026-09-17 had been
+   ([#131](https://github.com/sargismarkosyan/livespec/issues/131)). A case with
+   several is a judge worth looking at, not an agent.
+5. Where a case has a person, read the `PERSON:` lines in the digest beside
+   the questions they answer. A person who volunteered a fact nobody asked for,
+   or improvised one the sheet does not hold, is a sheet to rewrite before the
+   number is believed.
 
 **A pilot cannot take a measurement's row.** `--runs 1` is below the floor, so
 `run.py` writes its number only where the board holds nothing or holds another
@@ -396,3 +414,67 @@ carried the stall as a measurement (#123). The rule does not force a fixture on 
 conversation; it forces the sentence. Twelve cases were converted in that change
 and six declared empty, each after reading its prompt. The runner also says, after
 its table, when a skill-tagged case's plugin arm never fired.
+
+## When a case needs a person
+
+The skills are sittings. `setup` surveys, lists what it would write, asks six
+things only the human knows, and waits; `refine-spec` asks what the person was
+trying to do; `doctor` hands back a record and a question. Measured over one
+turn, each of those measures its first question and nothing after it. That is
+what the sitting of 2026-09-17 read on the flagship: three plugin sessions did
+exactly what `setup` does in the repository this plugin was built against —
+survey, list, ask — and the harness had nobody to say *go*, so six of ten
+graders read 0 of 3 in both arms
+([#133](https://github.com/sargismarkosyan/livespec/issues/133)). Since
+[`0058`](../specs/changes/0058-a-case-is-a-sitting-not-a-turn.md) a case may
+bring the person it would have had:
+
+- `person.md` beside the prompt — frontmatter `replies:`, the rounds after the
+  first (two when it says nothing), and a body that is **the sheet**: what the
+  human knows, in their voice. A sheet with nothing on it fails the suite gate;
+- the runner keeps the session's stdin open (`claude -p --input-format
+  stream-json`), and after each result — while rounds remain — asks the judge
+  model to answer as that person, held to a two-field reply and one standing
+  instruction: answer only from the sheet; anything the sheet does not settle
+  is *your call*; nothing asked, nothing said; a message that waits on nobody
+  is *done*. Done closes stdin; otherwise the reply is the next user message;
+- **the sheet answers; it never volunteers.** A fact the session never asks for
+  never reaches it — which is what lets `16` carry the answer to *what proves a
+  rule here* and still grade whether the question was asked;
+- both arms get the same person, or Δ compares two different questions; each
+  reply is a `person` line in the transcript and a `PERSON:` line in the
+  judge's digest, and each call is a line in the bill's ledger;
+- `max_turns` applies per round, as the CLI applies it, and `timeout_seconds`
+  bounds the sitting.
+
+`12`, `16` and `41` carry one; `24` does not — an audit answers to the tree;
+and `09` must never get one, because the stop it grades is the thing a person
+would answer. Convert the rest as their runs demand it, the rule for scaffolds,
+and read the `PERSON:` lines in the first sitting after each conversion.
+
+## When a case needs a shell
+
+`doctor`'s first line is a command, `setup` proves every gate fires before it
+hands back, and every one of the reference repository's doctor sittings used
+the shell between sixteen and 121 times. A case whose skill runs a tool says
+so in `case.yaml`:
+
+- `shell:` — the command prefixes it lends: `[python3, make, git, ls, cat,
+  pytest]`. The runner lends `Bash` as `Bash(python3:*)`, `Bash(make:*)` …
+  and nothing wider; a command outside the list is refused by the headless
+  session, which is what keeps `gh` and `curl` out. `evalsuite.py` fails an
+  entry that names an exit itself. An entry is a prefix, so a bare `git` lends
+  `git push` too — the fixtures carry no remote, and that is what keeps it
+  honest;
+- `requires:` — the binaries the fixture cannot run without. The runner checks
+  them before a config is written and refuses the case, naming the binary,
+  rather than measure its absence. `pytest` is a maintainer-machine
+  prerequisite the way node is;
+- where the machine has bubblewrap the session also runs inside Claude Code's
+  own sandbox with the network closed, the second wall; where it has not, the
+  run says so in its first lines and the allow-list is the wall. The fixture
+  is a throwaway under `/tmp` either way.
+
+`12`, `16`, `24` and `41` lend one since `0058`; `40` and `44` granted bare
+`Bash` before it. The allow-list is not a sandbox — `python3 -c` can open a
+socket — and the risk is written in the change spec rather than assumed away.

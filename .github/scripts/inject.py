@@ -691,6 +691,11 @@ FAULTS = [
      lambda r: edit(r, "evals/case-rule/prompt.md", "workspace: empty — the fixture's cases run in no repository\n", ""), "fails", "declares no workspace"),
     ("a case that says empty and not why", SUITE,
      lambda r: edit(r, "evals/case-rule/prompt.md", "workspace: empty — the fixture's cases run in no repository", "workspace: empty"), "fails", "not why"),
+    # A case is a sitting, not a turn. See specs/changes/0058 and #133.
+    ("a person with nothing on the sheet", SUITE,
+     lambda r: write(r, "evals/case-rule/person.md", "---\nreplies: 2\n---\n"), "fails", "nothing on the sheet"),
+    ("a shell entry that leaves the machine", SUITE,
+     lambda r: write(r, "evals/case-rule/case.yaml", "shell: [python3, gh]\n"), "fails", "leaves the machine"),
     ("the last should-not-fire case removed", SUITE,
      lambda r: drop(r, "evals/case-neg"), "fails", "no should-not-fire case"),
     ("a skill held by no case", SUITE,
@@ -904,10 +909,13 @@ def isolation_control() -> None:
 STUB_CLAUDE = r'''#!/usr/bin/env python3
 """A stand-in for the claude CLI, so the harness can be proved without spending.
 
-Records every argument list it was called with, then answers as a judge when
-asked for a JSON schema — the envelope `--output-format json` prints, verdict
-inside `structured_output`, a price beside it — and otherwise as a session: the
-stream-json transcript, whose `init` event names the model it was given.
+Records every argument list it was called with, then answers as a judge or as
+the person when asked for a JSON schema — the envelope `--output-format json`
+prints, the answer inside `structured_output`, a price beside it — and
+otherwise as a session: the stream-json transcript, whose `init` event names
+the model it was given, one assistant turn and one result per user message
+read from stdin. The first result asks a question; every later one is
+finished. The person says "Go ahead." to the question and done to anything else.
 """
 import json
 import os
@@ -917,21 +925,26 @@ args = sys.argv[1:]
 with open(os.environ["LIVESPEC_STUB_LOG"], "a") as log:
     log.write(json.dumps(args) + "\n")
 if "--json-schema" in args:
-    print(json.dumps({
-        "type": "result", "subtype": "success",
-        "structured_output": {"pass": True, "reason": "the stand-in approves"},
-        "result": json.dumps({"pass": True, "reason": "the stand-in approves"}),
-        "total_cost_usd": 0.04,
-    }))
+    schema = args[args.index("--json-schema") + 1]
+    prompt = sys.stdin.read()
+    if '"reply"' in schema:
+        answer = {"reply": "Go ahead.", "done": False} if "may I start?" in prompt else {"reply": "", "done": True}
+    else:
+        answer = {"pass": True, "reason": "the stand-in approves"}
+    print(json.dumps({"type": "result", "subtype": "success", "structured_output": answer,
+                      "result": json.dumps(answer), "total_cost_usd": 0.04}))
     sys.exit(0)
 model = args[args.index("--model") + 1] if "--model" in args else "the-account-default"
-sys.stdin.read()
-for event in (
-    {"type": "system", "subtype": "init", "model": model, "tools": []},
-    {"type": "assistant", "message": {"content": [{"type": "text", "text": "done"}]}},
-    {"type": "result", "subtype": "success", "result": "done", "total_cost_usd": 0.25},
-):
-    print(json.dumps(event))
+print(json.dumps({"type": "system", "subtype": "init", "model": model, "tools": []}), flush=True)
+turn, cost = 0, 0.0
+for line in sys.stdin:
+    if not line.strip():
+        continue
+    turn += 1
+    cost += 0.25
+    text = "Question: may I start?" if turn == 1 else "Finished."
+    print(json.dumps({"type": "assistant", "message": {"content": [{"type": "text", "text": text}]}}), flush=True)
+    print(json.dumps({"type": "result", "subtype": "success", "result": text, "total_cost_usd": cost}), flush=True)
 '''
 
 
@@ -1018,6 +1031,46 @@ def runner_control() -> None:
                 [{"name": "a"}, {"name": "b"}], {"cases": {"a": {"cost": 2.0, "model": "claude-opus-5[1m]"}}})
             assert priced and abs(total - 4.0) < 1e-9 and guessed == 1 and models == {"claude-opus-5[1m]"}, (
                 f"the estimate is wrong: {total, models, guessed, priced}")
+
+            # A case is a sitting, not a turn (0058). A sheet, two rounds allowed:
+            # the stand-in asks once and is answered, then finishes and the person
+            # says done. The shell goes in as prefix rules, never as bare Bash.
+            sheet = ws / "person.md"
+            sheet.write_text("---\nreplies: 2\n---\nI'm Priya. If asked whether to start: go ahead.\n")
+            sitting = provider.call_api(
+                "Do the thing.", {"config": {"with_plugin": False}},
+                {"vars": {"case": "case-rule", "max_turns": "3", "timeout_seconds": "60",
+                          "allowed_tools": "Read Bash", "disallowed_tools": "", "person": str(sheet),
+                          "replies": "2", "shell": "python3,make"}},
+            )
+            assert "error" not in sitting, f"the sitting errored: {sitting.get('error')}"
+            events = [json.loads(l) for l in Path(sitting["metadata"]["transcript"]).read_text().splitlines() if l.strip()]
+            said = [e.get("text") for e in events if e.get("type") == "person" and e.get("text")]
+            assert said == ["Go ahead."], f"the person's reply is not in the transcript: {said}"
+            assert any(e.get("type") == "person" and e.get("done") for e in events), "the person never said done"
+            assert sitting["output"] == "Finished." and sitting["metadata"].get("rounds") == 1, (
+                f"the sitting did not run its second round: {sitting['output']!r}, rounds {sitting['metadata'].get('rounds')}")
+            assert abs(sitting["cost"] - 0.5) < 1e-9, f"the cost is not the sitting's: {sitting['cost']}"
+            calls = [json.loads(l) for l in log.read_text().splitlines()]
+            last_session = [c for c in calls if "--input-format" in c][-1]
+            allowed_arg = last_session[last_session.index("--allowedTools") + 1]
+            assert "Bash(python3:*)" in allowed_arg and "Bash(make:*)" in allowed_arg, f"the shell is not confined: {allowed_arg}"
+            assert "Bash" not in allowed_arg.split(","), f"bare Bash was lent: {allowed_arg}"
+            person_calls = [c for c in calls if "--json-schema" in c and '"reply"' in c[c.index("--json-schema") + 1]]
+            assert len(person_calls) == 2, f"the person was asked {len(person_calls)} time(s), not twice"
+            ledgered = [json.loads(l) for l in ledger.read_text().splitlines()]
+            assert sum(1 for l in ledgered if l["grader"] == "person") == 2, "the person's calls were not ledgered"
+            assert "PERSON: Go ahead." in asserts._digest(sitting["metadata"]["transcript"]), "the judge would not see the person"
+            # A judge that said nothing is not a verdict, and a missing binary is a refusal.
+            score, errored = runner.session_score([
+                {"pass": True, "score": 1.0, "reason": "ok", "assertion": {"weight": 1}},
+                {"pass": False, "score": 0.0, "reason": "judge error after 3 attempts: boom"},
+                {"pass": True, "score": 1.0, "reason": "plugin-fired indicator: fired (1x, min 1)", "assertion": {"weight": 0}},
+            ])
+            assert score == 1.0 and errored == 1, f"an errored verdict still weighs: {score}, {errored}"
+            assert runner.session_score([{"pass": False, "score": 0.0, "reason": "judge error after 3 attempts: x"}]) == (None, 1)
+            assert runner.missing_requirements([{"name": "x", "requires": ["python3", "no-such-binary-livespec"]}]) == [
+                ("x", "no-such-binary-livespec")], "a missing binary was not refused"
         finally:
             sys.path.remove(str(runner_dir))
             os.environ.clear()

@@ -1,6 +1,6 @@
 # Spec 0058: a case is a sitting, not a turn
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#133](https://github.com/sargismarkosyan/livespec/issues/133) —
   the harness grades one turn of what is a sitting: nobody answers the
   session's questions, and 44 of 46 cases have no shell. Found 2026-09-18 by

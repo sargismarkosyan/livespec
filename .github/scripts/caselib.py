@@ -15,9 +15,13 @@ import re
 from pathlib import Path
 
 # A case is a directory holding a prompt and its graders. `case.yaml` carries
-# what prompt.md cannot (scaffolds, transcript replay); when both exist the
-# CLI merges them, and so do we — tags from either count as claimed.
+# what prompt.md cannot — a scaffold, the shell it lends, the binaries its
+# fixture requires; when both exist the CLI merges them, and so do we — tags
+# from either count as claimed. A `person.md` beside them is the human the
+# sitting would have had: what they know, and how many replies they give (0058).
 CASE_FILES = ("case.yaml", "prompt.md")
+PERSON_FILE = "person.md"
+DEFAULT_REPLIES = 2
 
 def _flat_fields(lines: list[str]) -> dict[str, str]:
     """A flat key: value reader, which is all a case file or a grader has.
@@ -65,6 +69,12 @@ def tag_values(raw: str) -> list[str]:
     return [t for t in re.split(r"[\s,\[\]\"']+", raw or "") if t]
 
 
+def list_values(raw: str) -> list[str]:
+    """Split a list whose items may hold spaces — `shell: [python3, claude plugin]` —
+    on commas only, brackets and quotes stripped."""
+    return [item.strip().strip("\"'") for item in (raw or "").strip().strip("[]").split(",") if item.strip().strip("\"'")]
+
+
 def cases(root: Path) -> list[dict]:
     """Every eval case under root/evals, in name order."""
     found: list[dict] = []
@@ -82,6 +92,8 @@ def cases(root: Path) -> list[dict]:
         runs: int | None = None
         scaffold: Path | None = None
         workspace: str | None = None
+        shell: list[str] = []
+        requires: list[str] = []
         for source in sources:
             fields = fields_of(source)
             tags += tag_values(fields.get("tags", ""))
@@ -92,6 +104,21 @@ def cases(root: Path) -> list[dict]:
                 scaffold = directory / fields["scaffold_script"].strip()
             if fields.get("workspace", "").strip():
                 workspace = fields["workspace"].strip()
+            shell += list_values(fields.get("shell", ""))
+            requires += list_values(fields.get("requires", ""))
+        # A shell is a Bash grant, confined to the prefixes named: the case asks
+        # for the tool by naming what it may run, and the grant check reads it.
+        if shell and "Bash" not in allowed_tools:
+            allowed_tools.append("Bash")
+        # The person: the sheet is the body, the rounds the frontmatter.
+        person_file = directory / PERSON_FILE
+        person: str | None = None
+        replies = 0
+        if person_file.exists():
+            person_fields, sheet = frontmatter(person_file)
+            person = sheet.strip()
+            replies = (int(person_fields["replies"].strip())
+                       if person_fields.get("replies", "").strip().isdigit() else DEFAULT_REPLIES)
         graders = []
         for grader in sorted((directory / "graders").glob("*.md")):
             fields, body = frontmatter(grader)
@@ -110,6 +137,14 @@ def cases(root: Path) -> list[dict]:
                 # The world the case runs in, when it is not a scaffold: `empty — <why>`.
                 # Read here so the suite gate and the runner agree on what was declared.
                 "workspace": workspace,
+                # What the sitting has that a turn does not (0058): the human's
+                # sheet and their rounds; the shell prefixes the case lends and
+                # the binaries its fixture cannot run without.
+                "person_file": person_file if person is not None else None,
+                "person": person,
+                "replies": replies,
+                "shell": shell,
+                "requires": requires,
                 "graders": graders,
                 "claims": {
                     "rules": [t.split(":", 1)[1] for t in tags if t.startswith("rule:")],

@@ -1,3 +1,9 @@
 # The fixture for 16: a repository that ships agent instructions — markdown a model reads — plus two templates, with no application code and no test suite, ever. The case grades setup asking what proves a rule here rather than assuming a runner.
 # Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
 scaffold_script: scaffold.sh
+# The sitting (0058): the desk's owner answers from person.md for two rounds —
+# including what proves a rule here, but only if asked. The shell reaches the
+# generator that already builds graded suites and finds it gated, which is the
+# honest state on this account; nothing else it could run leaves the machine.
+shell: [ls, cat, claude plugin]
+requires: [claude]

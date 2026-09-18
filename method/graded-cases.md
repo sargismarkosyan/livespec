@@ -40,6 +40,23 @@ asserts a repository — its layout, its history, a file that is deliberately
 absent — the case lays that down itself, identically for every arm, or it is
 measuring the wrong thing in all of them.
 
+**A case of something that asks must bring the answers.** A product that
+interviews — that says what it would do and waits, or asks the six things only
+the person knows — measured over one turn, measures its first question and
+nothing after it, and does so in every arm alike, so the difference reads as
+zero on exactly the cases where the product's judgment lives. Give the case the
+person it would have had: what they know, in their voice, answering only from
+that and only when asked, for a bounded number of turns, the same in every arm.
+Keep what they said beside what the product said, because the judge has to read
+both. And the sheet answers; it never volunteers — a fact the product never
+asked for never reaches it, or the case stops grading whether it asks.
+
+**The tools the product runs are part of the room.** A product whose first move
+is a command, measured in a session that refuses commands, measures the
+refusal. A case that lends a tool says which, confines it to the fixture, and
+names what the machine must have for the fixture to run — and refuses to
+measure when it has not, rather than measure the absence.
+
 ## One arm cannot tell you anything
 
 The thing being graded is **context that loads whether or not it is used**. So

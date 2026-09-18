@@ -1,3 +1,9 @@
 # The fixture for 12: a small Python service with a year-old CLAUDE.md that says what it does, how to run the tests and the branch naming, a CONTRIBUTING.md whose one line near the bottom says issues live on a self-hosted GitLab, a real test suite and a GitLab CI file. No specs/ and no bindings: setup writes those, and the case grades what it writes.
 # Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
 scaffold_script: scaffold.sh
+# The sitting (0058): Priya answers from person.md for up to three rounds — the
+# yes to the list and the six facts, never volunteered — and setup gets the
+# shell its job needs, confined to the fixture's own commands. pytest is a
+# maintainer-machine prerequisite; the runner refuses the case without it.
+shell: [python3, python, make, git, ls, cat, pytest]
+requires: [python3, make, pytest]
