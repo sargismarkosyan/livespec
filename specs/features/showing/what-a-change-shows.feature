@@ -65,7 +65,7 @@ Feature: What a version puts in front of somebody deciding whether to merge
       Then the bindings say so plainly
       And they record the line as the standing case rather than the exception
 
-  @rule:a-rider-is-filed-not-served @planned
+  @rule:a-rider-is-filed-not-served
   Rule: A request to record that also asks for a change records the version as it is and files the change; the recording is never deferred behind the change, and the hand-back says what the shot does not show
 
     Example: a fix asked for alongside the picture

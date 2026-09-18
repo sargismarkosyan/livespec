@@ -1,5 +1,5 @@
 ---
-tags: [skill:record-clip, rule:the-form-follows-what-changed, rule:the-picture-names-its-world]
+tags: [skill:record-clip, rule:the-form-follows-what-changed, rule:the-picture-names-its-world, rule:a-rider-is-filed-not-served]
 max_turns: 20
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

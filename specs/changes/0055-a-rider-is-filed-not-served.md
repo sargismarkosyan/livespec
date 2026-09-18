@@ -1,6 +1,6 @@
 # Spec 0055: a rider is filed, not served
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#125](https://github.com/sargismarkosyan/livespec/issues/125) —
   a recording request with a fix-first rider loses the recording. Found by
   the third part of the sitting of 2026-09-17, the first run of case 08 in
