@@ -13,4 +13,4 @@
 # leaving them unsaid is.
 scaffold_script: scaffold.sh
 shell: [python3, make, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo, pytest]
-requires: [python3]
+requires: [python3, pytest, module:pytest_cov]

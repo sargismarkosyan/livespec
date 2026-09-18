@@ -445,7 +445,13 @@ bring the person it would have had:
   reply is a `person` line in the transcript and a `PERSON:` line in the
   judge's digest, and each call is a line in the bill's ledger;
 - `max_turns` applies per round, as the CLI applies it, and `timeout_seconds`
-  bounds the sitting.
+  bounds the sitting. **A round that hits its ceiling is a finished round**, not
+  a harness error: the CLI exits 1 with `error_max_turns`, and what the round
+  wrote is exactly what the judge should see — the digest says where it
+  stopped, the last message stands as the reply, and the row's metadata carries
+  `ceiling`. The second Sonnet pilot lost the flagship's whole sitting to that
+  exit code, so `12` now has a hundred turns a round, which is what a setup
+  sitting with a shell takes.
 
 `12`, `16` and `41` carry one; `24` does not — an audit answers to the tree;
 and `09` must never get one, because the stop it grades is the thing a person
@@ -463,12 +469,16 @@ so in `case.yaml`:
   pytest]`. The runner lends `Bash` as `Bash(python3:*)`, `Bash(make:*)` …
   and nothing wider; a command outside the list is refused by the headless
   session, which is what keeps `gh` and `curl` out. `evalsuite.py` fails an
-  entry that names an exit itself. An entry is a prefix, so a bare `git` lends
+  entry that names an exit itself — and `claude` is one: a session inside the
+  session bills the account where the harness cannot see it and hangs on a
+  prompt nobody answers, which is how `16`'s second pilot sitting was lost. An entry is a prefix, so a bare `git` lends
   `git push` too — the fixtures carry no remote, and that is what keeps it
   honest;
-- `requires:` — the binaries the fixture cannot run without. The runner checks
-  them before a config is written and refuses the case, naming the binary,
-  rather than measure its absence. `pytest` is a maintainer-machine
+- `requires:` — the binaries the fixture cannot run without, or
+  `module:<name>` for a Python module the path's `python3` must import —
+  `24` runs `pytest --cov` and needs `module:pytest_cov`. The runner checks
+  them before a config is written and refuses the case, naming the
+  requirement, rather than measure its absence. `pytest` is a maintainer-machine
   prerequisite the way node is — and a `.venv/` at the repository root is put
   on the path for the run and its sessions, so on a machine that will not take
   a system package, `python3 -m venv .venv && .venv/bin/pip install pytest` is

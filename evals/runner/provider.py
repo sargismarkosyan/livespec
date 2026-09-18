@@ -167,12 +167,34 @@ def _person(sheet: str, said: str, case: str, arm: str) -> tuple[str, bool, str]
     return "", True, last or "no reply"
 
 
+def _last_text(raw: str) -> str:
+    """The last thing the assistant said, for a round that ended with no result
+    text — a ceiling hit mid-work leaves the last message where the work stopped."""
+    last = ""
+    for line in raw.splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if event.get("type") == "assistant":
+            text = " ".join(b.get("text", "") for b in (event.get("message") or {}).get("content") or []
+                            if isinstance(b, dict) and b.get("type") == "text").strip()
+            if text:
+                last = text
+    return last
+
+
 def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: str, replies: int,
-             case: str, arm: str) -> tuple[str, int, int, bool, str]:
+             case: str, arm: str) -> tuple[str, int, int, bool, str, bool]:
     """Drive one session as a sitting. Returns (transcript, returncode, rounds,
-    timed_out, stderr_tail). The first user message is the prompt; after each
-    result the person answers, up to `replies` times; stdin closes when the
-    person is done, the rounds run out, or there is no person at all."""
+    timed_out, stderr_tail, ceiling). The first user message is the prompt;
+    after each result the person answers, up to `replies` times; stdin closes
+    when the person is done, the rounds run out, or there is no person at all.
+
+    A round that hits its turn ceiling is a finished round, not a harness
+    failure: the CLI reports `error_max_turns` and exits 1, and what the round
+    wrote is exactly what the judge should see. The second Sonnet pilot lost the
+    flagship's whole sitting — bindings, layers, gates — to that exit code."""
     proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             text=True, cwd=cwd, bufsize=1)
     lines: list[str] = []
@@ -197,6 +219,8 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
         proc.stdin.flush()
 
     rounds = 0
+    saw_result = False
+    ceiling = False
     try:
         send(prompt)
         while True:
@@ -212,8 +236,12 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
                     continue
                 if event.get("type") == "result":
                     said = event.get("result") or ""
+                    saw_result = True
+                    ceiling = ceiling or event.get("subtype") == "error_max_turns"
                     break
-            if said is None or not sheet or rounds >= replies:
+            # No result: the process ended. An empty result: the round hit its
+            # ceiling or said nothing — there is nothing for a person to answer.
+            if said is None or not said.strip() or not sheet or rounds >= replies:
                 break
             reply, done, error = _person(sheet, said, case, arm)
             if error:
@@ -241,7 +269,8 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
         watchdog.cancel()
         draining.join(timeout=5)
     tail = " / ".join((stderr[0] if stderr else "").strip().splitlines()[-3:])
-    return "\n".join(lines) + ("\n" if lines else ""), proc.returncode, rounds, killed["yes"], tail
+    code = 0 if saw_result and not killed["yes"] else proc.returncode
+    return "\n".join(lines) + ("\n" if lines else ""), code, rounds, killed["yes"], tail, ceiling
 
 
 def call_api(prompt, options, context):
@@ -324,7 +353,7 @@ def call_api(prompt, options, context):
     replies = int(vars_.get("replies") or 0) if sheet else 0
 
     timeout = int(vars_.get("timeout_seconds") or 600)
-    transcript, code, rounds, timed_out, tail = _sitting(command, prompt, workspace, timeout, sheet, replies, case, arm)
+    transcript, code, rounds, timed_out, tail, ceiling = _sitting(command, prompt, workspace, timeout, sheet, replies, case, arm)
     (session_dir / "transcript.jsonl").write_text(transcript)
     if timed_out:
         shutil.move(str(workspace), str(session_dir / "workspace"))
@@ -334,6 +363,8 @@ def call_api(prompt, options, context):
         return {"error": f"claude exited {code}: {tail or 'no stderr'} — {session_dir}"}
 
     result, tools = _read_stream(transcript)
+    if not result.strip():
+        result = _last_text(transcript)  # the round ended mid-work; the last message is where it stopped
     (session_dir / "tools.json").write_text(json.dumps(tools, indent=1))
     files = sorted(path for path, digest in _snapshot(workspace).items() if laid_down.get(path) != digest)
     shutil.move(str(workspace), str(session_dir / "workspace"))
@@ -346,6 +377,7 @@ def call_api(prompt, options, context):
             "model": _init_model(transcript),
             "rounds": rounds,
             "person": bool(sheet),
+            "ceiling": ceiling,
             "session_dir": str(session_dir),
             "transcript": str(session_dir / "transcript.jsonl"),
             "tools": str(session_dir / "tools.json"),

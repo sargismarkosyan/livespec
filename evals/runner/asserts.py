@@ -94,7 +94,10 @@ def _digest(transcript_path: str) -> str:
             else:
                 pieces.append("PERSON: (nothing to answer; the sitting ends here)")
         elif kind == "result":
-            pieces.append("FINAL REPLY: " + (event.get("result") or "(empty)"))
+            if event.get("subtype") == "error_max_turns" and not event.get("result"):
+                pieces.append("FINAL REPLY: (none — the round hit its turn ceiling here; what is above is where it stopped)")
+            else:
+                pieces.append("FINAL REPLY: " + (event.get("result") or "(empty)"))
     digest = "\n\n".join(pieces)
     if len(digest) > DIGEST_LIMIT:
         half = DIGEST_LIMIT // 2
