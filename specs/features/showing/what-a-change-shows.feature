@@ -64,3 +64,25 @@ Feature: What a version puts in front of somebody deciding whether to merge
       When the sitting ends
       Then the bindings say so plainly
       And they record the line as the standing case rather than the exception
+
+  @rule:a-rider-is-filed-not-served
+  Rule: A request to record that also asks for a change records the version as it is and files the change; the recording is never deferred behind the change, and the hand-back says what the shot does not show
+
+    Example: a fix asked for alongside the picture
+      Given a request for a version's picture that also says to fix a line of copy first
+      When the version is recorded
+      Then the picture is of the version as it is, copy and all
+      And the fix is filed in a line rather than made or specced in the session
+      And the hand-back says the fix is not in the shot because it is not built
+
+    Example: the change is served and the picture is never taken
+      Given the same request
+      When the session writes a change spec for the copy and ends
+      Then the request was not met, whatever the spec says
+      And this is the failure the rule exists to name
+
+    Example: the rider is a question, not a change
+      Given a request for a picture that also asks which form reviewers prefer
+      When the version is recorded
+      Then the question is answered in the hand-back
+      And nothing is filed for it

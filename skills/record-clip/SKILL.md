@@ -1,6 +1,6 @@
 ---
 name: record-clip
-description: Record the picture a version ships with — the app being used in a real browser — and save it to docs/screenshots/. Use when asked to record, film, screenshot or capture a version, a clip, a GIF or a video of the app, or to show what a change did. Every pull request that changes what the app looks like needs one. Ships with the plugin — it records the app and never changes it.
+description: Record the picture a version ships with — the app being used in a real browser — and save it to docs/screenshots/. Use when asked to record, film, screenshot or capture a version, a clip, a GIF or a video of the app, or to show what a change did. Every pull request that changes what the app looks like needs one. Ships with the plugin — it records the app and never changes it. Fires on the recording even when the same message also asks for a fix alongside — the fix is filed, and the picture is of the version as it is.
 ---
 
 # Record the version
@@ -98,6 +98,13 @@ it is in.
 - **Never touch `src/` or `specs/`.** If the recording shows something broken,
   that is a finding: file it with the `todo` skill. Do not fix it here, and
   do not re-record around it.
+- **A rider is filed, not served.** A request to record that also asks for a
+  change — fix this first, tweak that while you are in there — records the
+  version as it is and files the change with `todo` or in one line of the
+  hand-back. The recording is never deferred behind it: a picture of an unbuilt
+  change cannot be taken, and the hand-back says which of the person's asks
+  the shot does not show and why. "First" in the request changes the order of
+  nothing; it is the person telling you what they noticed.
 - Check the file size before committing. Over ~1 MB means too many frames or too
   large a viewport.
 - **The form is reported, not slipped in.** Say which one this version got and
