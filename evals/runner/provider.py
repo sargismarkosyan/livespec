@@ -185,7 +185,7 @@ def _last_text(raw: str) -> str:
 
 
 def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: str, replies: int,
-             case: str, arm: str) -> tuple[str, int, int, bool, str, bool]:
+             case: str, arm: str, transcript: Path) -> tuple[str, int, int, bool, str, bool]:
     """Drive one session as a sitting. Returns (transcript, returncode, rounds,
     timed_out, stderr_tail, ceiling). The first user message is the prompt;
     after each result the person answers, up to `replies` times; stdin closes
@@ -194,10 +194,21 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
     A round that hits its turn ceiling is a finished round, not a harness
     failure: the CLI reports `error_max_turns` and exits 1, and what the round
     wrote is exactly what the judge should see. The second Sonnet pilot lost the
-    flagship's whole sitting — bindings, layers, gates — to that exit code."""
+    flagship's whole sitting — bindings, layers, gates — to that exit code.
+
+    The transcript is written as it streams, one line at a time, so a run the
+    machine kills mid-sitting leaves what it had rather than nothing — the
+    third Sonnet pilot died of a memory squeeze with two sittings in flight and
+    left two empty directories."""
     proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             text=True, cwd=cwd, bufsize=1)
     lines: list[str] = []
+    stream = transcript.open("a")
+
+    def keep(line: str) -> None:
+        lines.append(line)
+        stream.write(line + "\n")
+        stream.flush()
     stderr: list[str] = []
     killed = {"yes": False}
 
@@ -229,7 +240,7 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
                 line = proc.stdout.readline() if proc.stdout else ""
                 if not line:
                     break
-                lines.append(line.rstrip("\n"))
+                keep(line.rstrip("\n"))
                 try:
                     event = json.loads(line)
                 except json.JSONDecodeError:
@@ -245,17 +256,17 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
                 break
             reply, done, error = _person(sheet, said, case, arm)
             if error:
-                lines.append(json.dumps({"type": "person", "round": rounds + 1, "error": error}))
+                keep(json.dumps({"type": "person", "round": rounds + 1, "error": error}))
                 break
             # A reply is sent whenever there is one. The first pilot's person
             # answered all six questions and set done beside them — "I have
             # answered; nothing more from me" — and the answers were dropped.
             # Done ends the sitting only when there was nothing to say.
             if not reply:
-                lines.append(json.dumps({"type": "person", "round": rounds + 1, "done": True}))
+                keep(json.dumps({"type": "person", "round": rounds + 1, "done": True}))
                 break
             rounds += 1
-            lines.append(json.dumps({"type": "person", "round": rounds, "text": reply, "done": bool(done)}))
+            keep(json.dumps({"type": "person", "round": rounds, "text": reply, "done": bool(done)}))
             send(reply)
         try:
             if proc.stdin:
@@ -263,11 +274,13 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
         except OSError:
             pass
         rest = proc.stdout.read() if proc.stdout else ""
-        lines += [l.rstrip("\n") for l in rest.splitlines()]
+        for l in rest.splitlines():
+            keep(l.rstrip("\n"))
         proc.wait()
     finally:
         watchdog.cancel()
         draining.join(timeout=5)
+        stream.close()
     tail = " / ".join((stderr[0] if stderr else "").strip().splitlines()[-3:])
     code = 0 if saw_result and not killed["yes"] else proc.returncode
     return "\n".join(lines) + ("\n" if lines else ""), code, rounds, killed["yes"], tail, ceiling
@@ -353,8 +366,8 @@ def call_api(prompt, options, context):
     replies = int(vars_.get("replies") or 0) if sheet else 0
 
     timeout = int(vars_.get("timeout_seconds") or 600)
-    transcript, code, rounds, timed_out, tail, ceiling = _sitting(command, prompt, workspace, timeout, sheet, replies, case, arm)
-    (session_dir / "transcript.jsonl").write_text(transcript)
+    transcript, code, rounds, timed_out, tail, ceiling = _sitting(
+        command, prompt, workspace, timeout, sheet, replies, case, arm, session_dir / "transcript.jsonl")
     if timed_out:
         shutil.move(str(workspace), str(session_dir / "workspace"))
         return {"error": f"session timed out after {timeout}s — transcript in {session_dir}"}
