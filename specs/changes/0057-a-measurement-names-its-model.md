@@ -1,6 +1,6 @@
 # Spec 0057: a measurement names its model
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#130](https://github.com/sargismarkosyan/livespec/issues/130) —
   the eval sessions run on whatever model the account defaults to, and
   neither the runner, the board nor the bill says which. Found 2026-09-18 in

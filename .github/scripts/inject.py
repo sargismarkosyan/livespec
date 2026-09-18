@@ -93,7 +93,7 @@ FIXTURE: dict[str, str] = {
     ),
     "evals/README.md": (
         "# The eval suite\n\n"
-        "```\npython3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write\n```\n"
+        "```\npython3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write\n```\n"
     ),
     "evals/case-rule/prompt.md": (
         "---\ntags: [skill:refine-spec, rule:one]\nallowed_tools: [Skill, Write]\nruns: 3\nworkspace: empty — the fixture's cases run in no repository\n---\nDo the thing.\n"
@@ -302,6 +302,9 @@ def build(root: Path) -> None:
             "delta": 0.5, "with": 1.0, "without": 0.5, "runs": 3,
             "at": "2026-08-25", "sha": "0000000", "cost": 0.1,
             "inputs": measurement_inputs(case, root),
+            # A row names its model and its harness (0057): the fixture's rows
+            # are made on the bindings' model by the harness as it stands.
+            "model": SESSION_MODEL, "judge": SESSION_MODEL, "harness": harness_fingerprint(root),
         }
         for case in cases(root)
     }
@@ -327,6 +330,16 @@ def drop_board_entry(root: Path, name: str) -> None:
     path = root / "evals" / "board.json"
     data = json.loads(path.read_text())
     del data["cases"][name]
+    path.write_text(json.dumps(data, indent=1))
+
+
+def board_field(root: Path, name: str, field: str, value: str) -> None:
+    """Rewrite one field of one board row — the model it was made on, the
+    harness that made it — leaving the inputs hash true. The two faults that
+    use it are rows a Sonnet board may not carry as measurements (0057)."""
+    path = root / "evals" / "board.json"
+    data = json.loads(path.read_text())
+    data["cases"][name][field] = value
     path.write_text(json.dumps(data, indent=1))
 
 
@@ -371,7 +384,7 @@ def drop(root: Path, relative: str) -> None:
 # versions without ever being known to fire.
 
 sys.path.insert(0, str(SCRIPTS))
-from caselib import cases, measurement_inputs  # noqa: E402
+from caselib import SESSION_MODEL, cases, harness_fingerprint, measurement_inputs  # noqa: E402
 import verify  # noqa: E402
 from verify import GATES as VERIFY_GATES  # noqa: E402
 from releaselib import (  # noqa: E402
@@ -707,6 +720,12 @@ FAULTS = [
      lambda r: write(r, "evals/runner/run.py",
                      "# refuses without --i-approve-the-cost, and writes the board whatever it ran\n"),
      "fails", "caselib.replaces()"),
+    # A measurement names its model. See specs/changes/0057 and #130.
+    ("the runner losing the model the bindings name", SUITE,
+     lambda r: write(r, "evals/runner/run.py",
+                     "# refuses without --i-approve-the-cost, asks caselib.replaces( before it writes, "
+                     "and runs on whatever model the account defaults to\n"),
+     "fails", "defaults --model"),
     ("a measurement whose inputs moved on", BOARD,
      lambda r: edit(r, "evals/case-rule/prompt.md", "Do the thing.", "Do the other thing."), "fails", "changed since"),
     ("a measurement whose rule was reworded", BOARD,
@@ -715,6 +734,10 @@ FAULTS = [
      lambda r: drop_board_entry(r, "case-walk"), "warns", "never measured"),
     ("a board entry from fewer runs than the floor", BOARD,
      lambda r: board_runs(r, "case-walk", 1), "warns", "below the floor"),
+    ("a board row measured on another model", BOARD,
+     lambda r: board_field(r, "case-walk", "model", "claude-opus-5[1m]"), "fails", "measured on"),
+    ("a board row from another harness", BOARD,
+     lambda r: board_field(r, "case-walk", "harness", "0000000000000000"), "fails", "harness that has since changed"),
     ("an llm grader with an empty rubric", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: llm\nweight: 1\n---\n"),
      "fails", "will pass on anything"),
@@ -876,6 +899,129 @@ def isolation_control() -> None:
         assert (fixture / ".git").is_dir(), "the fixture has no repository of its own"
         own = read(fixture, "rev-list", "--all", "--count")
         assert own == "1", f"the fixture holds {own!r} commit(s) rather than its one"
+
+
+STUB_CLAUDE = r'''#!/usr/bin/env python3
+"""A stand-in for the claude CLI, so the harness can be proved without spending.
+
+Records every argument list it was called with, then answers as a judge when
+asked for a JSON schema — the envelope `--output-format json` prints, verdict
+inside `structured_output`, a price beside it — and otherwise as a session: the
+stream-json transcript, whose `init` event names the model it was given.
+"""
+import json
+import os
+import sys
+
+args = sys.argv[1:]
+with open(os.environ["LIVESPEC_STUB_LOG"], "a") as log:
+    log.write(json.dumps(args) + "\n")
+if "--json-schema" in args:
+    print(json.dumps({
+        "type": "result", "subtype": "success",
+        "structured_output": {"pass": True, "reason": "the stand-in approves"},
+        "result": json.dumps({"pass": True, "reason": "the stand-in approves"}),
+        "total_cost_usd": 0.04,
+    }))
+    sys.exit(0)
+model = args[args.index("--model") + 1] if "--model" in args else "the-account-default"
+sys.stdin.read()
+for event in (
+    {"type": "system", "subtype": "init", "model": model, "tools": []},
+    {"type": "assistant", "message": {"content": [{"type": "text", "text": "done"}]}},
+    {"type": "result", "subtype": "success", "result": "done", "total_cost_usd": 0.25},
+):
+    print(json.dumps(event))
+'''
+
+
+def runner_control() -> None:
+    """A measurement names its model. Against a stand-in `claude` on PATH — the
+    only way to prove the harness without spending — the provider passes the
+    bindings' model and records the model the session's init event says it ran
+    on; the judge's verdict is read from the JSON envelope and its cost
+    ledgered; the runner sums the ledger into the case's cost, writes model,
+    judge and harness into the row, and its refusal's estimate names the model
+    the board's costs were made on. See #130, 0057."""
+    import importlib
+
+    runner_dir = REPO / "evals" / "runner"
+    llm_grader = next(
+        p for p in sorted((REPO / "evals").glob("*/graders/*.md"))
+        if "type: llm" in p.read_text() and "focus: last_message" in p.read_text()
+    )
+    with tempfile.TemporaryDirectory(prefix="livespec-runner-") as workspace:
+        ws = Path(workspace)
+        stub_dir = ws / "bin"
+        stub_dir.mkdir()
+        stub = stub_dir / "claude"
+        stub.write_text(STUB_CLAUDE)
+        stub.chmod(0o755)
+        run_dir = ws / "run"
+        run_dir.mkdir()
+        log = ws / "argv.jsonl"
+        original = dict(os.environ)
+        os.environ.update({
+            "PATH": f"{stub_dir}{os.pathsep}{os.environ.get('PATH', '')}",
+            "LIVESPEC_STUB_LOG": str(log),
+            "LIVESPEC_ROOT": str(REPO),
+            "LIVESPEC_RUN_DIR": str(run_dir),
+            "LIVESPEC_SESSION_MODEL": SESSION_MODEL,
+            "LIVESPEC_JUDGE_MODEL": "sonnet",
+        })
+        sys.path.insert(0, str(runner_dir))
+        try:
+            provider = importlib.import_module("provider")
+            asserts = importlib.import_module("asserts")
+            runner = importlib.import_module("run")
+            response = provider.call_api(
+                "Do the thing.", {"config": {"with_plugin": False}},
+                {"vars": {"case": "case-rule", "max_turns": "3", "timeout_seconds": "60",
+                          "allowed_tools": "", "disallowed_tools": "Bash"}},
+            )
+            assert "error" not in response, f"the stand-in session errored: {response.get('error')}"
+            session_args = json.loads(log.read_text().splitlines()[0])
+            assert "--model" in session_args and session_args[session_args.index("--model") + 1] == SESSION_MODEL, (
+                f"the provider did not pass --model {SESSION_MODEL}: {session_args}")
+            recorded = (response.get("metadata") or {}).get("model")
+            assert recorded == SESSION_MODEL, f"the row would record {recorded!r}, not what the init event said"
+            verdict = asserts.get_assert("done", {
+                "config": {"grader": str(llm_grader.relative_to(REPO))},
+                "vars": {"case": "case-rule"},
+                "providerResponse": {"metadata": response["metadata"]},
+            })
+            assert verdict.get("pass") is True and "stand-in" in verdict.get("reason", ""), (
+                f"the verdict was not read from structured_output: {verdict}")
+            ledger = run_dir / "judge.jsonl"
+            assert ledger.exists(), "the judge's cost was not ledgered"
+            line = json.loads(ledger.read_text().splitlines()[0])
+            assert line["case"] == "case-rule" and line["arm"] == "without" and abs(line["cost"] - 0.04) < 1e-9, (
+                f"the ledger line is not the judge's: {line}")
+            results = run_dir / "results.json"
+            row = {
+                "vars": {"case": "case-rule"}, "response": {"cost": 0.25, "metadata": response["metadata"]},
+                "gradingResult": {"score": 1.0, "componentResults": [{"pass": True, "score": 1.0, "reason": "ok"}]},
+            }
+            results.write_text(json.dumps({"results": {"results": [
+                dict(row, provider={"label": "with-plugin"}), dict(row, provider={"label": "without-plugin"}),
+            ]}}))
+            stats, measured, sessions = runner.collect(results)
+            assert sessions == 2 and "case-rule" in measured, f"collect() lost the sessions: {stats}"
+            whole = stats["case-rule"]["cost"]
+            assert abs(whole - (0.25 * 2 + 0.04)) < 1e-9, f"the case's cost is {whole}, not sessions plus the ledger"
+            fake_case = {"name": "case-rule", "dir": REPO / "evals" / "06-neg-commit-message",
+                         "claims": {"rules": [], "skills": []}}
+            entry = runner.entry_for(stats["case-rule"], fake_case, REPO, "0000000", "sonnet")
+            assert entry["model"] == SESSION_MODEL and entry["judge"] == "sonnet", f"the row does not name its models: {entry}"
+            assert entry["harness"] == harness_fingerprint(REPO), "the row does not carry the harness fingerprint"
+            total, models, guessed, priced = runner.estimate(
+                [{"name": "a"}, {"name": "b"}], {"cases": {"a": {"cost": 2.0, "model": "claude-opus-5[1m]"}}})
+            assert priced and abs(total - 4.0) < 1e-9 and guessed == 1 and models == {"claude-opus-5[1m]"}, (
+                f"the estimate is wrong: {total, models, guessed, priced}")
+        finally:
+            sys.path.remove(str(runner_dir))
+            os.environ.clear()
+            os.environ.update(original)
 
 
 # (name, the check whose line must move, how to break the fixture, the state it must read)
@@ -1159,6 +1305,11 @@ def main() -> int:
         isolation_control()
     except (AssertionError, subprocess.CalledProcessError) as error:
         problems.append(f"a fixture is not a repository of its own: {error}")
+
+    try:
+        runner_control()
+    except (AssertionError, StopIteration, OSError) as error:
+        problems.append(f"a measurement does not name its model: {error}")
 
     for name, attempt, phrase in RELEASE_FAULTS:
         try:

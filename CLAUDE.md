@@ -85,8 +85,8 @@ session here is most likely to miss:
   sanctioned — [`method/repository.md`](method/repository.md), *Commits*, says
   what the commit and the pull request then owe.
 - **The suite runs when the maintainer asks for it.** Every run bills their
-  account and draws down its session limit — about $1.80 for one case, ~$4 for
-  the suite, and three runs in one sitting have exhausted it outright. `run.py`
+  account and draws down its session limit — the refusal says what a run would
+  cost, from the board — three runs in one sitting have exhausted it. `run.py`
   refuses without `--i-approve-the-cost`, `evalsuite.py` fails if that refusal
   is removed, and the flag is the maintainer's to add rather than the session's.
   A stale board entry is worth naming and costing out; the decision to spend
@@ -105,7 +105,7 @@ python3 .github/scripts/verify.py                 # everything that can pass her
 claude plugin validate . --strict                 # marketplace manifest
 claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
 claude plugin validate ./skills --strict
-python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold  # maintainer step
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold  # maintainer step
 ```
 
 The last one refuses unless the maintainer adds `--i-approve-the-cost`, per the

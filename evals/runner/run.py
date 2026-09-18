@@ -11,13 +11,15 @@ enablement ever arrives, both runners read the same folders.
 
 The flags are the suite's contract, unchanged from the native invocation:
 `--ablation with-without` is the only mode there is, `--judge-model` names the
-judge (sonnet or larger, never the model under test), and `--allow-tools` is an
+judge (never smaller than the model under test), `--model` names the model both
+arms run on — it defaults to `caselib.SESSION_MODEL`, the bindings' one
+decision, and every row records what actually ran — and `--allow-tools` is an
 operator grant — a gated tool a case asks for but the grant omits is stripped,
 exactly as the native CLI behaves, and stripped tools are warned about because
 a grader that could never fail proves nothing.
 
     python3 evals/runner/run.py --ablation with-without --judge-model sonnet \
-        --allow-tools Write Edit --scaffold [--case NAME] [--runs N] [--model M]
+        --model claude-sonnet-5 --allow-tools Write Edit --scaffold [--case NAME] [--runs N]
 
 `--scaffold` runs each case's `scaffold_script` — author-supplied bash, as you
 — in the session's fresh workspace before either arm starts. Off by default,
@@ -44,30 +46,69 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / ".github" / "scripts"))
-from caselib import MIN_RUNS, cases, frontmatter, measurement_inputs, replaces  # noqa: E402
+from caselib import (  # noqa: E402
+    MIN_RUNS, SESSION_MODEL, cases, frontmatter, harness_fingerprint, measurement_inputs, replaces, why_stale,
+)
 
 PROMPTFOO = "promptfoo@0.122.0"  # pinned: a floating runner makes every delta a comparison across two runners
 
 # --- the cost gate ------------------------------------------------------------
 #
 # This runner spends the maintainer's money and the account's session budget:
-# six real sessions plus judge calls per case, roughly $1.80 for one case at
-# `runs: 3` and about $4 for the full suite — and three runs in one sitting
-# once exhausted the account outright (429, mid-measurement, five sessions
-# lost). Nothing may start it on its own initiative: not CI, not a stale board
-# entry, not the `--changed` heal the board gate prints.
+# six real sessions plus judge calls per case, and three runs in one sitting
+# have exhausted the account outright more than once (429, mid-measurement,
+# sessions lost). Nothing may start it on its own initiative: not CI, not a
+# stale board entry, not the `--changed` heal the board gate prints.
 #
 # So the default is refusal. The flag below is the maintainer's signature on
 # one specific run, and an agent adding it without having been told to, in
-# this conversation, for this run, has forged it.
+# this conversation, for this run, has forged it. What a run would cost is not
+# a figure typed here — the one that was read $1.80 a case for a suite that
+# cost $4.46 — but an estimate from the board's last costs of the cases
+# selected, printed with the refusal, naming the model those costs were made on.
 APPROVAL_FLAG = "--i-approve-the-cost"
 
-REFUSAL = f"""✘ this run spends real money, and nobody approved it.
 
-  Six sessions plus judge calls per case — about $1.80 for one case at
-  runs: 3, ~$4 for the whole suite, drawn from the maintainer's account and
-  its session limit. A stale board entry is not an approval. A --changed
-  heal is not an approval. A green plan is not an approval.
+def estimate(suite: list[dict], board: dict) -> tuple[float, set[str], int, bool]:
+    """What a run of these cases would cost, from the board's last costs of them.
+
+    An unmeasured case counts at the mean of the measured ones. Returns the
+    total, the models those costs were made on — so the first Sonnet refusal
+    says plainly that it is quoting Opus prices — how many cases were guessed
+    at the mean, and whether the board held any cost to estimate from at all.
+    """
+    entries = board.get("cases", {}) if isinstance(board, dict) else {}
+    priced = {name: float(entry["cost"]) for name, entry in entries.items()
+              if isinstance(entry, dict) and isinstance(entry.get("cost"), (int, float))}
+    mean_cost = sum(priced.values()) / len(priced) if priced else None
+    total, models, guessed = 0.0, set(), 0
+    for case in suite:
+        if case["name"] in priced:
+            total += priced[case["name"]]
+            models.add(str(entries[case["name"]].get("model") or "an unknown model"))
+        elif mean_cost is not None:
+            total += mean_cost
+            guessed += 1
+    return total, models, guessed, mean_cost is not None
+
+
+def refusal(suite: list[dict], board: dict, runs: int | None, model: str) -> str:
+    total, models, guessed, priced = estimate(suite, board)
+    if priced:
+        if runs:
+            total = total * runs / MIN_RUNS
+        made_on = ", ".join(sorted(models)) if models else "the board's mean"
+        guess = f" ({guessed} of them never measured, counted at the board's mean)" if guessed else ""
+        line = (f"  ≈ ${total:.2f} for {len(suite)} case(s) at runs: {runs or MIN_RUNS}, from the board's "
+                f"last costs of these cases — made on {made_on}; this run would be on {model}{guess}.")
+    else:
+        line = "  The board holds no cost yet to estimate this run from."
+    return f"""✘ this run spends real money, and nobody approved it.
+
+{line}
+  Sessions plus judge calls, drawn from the maintainer's account and its
+  session limit. A stale board entry is not an approval. A --changed heal is
+  not an approval. A green plan is not an approval.
 
   If you are an agent: do not add {APPROVAL_FLAG} on your own
   initiative. Stop here, tell the maintainer which cases are stale and what
@@ -145,17 +186,37 @@ def load_board() -> dict:
         return {"format": 1, "cases": {}}
 
 
+def judge_costs(results_path: Path) -> dict[str, float]:
+    """The judge's bill per case, from the ledger asserts.py keeps beside the
+    results. Absent for a run made before 0057, in which case the judge cost
+    what it cost and nothing recorded it."""
+    ledger = results_path.parent / "judge.jsonl"
+    costs: dict[str, float] = defaultdict(float)
+    if not ledger.exists():
+        return costs
+    for line in ledger.read_text().splitlines():
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        costs[str(entry.get("case") or "?")] += float(entry.get("cost") or 0)
+    return costs
+
+
 def collect(results_path: Path) -> tuple[dict, dict, int]:
-    """Per-case scores, costs and fired-counts out of a promptfoo results file."""
+    """Per-case scores, costs, models and fired-counts out of a promptfoo results file."""
     rows = json.load(results_path.open())["results"]["results"]
     stats: dict[str, dict] = defaultdict(lambda: {
-        "with": [], "without": [], "cost": 0.0, "fired": [], "errors": 0,
+        "with": [], "without": [], "cost": 0.0, "fired": [], "errors": 0, "models": set(),
     })
     for row in rows:
         name = (row.get("vars") or {}).get("case") or (row.get("description") or "?")
         arm = ((row.get("provider") or {}).get("label")) or "?"
         response = row.get("response") or {}
         stats[name]["cost"] += float(response.get("cost") or 0)
+        ran_on = (response.get("metadata") or {}).get("model")
+        if ran_on:
+            stats[name]["models"].add(str(ran_on))
         grading = row.get("gradingResult") or {}
         if row.get("error") and not grading.get("componentResults"):
             # a genuine harness error — promptfoo also mirrors a failed judge's
@@ -168,7 +229,8 @@ def collect(results_path: Path) -> tuple[dict, dict, int]:
             reason = component.get("reason") or ""
             if key == "with" and reason.startswith("plugin-fired indicator"):
                 stats[name]["fired"].append("indicator: fired" in reason)
-    cost = sum(s["cost"] for s in stats.values())
+    for name, judged in judge_costs(results_path).items():
+        stats[name]["cost"] += judged  # the whole bill: sessions and the judge (0057)
     return stats, {n: s for n, s in stats.items() if s["with"] and s["without"]}, len(rows)
 
 
@@ -195,11 +257,34 @@ def print_summary(stats: dict, sessions: int, negatives: frozenset[str] | set[st
         print(f"  ⚠ {name}: the skill under test never fired in the plugin arm — the case may not reach it (#123)")
     if total:
         cost = sum(s["cost"] for s in stats.values())
-        print(f"\n  suite Δ {mean(total):+.2f} over {len(total)} case(s), {sessions} session(s), ${cost:.2f}")
+        print(f"\n  suite Δ {mean(total):+.2f} over {len(total)} case(s), {sessions} session(s), "
+              f"${cost:.2f} sessions and judge")
     print("  No number from here is calibrated until every verdict has been read — evals/README.md.")
 
 
-def record(measured: dict, suite: list[dict]) -> None:
+def entry_for(s: dict, case: dict, root: Path, sha: str, judge: str) -> dict:
+    """One board row: the number, its provenance, and what it was a measurement
+    of — the case's inputs, the model the sessions ran on (the transcripts' word,
+    not the flag's), the judge, and the harness that produced it. Pure, so the
+    injector can hold it without writing the board (0057)."""
+    runs = min(len(s["with"]), len(s["without"]))
+    models = sorted(s.get("models") or [])
+    return {
+        "delta": round(mean(s["with"]) - mean(s["without"]), 2),
+        "with": round(mean(s["with"]), 2),
+        "without": round(mean(s["without"]), 2),
+        "runs": runs,
+        "at": time.strftime("%Y-%m-%d"),
+        "sha": sha,
+        "cost": round(s["cost"], 2),
+        "model": "+".join(models) if models else "",
+        "judge": judge,
+        "harness": harness_fingerprint(root),
+        "inputs": measurement_inputs(case, root),
+    }
+
+
+def record(measured: dict, suite: list[dict], judge: str) -> None:
     """Update the board with what this run measured — and only that.
 
     An entry carries the number, its provenance, and a hash of what it was a
@@ -230,16 +315,7 @@ def record(measured: dict, suite: list[dict]) -> None:
         if not replaces(prior, runs):
             held.append((name, runs, prior))
             continue
-        board["cases"][name] = {
-            "delta": round(mean(s["with"]) - mean(s["without"]), 2),
-            "with": round(mean(s["with"]), 2),
-            "without": round(mean(s["without"]), 2),
-            "runs": runs,
-            "at": time.strftime("%Y-%m-%d"),
-            "sha": sha,
-            "cost": round(s["cost"], 2),
-            "inputs": measurement_inputs(by_name[name], ROOT),
-        }
+        board["cases"][name] = entry_for(s, by_name[name], ROOT, sha, judge)
         written += 1
     board["cases"] = dict(sorted(board["cases"].items()))
     BOARD.write_text(json.dumps(board, indent=1) + "\n")
@@ -268,20 +344,14 @@ def main() -> int:
                         help="run only the cases the board holds no fresh measurement for — "
                              "a changed rule, case or skill, or no entry at all")
     parser.add_argument("--runs", type=int, help="override every case's runs: (pilots; the floor for a real measurement is 3)")
-    parser.add_argument("--model", default="", help="session model for both arms (default: the account's default)")
+    parser.add_argument("--model", default=SESSION_MODEL,
+                        help=f"session model for both arms (default: caselib.SESSION_MODEL, {SESSION_MODEL}; "
+                             "the row records what actually ran, and the board stales a row made on anything else)")
     parser.add_argument("--max-concurrency", type=int, default=2)
     parser.add_argument(APPROVAL_FLAG, action="store_true", dest="approved",
                         help="the maintainer's approval for this one run. Required — without it this "
                              "refuses. Never add it on an agent's own initiative")
     args = parser.parse_args()
-
-    if not args.approved:
-        print(REFUSAL, file=sys.stderr)
-        return 2
-
-    if not shutil.which("npx"):
-        print("✘ npx not found — the runner needs node (a maintainer-machine prerequisite, never CI's)", file=sys.stderr)
-        return 1
 
     if args.changed and args.case:
         print("✘ --changed picks its own cases; drop --case or drop --changed", file=sys.stderr)
@@ -296,14 +366,23 @@ def main() -> int:
             return 1
     if args.changed:
         entries = load_board().get("cases", {})
-        suite = [c for c in suite
-                 if entries.get(c["name"], {}).get("inputs") != measurement_inputs(c, ROOT)]
+        suite = [c for c in suite if why_stale(entries.get(c["name"]), c, ROOT)]
         if not suite:
             print("✔ board is current — nothing has changed since its measurements")
             return 0
         print(f"  --changed: {len(suite)} case(s) without a fresh measurement")
     if not suite:
         print("✘ no cases selected", file=sys.stderr)
+        return 1
+
+    # The refusal comes after the selection so it can say what this run would
+    # cost, and before anything that could spend.
+    if not args.approved:
+        print(refusal(suite, load_board(), args.runs, args.model), file=sys.stderr)
+        return 2
+
+    if not shutil.which("npx"):
+        print("✘ npx not found — the runner needs node (a maintainer-machine prerequisite, never CI's)", file=sys.stderr)
         return 1
 
     repeat = args.runs or max(c["runs"] for c in suite)
@@ -330,7 +409,8 @@ def main() -> int:
         "PROMPTFOO_DISABLE_TELEMETRY": "1",
     })
     results_path = run_dir / "results.json"
-    print(f"  {len(suite)} case(s) x 2 arms x {repeat} run(s) — sessions in {run_dir}/sessions/")
+    print(f"  {len(suite)} case(s) x 2 arms x {repeat} run(s) on {args.model}, judged by {args.judge_model} "
+          f"— sessions in {run_dir}/sessions/")
     subprocess.run(
         ["npx", "-y", PROMPTFOO, "eval", "-c", str(config_path), "-o", str(results_path),
          "--no-cache", "--no-progress-bar", "--max-concurrency", str(args.max_concurrency)],
@@ -341,7 +421,7 @@ def main() -> int:
         return 1
     stats, measured, sessions = collect(results_path)
     print_summary(stats, sessions, negatives={c['name'] for c in suite if c['negative']})
-    record(measured, suite)
+    record(measured, suite, args.judge_model)
     return 0
 
 

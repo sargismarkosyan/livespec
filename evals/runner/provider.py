@@ -25,8 +25,12 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(os.environ["LIVESPEC_ROOT"]) / ".github" / "scripts"))
+from caselib import SESSION_MODEL  # noqa: E402
 
 
 def _snapshot(workspace: Path) -> dict[str, str]:
@@ -60,6 +64,22 @@ def _read_stream(raw: str) -> tuple[str, list[dict]]:
                         "input": json.dumps(block.get("input", {}), sort_keys=True),
                     })
     return result, tools
+
+
+def _init_model(raw: str) -> str:
+    """The model the session says it ran on — the `init` event's word, not the
+    flag's. The row records this, so a fallback or an alias that moved would
+    stale itself rather than pass as the model the bindings name (0057)."""
+    for line in raw.splitlines():
+        if '"init"' not in line:
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if event.get("type") == "system" and event.get("subtype") == "init":
+            return str(event.get("model") or "")
+    return ""
 
 
 def _cost(raw: str) -> float:
@@ -119,9 +139,11 @@ def call_api(prompt, options, context):
         command += ["--disallowedTools", ",".join(disallowed)]
     if with_plugin:
         command += ["--plugin-dir", root]
-    model = os.environ.get("LIVESPEC_SESSION_MODEL", "")
-    if model:
-        command += ["--model", model]
+    # Always named, never left to the account: every session of the sitting of
+    # 2026-09-17 ran on a model nobody chose, and no row could say which. The
+    # runner sets the variable from caselib.SESSION_MODEL or the --model flag;
+    # the constant is the fallback so a bare call cannot drift either (#130).
+    command += ["--model", os.environ.get("LIVESPEC_SESSION_MODEL") or SESSION_MODEL]
     allowed = [t for t in str(vars_.get("allowed_tools") or "").split() if t]
     if allowed:
         # one comma-joined argument: --allowedTools is variadic and would
@@ -152,6 +174,7 @@ def call_api(prompt, options, context):
         "cost": _cost(proc.stdout),
         "metadata": {
             "arm": arm,
+            "model": _init_model(proc.stdout),
             "session_dir": str(session_dir),
             "transcript": str(session_dir / "transcript.jsonl"),
             "tools": str(session_dir / "tools.json"),

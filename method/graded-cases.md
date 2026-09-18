@@ -91,6 +91,15 @@ either.** The rubric is usually right and the answer usually deserved to fail. A
 rubric edited because a run came back badly is a rubric being fitted to a result,
 and it can only be done once before the number means nothing.
 
+**When the judge is the model under test, the arms are what save the number.**
+Sometimes the only judge large enough to read the nuance is the model being
+graded, or the only one worth paying for. Then the same eyes read both arms,
+and what the judge prefers in its own kind lands on both sides of the
+difference — bounded by the comparison, not removed by it. Say so where the
+decision is made, and read the verdicts against that assumption: a judge found
+favouring one arm's voice is a finding the calibration read exists to make,
+and the day to pay for a different judge.
+
 ## Freshness is gated; the score never is
 
 A measurement describes the files it measured. Edit any of them — the case, the
