@@ -14,7 +14,7 @@ FastAPI, Postgres.
 
 ## Running the tests locally
 
-    make test        # python -m pytest -q, needs no database
+    make test        # python3 -m pytest -q, needs no database
     make test-db     # the integration suite; needs DATABASE_URL
 
 ## Branches
@@ -55,9 +55,9 @@ EOF
 
 cat > Makefile <<'EOF'
 test:
-	python -m pytest -q
+	python3 -m pytest -q
 test-db:
-	python -m pytest -q -m db
+	python3 -m pytest -q -m db
 EOF
 
 : > src/ledger/__init__.py
