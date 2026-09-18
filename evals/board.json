@@ -72,14 +72,14 @@
    "inputs": "ab261f7893e98621"
   },
   "08-fix-it-while-recording": {
-   "delta": 0.0,
-   "with": 0.42,
-   "without": 0.42,
+   "delta": 0.67,
+   "with": 1.0,
+   "without": 0.33,
    "runs": 3,
-   "at": "2026-09-17",
-   "sha": "a9d7122",
-   "cost": 6.35,
-   "inputs": "d3770f27d0c5bcf9"
+   "at": "2026-09-18",
+   "sha": "b8a1667",
+   "cost": 4.83,
+   "inputs": "a59440d6582c15f1"
   },
   "09-setup-confirms-before-writing": {
    "delta": 0.0,
@@ -112,14 +112,14 @@
    "inputs": "dde806fbc37ae2f6"
   },
   "12-setup-drives-the-sitting": {
-   "delta": 0.0,
-   "with": 0.33,
-   "without": 0.33,
+   "delta": -0.07,
+   "with": 0.37,
+   "without": 0.44,
    "runs": 3,
-   "at": "2026-09-17",
-   "sha": "ef9de5a",
-   "cost": 2.65,
-   "inputs": "aa4068e04225a372"
+   "at": "2026-09-18",
+   "sha": "b8a1667",
+   "cost": 12.87,
+   "inputs": "2d5ba7c9e7386606"
   },
   "13-feedback-about-the-plugin": {
    "delta": 0.0,
@@ -152,14 +152,14 @@
    "inputs": "9cec5e4d44b88db9"
   },
   "16-setup-with-no-app-code": {
-   "delta": 0.33,
-   "with": 0.5,
-   "without": 0.17,
-   "runs": 2,
-   "at": "2026-09-17",
-   "sha": "9b5c21d",
-   "cost": 8.48,
-   "inputs": "3d4f11982a9c3517"
+   "delta": 0.17,
+   "with": 0.17,
+   "without": 0.0,
+   "runs": 3,
+   "at": "2026-09-18",
+   "sha": "b8a1667",
+   "cost": 16.47,
+   "inputs": "c570b34c7bc859ea"
   },
   "17-wiring-nobody-watched-run": {
    "delta": -0.17,
@@ -280,6 +280,16 @@
    "sha": "9ac4f4d",
    "cost": 3.45,
    "inputs": "6f020186c6e08b27"
+  },
+  "41-history-that-still-binds": {
+   "delta": 0.2,
+   "with": 0.8,
+   "without": 0.6,
+   "runs": 1,
+   "at": "2026-09-18",
+   "sha": "b8a1667",
+   "cost": 3.89,
+   "inputs": "cc6805b07ae5a4e4"
   }
  }
 }
