@@ -469,7 +469,10 @@ so in `case.yaml`:
 - `requires:` — the binaries the fixture cannot run without. The runner checks
   them before a config is written and refuses the case, naming the binary,
   rather than measure its absence. `pytest` is a maintainer-machine
-  prerequisite the way node is;
+  prerequisite the way node is — and a `.venv/` at the repository root is put
+  on the path for the run and its sessions, so on a machine that will not take
+  a system package, `python3 -m venv .venv && .venv/bin/pip install pytest` is
+  the whole of it;
 - where the machine has bubblewrap the session also runs inside Claude Code's
   own sandbox with the network closed, the second wall; where it has not, the
   run says so in its first lines and the allow-list is the wall. The fixture

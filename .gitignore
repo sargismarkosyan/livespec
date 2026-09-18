@@ -4,3 +4,5 @@ __pycache__/
 # Eval runs write here. Results are a measurement of one moment, not a record
 # the repository keeps — what a run concluded goes in the change spec.
 evals/results/
+# a virtual environment for the eval fixtures' runners; run.py puts .venv/bin on the path (0058)
+.venv/

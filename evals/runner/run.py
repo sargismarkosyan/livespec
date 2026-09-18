@@ -432,6 +432,15 @@ def main() -> int:
         print("✘ no cases selected", file=sys.stderr)
         return 1
 
+    # A virtual environment at the root serves the run and its sessions: on a
+    # machine that will not take a system package, `python3 -m venv .venv &&
+    # .venv/bin/pip install pytest` is the whole prerequisite. Put on the path
+    # here so the requirement check below and the sessions see the same thing.
+    venv_bin = ROOT / ".venv" / "bin"
+    if venv_bin.is_dir() and str(venv_bin) not in os.environ.get("PATH", "").split(os.pathsep):
+        os.environ["PATH"] = f"{venv_bin}{os.pathsep}{os.environ.get('PATH', '')}"
+        print(f"  · {venv_bin.relative_to(ROOT)} is on the path for this run and its sessions")
+
     # What the fixtures need this machine to have, before anything is spent or
     # approved: a missing test runner is a refusal, never a measurement (0058).
     lacking = missing_requirements(suite)

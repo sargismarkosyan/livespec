@@ -40,7 +40,7 @@ EOF
 
 cat > Makefile <<'EOF'
 check:
-	pytest -q
+	python3 -m pytest -q
 
 dev:
 	uvicorn sluicegate.api:app --reload --port 8000
