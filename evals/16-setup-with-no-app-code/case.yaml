@@ -5,5 +5,5 @@ scaffold_script: scaffold.sh
 # including what proves a rule here, but only if asked. The shell reaches the
 # generator that already builds graded suites and finds it gated, which is the
 # honest state on this account; nothing else it could run leaves the machine.
-shell: [ls, cat, claude plugin]
+shell: [ls, cat, head, grep, find, pwd, claude plugin]
 requires: [claude]

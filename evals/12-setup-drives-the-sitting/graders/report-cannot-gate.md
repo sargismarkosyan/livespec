@@ -11,6 +11,12 @@ pipeline's verdict untouched — `allow_failure`, `continue-on-error`, a trailin
 rather than an accident of ordering. Saying out loud that the report is not a
 gate is a strong pass.
 
+FAIL if no report was wired at all. There is nothing here to pass on: this
+grader reads a property of the wiring, `wires-the-report` names the gap, and a
+sitting that wired nothing has not met either. The first Sonnet pilot passed a
+bare session on this grader for having "never wired any reporting step", which
+is the hatch this sentence closes.
+
 FAIL if a missing token, an unreachable base ref or a broken report step would
 turn the pipeline red. A report that can fail a build is a gate nobody declared,
 and it breaks the promise that nothing this process installs can fail somebody's

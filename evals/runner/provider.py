@@ -131,7 +131,7 @@ Rules:
 - Answer only from the sheet. Where the session asks for something the sheet does not settle, your whole answer on that point is: Your call.
 - Never add facts, requirements, preferences or context the sheet does not hold, and never answer a question that was not asked. The sheet answers; it never volunteers.
 - Be brief and plain, in the sheet's voice: a few lines, one per question, no headings.
-- If the session's message asks you nothing and is not waiting on you — it has finished, or it says what it does next without a question — set done to true and leave reply empty."""
+- done means there was nothing to answer: the session's message asks you nothing and is not waiting on you — it has finished, or it says what it does next without a question. Then set done to true and leave reply empty. If you answered anything at all, done is false."""
 
 
 def _tail(text: str, limit: int) -> str:
@@ -219,11 +219,15 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
             if error:
                 lines.append(json.dumps({"type": "person", "round": rounds + 1, "error": error}))
                 break
-            if done or not reply:
+            # A reply is sent whenever there is one. The first pilot's person
+            # answered all six questions and set done beside them — "I have
+            # answered; nothing more from me" — and the answers were dropped.
+            # Done ends the sitting only when there was nothing to say.
+            if not reply:
                 lines.append(json.dumps({"type": "person", "round": rounds + 1, "done": True}))
                 break
             rounds += 1
-            lines.append(json.dumps({"type": "person", "round": rounds, "text": reply}))
+            lines.append(json.dumps({"type": "person", "round": rounds, "text": reply, "done": bool(done)}))
             send(reply)
         try:
             if proc.stdin:

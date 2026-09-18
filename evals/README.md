@@ -479,5 +479,10 @@ so in `case.yaml`:
   is a throwaway under `/tmp` either way.
 
 `12`, `16`, `24` and `41` lend one since `0058`; `40` and `44` granted bare
-`Bash` before it. The allow-list is not a sandbox — `python3 -c` can open a
+`Bash` before it. Two things the first Sonnet pilot taught: a command that
+expands a variable — `echo $CLAUDE_PLUGIN_ROOT` — is refused by the CLI's own
+rule whatever the list says, so a session finds the plugin's tools by the path
+the skill hands it rather than by the variable; and `max_turns` is per round,
+so a case whose skill runs a tool needs the turns a real sitting takes — `24`
+hit thirty while finding and running `doctor.py`, and now has sixty. The allow-list is not a sandbox — `python3 -c` can open a
 socket — and the risk is written in the change spec rather than assumed away.
