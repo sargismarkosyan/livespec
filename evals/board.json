@@ -22,34 +22,34 @@
    "inputs": "1f45f8d8e426728e"
   },
   "03-persona-to-fit-feature": {
-   "delta": 0.5,
+   "delta": 1.0,
    "with": 1.0,
-   "without": 0.5,
-   "runs": 3,
-   "at": "2026-09-17",
-   "sha": "ef9de5a",
-   "cost": 1.35,
-   "inputs": "17fac8ff29a624f9"
-  },
-  "04-workflow-for-orphan": {
-   "delta": 0.0,
-   "with": 0.83,
-   "without": 0.83,
-   "runs": 3,
-   "at": "2026-09-17",
-   "sha": "ef9de5a",
-   "cost": 3.19,
-   "inputs": "3e9f82308c2b7d76"
-  },
-  "05-future-state-journey": {
-   "delta": 0.33,
-   "with": 0.33,
    "without": 0.0,
    "runs": 3,
    "at": "2026-09-17",
-   "sha": "ef9de5a",
-   "cost": 2.07,
-   "inputs": "61e8c97147b866f2"
+   "sha": "a9d7122",
+   "cost": 1.78,
+   "inputs": "36a945df35ba9b0e"
+  },
+  "04-workflow-for-orphan": {
+   "delta": 1.0,
+   "with": 1.0,
+   "without": 0.0,
+   "runs": 3,
+   "at": "2026-09-17",
+   "sha": "a9d7122",
+   "cost": 2.85,
+   "inputs": "6580b405d211d4a1"
+  },
+  "05-future-state-journey": {
+   "delta": 0.33,
+   "with": 1.0,
+   "without": 0.67,
+   "runs": 3,
+   "at": "2026-09-17",
+   "sha": "a9d7122",
+   "cost": 2.33,
+   "inputs": "0d830929c500d818"
   },
   "06-neg-commit-message": {
    "delta": 0.0,
@@ -73,13 +73,13 @@
   },
   "08-fix-it-while-recording": {
    "delta": 0.0,
-   "with": 0.5,
-   "without": 0.5,
+   "with": 0.42,
+   "without": 0.42,
    "runs": 3,
    "at": "2026-09-17",
-   "sha": "ef9de5a",
-   "cost": 2.69,
-   "inputs": "08d7a9280c75ceb6"
+   "sha": "a9d7122",
+   "cost": 6.35,
+   "inputs": "d3770f27d0c5bcf9"
   },
   "09-setup-confirms-before-writing": {
    "delta": 0.0,
@@ -92,14 +92,14 @@
    "inputs": "0720f2b862de70e5"
   },
   "10-gate-deferred-twice": {
-   "delta": -0.17,
-   "with": 0.67,
-   "without": 0.83,
+   "delta": 0.17,
+   "with": 0.83,
+   "without": 0.67,
    "runs": 3,
    "at": "2026-09-17",
-   "sha": "ef9de5a",
-   "cost": 2.34,
-   "inputs": "17b87655118851ea"
+   "sha": "a9d7122",
+   "cost": 5.06,
+   "inputs": "8eb07a34215a8c13"
   },
   "11-neg-setup-adjacent-request": {
    "delta": 0.0,
@@ -107,9 +107,9 @@
    "without": 1.0,
    "runs": 3,
    "at": "2026-09-17",
-   "sha": "ef9de5a",
-   "cost": 0.85,
-   "inputs": "2ea005dd2753ad13"
+   "sha": "a9d7122",
+   "cost": 1.01,
+   "inputs": "dde806fbc37ae2f6"
   },
   "12-setup-drives-the-sitting": {
    "delta": 0.0,
