@@ -13,4 +13,10 @@
 # fail. The list lives in verify.py so there is never a second copy of it here.
 set -e
 
+# Git exports GIT_DIR into hooks run from a linked worktree, and a child git
+# that inherits it ignores its working directory — which is how the injector's
+# fixture once landed as commits on the real branch (#127). The tooling scrubs
+# these itself now; the hook does too, so nothing it grows later relearns it.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE
+
 exec python3 "$(git rev-parse --show-toplevel)/.github/scripts/verify.py" --local
