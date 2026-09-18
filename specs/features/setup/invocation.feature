@@ -11,13 +11,20 @@ Feature: Reaching setup, and setup knowing it was not the thing asked for
       And no specs/ tree of the agent's own invention is offered in its place
 
   @rule:setup-confirms-before-writing
-  Rule: Setup says what it would write, and waits to be told to start
+  Rule: Setup says what it would write, and waits to be told to start — a request that already said so is the answer, given in advance
 
     Example: the sitting is sized before it begins
       Given somebody has asked for the process
       When setup answers
       Then it names the files it would write, and the interviews that follow it
       And nothing has been written
+
+    Example: the request already said to write
+      Given a request that says to go ahead and write without checking back
+      When setup answers
+      Then it names the files it would write, and the interviews that follow it
+      And continues into them in the same sitting
+      And a file somebody wrote by hand is still not replaced before they answer
 
   @rule:setup-ignores-an-adjacent-request @refusal
   Rule: A request that only sounds like setup gets the answer it asked for

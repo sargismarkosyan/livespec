@@ -12,9 +12,12 @@ merge request itself, not only in a log — and the bindings name what produces 
 The repository in this prompt is on a self-hosted GitLab, so the wiring belongs
 in that platform's own CI, not in a GitHub workflow.
 
-PASS also if it concludes the repository cannot carry such a comment and **the
-hand-back says the report is not wired and why**. That is a legitimate outcome;
-silence about it is not.
+PASS also if the transcript shows *why* the repository cannot carry such a
+comment — a platform feature the fixture lacks, a command that was run and
+refused — and **the hand-back says the report is not wired and why**. Saying so
+without having found out is not this pass: the sitting has a shell to try with
+and a person to ask, and a report left unwired for want of trying is the
+failure below.
 
 FAIL if the gates are wired and the report is neither wired nor mentioned — the
 gap that is easy to miss precisely because nothing fails when it is missing.

@@ -150,6 +150,16 @@ def compile_config(suite: list[dict], repeat: int, granted: set[str], scaffold: 
             elif grader["fields"].get("weight", "").strip().isdigit():
                 entry["weight"] = int(grader["fields"]["weight"])
             asserts.append(entry)
+        # The sitting (0058): the person and the shell, when the case brings them.
+        shell = list(case.get("shell") or [])
+        if shell and "Bash" not in granted:
+            print(f"  ⚠ {case['name']} lends a shell ({', '.join(shell)}); Bash not granted — running without it")
+            shell = []
+        if case.get("person"):
+            print(f"  · {case['name']}: a person answers up to {case['replies']} time(s)"
+                  + (f"; a shell of {', '.join(shell)}" if shell else ""))
+        elif shell:
+            print(f"  · {case['name']}: a shell of {', '.join(shell)}")
         tests.append({
             "description": case["name"],
             "vars": {
@@ -160,6 +170,9 @@ def compile_config(suite: list[dict], repeat: int, granted: set[str], scaffold: 
                 "disallowed_tools": " ".join(sorted(GATED - set(allowed))),
                 "max_turns": fields.get("max_turns", "25"),
                 "timeout_seconds": fields.get("timeout_seconds", "600"),
+                "person": str(case["person_file"]) if case.get("person") else "",
+                "replies": str(case.get("replies") or 0),
+                "shell": ",".join(shell),
             },
             "assert": asserts,
         })
@@ -203,11 +216,43 @@ def judge_costs(results_path: Path) -> dict[str, float]:
     return costs
 
 
+def missing_requirements(suite: list[dict]) -> list[tuple[str, str]]:
+    """(case, binary) for every `requires:` this machine cannot satisfy. Checked
+    before a config is written: a fixture whose test runner is absent measures
+    the absence, so the run refuses instead — a maintainer-machine prerequisite,
+    the way node is, never a number (0058)."""
+    return [(case["name"], binary) for case in suite
+            for binary in (case.get("requires") or []) if not shutil.which(binary)]
+
+
+def session_score(components: list[dict]) -> tuple[float | None, int]:
+    """One session's score from its verdicts, and how many verdicts errored.
+
+    The fraction is over the graders that returned: weightless indicators are
+    not in it, and a judge that said nothing three times is not a verdict —
+    it is counted here and left out, never read as the agent failing the
+    rubric (#131). None means no grader returned at all.
+    """
+    weighted, weights, errored = 0.0, 0.0, 0
+    for component in components:
+        reason = str(component.get("reason") or "")
+        if reason.startswith("plugin-fired indicator"):
+            continue
+        if component.get("errored") or reason.startswith("judge error"):
+            errored += 1
+            continue
+        weight = (component.get("assertion") or {}).get("weight", 1)
+        weight = float(weight if isinstance(weight, (int, float)) else 1)
+        weighted += weight * float(component.get("score") or 0)
+        weights += weight
+    return (weighted / weights if weights else None), errored
+
+
 def collect(results_path: Path) -> tuple[dict, dict, int]:
     """Per-case scores, costs, models and fired-counts out of a promptfoo results file."""
     rows = json.load(results_path.open())["results"]["results"]
     stats: dict[str, dict] = defaultdict(lambda: {
-        "with": [], "without": [], "cost": 0.0, "fired": [], "errors": 0, "models": set(),
+        "with": [], "without": [], "cost": 0.0, "fired": [], "errors": 0, "errored": 0, "models": set(),
     })
     for row in rows:
         name = (row.get("vars") or {}).get("case") or (row.get("description") or "?")
@@ -224,11 +269,20 @@ def collect(results_path: Path) -> tuple[dict, dict, int]:
             stats[name]["errors"] += 1
             continue
         key = "with" if arm == "with-plugin" else "without"
-        stats[name][key].append(float(grading.get("score") or 0))
-        for component in grading.get("componentResults") or []:
+        components = grading.get("componentResults") or []
+        for component in components:
             reason = component.get("reason") or ""
             if key == "with" and reason.startswith("plugin-fired indicator"):
                 stats[name]["fired"].append("indicator: fired" in reason)
+        # The score is ours to take, not promptfoo's: its number counts an
+        # errored verdict as a fail, and a session whose every verdict errored
+        # is not a measurement of zero (0058, #131).
+        score, errored = session_score(components)
+        stats[name]["errored"] += errored
+        if score is None:
+            stats[name]["errors"] += 1
+            continue
+        stats[name][key].append(score)
     for name, judged in judge_costs(results_path).items():
         stats[name]["cost"] += judged  # the whole bill: sessions and the judge (0057)
     return stats, {n: s for n, s in stats.items() if s["with"] and s["without"]}, len(rows)
@@ -250,6 +304,9 @@ def print_summary(stats: dict, sessions: int, negatives: frozenset[str] | set[st
         print(f"  {name:<34} {mean(with_arm):>5.2f} {mean(without):>6.2f} {delta:>+6.2f}   {flame}")
     for name in sorted(n for n in stats if stats[n]["errors"]):
         print(f"  ✘ {name}: {stats[name]['errors']} session(s) errored — see the run's sessions/ directory")
+    for name in sorted(n for n in stats if stats[n].get("errored")):
+        print(f"  ⚠ {name}: {stats[name]['errored']} verdict(s) errored — the judge returned nothing three "
+              f"times; left out of the score, never counted as a failure (#131)")
     # A skill-tagged case whose plugin arm never fired measured nothing about
     # that skill. A line, never a gate: it would have named 08 and 10 on
     # 2026-09-17 and not 12, where setup fired and then stalled (#123).
@@ -375,6 +432,15 @@ def main() -> int:
         print("✘ no cases selected", file=sys.stderr)
         return 1
 
+    # What the fixtures need this machine to have, before anything is spent or
+    # approved: a missing test runner is a refusal, never a measurement (0058).
+    lacking = missing_requirements(suite)
+    if lacking:
+        for name, binary in lacking:
+            print(f"✘ {name} requires {binary}, which this machine does not have — nothing was measured", file=sys.stderr)
+        print("  a maintainer-machine prerequisite, the way node is; install it and run again", file=sys.stderr)
+        return 1
+
     # The refusal comes after the selection so it can say what this run would
     # cost, and before anything that could spend.
     if not args.approved:
@@ -389,6 +455,13 @@ def main() -> int:
     run_dir = ROOT / "evals" / "results" / time.strftime("%Y%m%d-%H%M%S")
     run_dir.mkdir(parents=True)
 
+    if any(c.get("shell") for c in suite):
+        if shutil.which("bwrap"):
+            os.environ["LIVESPEC_SANDBOX"] = "1"
+            print("  · lent shells run inside Claude Code's sandbox with the network closed (bubblewrap found)")
+        else:
+            print("  ⚠ no bubblewrap on this machine: a lent shell is confined by its allow-list alone, "
+                  "and the fixture is a throwaway under /tmp")
     config = compile_config(suite, repeat, set(args.allow_tools), args.scaffold)
     config_path = run_dir / "promptfooconfig.json"
     config_path.write_text(json.dumps(config, indent=1))

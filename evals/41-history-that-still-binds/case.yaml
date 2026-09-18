@@ -12,3 +12,9 @@
 # edits — a command grader measures both and compares — and no other
 # repository's CLAUDE.md offered as the shape this one should take.
 scaffold_script: scaffold.sh
+# The sitting (0058): the keeper answers from person.md for up to three rounds
+# — the yes and the six facts, never volunteered, and nothing about what the
+# reading of CLAUDE.md is graded on. The shell runs the fixture's own suite;
+# pytest is a maintainer-machine prerequisite the runner refuses without.
+shell: [python3, python, make, git, ls, cat, pytest]
+requires: [python3, make, pytest]

@@ -104,3 +104,10 @@ def test_unbalanced_posting_is_refused():
 def test_empty_posting_balances():
     assert balanced([])
 EOF
+
+# A repository, not a directory: setup's hook question and its branch reading
+# need one, and the fourth run's sessions ended on "there's no git repo" (0058).
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE
+git init -q
+git -c user.name=ledger -c user.email=ledger@example.invalid add -A
+git -c user.name=ledger -c user.email=ledger@example.invalid commit -q -m "ledger-api as it stands"

@@ -84,6 +84,15 @@ def _digest(transcript_path: str) -> str:
             for block in content if isinstance(content, list) else []:
                 if isinstance(block, dict) and block.get("type") == "tool_result":
                     pieces.append("TOOL RESULT: " + _clip(json.dumps(block.get("content", ""))))
+        elif kind == "person":
+            # The human the sitting had (0058): what they answered between
+            # rounds, so a judge reads the question and the answer together.
+            if event.get("text"):
+                pieces.append("PERSON: " + str(event["text"]))
+            elif event.get("error"):
+                pieces.append(f"PERSON: (could not be reached: {event['error']})")
+            else:
+                pieces.append("PERSON: (nothing to answer; the sitting ends here)")
         elif kind == "result":
             pieces.append("FINAL REPLY: " + (event.get("result") or "(empty)"))
     digest = "\n\n".join(pieces)
@@ -142,7 +151,10 @@ def _judge(rubric: str, content: str, case: str = "?", arm: str = "?", grader: s
                     "reason": str(verdict.get("reason", ""))[:800]}
         except Exception as err:
             last = err
-    return {"pass": False, "score": 0.0, "reason": f"judge error after 3 attempts: {last}"}
+    # Not a verdict: run.py leaves it out of the session's fraction and counts
+    # it in the summary, so a judge that said nothing never reads as the agent
+    # failing the rubric (#131, 0058).
+    return {"pass": False, "score": 0.0, "errored": True, "reason": f"judge error after 3 attempts: {last}"}
 
 
 def get_assert(output, context):

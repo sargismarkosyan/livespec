@@ -44,6 +44,14 @@ If they came here by typing `/livespec:setup`, they have already asked to start
 the skill — but they have not yet seen the list, so they still get it and still
 get the stop. It is shorter that time, because the answer is usually yes.
 
+**A request that already says to write is the answer, given in advance.** *Go
+ahead and write*, *you do not need to check back with me before each file* —
+that is the yes this section waits for, said before the list. The list is still
+said, in the same message, and the sitting continues into it. It is not an
+answer to section 2, whose six are facts only they have and are asked either
+way; and it never covers replacing a file somebody wrote by hand, which section
+6 shows whole and waits on.
+
 ## 1. Read the repository before writing anything
 
 Find out what is true, and say it back before you touch a file:

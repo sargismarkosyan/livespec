@@ -46,6 +46,16 @@ REQUIRED_INVOCATION = ["--ablation with-without", "--judge-model", f"--model {SE
 # strict, it is inert, and it reads as green in both arms.
 GATED_TOOLS = {"Bash", "Write", "Edit", "WebFetch", "WebSearch"}
 
+# What a lent shell may never name: the commands that leave the machine. An
+# entry is a prefix rule — `git` lends `git log` and `git push` alike — so what
+# is refused here is the exits themselves, and a fixture with no remote is what
+# keeps a bare `git` honest. See specs/changes/0058.
+LEAVES_THE_MACHINE = (
+    "gh", "curl", "wget", "ssh", "scp", "rsync", "nc", "npx",
+    "npm install", "npm publish", "pip install", "pip3 install",
+    "git push", "git fetch", "git pull", "git clone",
+)
+
 failures: list[str] = []
 notes: list[str] = []
 
@@ -111,6 +121,18 @@ for case in suite:
     for skill in case["claims"]["skills"]:
         if skill not in skills:
             fail(where, f"is tagged skill:{skill}, which is not a skill in skills/")
+    # A case may bring the person its skill assumes, and the shell (0058, #133).
+    # A sheet with nothing on it is a person who answers "your call" to every
+    # question, which measures the session's patience rather than its judgment;
+    # a shell entry that leaves the machine is a case that files a real issue,
+    # or fetches the network, while being graded — which is not a test.
+    if case.get("person_file") is not None and not (case.get("person") or "").strip():
+        fail(where, "has a person.md with nothing on the sheet; a person who knows nothing answers "
+                    "'your call' to everything, and that measures the session's patience, not its judgment (#133)")
+    for entry in case.get("shell") or []:
+        if any(entry == exit_ or entry.startswith(exit_ + " ") for exit_ in LEAVES_THE_MACHINE):
+            fail(where, f"lends a shell entry `{entry}` that leaves the machine; a case that files a real issue "
+                        "or fetches the network while it is being graded is not a test (#133)")
 
 negatives = [c for c in suite if c["negative"]]
 if not negatives:
