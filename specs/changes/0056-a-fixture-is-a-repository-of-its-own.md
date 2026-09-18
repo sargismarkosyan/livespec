@@ -1,6 +1,6 @@
 # Spec 0056: a fixture is a repository of its own
 
-- **Status:** proposed
+- **Status:** approved
 - **Issue:** [#127](https://github.com/sargismarkosyan/livespec/issues/127) —
   `verify.py` run by the pre-push hook in a linked worktree commits the
   injector's fixture into the real repository. Found 2026-09-18 while

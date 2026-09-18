@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import os
 import subprocess
 import sys
 import tempfile
@@ -813,8 +814,28 @@ def drop_row(root: Path, relative: str, prefix: str) -> None:
     path.write_text("".join(line for line in lines if not line.startswith(prefix)))
 
 
+# The variables that tell git where a repository is. Git exports GIT_DIR into
+# hooks run from a linked worktree, and a child git that inherits it ignores its
+# working directory — which is how a fixture once landed as commits on the real
+# branch and flipped the real repository to bare (#127). A fixture is a
+# repository of its own, wherever the process building it was started from.
+GIT_LOCATION_VARS = (
+    "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR",
+    "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_PREFIX", "GIT_NAMESPACE",
+)
+
+
+def git_env() -> dict[str, str]:
+    """The process environment minus everything that relocates a repository."""
+    return {key: value for key, value in os.environ.items() if key not in GIT_LOCATION_VARS}
+
+
 def git_in(root: Path, *args: str) -> None:
-    subprocess.run(["git", "-c", "user.name=fixture", "-c", "user.email=fixture@example.test", *args], cwd=root, capture_output=True, check=True)
+    """Run git inside a fixture, and only inside it. The one sanctioned way."""
+    subprocess.run(
+        ["git", "-c", "user.name=fixture", "-c", "user.email=fixture@example.test", *args],
+        cwd=root, capture_output=True, check=True, env=git_env(),
+    )
 
 
 def as_git_repo_with_a_stray_change(root: Path) -> None:
@@ -825,6 +846,36 @@ def as_git_repo_with_a_stray_change(root: Path) -> None:
     (root / "src" / "app.js").write_text("// a fix that strayed into the wiring\n")
     git_in(root, "add", "-A")
     (root / "src" / "app.js").write_text("// changed after being added\n")
+
+
+def isolation_control() -> None:
+    """A fixture is a repository of its own. With GIT_DIR pointing at a decoy
+    repository — the environment a linked worktree's hook hands its children —
+    building a git fixture lands nothing in the decoy: no commit, no change to
+    core.bare. The fixture carries a commit of its own. See #127, 0056."""
+    with tempfile.TemporaryDirectory() as workspace:
+        decoy = Path(workspace) / "decoy"
+        decoy.mkdir()
+        git_in(decoy, "init", "-q")
+        read = lambda cwd, *args: subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, env=git_env()).stdout.strip()  # noqa: E731
+        bare_before = read(decoy, "config", "--get", "core.bare")
+        fixture = Path(workspace) / "fixture"
+        build(fixture)
+        original = dict(os.environ)
+        os.environ["GIT_DIR"] = str(decoy / ".git")
+        os.environ.pop("GIT_WORK_TREE", None)
+        try:
+            as_git_repo_with_a_stray_change(fixture)
+        finally:
+            os.environ.clear()
+            os.environ.update(original)
+        gained = read(decoy, "rev-list", "--all", "--count")
+        assert gained in ("", "0"), f"the decoy repository gained {gained} commit(s); the fixture followed GIT_DIR"
+        bare_after = read(decoy, "config", "--get", "core.bare")
+        assert bare_after == bare_before, f"the decoy's core.bare moved from {bare_before!r} to {bare_after!r}"
+        assert (fixture / ".git").is_dir(), "the fixture has no repository of its own"
+        own = read(fixture, "rev-list", "--all", "--count")
+        assert own == "1", f"the fixture holds {own!r} commit(s) rather than its one"
 
 
 # (name, the check whose line must move, how to break the fixture, the state it must read)
@@ -1103,6 +1154,11 @@ def main() -> int:
         verdict_control()
     except AssertionError as error:
         problems.append(f"verification cannot tell a bill from a defect: {error}")
+
+    try:
+        isolation_control()
+    except (AssertionError, subprocess.CalledProcessError) as error:
+        problems.append(f"a fixture is not a repository of its own: {error}")
 
     for name, attempt, phrase in RELEASE_FAULTS:
         try:
