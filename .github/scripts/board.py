@@ -38,7 +38,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from caselib import MIN_RUNS, cases, is_measurement, measurement_inputs  # noqa: E402
+from caselib import HARNESS_FILES, MIN_RUNS, SESSION_MODEL, cases, is_measurement, why_stale  # noqa: E402
 
 AS_JSON = "--json" in sys.argv
 args = [a for a in sys.argv[1:] if a != "--json"]
@@ -48,7 +48,7 @@ ROOT = Path(args[0]).resolve() if args else Path(__file__).resolve().parents[2]
 # reason to ask the maintainer for a run, never a licence to start one, and a
 # command that spends money should not be copy-pasteable out of a gate's output.
 HEAL = ("python3 evals/runner/run.py --changed --ablation with-without "
-        "--judge-model sonnet --allow-tools Write Edit --scaffold\n"
+        f"--judge-model sonnet --model {SESSION_MODEL} --allow-tools Write Edit --scaffold\n"
         "      (spends real money — the maintainer adds --i-approve-the-cost, nobody else)")
 
 failures: list[str] = []
@@ -77,12 +77,25 @@ for case in suite:
     # that cleared the floor: a number that no longer describes these files is a
     # lie however many runs produced it, and demoting a stale row to a warning
     # because it was only a pilot would be a gate getting quieter over time.
-    if entry.get("inputs") != measurement_inputs(case, ROOT):
+    # Three reasons, each said in its own words: the case moved, the model is
+    # not the one the bindings name, the harness changed. A row with no model
+    # at all was made before rows said — every row on 2026-09-18 — and reads
+    # as made on an unknown model, which is the truth about it (0057, #130).
+    reasons = why_stale(entry, case, ROOT)
+    if reasons:
         stale.append(case["name"])
+        said = []
+        if "inputs" in reasons:
+            said.append("the case, a rule it claims or a skill it holds has changed since")
+        if "model" in reasons:
+            said.append(f"it was measured on {entry.get('model') or 'an unknown model'}; "
+                        f"the suite measures on {SESSION_MODEL}")
+        if "harness" in reasons:
+            said.append(f"it was measured by a harness that has since changed ({', '.join(HARNESS_FILES)})")
         failures.append(
-            f"evals/{case['name']}: measured at {entry.get('sha', '?')} ({entry.get('at', '?')}), but the "
-            f"case, a rule it claims or a skill it holds has changed since. The number no longer describes "
-            f"these files. Re-measure exactly what changed:\n      {HEAL}"
+            f"evals/{case['name']}: measured at {entry.get('sha', '?')} ({entry.get('at', '?')}), but "
+            + "; ".join(said)
+            + f". The number no longer describes these files. Re-measure exactly what changed:\n      {HEAL}"
         )
         continue
     if not is_measurement(entry):

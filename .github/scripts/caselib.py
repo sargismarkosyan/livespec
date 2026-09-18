@@ -171,6 +171,59 @@ def measurement_inputs(case: dict, root: Path) -> str:
     return digest.hexdigest()[:16]
 
 
+# The model both arms run on. The exact id rather than an alias, so that a new
+# Sonnet is a line somebody moves here — and every row on the board goes stale
+# the moment it moves — rather than a change nobody sees. The judge's model is
+# a flag on the run, and the row records both. Held here, beside the floor, for
+# the same reason: the runner, the suite gate and the board gate read one
+# decision. See specs/changes/0057 and #130.
+SESSION_MODEL = "claude-sonnet-5"
+
+# The two files whose bytes decide what a session is and how it is graded. A
+# change to either changes what a number means, so their fingerprint travels
+# with every row and a mismatch stales it. run.py is orchestration and
+# bookkeeping and is left out on purpose: a reworded refusal is not a new
+# measurement.
+HARNESS_FILES = ("evals/runner/provider.py", "evals/runner/asserts.py")
+
+
+def harness_fingerprint(root: Path) -> str:
+    """Content hash of the harness files, the way measurement_inputs hashes a case."""
+    digest = hashlib.sha256()
+    for relative in HARNESS_FILES:
+        digest.update(relative.encode())
+        path = root / relative
+        if path.exists():
+            digest.update(path.read_bytes())
+    return digest.hexdigest()[:16]
+
+
+def why_stale(entry: dict | None, case: dict, root: Path) -> list[str]:
+    """Every reason a board entry no longer describes what it claims to measure.
+
+    Empty means current. Three reasons, each named so the gate can say it in
+    words: `inputs` — the case, a rule it claims or a skill it holds moved;
+    `model` — it was made on a model other than the one the bindings name, or
+    on one it never recorded; `harness` — provider.py or asserts.py changed
+    since. Shared by the runner's --changed and the board gate, so the two
+    cannot disagree about which rows a run is owed for.
+    """
+    if not isinstance(entry, dict):
+        return ["never measured"]
+    reasons: list[str] = []
+    if entry.get("inputs") != measurement_inputs(case, root):
+        reasons.append("inputs")
+    if entry.get("model") != SESSION_MODEL:
+        reasons.append("model")
+    if entry.get("harness") != harness_fingerprint(root):
+        reasons.append("harness")
+    return reasons
+
+
+def is_current(entry: dict | None, case: dict, root: Path) -> bool:
+    return not why_stale(entry, case, root)
+
+
 # The floor a number has to clear before it is a measurement of anything. One
 # run of an LLM grader is noise, and a suite that lets noise onto the board is
 # measuring its own variance. Shared with the runner and the board gate for the

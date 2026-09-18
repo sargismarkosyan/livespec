@@ -7,15 +7,18 @@ checkable by reading the files. This suite is how a change to a skill is held
 against it.
 
 ```
-python3 evals/runner/run.py --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold
 ```
 
 > **This refuses to run, and that is the design.** Every run drives six real
-> `claude -p` sessions per case plus judge calls — about $1.80 for one case at
-> `runs: 3`, ~$4 for the suite — billed to the maintainer's account and drawn
-> from its session limit, which three runs in one sitting have exhausted
-> outright. `run.py` exits 2 unless `--i-approve-the-cost` is passed, and
-> `evalsuite.py` fails the build if that refusal is ever removed.
+> `claude -p` sessions per case plus judge calls, billed to the maintainer's
+> account and drawn from its session limit, which three runs in one sitting
+> have exhausted outright. The refusal prints what the run would cost, from the
+> board's last costs of the cases selected, and names the model those costs
+> were made on — no figure typed here, because the one that was typed here read
+> $1.80 a case for a suite that measured $4.46. `run.py` exits 2 unless
+> `--i-approve-the-cost` is passed, and `evalsuite.py` fails the build if that
+> refusal is ever removed.
 >
 > **The flag is the maintainer's signature on one specific run.** An agent
 > must not add it on its own initiative — not for a stale board entry, not for
@@ -212,9 +215,14 @@ These are not negotiable when the suite is edited:
   [`specs/setup/README.md`](../specs/setup/README.md);
 - **`--ablation with-without` stays**, because a score without a baseline is not a
   measurement;
-- **`--judge-model sonnet` or larger**, and never the model under test — a small
-  judge misses exactly the nuance these cases turn on, and the agent's own model
-  prefers its own output;
+- **both arms run on the model the bindings name** — `claude-sonnet-5`, which
+  `run.py` takes as its `--model` default from `caselib.SESSION_MODEL` and every
+  row records as the model that actually ran — **and the judge is never smaller
+  than it.** The judge is the same model. The same eyes read both arms, so what
+  a judge prefers in its own kind lands on both sides of Δ; the calibration read
+  below is where that assumption is checked, and a judge found favouring one
+  arm's voice is its finding. What a judge may not be is smaller, because a
+  small judge misses exactly the nuance these cases turn on;
 - **`--allow-tools` grants every gated tool the cases ask for.** `Write`, `Edit`,
   `Bash`, `WebFetch`, `WebSearch` and `mcp__*` are refused unless the person
   running the suite grants them, whatever a case's own `allowed_tools` says. Run
@@ -230,10 +238,11 @@ needs a `case.yaml` scaffold and a sandbox first.
 The first five of those are checked by the gates in `.github/scripts/` —
 `evalsuite.py` for the suite's shape, `trace.py` for what a case claims — and
 `inject.py` breaks each of them in a fixture to prove the check still fires. The
-last two — the ablation and the judge model — are flags rather than files, so
-what is enforced is that this file still names them. That is a weak guard, and it
-is deliberately a guard on the *documentation* rather than a pretence of one on
-the run.
+last two — the ablation and the models — are flags rather than files, so what
+is enforced is that this file still names them, and that `run.py`'s `--model`
+default is still `caselib.SESSION_MODEL`. That is a weak guard, and it is
+deliberately a guard on the *documentation* and the default rather than a
+pretence of one on the run.
 
 A grader softened until it always passes is a vanity metric. If a case is failing
 and the fix is to loosen the rubric, the question to answer first is what version
@@ -244,7 +253,7 @@ of that grader would still catch a real regression.
 Pilot before trusting a full run:
 
 ```
-python3 evals/runner/run.py --runs 1 --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold
+python3 evals/runner/run.py --runs 1 --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold
 ```
 
 Then, against the run directory it prints (`evals/results/<stamp>/`):
@@ -270,27 +279,44 @@ what clears the freshness gate, so a pilot written into it loses the measurement
 on 2026-08-29 — a $1.21 single run replaced a $4.67 three-run entry and flipped
 its sign, and nothing recorded that it had ([#75](https://github.com/sargismarkosyan/livespec/issues/75)).
 
-Cost: the summary line prints what the pilot's sessions actually cost; a full
-suite is roughly that × 3. Sessions, transcripts and created files stay under
+Cost: the summary line prints what the pilot cost — sessions and judge calls
+both, since [`0057`](../specs/changes/0057-a-measurement-names-its-model.md)
+reads the judge's price from its own envelope — and a full suite at the floor
+is roughly that × 3. Sessions, transcripts and created files stay under
 the run directory, which is ignored — the evidence is local and reproducible.
 What survives a run is its summary, on the board.
 
 ## The board
 
 [`evals/board.json`](board.json) — committed — holds, per case, what the last
-run measured: `delta`, both arms, `runs`, when, at what commit, what it cost,
-and an `inputs` hash of what the number was a measurement *of* — the case's own
-files, the text of every rule it claims, and the body of every skill it holds.
+run measured: `delta`, both arms, `runs`, when, at what commit, what it cost
+— sessions and judge — the `model` the sessions ran on, read from each
+transcript's `init` event rather than from the flag, the `judge`, a `harness`
+fingerprint of `provider.py` and `asserts.py`, and an `inputs` hash of what the
+number was a measurement *of* — the case's own files, the text of every rule it
+claims, and the body of every skill it holds.
 `run.py` updates the entries for whatever it ran, automatically; a `--case`
 smoke updates one row, and its `runs` field says how much weight it deserves.
 
-Change any of those inputs and the hash stops matching: the entry is **stale**,
-and the board gate — `.github/scripts/board.py`, run by `verify.py` — fails the
-build naming the cases and the one command that heals them:
+Change any of those inputs and the hash stops matching: the entry is **stale**.
+So is a row measured on a model other than the one the bindings name, or by a
+harness whose two files have since changed — three reasons, each said in its
+own words in the failure, and `caselib.why_stale()` decides all three for the
+gate and for `run.py --changed` alike. The board gate — `.github/scripts/board.py`,
+run by `verify.py` — fails the build naming the cases and the one command that
+heals them:
 
 ```
-python3 evals/runner/run.py --changed --ablation with-without --judge-model sonnet --allow-tools Write Edit Bash --scaffold
+python3 evals/runner/run.py --changed --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold
 ```
+
+**The sitting of 2026-09-17 is why a row names its model.** Four runs, 438
+sessions, every one on `claude-opus-5[1m]` — the account's default, which
+`run.py` had never overridden — $118 of sessions before roughly 350 judge calls
+nobody priced, and a board that could not have said which model made any of it
+([#130](https://github.com/sargismarkosyan/livespec/issues/130)). Every row
+made before `0057` carries no model and reads stale for that reason until it is
+measured again.
 
 `--changed` selects exactly the cases without a fresh measurement — a reworded
 rule re-measures the cases that claim it, never the whole suite. A case with no

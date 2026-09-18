@@ -93,7 +93,19 @@ def _digest(transcript_path: str) -> str:
     return digest
 
 
-def _judge(rubric: str, content: str) -> dict:
+def _ledger(case: str, arm: str, grader: str, model: str, cost: float) -> None:
+    """One line per verdict in the run directory: what the judge cost, so the
+    row's `cost` is the whole bill rather than the sessions' half of it. Before
+    0057 roughly 350 judge calls a sitting were priced nowhere (#130)."""
+    run_dir = os.environ.get("LIVESPEC_RUN_DIR")
+    if not run_dir:
+        return
+    line = json.dumps({"case": case, "arm": arm, "grader": grader, "model": model, "cost": cost})
+    with (Path(run_dir) / "judge.jsonl").open("a") as ledger:
+        ledger.write(line + "\n")
+
+
+def _judge(rubric: str, content: str, case: str = "?", arm: str = "?", grader: str = "?") -> dict:
     prompt = (
         "You are grading one automated-agent eval transcript against a rubric. "
         "Apply the rubric exactly as written — do not add criteria of your own, "
@@ -102,8 +114,13 @@ def _judge(rubric: str, content: str) -> dict:
         "\n\n## What the agent produced\n\n" + (content.strip() or "(nothing)") +
         "\n\nReturn your verdict."
     )
+    model = os.environ.get("LIVESPEC_JUDGE_MODEL", "sonnet")
+    # `--output-format json` wraps the verdict in an envelope that also carries
+    # `total_cost_usd`; the verdict itself sits in `structured_output`. Plain
+    # stdout carried the verdict alone, and the judge's price with it went
+    # nowhere.
     command = [
-        "claude", "-p", "--model", os.environ.get("LIVESPEC_JUDGE_MODEL", "sonnet"),
+        "claude", "-p", "--model", model, "--output-format", "json",
         "--max-turns", "1", "--no-session-persistence", "--json-schema", VERDICT_SCHEMA,
     ]
     # Retried: a judge that returns nothing once is a transient harness wobble,
@@ -116,7 +133,11 @@ def _judge(rubric: str, content: str) -> dict:
             time.sleep(5)
         try:
             proc = subprocess.run(command, input=prompt, capture_output=True, text=True, timeout=180)
-            verdict = json.loads(proc.stdout.strip())
+            envelope = json.loads(proc.stdout.strip())
+            verdict = envelope.get("structured_output")
+            if not isinstance(verdict, dict):
+                verdict = json.loads(envelope.get("result") or "")
+            _ledger(case, arm, grader, model, float(envelope.get("total_cost_usd") or 0))
             return {"pass": bool(verdict["pass"]), "score": 1.0 if verdict["pass"] else 0.0,
                     "reason": str(verdict.get("reason", ""))[:800]}
         except Exception as err:
@@ -136,7 +157,8 @@ def get_assert(output, context):
             content = _digest(metadata["transcript"])
         else:
             content = str(output or "")
-        return _judge(body, content)
+        return _judge(body, content, case=str(((context or {}).get("vars") or {}).get("case") or "?"),
+                      arm=str(metadata.get("arm") or "?"), grader=Path(config["grader"]).stem)
 
     if kind == "regex":
         pattern = re.compile(_unquote(body), re.I if "i" in fields.get("flags", "") else 0)

@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from caselib import MIN_RUNS, cases  # noqa: E402
+from caselib import MIN_RUNS, SESSION_MODEL, cases  # noqa: E402
 
 ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[2]
 
@@ -35,7 +35,9 @@ OUTCOME_TYPES = {"llm", "regex", "file_exists", "baseline", "tool_order", "comma
 
 # The invocation the suite is meaningless without. A score with no baseline is
 # not a measurement, and the agent's own model prefers its own output.
-REQUIRED_INVOCATION = ["--ablation with-without", "--judge-model"]
+# `--model` names the sessions' model in the documented command as well as in
+# the runner's default, so a reader sees it without opening caselib (0057, #130).
+REQUIRED_INVOCATION = ["--ablation with-without", "--judge-model", f"--model {SESSION_MODEL}"]
 
 # `--allow-tools` is an operator grant: these are refused whatever a case's own
 # `allowed_tools` says. A case that lists one it is never granted runs without
@@ -158,6 +160,17 @@ if runner.exists() and "replaces(" not in runner_source:
         "no longer asks caselib.replaces() before writing the board. A run below the floor could "
         "then overwrite a measurement — losing the number and clearing the staleness that was "
         "asking for a real run, in one write nothing records.",
+    )
+
+# And the model. A runner that leaves --model to the account measures whatever
+# the account defaults to that day — every session of the sitting of 2026-09-17
+# ran on a model nobody chose, and no row could say which. The default is
+# caselib's one decision; a runner that stops reading it is a gate failure (0057).
+if runner.exists() and "default=SESSION_MODEL" not in runner_source:
+    fail(
+        "evals/runner/run.py",
+        f"no longer defaults --model to caselib.SESSION_MODEL ({SESSION_MODEL}). The sessions would run "
+        "on whatever the account defaults to, and the board could not say which model made a number (#130).",
     )
 
 readme = ROOT / "evals" / "README.md"

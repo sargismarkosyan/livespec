@@ -64,8 +64,9 @@ OWED = 2
 
 OWED_NOTE = """
   Nothing is broken. A number no longer describes the files it measured, and the
-  only cure is a run of the eval suite — about $1.80 a case, billed to the
-  maintainer's account and drawn down from its session limit.
+  only cure is a run of the eval suite — evals/runner/run.py prints what one
+  would cost when it refuses, billed to the maintainer's account and drawn down
+  from its session limit.
 
   Committing and pushing this is sanctioned: method/repository.md, "Commits".
   Say in the commit which measurements are waiting; say in the pull request what
