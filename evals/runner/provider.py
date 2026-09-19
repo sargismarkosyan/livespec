@@ -131,7 +131,7 @@ Rules:
 - Answer only from the sheet. Where the session asks for something the sheet does not settle, your whole answer on that point is: Your call.
 - Never add facts, requirements, preferences or context the sheet does not hold, and never answer a question that was not asked. The sheet answers; it never volunteers.
 - Be brief and plain, in the sheet's voice: a few lines, one per question, no headings.
-- If the session's message asks you nothing and is not waiting on you — it has finished, or it says what it does next without a question — set done to true and leave reply empty."""
+- done means there was nothing to answer: the session's message asks you nothing and is not waiting on you — it has finished, or it says what it does next without a question. Then set done to true and leave reply empty. If you answered anything at all, done is false."""
 
 
 def _tail(text: str, limit: int) -> str:
@@ -167,15 +167,48 @@ def _person(sheet: str, said: str, case: str, arm: str) -> tuple[str, bool, str]
     return "", True, last or "no reply"
 
 
+def _last_text(raw: str) -> str:
+    """The last thing the assistant said, for a round that ended with no result
+    text — a ceiling hit mid-work leaves the last message where the work stopped."""
+    last = ""
+    for line in raw.splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if event.get("type") == "assistant":
+            text = " ".join(b.get("text", "") for b in (event.get("message") or {}).get("content") or []
+                            if isinstance(b, dict) and b.get("type") == "text").strip()
+            if text:
+                last = text
+    return last
+
+
 def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: str, replies: int,
-             case: str, arm: str) -> tuple[str, int, int, bool, str]:
+             case: str, arm: str, transcript: Path) -> tuple[str, int, int, bool, str, bool]:
     """Drive one session as a sitting. Returns (transcript, returncode, rounds,
-    timed_out, stderr_tail). The first user message is the prompt; after each
-    result the person answers, up to `replies` times; stdin closes when the
-    person is done, the rounds run out, or there is no person at all."""
+    timed_out, stderr_tail, ceiling). The first user message is the prompt;
+    after each result the person answers, up to `replies` times; stdin closes
+    when the person is done, the rounds run out, or there is no person at all.
+
+    A round that hits its turn ceiling is a finished round, not a harness
+    failure: the CLI reports `error_max_turns` and exits 1, and what the round
+    wrote is exactly what the judge should see. The second Sonnet pilot lost the
+    flagship's whole sitting — bindings, layers, gates — to that exit code.
+
+    The transcript is written as it streams, one line at a time, so a run the
+    machine kills mid-sitting leaves what it had rather than nothing — the
+    third Sonnet pilot died of a memory squeeze with two sittings in flight and
+    left two empty directories."""
     proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             text=True, cwd=cwd, bufsize=1)
     lines: list[str] = []
+    stream = transcript.open("a")
+
+    def keep(line: str) -> None:
+        lines.append(line)
+        stream.write(line + "\n")
+        stream.flush()
     stderr: list[str] = []
     killed = {"yes": False}
 
@@ -197,6 +230,8 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
         proc.stdin.flush()
 
     rounds = 0
+    saw_result = False
+    ceiling = False
     try:
         send(prompt)
         while True:
@@ -205,25 +240,33 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
                 line = proc.stdout.readline() if proc.stdout else ""
                 if not line:
                     break
-                lines.append(line.rstrip("\n"))
+                keep(line.rstrip("\n"))
                 try:
                     event = json.loads(line)
                 except json.JSONDecodeError:
                     continue
                 if event.get("type") == "result":
                     said = event.get("result") or ""
+                    saw_result = True
+                    ceiling = ceiling or event.get("subtype") == "error_max_turns"
                     break
-            if said is None or not sheet or rounds >= replies:
+            # No result: the process ended. An empty result: the round hit its
+            # ceiling or said nothing — there is nothing for a person to answer.
+            if said is None or not said.strip() or not sheet or rounds >= replies:
                 break
             reply, done, error = _person(sheet, said, case, arm)
             if error:
-                lines.append(json.dumps({"type": "person", "round": rounds + 1, "error": error}))
+                keep(json.dumps({"type": "person", "round": rounds + 1, "error": error}))
                 break
-            if done or not reply:
-                lines.append(json.dumps({"type": "person", "round": rounds + 1, "done": True}))
+            # A reply is sent whenever there is one. The first pilot's person
+            # answered all six questions and set done beside them — "I have
+            # answered; nothing more from me" — and the answers were dropped.
+            # Done ends the sitting only when there was nothing to say.
+            if not reply:
+                keep(json.dumps({"type": "person", "round": rounds + 1, "done": True}))
                 break
             rounds += 1
-            lines.append(json.dumps({"type": "person", "round": rounds, "text": reply}))
+            keep(json.dumps({"type": "person", "round": rounds, "text": reply, "done": bool(done)}))
             send(reply)
         try:
             if proc.stdin:
@@ -231,13 +274,16 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
         except OSError:
             pass
         rest = proc.stdout.read() if proc.stdout else ""
-        lines += [l.rstrip("\n") for l in rest.splitlines()]
+        for l in rest.splitlines():
+            keep(l.rstrip("\n"))
         proc.wait()
     finally:
         watchdog.cancel()
         draining.join(timeout=5)
+        stream.close()
     tail = " / ".join((stderr[0] if stderr else "").strip().splitlines()[-3:])
-    return "\n".join(lines) + ("\n" if lines else ""), proc.returncode, rounds, killed["yes"], tail
+    code = 0 if saw_result and not killed["yes"] else proc.returncode
+    return "\n".join(lines) + ("\n" if lines else ""), code, rounds, killed["yes"], tail, ceiling
 
 
 def call_api(prompt, options, context):
@@ -320,8 +366,8 @@ def call_api(prompt, options, context):
     replies = int(vars_.get("replies") or 0) if sheet else 0
 
     timeout = int(vars_.get("timeout_seconds") or 600)
-    transcript, code, rounds, timed_out, tail = _sitting(command, prompt, workspace, timeout, sheet, replies, case, arm)
-    (session_dir / "transcript.jsonl").write_text(transcript)
+    transcript, code, rounds, timed_out, tail, ceiling = _sitting(
+        command, prompt, workspace, timeout, sheet, replies, case, arm, session_dir / "transcript.jsonl")
     if timed_out:
         shutil.move(str(workspace), str(session_dir / "workspace"))
         return {"error": f"session timed out after {timeout}s — transcript in {session_dir}"}
@@ -330,6 +376,8 @@ def call_api(prompt, options, context):
         return {"error": f"claude exited {code}: {tail or 'no stderr'} — {session_dir}"}
 
     result, tools = _read_stream(transcript)
+    if not result.strip():
+        result = _last_text(transcript)  # the round ended mid-work; the last message is where it stopped
     (session_dir / "tools.json").write_text(json.dumps(tools, indent=1))
     files = sorted(path for path, digest in _snapshot(workspace).items() if laid_down.get(path) != digest)
     shutil.move(str(workspace), str(session_dir / "workspace"))
@@ -342,6 +390,7 @@ def call_api(prompt, options, context):
             "model": _init_model(transcript),
             "rounds": rounds,
             "person": bool(sheet),
+            "ceiling": ceiling,
             "session_dir": str(session_dir),
             "transcript": str(session_dir / "transcript.jsonl"),
             "tools": str(session_dir / "tools.json"),

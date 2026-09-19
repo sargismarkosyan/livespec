@@ -936,15 +936,23 @@ if "--json-schema" in args:
     sys.exit(0)
 model = args[args.index("--model") + 1] if "--model" in args else "the-account-default"
 print(json.dumps({"type": "system", "subtype": "init", "model": model, "tools": []}), flush=True)
-turn, cost = 0, 0.0
+turn, cost, hit, wants = 0, 0.0, False, False
 for line in sys.stdin:
     if not line.strip():
         continue
     turn += 1
     cost += 0.25
+    if turn == 1:
+        wants = "ceiling" in line  # a sitting whose prompt asks for the ceiling hits it in its second round
+    ceiling = turn == 2 and wants
     text = "Question: may I start?" if turn == 1 else "Finished."
     print(json.dumps({"type": "assistant", "message": {"content": [{"type": "text", "text": text}]}}), flush=True)
-    print(json.dumps({"type": "result", "subtype": "success", "result": text, "total_cost_usd": cost}), flush=True)
+    if ceiling:
+        hit = True
+        print(json.dumps({"type": "result", "subtype": "error_max_turns", "result": "", "total_cost_usd": cost}), flush=True)
+    else:
+        print(json.dumps({"type": "result", "subtype": "success", "result": text, "total_cost_usd": cost}), flush=True)
+sys.exit(1 if hit else 0)
 '''
 
 
@@ -1061,6 +1069,21 @@ def runner_control() -> None:
             ledgered = [json.loads(l) for l in ledger.read_text().splitlines()]
             assert sum(1 for l in ledgered if l["grader"] == "person") == 2, "the person's calls were not ledgered"
             assert "PERSON: Go ahead." in asserts._digest(sitting["metadata"]["transcript"]), "the judge would not see the person"
+            # A round that hits its ceiling is a finished round: the CLI exits 1 with
+            # error_max_turns, and what it wrote is graded rather than thrown away.
+            capped = provider.call_api(
+                "Do the thing; hit the ceiling.", {"config": {"with_plugin": False}},
+                {"vars": {"case": "case-rule", "max_turns": "3", "timeout_seconds": "60",
+                          "allowed_tools": "Read", "disallowed_tools": "Bash", "person": str(sheet),
+                          "replies": "2", "shell": ""}},
+            )
+            assert "error" not in capped, f"a ceiling was reported as a harness error: {capped.get('error')}"
+            assert capped["metadata"].get("ceiling") is True, "the row does not say the round hit its ceiling"
+            assert capped["output"] == "Finished.", f"the last message did not stand as the reply: {capped['output']!r}"
+            assert "hit its turn ceiling" in asserts._digest(capped["metadata"]["transcript"]), "the judge is not told where it stopped"
+            assert runner.missing_requirements([{"name": "y", "requires": ["module:json", "module:no_such_module_livespec"]}]) == [
+                ("y", "module:no_such_module_livespec")], "a missing module was not refused"
+
             # A judge that said nothing is not a verdict, and a missing binary is a refusal.
             score, errored = runner.session_score([
                 {"pass": True, "score": 1.0, "reason": "ok", "assertion": {"weight": 1}},

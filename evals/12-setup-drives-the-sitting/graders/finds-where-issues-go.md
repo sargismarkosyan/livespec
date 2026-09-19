@@ -15,3 +15,9 @@ leaves the question blank — the assumption a skill makes when nothing went
 looking. FAIL if the tracker is mentioned in conversation but appears nowhere in
 what was written to disk: the point of the rule is that the next session reads
 it without being told.
+
+FAIL also if the only place the tracker is named is a file the fixture already
+carried. CLAUDE.md's branch line and CONTRIBUTING.md's last line said GitLab
+before the sitting began; the second Sonnet pilot passed a bare session on
+them. What is graded is the sitting writing it where the skills read it — the
+bindings, or the CLAUDE.md it wrote or audited — in its own words.

@@ -152,14 +152,17 @@
    "inputs": "9cec5e4d44b88db9"
   },
   "16-setup-with-no-app-code": {
-   "delta": 0.33,
-   "with": 0.5,
-   "without": 0.17,
-   "runs": 2,
-   "at": "2026-09-17",
-   "sha": "9b5c21d",
-   "cost": 8.48,
-   "inputs": "3d4f11982a9c3517"
+   "delta": 1.0,
+   "with": 1.0,
+   "without": 0.0,
+   "runs": 1,
+   "at": "2026-09-19",
+   "sha": "8594558",
+   "cost": 2.74,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "494a9a61cd54ba50",
+   "inputs": "91b83f0e2be82ccc"
   },
   "17-wiring-nobody-watched-run": {
    "delta": -0.17,

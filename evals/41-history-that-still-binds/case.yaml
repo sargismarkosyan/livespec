@@ -16,5 +16,5 @@ scaffold_script: scaffold.sh
 # — the yes and the six facts, never volunteered, and nothing about what the
 # reading of CLAUDE.md is graded on. The shell runs the fixture's own suite;
 # pytest is a maintainer-machine prerequisite the runner refuses without.
-shell: [python3, python, make, git, ls, cat, pytest]
+shell: [python3, python, make, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo, pytest]
 requires: [python3, make, pytest]

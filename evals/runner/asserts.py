@@ -40,8 +40,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(os.environ["LIVESPEC_ROOT"]) / ".github" / "scripts"))
 from caselib import frontmatter  # noqa: E402
 
-DIGEST_LIMIT = 120_000  # characters of transcript a judge is shown, at most
-PIECE_LIMIT = 1_500     # characters kept of any one tool call or result
+DIGEST_LIMIT = 160_000  # characters of transcript a judge is shown, at most
+PIECE_LIMIT = 600       # characters kept of any one tool call or result
+FILE_LIMIT = 16_000     # characters kept of any one file the session wrote
+FILES_LIMIT = 120_000   # characters of written files a judge is shown, at most
+SKIP_WRITTEN = (".pyc", ".png", ".gif", ".jpg", ".sqlite", ".db", ".lock")
 
 VERDICT_SCHEMA = json.dumps({
     "type": "object",
@@ -62,8 +65,36 @@ def _clip(text: str, limit: int = PIECE_LIMIT) -> str:
     return text if len(text) <= limit else text[:limit] + f" …[{len(text) - limit} more]"
 
 
-def _digest(transcript_path: str) -> str:
-    """A judge-readable rendering of a stream-json transcript."""
+def _written(files: list[str], workspace: str) -> str:
+    """The files the session wrote, as they stand at the end — the evidence an
+    outcome grader is actually about. The fifth Sonnet pilot's judge failed the
+    flagship's bindings for a stamp line at line 70 of a file whose Write call
+    the digest had clipped at 1,500 characters: the line was there, and the
+    judge had never been shown it (0058)."""
+    if not files or not workspace:
+        return ""
+    out: list[str] = []
+    total = 0
+    for name in files:
+        if name.endswith(SKIP_WRITTEN) or "/.git/" in f"/{name}" or "__pycache__" in name:
+            continue
+        try:
+            text = (Path(workspace) / name).read_text(errors="replace")
+        except (OSError, UnicodeDecodeError):
+            continue
+        piece = f"=== {name} ===\n{_clip(text, FILE_LIMIT)}"
+        if total + len(piece) > FILES_LIMIT:
+            out.append(f"=== {name} === …[not shown: the files section is at its limit]")
+            continue
+        out.append(piece)
+        total += len(piece)
+    return "\n\n".join(out)
+
+
+def _digest(transcript_path: str, files: list[str] | None = None, workspace: str | None = None) -> str:
+    """A judge-readable rendering of a stream-json transcript: what the
+    assistant said, what it called and what came back (clipped), the person's
+    answers, the final reply — and then, in full, the files the session wrote."""
     pieces: list[str] = []
     for line in Path(transcript_path).read_text().splitlines():
         try:
@@ -78,7 +109,14 @@ def _digest(transcript_path: str) -> str:
                 if block.get("type") == "text" and block.get("text"):
                     pieces.append("ASSISTANT: " + block["text"])
                 elif block.get("type") == "tool_use":
-                    pieces.append(f"TOOL CALL {block.get('name', '?')}: " + _clip(json.dumps(block.get("input", {}))))
+                    name = block.get("name", "?")
+                    inp = block.get("input", {}) or {}
+                    if name in ("Write", "Edit") and isinstance(inp, dict) and inp.get("file_path"):
+                        # the content is shown whole in the files section; here only where it went
+                        pieces.append(f"TOOL CALL {name}: {inp.get('file_path')} " + _clip(json.dumps(
+                            {k: v for k, v in inp.items() if k != "file_path"}), 200))
+                    else:
+                        pieces.append(f"TOOL CALL {name}: " + _clip(json.dumps(inp)))
         elif kind == "user":
             content = (event.get("message") or {}).get("content")
             for block in content if isinstance(content, list) else []:
@@ -94,11 +132,17 @@ def _digest(transcript_path: str) -> str:
             else:
                 pieces.append("PERSON: (nothing to answer; the sitting ends here)")
         elif kind == "result":
-            pieces.append("FINAL REPLY: " + (event.get("result") or "(empty)"))
+            if event.get("subtype") == "error_max_turns" and not event.get("result"):
+                pieces.append("FINAL REPLY: (none — the round hit its turn ceiling here; what is above is where it stopped)")
+            else:
+                pieces.append("FINAL REPLY: " + (event.get("result") or "(empty)"))
     digest = "\n\n".join(pieces)
     if len(digest) > DIGEST_LIMIT:
         half = DIGEST_LIMIT // 2
-        digest = digest[:half] + "\n\n…[transcript truncated]…\n\n" + digest[-half:]
+        digest = digest[:half] + "\n\n…[transcript truncated in the middle]…\n\n" + digest[-half:]
+    written = _written(files or [], workspace or "")
+    if written:
+        digest += "\n\n## The files the session wrote, as they stand at the end\n\n" + written
     return digest
 
 
@@ -128,9 +172,15 @@ def _judge(rubric: str, content: str, case: str = "?", arm: str = "?", grader: s
     # `total_cost_usd`; the verdict itself sits in `structured_output`. Plain
     # stdout carried the verdict alone, and the judge's price with it went
     # nowhere.
+    # Hermetic, like the sessions: without `--setting-sources project` and
+    # `--strict-mcp-config` every verdict inherited the operator's settings and
+    # started their MCP servers — a Playwright browser per judge call, on the
+    # fifth Sonnet pilot — which is what made the machine look short of memory.
     command = [
         "claude", "-p", "--model", model, "--output-format", "json",
-        "--max-turns", "1", "--no-session-persistence", "--json-schema", VERDICT_SCHEMA,
+        "--max-turns", "1", "--no-session-persistence",
+        "--setting-sources", "project", "--strict-mcp-config",
+        "--json-schema", VERDICT_SCHEMA,
     ]
     # Retried: a judge that returns nothing once is a transient harness wobble,
     # and scoring it 0 would pollute one arm's number with a non-verdict. Only
@@ -166,7 +216,7 @@ def get_assert(output, context):
 
     if kind == "llm":
         if fields.get("focus", "last_message") == "full_transcript" and metadata.get("transcript"):
-            content = _digest(metadata["transcript"])
+            content = _digest(metadata["transcript"], metadata.get("files") or [], metadata.get("workspace") or "")
         else:
             content = str(output or "")
         return _judge(body, content, case=str(((context or {}).get("vars") or {}).get("case") or "?"),
