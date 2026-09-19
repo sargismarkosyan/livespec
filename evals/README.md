@@ -281,7 +281,13 @@ Then, against the run directory it prints (`evals/results/<stamp>/`):
    failing the rubric — nine of them in the sitting of 2026-09-17 had been
    ([#131](https://github.com/sargismarkosyan/livespec/issues/131)). A case with
    several is a judge worth looking at, not an agent.
-5. Where a case has a person, read the `PERSON:` lines in the digest beside
+5. A `full_transcript` judge is shown the transcript's digest — what the
+   session said, what it called, what came back, clipped — and then, in full,
+   **the files the session wrote as they stand at the end**. The fifth Sonnet
+   pilot's judge failed the flagship's bindings for a stamp line it had never
+   been shown, at line 70 of a file whose Write call the digest had clipped;
+   an outcome is graded on the artefact, not on the keystrokes that made it.
+6. Where a case has a person, read the `PERSON:` lines in the digest beside
    the questions they answer. A person who volunteered a fact nobody asked for,
    or improvised one the sheet does not hold, is a sheet to rewrite before the
    number is believed.
@@ -493,6 +499,5 @@ so in `case.yaml`:
 expands a variable — `echo $CLAUDE_PLUGIN_ROOT` — is refused by the CLI's own
 rule whatever the list says, so a session finds the plugin's tools by the path
 the skill hands it rather than by the variable; and `max_turns` is per round,
-so a case whose skill runs a tool needs the turns a real sitting takes — `24`
-hit thirty while finding and running `doctor.py`, and now has sixty. The allow-list is not a sandbox — `python3 -c` can open a
+so a case whose skill runs a tool needs the turns a real sitting takes — `24` hit thirty while finding and running `doctor.py`, then sixty with the audit written and the reply unwritten, and now has a hundred, which is what the reference repository's doctor sittings ran to. The allow-list is not a sandbox — `python3 -c` can open a
 socket — and the risk is written in the change spec rather than assumed away.
