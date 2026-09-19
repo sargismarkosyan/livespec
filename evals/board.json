@@ -156,13 +156,13 @@
    "with": 1.0,
    "without": 0.0,
    "runs": 1,
-   "at": "2026-09-18",
-   "sha": "9b0021d",
-   "cost": 0.97,
+   "at": "2026-09-19",
+   "sha": "8594558",
+   "cost": 2.74,
    "model": "claude-sonnet-5",
    "judge": "sonnet",
-   "harness": "97ddf88488973edd",
-   "inputs": "1f7aca34c809359d"
+   "harness": "494a9a61cd54ba50",
+   "inputs": "91b83f0e2be82ccc"
   },
   "17-wiring-nobody-watched-run": {
    "delta": -0.17,

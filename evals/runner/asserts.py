@@ -131,9 +131,15 @@ def _judge(rubric: str, content: str, case: str = "?", arm: str = "?", grader: s
     # `total_cost_usd`; the verdict itself sits in `structured_output`. Plain
     # stdout carried the verdict alone, and the judge's price with it went
     # nowhere.
+    # Hermetic, like the sessions: without `--setting-sources project` and
+    # `--strict-mcp-config` every verdict inherited the operator's settings and
+    # started their MCP servers — a Playwright browser per judge call, on the
+    # fifth Sonnet pilot — which is what made the machine look short of memory.
     command = [
         "claude", "-p", "--model", model, "--output-format", "json",
-        "--max-turns", "1", "--no-session-persistence", "--json-schema", VERDICT_SCHEMA,
+        "--max-turns", "1", "--no-session-persistence",
+        "--setting-sources", "project", "--strict-mcp-config",
+        "--json-schema", VERDICT_SCHEMA,
     ]
     # Retried: a judge that returns nothing once is a transient harness wobble,
     # and scoring it 0 would pollute one arm's number with a non-verdict. Only
