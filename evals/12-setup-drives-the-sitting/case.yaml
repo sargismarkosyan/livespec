@@ -5,5 +5,5 @@ scaffold_script: scaffold.sh
 # yes to the list and the six facts, never volunteered — and setup gets the
 # shell its job needs, confined to the fixture's own commands. pytest is a
 # maintainer-machine prerequisite; the runner refuses the case without it.
-shell: [python3, python, make, git, ls, cat, pytest]
+shell: [python3, python, make, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo, pytest]
 requires: [python3, make, pytest]

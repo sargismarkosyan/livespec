@@ -1,7 +1,7 @@
 ---
 tags: [skill:setup, rule:setup-asks-how-a-test-claims-a-rule, rule:setup-scaffolds-the-rule-binding]
-max_turns: 30
-timeout_seconds: 720
+max_turns: 50
+timeout_seconds: 1200
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---

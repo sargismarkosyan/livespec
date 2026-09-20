@@ -54,6 +54,10 @@ LEAVES_THE_MACHINE = (
     "gh", "curl", "wget", "ssh", "scp", "rsync", "nc", "npx",
     "npm install", "npm publish", "pip install", "pip3 install",
     "git push", "git fetch", "git pull", "git clone",
+    # a session inside the session: bills the account where the harness cannot
+    # see it, and hangs on a prompt nobody answers — 16 reached the generator
+    # that way and timed out its whole sitting
+    "claude",
 )
 
 failures: list[str] = []

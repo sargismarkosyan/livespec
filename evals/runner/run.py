@@ -216,13 +216,23 @@ def judge_costs(results_path: Path) -> dict[str, float]:
     return costs
 
 
+def _have(requirement: str) -> bool:
+    """A binary on the path, or `module:<name>` importable by the path's python3 —
+    the fixture that runs `pytest --cov` needs pytest-cov, which is no binary."""
+    if requirement.startswith("module:"):
+        python = shutil.which("python3") or "python3"
+        probe = subprocess.run([python, "-c", f"import {requirement.split(':', 1)[1]}"], capture_output=True)
+        return probe.returncode == 0
+    return shutil.which(requirement) is not None
+
+
 def missing_requirements(suite: list[dict]) -> list[tuple[str, str]]:
-    """(case, binary) for every `requires:` this machine cannot satisfy. Checked
-    before a config is written: a fixture whose test runner is absent measures
-    the absence, so the run refuses instead — a maintainer-machine prerequisite,
-    the way node is, never a number (0058)."""
-    return [(case["name"], binary) for case in suite
-            for binary in (case.get("requires") or []) if not shutil.which(binary)]
+    """(case, requirement) for every `requires:` this machine cannot satisfy.
+    Checked before a config is written: a fixture whose test runner is absent
+    measures the absence, so the run refuses instead — a maintainer-machine
+    prerequisite, the way node is, never a number (0058)."""
+    return [(case["name"], requirement) for case in suite
+            for requirement in (case.get("requires") or []) if not _have(requirement)]
 
 
 def session_score(components: list[dict]) -> tuple[float | None, int]:

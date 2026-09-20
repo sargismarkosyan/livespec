@@ -2,8 +2,9 @@
 # Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
 scaffold_script: scaffold.sh
 # The sitting (0058): the desk's owner answers from person.md for two rounds —
-# including what proves a rule here, but only if asked. The shell reaches the
-# generator that already builds graded suites and finds it gated, which is the
-# honest state on this account; nothing else it could run leaves the machine.
-shell: [ls, cat, claude plugin]
-requires: [claude]
+# including what proves a rule here, but only if asked. The shell is read-only:
+# the generator that builds graded suites is a `claude` command, and a session
+# inside the session bills the account and hangs on a prompt nobody answers —
+# the second pilot lost this sitting to exactly that. What is graded is that
+# the generator is reached for and named, which the rubric's fallback allows.
+shell: [ls, cat, head, grep, find, pwd]

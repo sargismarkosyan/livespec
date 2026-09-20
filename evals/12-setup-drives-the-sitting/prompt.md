@@ -1,7 +1,7 @@
 ---
 tags: [skill:setup, workflow:adopt-the-process, rule:setup-continues-into-the-layers, rule:setup-finds-where-issues-go, rule:setup-audits-an-existing-claude-md, rule:setup-wires-the-pull-request-report, rule:the-report-cannot-fail-the-build, rule:the-report-says-what-moved, rule:the-spec-bound-measure-is-reported-never-gated, rule:the-bindings-are-written-from-one-template, rule:the-sitting-wires-what-ran]
-max_turns: 40
-timeout_seconds: 900
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---
