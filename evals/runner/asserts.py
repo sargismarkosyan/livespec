@@ -38,7 +38,9 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(os.environ["LIVESPEC_ROOT"]) / ".github" / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from caselib import frontmatter  # noqa: E402
+from provider import limit_text  # noqa: E402 — one reading of the account's refusal, shared (0059)
 
 DIGEST_LIMIT = 160_000  # characters of transcript a judge is shown, at most
 PIECE_LIMIT = 600       # characters kept of any one tool call or result
@@ -193,6 +195,13 @@ def _judge(rubric: str, content: str, case: str = "?", arm: str = "?", grader: s
         try:
             proc = subprocess.run(command, input=prompt, capture_output=True, text=True, timeout=180)
             envelope = json.loads(proc.stdout.strip())
+            if limit_text(envelope):
+                # The account's limit, not a wobble: the wall does not move in
+                # ten seconds, so no retry. Errored and marked, so the runner
+                # stops starting more and `--resume` judges this one again
+                # over the session that already exists (0059).
+                return {"pass": False, "score": 0.0, "errored": True, "limit": True,
+                        "reason": f"judge error: the account's limit — {limit_text(envelope)}"}
             verdict = envelope.get("structured_output")
             if not isinstance(verdict, dict):
                 verdict = json.loads(envelope.get("result") or "")

@@ -249,6 +249,8 @@ else:
         line = line.strip()
         if not line.startswith(("python3 evals/runner/run.py", "claude plugin eval")):
             continue
+        if "--resume" in line:
+            continue  # a resumed run's grant is the run's own, read from its run.json (0059)
         granted = re.split(r"\s--", line + " --")
         grant = next((part for part in granted if part.startswith("allow-tools")), "")
         missing = [tool for tool in needed if tool not in grant.split()]

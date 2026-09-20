@@ -15,6 +15,11 @@ The `files` a grader sees are then what the session wrote or changed, never
 what the scaffold laid down: a fixture with a `src/` tree must arm a
 no-source-edits grader, not trip it in both arms.
 
+The account's limit is read, never inferred (0059): a `result` event whose
+`api_error_status` is 429 — *You've hit your session limit · resets 1pm* —
+ends the session as the limit's, marked so the runner stops starting more and
+`--resume` runs this one again. The person's envelope is read the same way.
+
 A session is a sitting, not a turn (0058). Its stdin stays open — `claude -p
 --input-format stream-json` — and after each result, while the case has a
 `person` and rounds remain, the person model answers from the sheet in the
@@ -42,6 +47,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(os.environ["LIVESPEC_ROOT"]) / ".github" / "scripts"))
 from caselib import SESSION_MODEL  # noqa: E402
+
+
+def limit_text(event: dict) -> str:
+    """The limit's own words when an event — a session's result, a judge's or
+    the person's envelope — is the account refusing, else empty. The status
+    is the signal; the text is what the summary prints, reset time and all."""
+    if not isinstance(event, dict) or not event.get("is_error"):
+        return ""
+    text = str(event.get("result") or event.get("error") or "")
+    if event.get("api_error_status") == 429 or ("limit" in text.lower() and "hit your" in text.lower()):
+        return text or "the account's limit (429)"
+    return ""
 
 
 def _snapshot(workspace: Path) -> dict[str, str]:
@@ -157,6 +174,8 @@ def _person(sheet: str, said: str, case: str, arm: str) -> tuple[str, bool, str]
         try:
             proc = subprocess.run(command, input=prompt, capture_output=True, text=True, timeout=180)
             envelope = json.loads(proc.stdout.strip())
+            if limit_text(envelope):
+                return "", True, "limit: " + limit_text(envelope)
             answer = envelope.get("structured_output")
             if not isinstance(answer, dict):
                 answer = json.loads(envelope.get("result") or "")
@@ -165,6 +184,13 @@ def _person(sheet: str, said: str, case: str, arm: str) -> tuple[str, bool, str]
         except Exception as err:  # noqa: BLE001 — every failure is the same failure here
             last = str(err)
     return "", True, last or "no reply"
+
+
+def _resets(text: str) -> str:
+    """The reset time out of the limit's text — `resets 1pm (Asia/Yerevan)` —
+    printed as the CLI printed it, never parsed into a wait."""
+    marker = "resets "
+    return text[text.index(marker) + len(marker):].strip() if marker in text else ""
 
 
 def _last_text(raw: str) -> str:
@@ -185,9 +211,10 @@ def _last_text(raw: str) -> str:
 
 
 def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: str, replies: int,
-             case: str, arm: str, transcript: Path) -> tuple[str, int, int, bool, str, bool]:
+             case: str, arm: str, transcript: Path) -> tuple[str, int, int, bool, str, bool, str]:
     """Drive one session as a sitting. Returns (transcript, returncode, rounds,
-    timed_out, stderr_tail, ceiling). The first user message is the prompt;
+    timed_out, stderr_tail, ceiling, limit) — limit being the account's own
+    words when it refused, which ends the sitting whatever else was owed. The first user message is the prompt;
     after each result the person answers, up to `replies` times; stdin closes
     when the person is done, the rounds run out, or there is no person at all.
 
@@ -232,6 +259,7 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
     rounds = 0
     saw_result = False
     ceiling = False
+    limit = ""
     try:
         send(prompt)
         while True:
@@ -249,14 +277,18 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
                     said = event.get("result") or ""
                     saw_result = True
                     ceiling = ceiling or event.get("subtype") == "error_max_turns"
+                    limit = limit_text(event)
                     break
             # No result: the process ended. An empty result: the round hit its
             # ceiling or said nothing — there is nothing for a person to answer.
-            if said is None or not said.strip() or not sheet or rounds >= replies:
+            # The limit: nothing more happens in this sitting.
+            if limit or said is None or not said.strip() or not sheet or rounds >= replies:
                 break
             reply, done, error = _person(sheet, said, case, arm)
             if error:
                 keep(json.dumps({"type": "person", "round": rounds + 1, "error": error}))
+                if error.startswith("limit: "):
+                    limit = error[len("limit: "):]
                 break
             # A reply is sent whenever there is one. The first pilot's person
             # answered all six questions and set done beside them — "I have
@@ -283,7 +315,7 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
         stream.close()
     tail = " / ".join((stderr[0] if stderr else "").strip().splitlines()[-3:])
     code = 0 if saw_result and not killed["yes"] else proc.returncode
-    return "\n".join(lines) + ("\n" if lines else ""), code, rounds, killed["yes"], tail, ceiling
+    return "\n".join(lines) + ("\n" if lines else ""), code, rounds, killed["yes"], tail, ceiling, limit
 
 
 def call_api(prompt, options, context):
@@ -297,7 +329,14 @@ def call_api(prompt, options, context):
     case = str(vars_.get("case") or "case")
     sessions = run_dir / "sessions"
     sessions.mkdir(parents=True, exist_ok=True)
-    session_dir = Path(tempfile.mkdtemp(prefix=f"{case}-{arm}-", dir=sessions))
+    # The runner names the directory — sessions/<case>/<arm>-<run> — so a
+    # resume finds this session again (0059); a bare call gets one of its own.
+    named = str(vars_.get("session_dir") or "")
+    if named:
+        session_dir = Path(named)
+        session_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        session_dir = Path(tempfile.mkdtemp(prefix=f"{case}-{arm}-", dir=sessions))
     # The working directory lives in system tmp, never under the repository —
     # a session run inside the repo walks up, loads livespec's own CLAUDE.md,
     # and both arms stop being what they claim to be. Moved under the session
@@ -366,8 +405,14 @@ def call_api(prompt, options, context):
     replies = int(vars_.get("replies") or 0) if sheet else 0
 
     timeout = int(vars_.get("timeout_seconds") or 600)
-    transcript, code, rounds, timed_out, tail, ceiling = _sitting(
+    transcript, code, rounds, timed_out, tail, ceiling, limit = _sitting(
         command, prompt, workspace, timeout, sheet, replies, case, arm, session_dir / "transcript.jsonl")
+    if limit:
+        # Not a measurement and not a harness failure: the account said no.
+        # Marked so the runner stops starting sessions and a resume runs this
+        # one again; the transcript stays as evidence of when.
+        shutil.move(str(workspace), str(session_dir / "workspace"))
+        return {"error": f"the account's limit: {limit}", "limit": True, "resets": _resets(limit)}
     if timed_out:
         shutil.move(str(workspace), str(session_dir / "workspace"))
         return {"error": f"session timed out after {timeout}s — transcript in {session_dir}"}

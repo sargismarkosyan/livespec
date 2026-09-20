@@ -916,10 +916,25 @@ otherwise as a session: the stream-json transcript, whose `init` event names
 the model it was given, one assistant turn and one result per user message
 read from stdin. The first result asks a question; every later one is
 finished. The person says "Go ahead." to the question and done to anything else.
+The account's limit: while the file LIVESPEC_STUB_LIMIT_SESSION names exists, a
+session whose prompt asks to hit the limit gets the 429 envelope instead and the
+file is consumed; LIVESPEC_STUB_LIMIT_JUDGE does the same to one judge call.
 """
 import json
 import os
 import sys
+
+LIMIT = {"type": "result", "subtype": "success", "is_error": True, "api_error_status": 429,
+         "result": "You've hit your session limit · resets 1pm (Asia/Yerevan)", "total_cost_usd": 0}
+
+
+def limited(kind):
+    path = os.environ.get("LIVESPEC_STUB_LIMIT_" + kind, "")
+    if path and os.path.exists(path):
+        os.remove(path)
+        return True
+    return False
+
 
 args = sys.argv[1:]
 with open(os.environ["LIVESPEC_STUB_LOG"], "a") as log:
@@ -929,6 +944,9 @@ if "--json-schema" in args:
     prompt = sys.stdin.read()
     if '"reply"' in schema:
         answer = {"reply": "Go ahead.", "done": False} if "may I start?" in prompt else {"reply": "", "done": True}
+    elif limited("JUDGE"):
+        print(json.dumps(LIMIT))
+        sys.exit(1)
     else:
         answer = {"pass": True, "reason": "the stand-in approves"}
     print(json.dumps({"type": "result", "subtype": "success", "structured_output": answer,
@@ -941,6 +959,9 @@ for line in sys.stdin:
     if not line.strip():
         continue
     turn += 1
+    if turn == 1 and "hit the limit" in line and limited("SESSION"):
+        print(json.dumps(LIMIT), flush=True)
+        sys.exit(1)
     cost += 0.25
     if turn == 1:
         wants = "ceiling" in line  # a sitting whose prompt asks for the ceiling hits it in its second round
@@ -1094,6 +1115,67 @@ def runner_control() -> None:
             assert runner.session_score([{"pass": False, "score": 0.0, "reason": "judge error after 3 attempts: x"}]) == (None, 1)
             assert runner.missing_requirements([{"name": "x", "requires": ["python3", "no-such-binary-livespec"]}]) == [
                 ("x", "no-such-binary-livespec")], "a missing binary was not refused"
+
+            # A run the limit stops is resumed, not repeated (0059). Two cases,
+            # one run each, one worker: the second case's first session meets
+            # the stubbed limit, the run stops, what ran is on disk; resumed,
+            # the session runs and its judge meets the limit; resumed again,
+            # the verdict is judged over the session that exists and the last
+            # session runs — every session once, by the stub's own log.
+            def flag(kind: str) -> None:
+                path = ws / f"limit-{kind.lower()}"
+                path.write_text("")
+                os.environ[f"LIVESPEC_STUB_LIMIT_{kind}"] = str(path)
+
+            def sessions_started() -> int:
+                return sum(1 for l in log.read_text().splitlines() if "--input-format" in json.loads(l))
+
+            def planned(name: str, prompt: str) -> dict:
+                return {"case": name, "negative": False, "inputs": "stub",
+                        "vars": {"prompt": prompt, "case": name, "scaffold": "", "allowed_tools": "",
+                                 "disallowed_tools": "Bash", "max_turns": "3", "timeout_seconds": "60",
+                                 "person": "", "replies": "0", "shell": ""},
+                        "graders": [{"grader": str(llm_grader.relative_to(REPO)), "weight": 1}]}
+            plan = {"format": 1, "model": SESSION_MODEL, "judge": "sonnet", "repeat": 1, "granted": [],
+                    "scaffold": False, "cases": [planned("case-a", "Do the thing."),
+                                                 planned("case-b", "Do the thing; hit the limit.")]}
+            drive_dir = ws / "drive"
+            drive_dir.mkdir()
+            os.environ["LIVESPEC_RUN_DIR"] = str(drive_dir)
+            before = sessions_started()
+            flag("SESSION")
+            first = runner.drive(drive_dir, plan, 1)
+            assert "hit your session limit" in first["limit"], f"the limit was not read from the event: {first}"
+            assert first["skipped"] == 1, f"the run went on starting sessions after the limit: {first}"
+            assert sessions_started() - before == 3, "sessions were started past the one that met the limit"
+            sessions_owed, verdicts_owed = runner.owed(drive_dir, plan)
+            assert sessions_owed == [("case-b", "with", 1), ("case-b", "without", 1)] and not verdicts_owed, (
+                f"the run does not know what it owes: {sessions_owed}, {verdicts_owed}")
+            a_with = runner.job_dir(drive_dir, "case-a", "with", 1)
+            assert (a_with / "session.json").exists() and (a_with / "verdicts.json").exists(), (
+                "a finished session was not on disk the moment it finished")
+            b_with = runner.job_dir(drive_dir, "case-b", "with", 1)
+            assert json.loads((b_with / "session.json").read_text()).get("limit") is True, "the limited session is not marked"
+            rows = json.loads(runner.assemble(drive_dir, plan).read_text())["results"]["results"]
+            assert [r["vars"]["case"] for r in rows] == ["case-a", "case-a"], f"an unfinished session became a row: {rows}"
+            flag("JUDGE")
+            second = runner.drive(drive_dir, plan, 1)
+            assert "hit your session limit" in second["limit"] and second["skipped"] == 1, (
+                f"the judge meeting the limit did not stop the run: {second}")
+            sessions_owed, verdicts_owed = runner.owed(drive_dir, plan)
+            assert sessions_owed == [("case-b", "without", 1)] and verdicts_owed == [("case-b", "with", 1)], (
+                f"after the judge's limit the run owes the wrong things: {sessions_owed}, {verdicts_owed}")
+            assert (b_with / "previous").is_dir(), "the limited attempt was not kept aside"
+            verdicts = json.loads((b_with / "verdicts.json").read_text())
+            assert verdicts[0].get("limit") is True and verdicts[0].get("errored") is True, f"the judge's limit is not marked: {verdicts}"
+            started = sessions_started()
+            third = runner.drive(drive_dir, plan, 1)
+            assert not third["limit"] and third["skipped"] == 0, f"the resume did not finish the run: {third}"
+            assert runner.owed(drive_dir, plan) == ([], []), "something is still owed after the resume"
+            assert sessions_started() - started == 1, "the resume ran the judged session again instead of only its verdict"
+            stats, measured, sessions = runner.collect(runner.assemble(drive_dir, plan))
+            assert sessions == 4 and set(measured) == {"case-a", "case-b"}, f"the whole run did not measure both cases: {stats}"
+            assert all(v.get("pass") for v in json.loads((b_with / "verdicts.json").read_text())), "the re-judged verdict is not the judge's"
         finally:
             sys.path.remove(str(runner_dir))
             os.environ.clear()
