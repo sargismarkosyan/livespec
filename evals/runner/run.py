@@ -668,11 +668,14 @@ def main() -> int:
             print(f"  ⚠ changed since the run began, so its halves measure two versions: {', '.join(moved)} "
                   f"— a fresh run is one command")
     elif args.case:
-        suite = [c for c in suite if c["name"] in set(args.case)]
-        missing = set(args.case) - {c["name"] for c in suite}
+        # In the order named, once each: a run the limit will cut short
+        # finishes the cases the maintainer put first (0059).
+        by_name = {c["name"]: c for c in suite}
+        missing = [name for name in args.case if name not in by_name]
         if missing:
-            print(f"✘ no such case: {', '.join(sorted(missing))}", file=sys.stderr)
+            print(f"✘ no such case: {', '.join(sorted(set(missing)))}", file=sys.stderr)
             return 1
+        suite = [by_name[name] for name in dict.fromkeys(args.case)]
     elif args.changed:
         entries = load_board().get("cases", {})
         suite = [c for c in suite if why_stale(entries.get(c["name"]), c, ROOT)]
@@ -759,7 +762,12 @@ def main() -> int:
     results_path = assemble(run_dir, plan)
     stats, measured, sessions = collect(results_path)
     print_summary(stats, sessions, negatives={c['case'] for c in plan['cases'] if c['negative']})
-    record(measured, suite, judge)
+    if outcome["ran"]:
+        record(measured, suite, judge)
+    else:
+        # Nothing ran: a resume of a whole directory is a reading of it, and a
+        # reading does not re-stamp the board with today's date and commit.
+        print("  nothing ran, so the board is left as it is")
     if print_owed(run_dir, plan, outcome["limit"]):
         return LIMIT_EXIT
     return 0
