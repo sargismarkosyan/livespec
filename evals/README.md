@@ -27,14 +27,17 @@ python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model
 > that copying one refuses rather than spends. When a measurement is needed,
 > stop, name the stale cases and the cost, and wait for a yes.
 
-> **Runs on promptfoo, not yet calibrated.** The native runner for this case
-> format — `claude plugin eval` — is gated per organisation during early access
-> and has never started on this account, so since
+> **Runs its own sessions, not yet calibrated.** The native runner for this
+> case format — `claude plugin eval` — is gated per organisation during early
+> access and has never started on this account, so since
 > [0012](../specs/changes/0012-a-runner-that-runs.md) the suite runs through
 > [`evals/runner/`](runner/run.py) instead: each case goes through `claude -p`
 > with the plugin loaded and without, an llm grader's rubric is scored by the
 > judge model, and the cases stay written in the native format so enablement
-> arriving one day is a bonus rather than a migration. One case has been run end
+> arriving one day is a bonus rather than a migration. Since
+> [`0059`](../specs/changes/0059-a-run-the-limit-stops-is-resumed-not-repeated.md) the runner drives the sessions itself — no promptfoo, no
+> node — and a run is a directory it can take up again; see *When the limit
+> stops a run*. One case has been run end
 > to end; **nobody has read a full pilot's verdicts.** Whoever runs the first
 > one should treat it as calibration — read every judge verdict and ask whether
 > they would have scored it the same way — and correct the rubrics before
@@ -271,9 +274,10 @@ Then, against the run directory it prints (`evals/results/<stamp>/`):
 2. Watch the run output for `⚠ <case> asks for <tool>; not granted`. A case
    whose grader needs a file that no granted tool can create scores 0 in both
    arms and reads as "the plugin did nothing".
-3. Read every judge verdict — each one is a `reason` in the run's
-   `results.json`, or `npx promptfoo@0.122.0 view` shows them in a browser. If
-   you would have scored even one differently, the rubric is not ready.
+3. Read every judge verdict — each one is a `reason` in
+   `sessions/<case>/<arm>-<run>/verdicts.json`, and all of them are in the
+   run's `results.json`. If you would have scored even one differently, the
+   rubric is not ready.
 4. Read the `⚠ <case>: n verdict(s) errored` lines. A judge that returned
    nothing three times is not a verdict: since
    [`0058`](../specs/changes/0058-a-case-is-a-sitting-not-a-turn.md) it is left
@@ -309,6 +313,46 @@ reads the judge's price from its own envelope — and a full suite at the floor
 is roughly that × 3. Sessions, transcripts and created files stay under
 the run directory, which is ignored — the evidence is local and reproducible.
 What survives a run is its summary, on the board.
+
+## When the limit stops a run
+
+Every whole sitting so far ended at the account's session limit, and until
+[`0059`](../specs/changes/0059-a-run-the-limit-stops-is-resumed-not-repeated.md) every session after the cut was lost: it started, got one
+`result` event — `is_error: true`, `api_error_status: 429`, *You've hit your
+session limit · resets 1pm* — and was reported as an error, and a case with
+one such session fell below the floor and wrote nothing, its earlier sessions
+and their cost with it. Cases `42`–`45` were paid for four times and measured
+never ([#144](https://github.com/sargismarkosyan/livespec/issues/144)).
+
+A run is now a directory. `run.json` holds the plan — the cases, their
+variables and graders, the model, the judge, the grant, the runs — and every
+session writes `session.json` and then `verdicts.json` under
+`sessions/<case>/<arm>-<run>/`, beside its transcript, tool log and workspace,
+the moment each exists. `results.json` is assembled from those files. The
+first session or verdict that meets the limit stops the run from starting
+more; the ones already running finish on their own, one line each. The summary
+then says how many sessions never ran or met the limit, how many sessions are
+owed a verdict, when the limit resets in the CLI's own words, and the one
+command that takes the run up:
+
+```
+$ python3 evals/runner/run.py --resume evals/results/<stamp>
+```
+
+The run exits **3** — not 0, a completed measurement, and not 1, a broken
+harness. A run the machine killed leaves the same directory and resumes the
+same way. `--resume` takes no selection flag beside it, because a resumed run
+is the same run: it performs only what is owed — a session that never
+finished or met the limit is run again, its earlier attempt kept under
+`previous/`; a verdict the judge never returned is judged again over the
+session that already exists, at the judge's price and not the session's. A
+session that errored any other way — a timeout, a scaffold that failed — is
+left as it is: a resume is for what the limit or the kill took, not a second
+try at a measurement. It is still a spend: it refuses without the flag, and
+the refusal prices only the share of each case still owed. The board is
+written at the end of every resume from the whole directory, so a case
+finished on the second day writes its row then. A case edited between the two
+halves is warned about by name, because its halves would measure two versions.
 
 ## The board
 
@@ -485,7 +529,7 @@ so in `case.yaml`:
   `24` runs `pytest --cov` and needs `module:pytest_cov`. The runner checks
   them before a config is written and refuses the case, naming the
   requirement, rather than measure its absence. `pytest` is a maintainer-machine
-  prerequisite the way node is — and a `.venv/` at the repository root is put
+  prerequisite — and a `.venv/` at the repository root is put
   on the path for the run and its sessions, so on a machine that will not take
   a system package, `python3 -m venv .venv && .venv/bin/pip install pytest` is
   the whole of it;

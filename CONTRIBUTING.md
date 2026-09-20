@@ -152,8 +152,9 @@ optional: their entries on `evals/board.json` go stale and `verify.py` exits 2
 until `evals/runner/run.py --changed` re-measures exactly what moved — see
 [`evals/README.md`](evals/README.md). Running them stays a maintainer step
 (they cost money per session; CI checks the bookkeeping, never runs a case):
-the runner drives promptfoo, since the native `claude plugin eval` is gated
-behind early access.
+the runner drives `claude -p` itself, since the native `claude plugin eval`
+is gated behind early access, and a run the account's limit stops is taken up
+with `run.py --resume` rather than paid for again.
 
 ### Developing against a local checkout
 

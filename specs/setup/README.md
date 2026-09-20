@@ -148,9 +148,10 @@ account and draw down its session limit — three runs in one sitting exhausted
 it outright on 2026-08-25. A stale board entry is a reason to stop and ask,
 never a licence to run.
 
-It compiles the case folders into a promptfoo config (pinned `promptfoo@0.122.0`,
-run via `npx` — node is a maintainer-machine prerequisite, never CI's), drives
-each arm through `claude -p` (`--plugin-dir` present or absent is the ablation),
+It reads the case folders through `caselib.py`, drives each arm through
+`claude -p` itself (`--plugin-dir` present or absent is the ablation) — no
+promptfoo and no node since
+[`0059`](../changes/0059-a-run-the-limit-stops-is-resumed-not-repeated.md) —
 and scores `llm` graders through the judge model with a `--json-schema` verdict.
 Since [`0057`](../changes/0057-a-measurement-names-its-model.md) both arms run
 on `caselib.SESSION_MODEL` — `claude-sonnet-5`, by id rather than alias, so a
@@ -168,9 +169,18 @@ sitting: its stdin stays open (`--input-format stream-json`), and after each
 result the person answers from the case's sheet, up to `replies` rounds, both
 arms alike — each reply a `person` line in the transcript and a line in the
 ledger; `shell:` prefixes become `Bash(<prefix>:*)` rules and nothing wider;
-`requires:` is checked before a config is written; and a verdict the judge
+`requires:` is checked before anything is spent; and a verdict the judge
 never returned is left out of the session's fraction and counted in the
-summary, never scored as a failure.
+summary, never scored as a failure. Since
+[`0059`](../changes/0059-a-run-the-limit-stops-is-resumed-not-repeated.md) a
+run is a directory: `run.json` holds the plan, every session's `session.json`
+and `verdicts.json` land under `evals/results/<stamp>/sessions/<case>/<arm>-<run>/`
+as they exist, and the first session or verdict that meets the account's
+limit — a `result` event with `api_error_status` 429 — stops the run from
+starting more. It exits **3**, prints what is owed and when the limit resets,
+and `run.py --resume evals/results/<stamp>` runs exactly that — refusing
+without the flag, pricing only what is owed, re-running a session the limit
+took and re-judging a verdict it took over the session that exists.
 The format stays native to `claude plugin eval`, which is compiled into the CLI
 but gated per organisation during early access — on this account it prints
 `` `plugin eval` is currently in early access `` and exits before case
@@ -363,7 +373,7 @@ did.
 
 | id | boundary | state | since | evidence |
 |---|---|---|---|---|
-| `boundary:model-session` | the model session | **real** | 0012 | `claude -p` through promptfoo, started by `python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold --i-approve-the-cost` — the maintainer's to run, paid per run. Since 0057 the sessions run on `claude-sonnet-5` and every row records the model its transcripts name. Leaves uncovered: the account's session limit, which three runs in one sitting have exhausted |
+| `boundary:model-session` | the model session | **real** | 0012 | `claude -p` through promptfoo, started by `python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold --i-approve-the-cost` — the maintainer's to run, paid per run. Since 0057 the sessions run on `claude-sonnet-5` and every row records the model its transcripts name. The account's session limit, which ended every whole sitting before 0059, is read from the event: the run stops, exits 3, and `--resume` takes it up |
 | `boundary:judge` | the judge | **unreachable** — decided | 0042 | a model standing in for the human who would read what came out. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16 rather than left as an apology: the calibration set that would make it a *fake* — verdicts a person has scored, re-scored by the judge on a schedule, [`evals/README.md`](../../evals/README.md#calibration) — is real work nobody has scheduled, and every change touching the judge says so where the change is decided. Since 0057 the judge is the sessions' own model, Sonnet, and its price is ledgered into the row; the same eyes read both arms, so what it prefers in its own kind lands on both sides of Δ — bounded, not removed. Leaves uncovered: everything a person would have scored differently, and a preference for one arm's voice that only the calibration read could show |
 | `boundary:consuming-repository` | the consuming repository a case runs in | **unreachable** — decided | 0042 | a scaffold script's fixture, a stand-in for a repository somebody set up. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16: a case against a live remote, CI and a real tracker is a repository nobody has set aside for it, the reference repository is read by hand, and every change touching the runner says so where the change is decided. Leaves uncovered: a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
 | `boundary:platform` | the platform | **real** | 0021 | `gh` against `sargismarkosyan/livespec`, read back 2026-08-29 with the commands under *Branch protection* below. Leaves uncovered: nothing named |

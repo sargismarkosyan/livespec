@@ -110,7 +110,7 @@ python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model
 
 The last one refuses unless the maintainer adds `--i-approve-the-cost`, per the
 rule above. It **costs money per session and never runs in CI** — it drives real
-`claude -p` sessions through promptfoo, because the native `claude plugin eval`
+`claude -p` sessions itself, because the native `claude plugin eval`
 is gated behind early access on this account. The gates hold the eval suite
 structurally — see the bindings, and a green `verify.py` does not mean the
 cases passed.
