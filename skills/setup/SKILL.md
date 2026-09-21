@@ -119,7 +119,13 @@ yourself and record.
   **Recommend what the repository already runs**, and never stand up a second way
   of testing alongside one that works. Where the answer is graded cases, say
   plainly that they prove a weaker thing, so it is chosen rather than drifted
-  into.
+  into — **and name the tool in the same breath: `claude plugin eval init
+  <name>` writes the suite**, cases as folders of a prompt and its graders.
+  Where that tool is gated or absent here, the fallback is said at the same
+  moment: the cases are written in the format that tool reads, and a platform
+  that already runs graded suites runs them. **A case format of this
+  repository's own is never the answer**, and a sitting that finds the tool it
+  cannot run has found the format, not a reason to invent one.
 - **What does this talk to, and which of those can a test reach for real from a
   session here?** The store, the clock, the network and each service on it, the
   browser or terminal it is used through, whoever it signs people in with — one
@@ -209,9 +215,13 @@ uses to name its rule.
   bespoke layout invented in a sitting has one user and no documentation.
   **And run the tool before the sitting recommends it.** Where it is gated or
   absent — `plugin eval` is behind early access on some accounts, and livespec's
-  own suite hit exactly this — set up a platform that already runs graded
-  suites (promptfoo is one) and keep the cases in the format the repository's
-  gates read, so the native runner arriving later is a bonus, not a migration.
+  own suite hit exactly this — say so in one line, write the cases in the
+  format the tool reads anyway — a folder per case holding `prompt.md`, its
+  `case.yaml`, and `graders/*.md`, which is the format this plugin's own
+  `evals/` is in — and set up a platform that already runs graded suites to
+  run them, so the native runner arriving later is a bonus, not a migration.
+  What is never done is the third thing: a layout, a tag schema and a grader
+  script of this repository's own, which has one user and no documentation.
 
 **Coverage** is whatever the language already has. Lines, branches and functions
 if the tool reports all three; the demand and the exclusions are the ones agreed
@@ -409,11 +419,16 @@ what form**, where it goes, and which paths make the Gherkin owed. A repository
 that adopts the process without that row keeps merging changed promises nobody
 read.
 
-The form half is the one that gets left as a habit. *Something happens on screen*
-and *the whole result is a screen sitting there* are answered per change forever
-unless the row says how this repository decides, and a repository with no screen
-at all writes **that** down — the method's *nothing to see* line becomes the
-standing case here rather than the exception somebody invokes.
+**The row answers three things, per kind of change, never per repository**:
+which changes here owe a picture, in what form — *something happens on screen*
+is a recording, *the whole result is a screen sitting there* is a still — and
+**which changes owe none**, and get the method's *nothing to see* line in the
+pull request instead: a retry backoff, a parser, a migration nobody sees. A row
+that answers only moving-or-still has left the third question to be answered
+per change forever, and the answer drifts to "every pull request", which is
+wrong wherever code runs unseen. A repository with no screen at all writes the
+third answer as its standing case — every change owes none — and still writes
+the first two as *none here*, so the row is read as decided rather than blank.
 
 **Then write the second row, and do not let the first one absorb it.** A change
 here also owes a **sketch** before it is approved — the evidence its change spec
