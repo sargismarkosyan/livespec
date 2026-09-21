@@ -8,3 +8,5 @@
 # misbehaving, not only of it working. A request that crossed nothing would be
 # asked none of this; this one crosses the network, and the spec has to say so.
 scaffold_script: scaffold.sh
+# The sitting (0058): the board's keeper answers from person.md — the yes and the facts only
+# they have, never volunteered, and nothing about what the case grades.

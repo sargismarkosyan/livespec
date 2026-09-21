@@ -1,7 +1,7 @@
 ---
 tags: [skill:doctor, rule:a-real-row-over-a-world-the-tests-never-enter, rule:a-stand-in-nothing-checks-is-on-the-clock, rule:the-last-line-is-the-command-to-run]
-max_turns: 30
-timeout_seconds: 900
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---

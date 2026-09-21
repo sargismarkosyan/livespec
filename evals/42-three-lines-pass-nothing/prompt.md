@@ -1,7 +1,7 @@
 ---
 tags: [skill:setup, rule:the-sitting-wires-the-context-file-check]
-max_turns: 40
-timeout_seconds: 900
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---

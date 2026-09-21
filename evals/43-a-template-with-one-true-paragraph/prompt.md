@@ -1,7 +1,7 @@
 ---
 tags: [skill:setup, rule:a-file-out-of-line-is-offered-whole, rule:what-only-the-file-knows-survives-the-rewrite, rule:a-rewrite-lands-only-on-a-yes]
-max_turns: 40
-timeout_seconds: 900
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---

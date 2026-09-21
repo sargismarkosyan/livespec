@@ -503,10 +503,14 @@ bring the person it would have had:
   exit code, so `12` now has a hundred turns a round, which is what a setup
   sitting with a shell takes.
 
-`12`, `16` and `41` carry one; `24` does not — an audit answers to the tree;
-and `09` must never get one, because the stop it grades is the thing a person
-would answer. Convert the rest as their runs demand it, the rule for scaffolds,
-and read the `PERSON:` lines in the first sitting after each conversion.
+`12`, `16` and `41` carried one first; the sitting of 2026-09-20 read `30`,
+`31`, `38`, `42` and `43` asking setup's six questions of nobody and `29`,
+`33` and `45` stopping at a clarifying question in both arms, so those eight
+carry one since. `24` and the other doctor cases do not — an audit answers to
+the tree — and `09` must never get one, because the stop it grades is the
+thing a person would answer. Convert the rest as their runs demand it, the
+rule for scaffolds, and read the `PERSON:` lines in the first sitting after
+each conversion.
 
 ## When a case needs a shell
 
@@ -524,6 +528,11 @@ so in `case.yaml`:
   prompt nobody answers, which is how `16`'s second pilot sitting was lost. An entry is a prefix, so a bare `git` lends
   `git push` too — the fixtures carry no remote, and that is what keeps it
   honest;
+- every doctor case lends one since the sitting of 2026-09-20, which read
+  `32`, `34`, `35` and `36` spending their whole plugin sitting hunting for a
+  shell to run the tool with — `printenv`, subagents, `find /` — and
+  measuring the hunt; a doctor case without a shell measures nothing about
+  the audit;
 - `requires:` — the binaries the fixture cannot run without, or
   `module:<name>` for a Python module the path's `python3` must import —
   `24` runs `pytest --cov` and needs `module:pytest_cov`. The runner checks

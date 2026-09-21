@@ -16,3 +16,5 @@
 # the deliverable section entirely fails the first grader, and one that writes a
 # single exemption covering everything fails the second.
 scaffold_script: scaffold.sh
+# The sitting (0058): the on-call engineer answers from person.md — the yes and the facts only
+# they have, never volunteered, and nothing about what the case grades.

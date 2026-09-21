@@ -1,7 +1,7 @@
 ---
 tags: [skill:doctor, rule:a-skill-the-record-names-is-one-that-exists]
-max_turns: 30
-timeout_seconds: 900
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---

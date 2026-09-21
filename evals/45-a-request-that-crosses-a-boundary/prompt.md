@@ -1,7 +1,7 @@
 ---
 tags: [skill:refine-spec, rule:refine-spec-asks-for-the-boundary-misbehaving]
-max_turns: 30
-timeout_seconds: 720
+max_turns: 40
+timeout_seconds: 1200
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---

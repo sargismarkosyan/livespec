@@ -1,7 +1,7 @@
 ---
 tags: [skill:doctor, rule:the-entries-between-are-where-to-look, rule:a-reading-leaves-the-stamp-where-it-was, rule:what-the-reading-finds-is-corrected-as-record-or-written-as-a-row]
-max_turns: 40
-timeout_seconds: 1200
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---

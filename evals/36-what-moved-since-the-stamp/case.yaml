@@ -28,3 +28,9 @@
 # an issue was filed with `/livespec:feedback` on 2026-08-31, which is history;
 # `docs/feedback/` and the `from-feedback` label, which are not skill names.
 scaffold_script: scaffold.sh
+# The sitting (0058): the session is lent the fixture's own commands, so the
+# audit tool runs as the skill's first line says it must — the sitting of
+# 2026-09-20 read every doctor case without one spending its turns hunting
+# for a shell and measuring the hunt.
+shell: [python3, make, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo, pytest]
+requires: [python3, pytest]
