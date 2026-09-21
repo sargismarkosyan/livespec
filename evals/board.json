@@ -112,14 +112,17 @@
    "inputs": "dde806fbc37ae2f6"
   },
   "12-setup-drives-the-sitting": {
-   "delta": -0.07,
+   "delta": 0.3,
    "with": 0.37,
-   "without": 0.44,
+   "without": 0.07,
    "runs": 3,
-   "at": "2026-09-18",
-   "sha": "b8a1667",
-   "cost": 12.87,
-   "inputs": "2d5ba7c9e7386606"
+   "at": "2026-09-21",
+   "sha": "cab5530",
+   "cost": 29.31,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "080006f7ec79a119",
+   "inputs": "f8d518922c99d3d0"
   },
   "13-feedback-about-the-plugin": {
    "delta": 0.0,
@@ -152,14 +155,17 @@
    "inputs": "9cec5e4d44b88db9"
   },
   "16-setup-with-no-app-code": {
-   "delta": 0.17,
-   "with": 0.17,
+   "delta": 0.67,
+   "with": 0.67,
    "without": 0.0,
    "runs": 3,
-   "at": "2026-09-18",
-   "sha": "b8a1667",
-   "cost": 16.47,
-   "inputs": "c570b34c7bc859ea"
+   "at": "2026-09-21",
+   "sha": "cab5530",
+   "cost": 10.67,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "080006f7ec79a119",
+   "inputs": "91b83f0e2be82ccc"
   },
   "17-wiring-nobody-watched-run": {
    "delta": -0.17,
@@ -232,14 +238,17 @@
    "inputs": "24928dcd69d8cf50"
   },
   "24-a-ledger-nobody-read-back": {
-   "delta": -0.08,
-   "with": 0.25,
-   "without": 0.33,
+   "delta": 0.25,
+   "with": 0.33,
+   "without": 0.08,
    "runs": 3,
-   "at": "2026-09-17",
-   "sha": "9b5c21d",
-   "cost": 4.0,
-   "inputs": "b111b6976cf31da1"
+   "at": "2026-09-21",
+   "sha": "cab5530",
+   "cost": 7.51,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "080006f7ec79a119",
+   "inputs": "26432726b7d0fadb"
   },
   "25-neg-a-red-job-is-not-an-audit": {
    "delta": 0.0,
@@ -290,6 +299,58 @@
    "sha": "b8a1667",
    "cost": 3.89,
    "inputs": "cc6805b07ae5a4e4"
+  },
+  "42-three-lines-pass-nothing": {
+   "delta": 0.0,
+   "with": 0.25,
+   "without": 0.25,
+   "runs": 3,
+   "at": "2026-09-21",
+   "sha": "cab5530",
+   "cost": 2.18,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "080006f7ec79a119",
+   "inputs": "1f691b15b8cc168d"
+  },
+  "43-a-template-with-one-true-paragraph": {
+   "delta": 0.33,
+   "with": 0.6,
+   "without": 0.27,
+   "runs": 3,
+   "at": "2026-09-21",
+   "sha": "cab5530",
+   "cost": 4.55,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "080006f7ec79a119",
+   "inputs": "1ab7be47745beff6"
+  },
+  "44-the-audit-does-not-rewrite": {
+   "delta": 0.08,
+   "with": 0.08,
+   "without": 0.0,
+   "runs": 3,
+   "at": "2026-09-21",
+   "sha": "cab5530",
+   "cost": 6.23,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "080006f7ec79a119",
+   "inputs": "6881914c221575c8"
+  },
+  "45-a-request-that-crosses-a-boundary": {
+   "delta": 0.22,
+   "with": 0.56,
+   "without": 0.33,
+   "runs": 3,
+   "at": "2026-09-21",
+   "sha": "cab5530",
+   "cost": 1.63,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "080006f7ec79a119",
+   "inputs": "c1f22db6ac8148df"
   }
  }
 }
