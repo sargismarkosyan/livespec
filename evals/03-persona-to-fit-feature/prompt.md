@@ -1,5 +1,5 @@
 ---
-tags: [skill:refine-personas]
+tags: [skill:refine-personas, rule:a-persona-invented-to-fit-a-feature-is-refused]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

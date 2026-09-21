@@ -1,5 +1,5 @@
 ---
-tags: [skill:refine-spec]
+tags: [skill:refine-spec, rule:the-job-is-found-under-the-request]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

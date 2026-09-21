@@ -1,5 +1,5 @@
 ---
-tags: [skill:refine-workflows]
+tags: [skill:refine-workflows, rule:a-twice-deferred-row-stops-the-workflow]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
