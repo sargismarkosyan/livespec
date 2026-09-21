@@ -1,4 +1,5 @@
 ---
+rule: an-arc-with-no-seam-is-refused
 type: llm
 focus: last_message
 weight: 1

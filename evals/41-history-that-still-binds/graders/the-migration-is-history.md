@@ -1,4 +1,5 @@
 ---
+rule: a-dated-account-that-still-binds-is-not-history
 type: llm
 focus: full_transcript
 weight: 1

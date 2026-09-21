@@ -1,4 +1,5 @@
 ---
+rule: what-the-reading-finds-is-corrected-as-record-or-written-as-a-row
 type: command
 command: 'python3 "$LIVESPEC_ROOT/evals/44-the-audit-does-not-rewrite/check_corrected_in_place.py"'
 weight: 1

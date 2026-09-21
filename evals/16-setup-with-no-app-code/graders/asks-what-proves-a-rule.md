@@ -1,4 +1,5 @@
 ---
+rule: setup-asks-how-a-test-claims-a-rule
 type: llm
 focus: full_transcript
 weight: 1

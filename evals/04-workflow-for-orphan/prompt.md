@@ -1,5 +1,5 @@
 ---
-tags: [skill:refine-workflows]
+tags: [skill:refine-workflows, rule:a-workflow-invented-for-an-orphan-feature-is-refused]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

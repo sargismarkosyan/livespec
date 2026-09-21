@@ -1,4 +1,5 @@
 ---
+rule: what-the-reading-finds-is-corrected-as-record-or-written-as-a-row
 type: command
 command: 'test -f specs/setup/audit.md && python3 "$LIVESPEC_ROOT/tools/doctor.py" --check specs/setup/audit.md >/dev/null'
 weight: 1

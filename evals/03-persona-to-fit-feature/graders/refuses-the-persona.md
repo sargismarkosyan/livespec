@@ -1,4 +1,5 @@
 ---
+rule: a-persona-invented-to-fit-a-feature-is-refused
 type: llm
 focus: last_message
 weight: 1

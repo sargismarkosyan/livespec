@@ -1,4 +1,5 @@
 ---
+rule: an-instruction-to-build-is-not-filed-instead
 type: llm
 focus: last_message
 weight: 1

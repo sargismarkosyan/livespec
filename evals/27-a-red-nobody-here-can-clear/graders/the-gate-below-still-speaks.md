@@ -1,4 +1,5 @@
 ---
+rule: a-red-does-not-hide-the-gates-after-it
 type: llm
 focus: full_transcript
 weight: 1

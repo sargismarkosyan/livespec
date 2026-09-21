@@ -1,4 +1,5 @@
 ---
+rule: a-real-row-is-written-after-a-test-reached-it
 type: llm
 focus: full_transcript
 weight: 1

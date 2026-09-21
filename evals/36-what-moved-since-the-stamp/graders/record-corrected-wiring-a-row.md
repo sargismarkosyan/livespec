@@ -1,4 +1,5 @@
 ---
+rule: what-the-reading-finds-is-corrected-as-record-or-written-as-a-row
 type: llm
 focus: full_transcript
 weight: 1

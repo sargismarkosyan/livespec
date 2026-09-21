@@ -1,4 +1,5 @@
 ---
+rule: what-arrived-after-the-bindings-were-written-is-caught
 type: llm
 focus: full_transcript
 weight: 1

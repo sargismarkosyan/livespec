@@ -1,4 +1,5 @@
 ---
+rule: one-line-per-check-or-it-does-not-end
 type: command
 command: 'test -f specs/setup/audit.md && python3 "$LIVESPEC_ROOT/tools/doctor.py" --check specs/setup/audit.md >/dev/null'
 weight: 1

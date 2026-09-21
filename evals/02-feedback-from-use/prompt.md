@@ -1,5 +1,5 @@
 ---
-tags: [skill:todo, rule:skills-act-on-the-session-repository, rule:the-target-is-named-before-filing]
+tags: [skill:todo, rule:skills-act-on-the-session-repository, rule:the-target-is-named-before-filing, rule:capture-and-build-are-different-destinations]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

@@ -1,4 +1,5 @@
 ---
+rule: the-report-cannot-fail-the-build
 type: llm
 focus: full_transcript
 weight: 1

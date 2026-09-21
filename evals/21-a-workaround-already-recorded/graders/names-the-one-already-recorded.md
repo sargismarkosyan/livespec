@@ -1,4 +1,5 @@
 ---
+rule: a-recorded-workaround-is-not-followed-silently
 type: llm
 focus: full_transcript
 weight: 1

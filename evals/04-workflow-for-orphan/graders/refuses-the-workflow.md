@@ -1,4 +1,5 @@
 ---
+rule: a-workflow-invented-for-an-orphan-feature-is-refused
 type: llm
 focus: last_message
 weight: 1

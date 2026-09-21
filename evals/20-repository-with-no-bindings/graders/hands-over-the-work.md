@@ -1,4 +1,5 @@
 ---
+rule: what-did-not-need-it-is-still-handed-over
 type: llm
 focus: full_transcript
 weight: 1

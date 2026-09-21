@@ -1,4 +1,5 @@
 ---
+rule: setup-scaffolds-the-rule-binding
 type: llm
 focus: full_transcript
 weight: 1

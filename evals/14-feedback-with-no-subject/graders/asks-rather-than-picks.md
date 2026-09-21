@@ -1,4 +1,5 @@
 ---
+rule: an-unstated-subject-is-asked-about
 type: llm
 focus: last_message
 weight: 1

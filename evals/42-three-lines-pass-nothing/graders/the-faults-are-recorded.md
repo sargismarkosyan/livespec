@@ -1,4 +1,5 @@
 ---
+rule: the-sitting-wires-the-context-file-check
 type: llm
 focus: full_transcript
 weight: 1

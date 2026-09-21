@@ -1,4 +1,5 @@
 ---
+rule: the-job-is-found-under-the-request
 type: llm
 focus: last_message
 weight: 1

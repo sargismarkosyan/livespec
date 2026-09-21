@@ -1,4 +1,5 @@
 ---
+rule: a-local-hook-is-not-a-gate
 type: llm
 focus: full_transcript
 weight: 1

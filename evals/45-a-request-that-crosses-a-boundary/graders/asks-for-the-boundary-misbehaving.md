@@ -1,4 +1,5 @@
 ---
+rule: refine-spec-asks-for-the-boundary-misbehaving
 type: llm
 focus: full_transcript
 weight: 1

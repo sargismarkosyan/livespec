@@ -1,4 +1,5 @@
 ---
+rule: old-rows-are-matched-by-alias
 type: llm
 focus: full_transcript
 weight: 1

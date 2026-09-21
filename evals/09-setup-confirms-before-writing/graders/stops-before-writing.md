@@ -1,4 +1,5 @@
 ---
+rules: [setup-confirms-before-writing, setup-can-be-offered]
 type: llm
 focus: last_message
 weight: 1

@@ -1,4 +1,5 @@
 ---
+rule: the-coverage-demand-is-not-todays-score
 type: llm
 focus: full_transcript
 weight: 1

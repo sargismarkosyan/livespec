@@ -1,4 +1,5 @@
 ---
+rule: a-twice-deferred-row-stops-the-workflow
 type: llm
 focus: last_message
 weight: 1

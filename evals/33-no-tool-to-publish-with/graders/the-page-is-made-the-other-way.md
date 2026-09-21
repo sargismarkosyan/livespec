@@ -1,4 +1,5 @@
 ---
+rule: a-missing-tool-is-not-a-missing-page
 type: llm
 focus: full_transcript
 weight: 1

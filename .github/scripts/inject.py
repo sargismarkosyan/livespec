@@ -46,6 +46,12 @@ weight: 1
 The reply does the thing.
 """
 
+
+def grader_for(rule: str) -> str:
+    """The fixture's grader naming the rule it tests — the claim on the case is
+    held to a grader that can fail (0066)."""
+    return GRADER.replace("weight: 1\n", f"weight: 1\nrule: {rule}\n")
+
 def context_file(steps: int = 3) -> str:
     """A CLAUDE.md in the shape the gate reads — a numbered loop, a fenced block
     of commands, a link to the bindings. `steps` is the length of its loop. The
@@ -98,11 +104,11 @@ FIXTURE: dict[str, str] = {
     "evals/case-rule/prompt.md": (
         "---\ntags: [skill:refine-spec, rule:one]\nallowed_tools: [Skill, Write]\nruns: 3\nworkspace: empty — the fixture's cases run in no repository\n---\nDo the thing.\n"
     ),
-    "evals/case-rule/graders/outcome.md": GRADER,
+    "evals/case-rule/graders/outcome.md": grader_for("one"),
     "evals/case-walk/prompt.md": "---\ntags: [skill:refine-spec, workflow:read-it]\nruns: 3\nworkspace: empty — the fixture's cases run in no repository\n---\nWalk it.\n",
     "evals/case-walk/graders/outcome.md": GRADER,
     "evals/case-neg/prompt.md": "---\ntags: [should-not-fire, rule:two]\nruns: 3\nworkspace: empty — the fixture's cases run in no repository\n---\nWrite me a commit message.\n",
-    "evals/case-neg/graders/outcome.md": GRADER,
+    "evals/case-neg/graders/outcome.md": grader_for("two"),
     # checks.py reads these two against each other. Minimal on purpose: the
     # fixture is here to be broken, not to be a second copy of the plugin.
     ".claude-plugin/plugin.json": json.dumps(
@@ -686,6 +692,11 @@ FAULTS = [
      "fails", "never by what came out"),
     ("case run fewer times than the floor", SUITE,
      lambda r: edit(r, "evals/case-rule/prompt.md", "runs: 3", "runs: 1"), "fails", "the floor is 3"),
+    # A claim is a grader that can fail. See specs/changes/0066.
+    ("a claimed rule no grader tests", SUITE,
+     lambda r: edit(r, "evals/case-rule/graders/outcome.md", "rule: one\n", ""), "fails", "no grader names it"),
+    ("a grader naming a rule the case does not claim", SUITE,
+     lambda r: edit(r, "evals/case-rule/graders/outcome.md", "rule: one\n", "rule: two\n"), "fails", "does not claim"),
     # A case names the world it runs in. See specs/changes/0054 and #123.
     ("a case that declares no workspace", SUITE,
      lambda r: edit(r, "evals/case-rule/prompt.md", "workspace: empty — the fixture's cases run in no repository\n", ""), "fails", "declares no workspace"),

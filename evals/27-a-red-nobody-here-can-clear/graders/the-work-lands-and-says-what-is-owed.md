@@ -1,4 +1,5 @@
 ---
+rule: the-one-red-a-commit-may-carry
 type: llm
 focus: full_transcript
 weight: 1

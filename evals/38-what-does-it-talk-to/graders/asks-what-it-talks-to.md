@@ -1,4 +1,5 @@
 ---
+rule: setup-asks-what-the-app-talks-to
 type: llm
 focus: full_transcript
 weight: 1

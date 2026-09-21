@@ -1,4 +1,5 @@
 ---
+rule: capture-does-not-require-having-used-it
 type: llm
 focus: last_message
 weight: 1

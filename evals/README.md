@@ -214,7 +214,12 @@ These are not negotiable when the suite is edited:
   context in every session and cannot be changed safely;
 - **every case says which skill it holds**, in `tags:` — `skill:<name>`. A case
   may also carry `rule:<id>` or `workflow:<id>` once the rule it answers to
-  exists, and a claim that names nothing fails. The contract is in
+  exists, and a claim that names nothing fails. **And a claim is a grader that
+  can fail** — since [`0066`](../specs/changes/0066-a-claim-is-a-grader-that-can-fail.md)
+  every grader says which rule it tests, `rule: <id>` in its frontmatter, and
+  the suite gate fails a case claiming a rule no grader names and a grader
+  naming a rule its case does not claim; a grader naming none is a guard,
+  `no-source-edits`, never coverage. The contract is in
   [`specs/setup/README.md`](../specs/setup/README.md);
 - **`--ablation with-without` stays**, because a score without a baseline is not a
   measurement;

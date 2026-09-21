@@ -1,4 +1,5 @@
 ---
+rule: the-ceiling-is-a-number-in-the-bindings
 type: command
 command: 'python3 "$LIVESPEC_ROOT/evals/41-history-that-still-binds/check_ceiling.py"'
 weight: 1

@@ -1,4 +1,5 @@
 ---
+rule: setup-audits-an-existing-claude-md
 type: llm
 focus: full_transcript
 weight: 1

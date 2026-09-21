@@ -1,4 +1,5 @@
 ---
+rule: an-unreachable-step-is-said-not-searched-for
 type: llm
 focus: full_transcript
 weight: 1

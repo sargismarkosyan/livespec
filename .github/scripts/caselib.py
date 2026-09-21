@@ -122,7 +122,14 @@ def cases(root: Path) -> list[dict]:
         graders = []
         for grader in sorted((directory / "graders").glob("*.md")):
             fields, body = frontmatter(grader)
-            graders.append({"path": grader, "type": fields.get("type", ""), "body": body.strip(), "fields": fields})
+            # The rule this grader tests — `rule: <id>`, or `rules: [a, b]` where
+            # one verdict holds two — so a claim on the case can be held to a
+            # grader that fails when the rule is broken (0066). A grader naming
+            # none is a guard, never coverage.
+            rules = tag_values(fields.get("rules", "") or fields.get("rule", ""))
+            graders.append({"path": grader, "type": fields.get("type", ""), "body": body.strip(), "fields": fields,
+                            "rules": rules,
+                            "indicator": fields.get("type", "") == "tool_used" and not fields.get("max", "").strip().isdigit()})
         found.append(
             {
                 "name": directory.name,

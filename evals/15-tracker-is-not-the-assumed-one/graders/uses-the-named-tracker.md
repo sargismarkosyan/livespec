@@ -1,4 +1,5 @@
 ---
+rule: the-tracker-comes-from-the-bindings
 type: llm
 focus: full_transcript
 weight: 1

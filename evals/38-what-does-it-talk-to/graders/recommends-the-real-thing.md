@@ -1,4 +1,5 @@
 ---
+rule: a-stand-in-nobody-chose-is-not-written-as-chosen
 type: llm
 focus: full_transcript
 weight: 1

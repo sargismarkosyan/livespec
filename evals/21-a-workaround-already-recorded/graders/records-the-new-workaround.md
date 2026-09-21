@@ -1,4 +1,5 @@
 ---
+rule: a-workaround-records-what-would-end-it
 type: llm
 focus: full_transcript
 weight: 1

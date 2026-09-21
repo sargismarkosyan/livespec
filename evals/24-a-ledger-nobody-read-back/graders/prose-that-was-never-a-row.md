@@ -1,4 +1,5 @@
 ---
+rule: a-gap-is-a-row-not-a-sentence
 type: llm
 focus: full_transcript
 weight: 1

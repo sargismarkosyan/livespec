@@ -1,4 +1,5 @@
 ---
+rule: setup-finds-where-issues-go
 type: llm
 focus: full_transcript
 weight: 1
