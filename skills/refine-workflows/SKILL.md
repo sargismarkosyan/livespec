@@ -132,7 +132,10 @@ The template in the workflows folder carries this shape with the rules inline.
 above as fact, move the rows this change makes applicable, and treat a row that
 says *not applicable* while the layer plainly exists as a contradiction to
 report rather than a line to trust. A row *deferred* since two changes ago stops
-you: wire it, or write it off with the reason in the row itself. The norm, and
+you: wire it, or write it off with the reason in the row itself — **and the
+reply ends on that choice**, put to the person as those two halves, and does
+not continue into the workflow until one is picked; a reply that names the
+deferral and carries on has reported the finding and dropped the stop. The norm, and
 the three states a row may read, are in [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not).
 
 Three bite this skill in particular:
