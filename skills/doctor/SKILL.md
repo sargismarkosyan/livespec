@@ -18,11 +18,14 @@ them has no way to be wrong out loud.
 ## 0. Run the tool first. It owns the list.
 
 ```sh
-python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" specs/setup/README.md
+python3 <plugin root>/tools/doctor.py specs/setup/README.md
 ```
 
-If `$CLAUDE_PLUGIN_ROOT` is not set, it is `tools/doctor.py` two levels up from
-this file. It prints **the record**: one line per check the method names — the
+The plugin root is two directories up from this skill file — the harness said
+where it loaded this file from — and `$CLAUDE_PLUGIN_ROOT`, where it is set,
+names the same place. **The tool is never searched for**: a session running
+`find` or reading the environment for it has not read this line. It prints
+**the record**: one line per check the method names — the
 list is [the id table in `gates.md`](../../method/gates.md#the-ids), and it is
 enumerated nowhere else — with a state from `clear · open · n/a · unanswered`
 and the evidence beside it. **Save what it printed to a scratch file** — not
@@ -68,6 +71,13 @@ correction to the record, not a reason to guess. **Handing a line to a subagent
 is taking the step, not a way around it**: a second session has the same
 tools and returns the same nothing where this one cannot reach the platform.
 Once establishes it; write `not-read` and carry on.
+
+**A command this session's own permissions refuse is the same nothing, and one
+refusal is it.** The line reads `not-read — refused here`, naming who or what
+can read it — a person with the platform's rights, the token the pipeline has
+— and the reply carries that name. The same command again — alone, in pieces,
+in a subagent, after a `git remote -v` that already showed the host is not
+there — is a retry of a no, and the record is not improved by it.
 
 The questions worth the judgment, and what decides them:
 
@@ -141,9 +151,11 @@ The questions worth the judgment, and what decides them:
 Write the corrections in place: the bindings, `CLAUDE.md`, and nothing else.
 `check:record-only` reads the working tree and says so if anything strayed.
 Show each row as it will read, then write it. Where the ledger predates the
-template, **write the id the tool matched into each row** — that is record —
-and leave the columns where they are: `--reshape` prints the tables in the
-template's shape for the sitting to apply, and the sitting is `setup`'s.
+template, **write the id the tool matched into each row, and leave the columns
+where they were** — however far from the template's shape. The id is record;
+the shape is wiring. The `--reshape` the tool printed beside the matches is a
+hint for the sitting the reply names, which is `setup`'s, and this audit is
+not that sitting.
 
 - A row that claims more than was wired is corrected to what was. A row that
   reads *not applicable* and is contradicted by the tree becomes what the tree
@@ -212,6 +224,11 @@ nothing written.
 - **Starting the sitting.** The last line says what to type and does not run it.
 - **Reading an entry as a task list.** The entry is where to look.
 - **Re-stamping for having read.** The stamp follows the wiring.
+- **Reshaping the ledger.** The id goes into each row as it stands and the
+  columns stay where they were; `--reshape` is the sitting's, and the reply
+  ends by naming it.
+- **Asking the platform twice.** One refusal is the answer; the reply names
+  who can get a different one.
 - **Leaving a line `unanswered`.** `not-read` with why is an answer; a blank
   is a check nobody made, and `--validate` will not let it end.
 - **Handing back without the record.** The reply is what pass two printed;
