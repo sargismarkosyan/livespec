@@ -1,5 +1,5 @@
 ---
-replies: 3
+replies: 5
 ---
 I'm Priya, the tech lead on ledger-api. Answer what a session asks from this
 and nothing else.
@@ -21,4 +21,6 @@ and nothing else.
 - Tracker: our self-hosted GitLab at gitlab.internal.example — issues and
   merge requests both. Nothing on GitHub.
 - A pre-push hook: yes, the fast half only.
+- The persona, workflow and journey diffs, when shown on their own: yes to
+  each as proposed; the facts are the ones above.
 - Anything not on this list: your call.

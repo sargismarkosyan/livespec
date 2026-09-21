@@ -192,8 +192,10 @@ def _judge(rubric: str, content: str, case: str = "?", arm: str = "?", grader: s
     for attempt in range(3):
         if attempt:
             time.sleep(5)
+        stderr_tail = ""
         try:
             proc = subprocess.run(command, input=prompt, capture_output=True, text=True, timeout=180)
+            stderr_tail = " / ".join((proc.stderr or "").strip().splitlines()[-2:])
             envelope = json.loads(proc.stdout.strip())
             if limit_text(envelope):
                 # The account's limit, not a wobble: the wall does not move in
@@ -213,7 +215,11 @@ def _judge(rubric: str, content: str, case: str = "?", arm: str = "?", grader: s
     # Not a verdict: run.py leaves it out of the session's fraction and counts
     # it in the summary, so a judge that said nothing never reads as the agent
     # failing the rubric (#131, 0058).
-    return {"pass": False, "score": 0.0, "errored": True, "reason": f"judge error after 3 attempts: {last}"}
+    # The CLI's own last words travel with the error: two verdicts of the
+    # sitting of 2026-09-20 read "Expecting value: line 1 column 1" three times
+    # and nothing said why the judge printed nothing (0059).
+    return {"pass": False, "score": 0.0, "errored": True,
+            "reason": f"judge error after 3 attempts: {last}" + (f" — the CLI said: {stderr_tail}" if stderr_tail else "")}
 
 
 def get_assert(output, context):
