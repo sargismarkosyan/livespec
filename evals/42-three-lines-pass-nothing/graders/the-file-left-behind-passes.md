@@ -1,4 +1,5 @@
 ---
+rule: the-sitting-wires-the-context-file-check
 type: command
 command: 'python3 "$LIVESPEC_ROOT/evals/42-three-lines-pass-nothing/check_context_file.py"'
 weight: 1

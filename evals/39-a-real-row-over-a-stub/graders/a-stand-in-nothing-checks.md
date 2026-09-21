@@ -1,4 +1,5 @@
 ---
+rule: a-stand-in-nothing-checks-is-on-the-clock
 type: llm
 focus: full_transcript
 weight: 1

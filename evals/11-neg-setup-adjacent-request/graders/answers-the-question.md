@@ -1,4 +1,5 @@
 ---
+rule: setup-ignores-an-adjacent-request
 type: llm
 focus: last_message
 weight: 1

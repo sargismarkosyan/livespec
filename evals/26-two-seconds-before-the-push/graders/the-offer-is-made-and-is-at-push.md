@@ -1,4 +1,5 @@
 ---
+rule: a-local-run-is-offered-before-the-push
 type: llm
 focus: full_transcript
 weight: 1

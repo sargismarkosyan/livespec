@@ -1,4 +1,5 @@
 ---
+rule: an-instruction-to-build-is-not-filed-instead
 type: tool_used
 tool: Skill
 input_match: '"skill"\s*:\s*"(?:[\w-]+:)?todo"'

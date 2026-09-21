@@ -1,4 +1,5 @@
 ---
+rule: the-bindings-are-written-from-one-template
 type: llm
 focus: full_transcript
 weight: 1

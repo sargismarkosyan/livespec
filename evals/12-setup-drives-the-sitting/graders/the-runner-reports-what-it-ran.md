@@ -1,4 +1,5 @@
 ---
+rule: the-sitting-wires-what-ran
 type: llm
 focus: full_transcript
 weight: 1

@@ -1,4 +1,5 @@
 ---
+rule: the-spec-bound-measure-is-reported-never-gated
 type: llm
 focus: full_transcript
 weight: 1

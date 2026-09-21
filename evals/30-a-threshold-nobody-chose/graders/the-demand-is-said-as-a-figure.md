@@ -1,4 +1,5 @@
 ---
+rule: the-demand-is-recommended-as-a-figure
 type: llm
 focus: full_transcript
 weight: 1

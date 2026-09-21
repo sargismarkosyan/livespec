@@ -1,4 +1,5 @@
 ---
+rule: a-red-says-which-red-it-is
 type: llm
 focus: full_transcript
 weight: 1

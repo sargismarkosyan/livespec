@@ -1,4 +1,5 @@
 ---
+rule: a-claim-outside-the-tree-is-read-back
 type: llm
 focus: full_transcript
 weight: 1

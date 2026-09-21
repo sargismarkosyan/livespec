@@ -1,4 +1,5 @@
 ---
+rule: a-reading-leaves-the-stamp-where-it-was
 type: llm
 focus: full_transcript
 weight: 1

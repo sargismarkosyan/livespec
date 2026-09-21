@@ -1,4 +1,5 @@
 ---
+rule: the-requirements-are-the-only-reference
 type: llm
 focus: full_transcript
 weight: 1

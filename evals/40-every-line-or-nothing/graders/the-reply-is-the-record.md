@@ -1,4 +1,5 @@
 ---
+rule: the-reply-is-generated-from-the-record
 type: llm
 focus: last_message
 weight: 1

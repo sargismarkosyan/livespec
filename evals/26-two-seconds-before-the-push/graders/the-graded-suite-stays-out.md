@@ -1,4 +1,5 @@
 ---
+rule: what-costs-money-stays-out-of-the-hook
 type: llm
 focus: full_transcript
 weight: 1

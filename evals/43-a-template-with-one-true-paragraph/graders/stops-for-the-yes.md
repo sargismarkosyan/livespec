@@ -1,4 +1,5 @@
 ---
+rule: a-rewrite-lands-only-on-a-yes
 type: llm
 focus: last_message
 weight: 1

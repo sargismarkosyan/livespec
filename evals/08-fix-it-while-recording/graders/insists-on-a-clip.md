@@ -1,4 +1,5 @@
 ---
+rule: the-form-follows-what-changed
 type: llm
 focus: last_message
 weight: 1

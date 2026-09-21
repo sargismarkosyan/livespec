@@ -1,4 +1,5 @@
 ---
+rule: the-bindings-say-a-sketch-is-owed-here
 type: llm
 focus: full_transcript
 weight: 1

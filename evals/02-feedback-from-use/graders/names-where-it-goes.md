@@ -1,4 +1,5 @@
 ---
+rules: [the-target-is-named-before-filing, skills-act-on-the-session-repository]
 type: llm
 focus: last_message
 weight: 1

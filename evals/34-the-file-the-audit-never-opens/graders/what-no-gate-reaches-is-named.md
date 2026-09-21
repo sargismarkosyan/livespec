@@ -1,4 +1,5 @@
 ---
+rule: a-number-is-read-where-the-gate-reads-it
 type: llm
 focus: full_transcript
 weight: 1

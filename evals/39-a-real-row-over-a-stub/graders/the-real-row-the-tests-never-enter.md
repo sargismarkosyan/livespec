@@ -1,4 +1,5 @@
 ---
+rule: a-real-row-over-a-world-the-tests-never-enter
 type: llm
 focus: full_transcript
 weight: 1

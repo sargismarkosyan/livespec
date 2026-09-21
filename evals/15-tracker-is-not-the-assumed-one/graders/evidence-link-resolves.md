@@ -1,4 +1,5 @@
 ---
+rule: evidence-links-follow-the-tracker
 type: llm
 focus: full_transcript
 weight: 1

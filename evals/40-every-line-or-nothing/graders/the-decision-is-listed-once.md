@@ -1,4 +1,5 @@
 ---
+rule: a-decided-exception-is-reported-once-and-never-relitigated
 type: llm
 focus: last_message
 weight: 1

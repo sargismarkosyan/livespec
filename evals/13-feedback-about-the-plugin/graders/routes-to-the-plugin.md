@@ -1,4 +1,5 @@
 ---
+rule: plugin-reports-reach-the-plugin
 type: llm
 focus: last_message
 weight: 1

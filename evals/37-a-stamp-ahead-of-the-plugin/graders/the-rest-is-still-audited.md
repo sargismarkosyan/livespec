@@ -1,4 +1,5 @@
 ---
+rule: a-range-with-nothing-in-it-is-said-not-computed
 type: llm
 focus: full_transcript
 weight: 1

@@ -90,6 +90,20 @@ for case in suite:
             fail(f"{where}/graders/{name}", "is an llm grader with an empty rubric; it will pass on anything")
         if grader["type"] == "command" and not grader["fields"].get("command", "").strip():
             fail(f"{where}/graders/{name}", "is a command grader with no command:; it can run nothing and passes nothing")
+    # Full coverage is a rule with a grader that fails when the rule is
+    # broken, not a tag on a case that happens to hold ten graders (0066).
+    # The plugin-fired indicator is never in either arm's score, so it tests
+    # nothing; every other grader counts.
+    tested = {rule for g in case["graders"] if not g["indicator"] for rule in g["rules"]}
+    for rule in case["claims"]["rules"]:
+        if rule not in tested:
+            fail(where, f"claims rule:{rule} and no grader names it in `rule:`; a claim no grader tests is a tag, "
+                        f"not coverage — say which grader fails when the rule is broken")
+    for g in case["graders"]:
+        for rule in g["rules"]:
+            if rule not in case["claims"]["rules"]:
+                fail(f"{where}/graders/{g['path'].name}", f"names rule:{rule}, which the case does not claim; "
+                     f"add it to the case's tags, or the board never learns this rule was measured")
     if not any(g["type"] in OUTCOME_TYPES for g in case["graders"]):
         fail(
             where,

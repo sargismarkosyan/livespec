@@ -1,4 +1,5 @@
 ---
+rule: the-bindings-say-what-a-change-here-must-show
 type: llm
 focus: full_transcript
 weight: 1

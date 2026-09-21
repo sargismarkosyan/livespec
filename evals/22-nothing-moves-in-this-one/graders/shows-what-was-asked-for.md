@@ -1,4 +1,5 @@
 ---
+rule: what-is-shown-answers-the-request
 type: llm
 focus: full_transcript
 weight: 1

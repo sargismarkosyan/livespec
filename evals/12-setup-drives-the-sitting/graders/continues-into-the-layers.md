@@ -1,4 +1,5 @@
 ---
+rule: setup-continues-into-the-layers
 type: llm
 focus: last_message
 weight: 1

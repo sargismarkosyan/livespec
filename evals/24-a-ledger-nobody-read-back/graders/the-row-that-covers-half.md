@@ -1,4 +1,5 @@
 ---
+rule: a-row-says-what-it-leaves-uncovered
 type: llm
 focus: full_transcript
 weight: 1

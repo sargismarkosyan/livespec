@@ -1,4 +1,5 @@
 ---
+rule: the-entries-between-are-where-to-look
 type: llm
 focus: full_transcript
 weight: 1

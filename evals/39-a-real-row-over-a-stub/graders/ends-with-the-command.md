@@ -1,4 +1,5 @@
 ---
+rule: the-last-line-is-the-command-to-run
 type: llm
 focus: last_message
 weight: 1

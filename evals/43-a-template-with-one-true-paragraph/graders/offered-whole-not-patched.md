@@ -1,4 +1,5 @@
 ---
+rule: a-file-out-of-line-is-offered-whole
 type: llm
 focus: full_transcript
 weight: 1

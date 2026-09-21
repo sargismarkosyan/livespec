@@ -1,4 +1,5 @@
 ---
+rule: what-explains-a-red-survives-it
 type: llm
 focus: full_transcript
 weight: 1

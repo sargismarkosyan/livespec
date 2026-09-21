@@ -1,4 +1,5 @@
 ---
+rule: what-is-not-covered-is-named-rather-than-subtracted
 type: llm
 focus: full_transcript
 weight: 1

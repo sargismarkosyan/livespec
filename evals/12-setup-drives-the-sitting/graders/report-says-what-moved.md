@@ -1,4 +1,5 @@
 ---
+rule: the-report-says-what-moved
 type: llm
 focus: full_transcript
 weight: 1

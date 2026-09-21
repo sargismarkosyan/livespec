@@ -1,4 +1,5 @@
 ---
+rule: setup-wires-the-pull-request-report
 type: llm
 focus: full_transcript
 weight: 1

@@ -1,4 +1,5 @@
 ---
+rule: an-absent-sketch-is-said-rather-than-filled
 type: llm
 focus: full_transcript
 weight: 1

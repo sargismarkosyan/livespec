@@ -1,4 +1,5 @@
 ---
+rule: the-checklist-is-the-method-as-it-now-stands
 type: llm
 focus: full_transcript
 weight: 1

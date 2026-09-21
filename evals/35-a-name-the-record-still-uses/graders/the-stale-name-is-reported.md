@@ -1,4 +1,5 @@
 ---
+rule: a-skill-the-record-names-is-one-that-exists
 type: llm
 focus: full_transcript
 weight: 1

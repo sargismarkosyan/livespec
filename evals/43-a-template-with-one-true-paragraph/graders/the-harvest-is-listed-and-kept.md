@@ -1,4 +1,5 @@
 ---
+rule: what-only-the-file-knows-survives-the-rewrite
 type: llm
 focus: full_transcript
 weight: 1
