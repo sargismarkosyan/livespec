@@ -25,7 +25,7 @@ headers and the stamp line below, so keep those as they are.
 | **Required checks** | <the names the platform has, read back from it> |
 | **Tracker** | <the host, and the command that files there — or "there is no tracker"> |
 | **Where the app runs** | `<command>`, or *nowhere — there is no app* |
-| **Deliverable of a version** | <the picture and its form, or *nothing to see* and what stands in its place> |
+| **Deliverable of a version** | <which changes owe a picture and in what form — a recording, a still — and which owe none and get *nothing to see* in the pull request instead; three answers, per kind of change, never one for the repository> |
 | **What a change here must show** | <which changes owe a picture, in what form, and where it goes> |
 | **A sketch is owed** | <which changes owe one before approval — a repository with no app still has change specs> |
 | **CLAUDE.md ceiling** | <the size the file may not exceed, in a unit the gate reads — written from what the file is when the sitting has finished with it, with the command that reads it and the change that set it; raised only in the change that needs the room, and never above the limit the method names> |
