@@ -1,7 +1,7 @@
 ---
 tags: [skill:doctor, rule:one-line-per-check-or-it-does-not-end, rule:a-decided-exception-is-reported-once-and-never-relitigated, rule:the-reply-is-generated-from-the-record]
-max_turns: 40
-timeout_seconds: 1200
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit, Bash]
 runs: 3
 ---

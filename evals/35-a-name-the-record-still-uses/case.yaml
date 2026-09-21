@@ -21,3 +21,9 @@
 # `/livespec:setup`, which all still exist. The check has to discriminate, not
 # flag every `/livespec:` it finds.
 scaffold_script: scaffold.sh
+# The sitting (0058): the session is lent the fixture's own commands, so the
+# audit tool runs as the skill's first line says it must — the sitting of
+# 2026-09-20 read every doctor case without one spending its turns hunting
+# for a shell and measuring the hunt.
+shell: [python3, make, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo, pytest]
+requires: [python3, pytest]

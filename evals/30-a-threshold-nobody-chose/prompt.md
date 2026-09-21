@@ -1,7 +1,7 @@
 ---
 tags: [skill:setup, rule:the-coverage-demand-is-not-todays-score, rule:what-is-not-covered-is-named-rather-than-subtracted, rule:the-demand-is-recommended-as-a-figure]
-max_turns: 25
-timeout_seconds: 660
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---

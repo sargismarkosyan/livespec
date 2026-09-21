@@ -11,3 +11,9 @@
 # measure is described in prose as "not built yet", which is a row on no clock,
 # and that finding is the proof the audit carried on past the stamp.
 scaffold_script: scaffold.sh
+# The sitting (0058): the session is lent the fixture's own commands, so the
+# audit tool runs as the skill's first line says it must — the sitting of
+# 2026-09-20 read every doctor case without one spending its turns hunting
+# for a shell and measuring the hunt.
+shell: [python3, make, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo, pytest]
+requires: [python3, pytest]

@@ -246,6 +246,29 @@ open, rather than reading its summary line as the count. Both go into the
 injection table: a skipped rule-bound test, and a run that saw fewer than the
 tree holds.
 
+### Then wire the report, and make it unable to fail the build
+
+The last gate-shaped thing this section wires is not a gate.
+[`gates.md`](../../method/gates.md#the-report-is-not-a-gate) expects a
+repository to come out of this sitting posting a report on its pull requests:
+what the change did to the spec layer, read from the traceability gate's own
+output rather than worked out again, placed where somebody deciding whether to
+merge is already looking. It runs after both gates pass and **it must not be
+able to fail the build** — not on a missing token, not on its own errors.
+
+Spell it in the words of the platform in front of you. On GitHub Actions it is
+a job after the gates with `continue-on-error: true` that posts a comment on
+the pull request with the token the workflow already has. On GitLab CI it is a
+job with `allow_failure: true` that posts a merge-request note through the API
+with the job token. On anything else it is that platform's equivalent, and the
+bindings' `wiring:pr-report` row names which. Where the repository's pull
+requests cannot carry a comment at all, the hand-back says the report is not
+wired and why; what it must never do is read as though it were.
+
+Wire it here, before the hook is offered below: the hook is a question, and a
+sitting that runs out of turns runs out after a question, so whatever sits
+after the offer is the first thing lost. The report is wiring, not a question.
+
 ### Then offer to run it before the push
 
 One command that a person can run locally is the precondition for the thing
@@ -365,15 +388,9 @@ pasted, not written. **Keep the table headers and the stamp line as the
 template has them**: the audit tool reads those and nothing else, and a ledger
 in another shape is reported as one the audit could not read.
 
-**Wire the report too, and say so when you cannot.**
-[`gates.md`](../../method/gates.md#the-report-is-not-a-gate) expects a repository
-to end up posting one on its pull requests: what the change did to the spec
-layer, read from the traceability gate's own output rather than worked out again,
-placed where somebody deciding whether to merge is already looking. It runs after
-both gates pass and **it must not be able to fail the build** — not on a missing
-token, not on its own errors. Where the repository's pull requests cannot carry a
-comment at all, the hand-back says the report is not wired and why; what it must
-never do is read as though it were.
+**The `wiring:pr-report` row names the job section 4 wired** — *Then wire the
+report* — or says why there is none; a row reading *deferred* for a report the
+platform could carry is a sitting that stopped short, not a decision.
 
 **The tracker row is not optional and is not cosmetic.** Section 1 already found
 how issues are filed here; this is where that answer becomes something a skill

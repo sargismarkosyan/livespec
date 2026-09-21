@@ -12,3 +12,5 @@
 # What the case grades is which of the two comes back, and whether the exclusion
 # lands where the coverage tool reads it rather than in a paragraph beside it.
 scaffold_script: scaffold.sh
+# The sitting (0058): the owner answers from person.md — the yes and the facts only
+# they have, never volunteered, and nothing about what the case grades.

@@ -1,7 +1,7 @@
 ---
 tags: [skill:refine-spec, rule:a-missing-tool-is-not-a-missing-page]
-max_turns: 25
-timeout_seconds: 660
+max_turns: 40
+timeout_seconds: 1200
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---

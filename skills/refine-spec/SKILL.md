@@ -216,12 +216,21 @@ Persona, workflow, end value and scope are all *in* the spec under their own
 headings. Repeating them in chat gives the reader two versions to reconcile, and
 the one in the terminal is the one that goes stale.
 
-### And draw the sketch, before approval is asked for
+### And draw the sketch, before approval is asked for — or say in a line that there is nothing to draw
 
 The spec argues its case in prose. **What it cannot do is show the reader the
 thing it is arguing about** — and this is the one step where that matters most,
-because the change does not exist yet and there is nothing to record. So make one
-page carrying the evidence, and hand it over with the links.
+because the change does not exist yet and there is nothing to record.
+
+**First decide whether there is anything to draw, and decide it before a page
+exists.** A sketch carries four things — what it is now beside what it would
+be, what moves and what stays with the reason against each, a count that
+changed, a link to the spec — and where every one of them fits in a line of
+prose, there is nothing the prose does not carry: a renamed constant, a
+corrected path, one name chosen out of three. Then the hand-back says so in
+that line, and no page is made. A page for a rename is padding, and padding is
+the failure this step exists to prevent. Only when the prose cannot carry the
+evidence: make one page carrying it, and hand it over with the links.
 
 **Two ways to make it, in this order.** Publish it where the session has a tool
 that can (in Claude Code, `Artifact`). Where it has none, **write it as an
@@ -257,10 +266,10 @@ state the change starts from, do not draw one. Invented evidence, in a document
 whose whole purpose is to *be* evidence, at the moment somebody is deciding on
 it, is worse than no document.
 
-**Two absences, each one line.** Where there is nothing the prose cannot carry —
-a renamed constant, a corrected path — say so and draw nothing; padding the space
-is the failure this is meant to prevent. Where the session can **neither publish
-a page nor write a file**, say that once and hand back as below. That is the last
+**Two absences, each one line.** The first is decided above, before anything
+is made: nothing the prose cannot carry, said so, nothing drawn. The second is
+the session that can **neither publish a page nor write a file**: say that once
+and hand back as below. That is the last
 resort rather than the first, and one absent tool is not it — a session that can
 write the spec files can write the page. Do not go looking for a third way: that
 is [`process.md`](../../method/process.md#a-step-you-cannot-take-here-is-said-once-not-searched-for)'s

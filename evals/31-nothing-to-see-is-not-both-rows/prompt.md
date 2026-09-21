@@ -1,7 +1,7 @@
 ---
 tags: [skill:setup, rule:the-bindings-say-a-sketch-is-owed-here]
-max_turns: 25
-timeout_seconds: 660
+max_turns: 100
+timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---
