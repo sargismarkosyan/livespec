@@ -1,6 +1,6 @@
 # Spec 0059: a run the limit stops is resumed, not repeated
 
-- **Status:** proposed
+- **Status:** approved — merged by the maintainer as #145 on 2026-09-20
 - **Issue:** [#144](https://github.com/sargismarkosyan/livespec/issues/144) —
   every paid sitting since 2026-08-25 has ended at the account's session
   limit, and every session after the cut was lost: cases `42`–`45` have been
