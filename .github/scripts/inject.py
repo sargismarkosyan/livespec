@@ -806,6 +806,17 @@ FAULTS = [
     ("an id in the table no function answers", CHECKS,
      lambda r: edit(r, "method/gates.md", "| `check:stamp-present` |", "| `check:ghost` | mechanical | 0.0.0 | record | — | | nobody answers this |\n| `check:stamp-present` |"),
      "fails", "names check:ghost and no function"),
+    # A skill a strict YAML reader refuses is dropped whole, and Pi says nothing
+    # when it does; refine-workflows was invisible there for eleven versions
+    # while this gate read it line by line and passed it. See specs/changes/0067.
+    ("a skill description with ': ' in it, unquoted", CHECKS,
+     lambda r: edit(r, "skills/refine-spec/SKILL.md", "description: Turns a request into a spec.",
+                    "description: Turns a request into a spec: never the code."),
+     "fails", "opens a nested mapping"),
+    ("a skill description whose quote never closes", CHECKS,
+     lambda r: edit(r, "skills/refine-spec/SKILL.md", "description: Turns a request into a spec.",
+                    'description: "Turns a request into a spec.'),
+     "fails", "never closes"),
     ("a test claiming a rule that does not exist", TRACE,
      lambda r: edit(r, "tests/test_thing.py", 'rule("two")', 'rule("nope")'),
      "fails", "does not exist"),

@@ -1,6 +1,6 @@
 ---
 name: refine-workflows
-description: Refine the workflow specs — the bounded attempts the product is built out of. Use when the workflow list no longer matches what anyone actually attempts: one that is really two, one with no end state, one nothing implements or nothing walks, one to add, split, retire or re-cut. Also when the traceability gate reports a workflow orphan. Runs as an interview — asks what set the attempt off and how they knew they were done — then writes the workflow and a numbered change spec. Never implements.
+description: "Refine the workflow specs — the bounded attempts the product is built out of. Use when the workflow list no longer matches what anyone actually attempts: one that is really two, one with no end state, one nothing implements or nothing walks, one to add, split, retire or re-cut. Also when the traceability gate reports a workflow orphan. Runs as an interview — asks what set the attempt off and how they knew they were done — then writes the workflow and a numbered change spec. Never implements."
 ---
 
 # Refine the workflows
