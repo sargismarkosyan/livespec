@@ -1,0 +1,6 @@
+# The fixture for 49: sowlog whose journey was written from the workflows folder without asking the keeper and has become a workflows README with a journey id on top — a table of ids, a rules list, phases that reorder freely — and now carries a workflow name retired in July. The case grades taking the ids out and naming what the file had become, not refreshing them.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the keeper answers from person.md — the memory the file
+# never had, and the go-ahead. Never the phases.

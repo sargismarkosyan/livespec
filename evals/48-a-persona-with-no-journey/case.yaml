@@ -1,0 +1,7 @@
+# The fixture for 48: sowlog with its persona, two workflows tagged with a journey id, and an empty journeys layer, so the check reports the dangling id. The keeper who lived two seasons is on the person sheet. The case grades the interview — the last time, the gaps, where it nearly ended — and the file it produces.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the keeper answers from person.md — memory of the last
+# season, never volunteered, and never the phases. Three rounds: the
+# questions, the playback, the approval.

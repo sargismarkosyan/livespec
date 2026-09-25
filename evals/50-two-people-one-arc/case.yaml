@@ -1,0 +1,6 @@
+# The fixture for 50: sowlog with two persona files — the keeper the diary is for, and the plot neighbour who waters in August and is explicitly not a user — a sound current journey for the keeper, and a request to write one arc over both. The case grades one actor per journey.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the keeper answers from person.md — what August was
+# actually like, and the go-ahead. The neighbour is not in the room.
