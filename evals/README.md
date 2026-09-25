@@ -516,11 +516,19 @@ bring the person it would have had:
 `12`, `16` and `41` carried one first; the sitting of 2026-09-20 read `30`,
 `31`, `38`, `42` and `43` asking setup's six questions of nobody and `29`,
 `33` and `45` stopping at a clarifying question in both arms, so those eight
-carry one since. `24` and the other doctor cases do not — an audit answers to
+carry one since. The four journey cases `47`–`50` were written with one,
+because the skill they hold is an interview and `48` grades the questions
+themselves. `24` and the other doctor cases do not — an audit answers to
 the tree — and `09` must never get one, because the stop it grades is the
 thing a person would answer. Convert the rest as their runs demand it, the
 rule for scaffolds, and read the `PERSON:` lines in the first sitting after
 each conversion.
+
+`48`'s first pilot is why a sheet says the number as well as the fact. Asked
+how long the gap between sowing and the first tray showing was, the person
+answered *about six weeks* from a sheet that says three weeks — a plausible
+improvisation that the journey then carried. A sheet holds the fact; the
+rounds are the judge's, and anything it can round off, it will.
 
 ## When a case needs a shell
 
@@ -558,7 +566,9 @@ so in `case.yaml`:
   is a throwaway under `/tmp` either way.
 
 `12`, `16`, `24` and `41` lend one since `0058`; `40` and `44` granted bare
-`Bash` before it. Two things the first Sonnet pilot taught: a command that
+`Bash` before it; `47`–`50` lend `python3`, `git`, `ls` and `cat`, because
+`refine-journeys` reads the traceability check and `git log` on two folders
+before it believes anything about drift. Two things the first Sonnet pilot taught: a command that
 expands a variable — `echo $CLAUDE_PLUGIN_ROOT` — is refused by the CLI's own
 rule whatever the list says, so a session finds the plugin's tools by the path
 the skill hands it rather than by the variable; and `max_turns` is per round,
