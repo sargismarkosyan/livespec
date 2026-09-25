@@ -200,6 +200,26 @@ discriminate, the spiral did not recur, and the −0.33 stands as a fact about
 `452bcc3` rather than as a live defect. It is written down here because a Δ that
 size, seen cold, is worth exactly one re-open and no more.
 
+`50-two-people-one-arc` is the one to watch here, and it is worth reading
+before its number is. It measured Δ +0.33 on 2026-09-23 and **+0.00** on
+2026-09-25, where the bare arm raised the one-actor rule by itself — from the
+neighbour's persona file, which says in its own words that they are not
+somebody the diary is built for, and from the sound journey already in the
+fixture carrying one `@persona:` tag. The fixture teaches the answer it is
+asking for. That is not yet a reason to change it: one run either way is
+noise, and the floor is three. It is a reason to read the bare arm's replies
+first when the floor run lands, and to decide then whether the neighbour's
+file is doing the skill's work for it.
+
+**`48`'s sheet is five rounds because three measured the round count.** The
+sitting is questions, playback, the journey diff on its own, and only then the
+change spec — which is the order the skill sets out. On 2026-09-25 the plugin
+arm spent its third round asking whether the journey read right, which is
+exactly what it should have been doing, and the run ended before the change
+spec it was about to write. The grader asking where provenance went read that
+as a session that never wrote one. A budget that stops a sitting mid-flow does
+not grade the sitting.
+
 The negative cases are the ones to watch. Eight skills' descriptions load in
 every session, and the cost of widening one — or, as with `setup`, of making one
 visible at all — is paid here — where it should show up as a scored failure rather than as a user

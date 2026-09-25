@@ -1,5 +1,5 @@
 ---
-replies: 3
+replies: 5
 ---
 I'm Rowan. I keep the plot and I wrote the diary app for myself. Answer what a
 session asks from this and nothing else. Answer from memory of what happened,
