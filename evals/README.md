@@ -200,16 +200,17 @@ discriminate, the spiral did not recur, and the −0.33 stands as a fact about
 `452bcc3` rather than as a live defect. It is written down here because a Δ that
 size, seen cold, is worth exactly one re-open and no more.
 
-`50-two-people-one-arc` is the one to watch here, and it is worth reading
-before its number is. It measured Δ +0.33 on 2026-09-23 and **+0.00** on
-2026-09-25, where the bare arm raised the one-actor rule by itself — from the
-neighbour's persona file, which says in its own words that they are not
-somebody the diary is built for, and from the sound journey already in the
-fixture carrying one `@persona:` tag. The fixture teaches the answer it is
-asking for. That is not yet a reason to change it: one run either way is
-noise, and the floor is three. It is a reason to read the bare arm's replies
-first when the floor run lands, and to decide then whether the neighbour's
-file is doing the skill's work for it.
+`50-two-people-one-arc` is the narrowest of the five, and it is worth reading
+before its number is. Its pilots read Δ +0.33 and then +0.00, and the floor
+settled it at **+0.11** — the bare arm reaches the one-actor rule by itself in
+two runs of three, from the neighbour's persona file, which says in its own
+words that they are not somebody the diary is built for, and from the sound
+journey already in the fixture carrying one `@persona:` tag. The fixture
+teaches half the answer it is asking for. It still discriminates: the third
+bare run wrote the composite anyway, and one plugin run leaked a workflow id
+into the prose and was caught by the command grader. Leave it, and if the next
+floor run reads +0.00, the neighbour's file is doing the skill's work and the
+case needs a harder fixture rather than a softer rubric.
 
 **`48`'s sheet is five rounds because three measured the round count.** The
 sitting is questions, playback, the journey diff on its own, and only then the
@@ -532,6 +533,20 @@ bring the person it would have had:
   `ceiling`. The second Sonnet pilot lost the flagship's whole sitting to that
   exit code, so `12` now has a hundred turns a round, which is what a setup
   sitting with a shell takes.
+
+**A person the judge cannot reach is a harness error, not an answer.** In the
+floor run of 2026-09-25 one of `48`'s plugin sessions asked its four
+retrospective questions, promised to play the arc back, and then met
+`person: round 1, error: Expecting value: line 1 column 1` — the judge
+returned nothing parseable, nobody answered, and the sitting ended there. Three
+graders scored 0 against a session that had done exactly what the skill asks,
+and the case's plugin arm read 0.80 instead of 1.00. The judge-error rule from
+[`0058`](../specs/changes/0058-a-case-is-a-sitting-not-a-turn.md) covers a
+verdict that never came back; it does not yet cover a *person* who never
+answered, and until it does a row with one of these in it is worth reading the
+transcripts for. The number on the board is the measured one either way — a
+row edited by hand to say what a run would have said is the one thing worse
+than a low row.
 
 `12`, `16` and `41` carried one first; the sitting of 2026-09-20 read `30`,
 `31`, `38`, `42` and `43` asking setup's six questions of nobody and `29`,
