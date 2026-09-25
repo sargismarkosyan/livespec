@@ -12,6 +12,12 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.16.3 — 2026-09-25
+
+`refine-workflows` now loads on hosts that read skill frontmatter as strict YAML. Pi was silently dropping it because its description contained an unquoted `: `. The repository checks now read every skill's frontmatter the way a strict reader does, so the next such colon fails the build instead of making a skill disappear on another host.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
 ## 1.16.2 — 2026-09-21
 
 **Three more sentences said where they are read.** `setup` names `claude plugin eval init` at the moment the answer to *what proves a rule here* is graded cases — with the fallback in the same breath: the tool's own format, a folder per case of `prompt.md`, `case.yaml` and `graders/*.md`, run by a platform that already runs graded suites — and says that a case format of the repository's own is never the answer; at the floor, one sitting in three had named the tool and one had invented a layout, a tag schema and a grader script after the tool was refused. `setup`'s deliverable row, in the bindings template and in section 5, answers three things per kind of change — which changes owe a picture, in what form, and which owe none and get *nothing to see* instead — where it had answered moving-or-still and left the third question to every pull request. `refine-workflows` ends its reply on the choice a row deferred across two changes puts to the person — wire it, or write it off with the reason — and does not continue into the workflow until one is picked. In this repository's own suite the flagship's person answers five rounds, since its third sitting reached the persona diff exactly as three ran out, and a judge that returns nothing three times now carries the CLI's own last words in its errored verdict.
