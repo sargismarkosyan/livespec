@@ -1,6 +1,6 @@
 # Spec 0067: a skill loads where its frontmatter is read strictly
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-09-25
 - **Issue:** [#154](https://github.com/sargismarkosyan/livespec/issues/154)
 - **Blocks:** [#155](https://github.com/sargismarkosyan/livespec/issues/155),
   the Pi compatibility item. That item decides whether livespec names a second
@@ -150,14 +150,15 @@ property of this repository's own gate.
 
 No storage contract is touched.
 
-**The measurement board is.** Editing `skills/refine-workflows/SKILL.md` stales
-the board entries of the two cases that name that skill:
-`04-workflow-for-orphan` and `10-gate-deferred-twice`. `verify.py` exits **2**
-until they are re-measured. At the suite's recent per-case cost, that is roughly
-**$7**, and only the maintainer can approve it. The change can be committed and
-merged on that 2, per
+**The measurement board is, and adds nothing to the bill.** Editing
+`skills/refine-workflows/SKILL.md` stales the two cases that hold it,
+`04-workflow-for-orphan` and `10-gate-deferred-twice`. Read at build time on
+2026-09-25, both were already stale on `main`, because the harness moved under
+all 40 measured cases. `verify.py` exits **2** before this change and after it,
+and it is the same forty. The re-measurement those forty are owed covers these
+two as well, and approving it is the maintainer's call. The change is committed
+on that 2, per
 [`the-one-red-a-commit-may-carry`](../features/verification/which-red.feature).
-The pull request says which two cases are waiting.
 
 ## Risks
 

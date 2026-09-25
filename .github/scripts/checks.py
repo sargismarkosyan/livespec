@@ -65,25 +65,109 @@ def rel(path: Path) -> str:
     return str(path.relative_to(ROOT))
 
 
-def frontmatter(path: Path) -> dict[str, str] | None:
-    """Read the leading --- block. Flat string keys only, which is all a SKILL.md has."""
+# A plain YAML scalar may not open with one of these. `-`, `?` and `:` may, when
+# a non-space follows — `-x` is a string, `- x` is a sequence.
+YAML_INDICATORS = set("-?:,[]{}#&*!|>'\"%@`")
+
+# What every refusal below ends with, because the cost is not where it looks.
+STRICT_READER = (
+    "a strict YAML reader drops the whole skill here, not this one field, and "
+    "may say nothing when it does. Quote the value, or make it a block scalar (>-)"
+)
+
+
+def scalar(raw: str, rest: list[str]) -> tuple[str, str | None]:
+    """One value of a SKILL.md's frontmatter, as a host would read it.
+
+    `raw` is what follows `key:` on its own line, `rest` the indented lines under
+    it. Returns the value and, where a strict reader would refuse it, why.
+    """
+    body = [line.strip() for line in rest if line.strip()]
+    if raw[:1] in ("|", ">"):
+        if not re.fullmatch(r"[|>](?:[1-9][-+]?|[-+][1-9]?)?(?:\s+#.*)?", raw):
+            return "", f"block scalar header {raw!r} is not one YAML accepts"
+        return ("\n" if raw[0] == "|" else " ").join(body), None
+    if raw[:1] in ("'", '"'):
+        quote, text = raw[0], " ".join([raw] + body)
+        i = 1
+        while i < len(text):
+            if quote == '"' and text[i] == "\\":
+                i += 2
+                continue
+            if text[i] == quote:
+                if quote == "'" and text[i + 1:i + 2] == "'":
+                    i += 2
+                    continue
+                break
+            i += 1
+        else:
+            return "", f"the {quote} opening this value never closes"
+        inner, after = text[1:i], text[i + 1:].strip()
+        if after and not after.startswith("#"):
+            return "", f"{after!r} follows the closing {quote}"
+        if quote == "'":
+            return inner.replace("''", "'"), None
+        try:
+            return json.loads(f'"{inner}"'), None
+        except ValueError:
+            return inner, None
+    parts = [raw] if raw else []
+    parts += body
+    if not parts:
+        return "", None
+    first = parts[0]
+    if first[0] in YAML_INDICATORS and not (first[0] in "-?:" and first[1:2] not in ("", " ", "\t")):
+        return "", f"an unquoted value may not open with {first[0]!r}"
+    for part in parts:
+        if ": " in part or part.endswith(":"):
+            return "", "': ' inside an unquoted value opens a nested mapping"
+        if " #" in part or "\t#" in part:
+            return "", "' #' inside an unquoted value opens a comment, and the rest is cut"
+    return " ".join(parts), None
+
+
+def frontmatter(path: Path) -> tuple[dict[str, str] | None, list[str]]:
+    """Read the leading --- block the way a strict YAML reader would.
+
+    Only the subset a SKILL.md uses: top-level `key: value`, the value plain,
+    quoted or a block scalar. The gates take no dependencies and the standard
+    library has no YAML parser, so anything outside the subset is refused rather
+    than guessed at. Claude Code's reader is lenient and passed a description
+    Pi's dropped without a word; this one is not. See specs/changes/0067.
+    """
     lines = path.read_text().splitlines()
     if not lines or lines[0].strip() != "---":
-        return None
+        return None, []
     try:
         end = lines.index("---", 1)
     except ValueError:
-        return None
+        return None, []
     fields: dict[str, str] = {}
-    key = None
-    for line in lines[1:end]:
-        match = re.match(r"^([A-Za-z][\w-]*):\s*(.*)$", line)
-        if match:
-            key = match.group(1)
-            fields[key] = match.group(2).strip()
-        elif key and line.startswith((" ", "\t")):
-            fields[key] += " " + line.strip()
-    return fields
+    problems: list[str] = []
+    block, i = lines[1:end], 0
+    while i < len(block):
+        number, line = i + 2, block[i]
+        i += 1
+        if not line.strip() or line.startswith("#"):
+            continue
+        match = re.fullmatch(r"([A-Za-z][\w-]*):(?:[ \t]+(.*))?", line)
+        if not match:
+            problems.append(f"line {number}: {line.strip()[:40]!r} is not a `key: value` pair — {STRICT_READER}")
+            continue
+        key, raw = match.group(1), (match.group(2) or "").strip()
+        rest = []
+        while i < len(block) and (block[i].startswith((" ", "\t")) or not block[i].strip()):
+            rest.append(block[i])
+            i += 1
+        value, problem = scalar(raw, rest)
+        if problem:
+            problems.append(f"line {number}: {key}: {problem} — {STRICT_READER}")
+            # Read on as a lenient host would, so one refusal is the whole report.
+            value = " ".join([raw] + [line.strip() for line in rest if line.strip()])
+        if key in fields:
+            problems.append(f"line {number}: {key!r} appears twice — {STRICT_READER}")
+        fields[key] = value
+    return fields, problems
 
 
 def markdown_files() -> list[Path]:
@@ -169,10 +253,12 @@ always_on_skills = 0
 seen = set()
 for skill in skill_files:
     where = rel(skill)
-    fields = frontmatter(skill)
+    fields, problems = frontmatter(skill)
     if fields is None:
         fail(where, "no YAML frontmatter block")
         continue
+    for problem in problems:
+        fail(where, problem)
     name = fields.get("name", "")
     description = fields.get("description", "")
     seen.add(skill.parent.name)
