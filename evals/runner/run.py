@@ -62,7 +62,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / ".github" / "scripts"))
 from caselib import (  # noqa: E402
-    MIN_RUNS, SESSION_MODEL, cases, frontmatter, harness_fingerprint, measurement_inputs, replaces, why_stale,
+    MIN_RUNS, SESSION_MODEL, cases, frontmatter, harness_fingerprint, measurement_inputs, replaces,
+    stale_arms, why_stale,
 )
 
 # --- the cost gate ------------------------------------------------------------
@@ -187,7 +188,8 @@ def plan_cases(suite: list[dict], granted: set[str], scaffold: bool) -> list[dic
         planned.append({
             "case": case["name"],
             "negative": bool(case["negative"]),
-            "inputs": measurement_inputs(case, ROOT),
+            "inputs": measurement_inputs(case, ROOT, "with"),
+            "arms": list(case.get("arms") or ARMS),
             "vars": {
                 "prompt": body.strip(),
                 "case": case["name"],
@@ -211,11 +213,15 @@ def plan_cases(suite: list[dict], granted: set[str], scaffold: bool) -> list[dic
 def jobs(plan: dict) -> list[tuple[str, str, int]]:
     """Every (case, arm, run) the plan asks for, case by case and run by run,
     both arms together — so a run the limit cuts short has finished whole
-    cases rather than half of every case."""
+    cases rather than half of every case.
+
+    A case may owe one arm rather than two. `--changed` asks for the arms
+    whose inputs moved, and a skill edit moves only the with-arm's, because
+    the bare arm never had the skill in its context (0070)."""
     return [(case["case"], arm, run)
             for case in plan["cases"]
             for run in range(1, int(plan["repeat"]) + 1)
-            for arm in ARMS]
+            for arm in (case.get("arms") or ARMS)]
 
 
 def job_dir(run_dir: Path, case: str, arm: str, run: int) -> Path:
@@ -564,8 +570,25 @@ def entry_for(s: dict, case: dict, root: Path, sha: str, judge: str) -> dict:
         "model": "+".join(models) if models else "",
         "judge": judge,
         "harness": harness_fingerprint(root),
-        "inputs": measurement_inputs(case, root),
+        "inputs": measurement_inputs(case, root, "with"),
+        "inputs_without": measurement_inputs(case, root, "without"),
     }
+
+
+def _carried(s: dict, prior: dict | None) -> dict:
+    """This run's scores, with an arm it did not run filled from the board.
+
+    A run that measured one arm is still a measurement of a delta, because the
+    other arm's number is still true: nothing it saw has changed. What would
+    not be true is pretending it ran — so the row marks the arm as carried and
+    keeps its own inputs hash, which is what a later edit to the case will
+    stale.
+    """
+    out = {**s, "with": list(s["with"]), "without": list(s["without"])}
+    for arm in ARMS:
+        if not out[arm] and isinstance(prior, dict) and isinstance(prior.get(arm), (int, float)):
+            out[arm] = [float(prior[arm])] * int(prior.get("runs") or 1)
+    return out
 
 
 def record(measured: dict, suite: list[dict], judge: str) -> None:
@@ -594,12 +617,21 @@ def record(measured: dict, suite: list[dict], judge: str) -> None:
         sha = "unknown"
     written, held = 0, []
     for name, s in measured.items():
-        runs = min(len(s["with"]), len(s["without"]))
         prior = board["cases"].get(name)
+        # An arm this run did not perform keeps the number it had, and the row
+        # says so by carrying that arm's hash forward untouched. The commonest
+        # change here edits a skill, which only the with-arm ever saw (0070).
+        kept = _carried(s, prior)
+        runs = min(len(kept["with"]), len(kept["without"]))
         if not replaces(prior, runs):
             held.append((name, runs, prior))
             continue
-        board["cases"][name] = entry_for(s, by_name[name], ROOT, sha, judge)
+        row = entry_for(kept, by_name[name], ROOT, sha, judge)
+        for arm, field in (("with", "inputs"), ("without", "inputs_without")):
+            if not s[arm] and isinstance(prior, dict) and prior.get(field):
+                row[field] = prior[field]          # not re-measured, so not re-dated
+                row.setdefault("carried", []).append(arm)
+        board["cases"][name] = row
         written += 1
     board["cases"] = dict(sorted(board["cases"].items()))
     BOARD.write_text(json.dumps(board, indent=1) + "\n")
@@ -673,7 +705,7 @@ def main() -> int:
         if missing:
             print(f"✘ the run names a case the tree no longer has: {', '.join(sorted(missing))}", file=sys.stderr)
             return 1
-        moved = [c["name"] for c in suite if measurement_inputs(c, ROOT) != next(
+        moved = [c["name"] for c in suite if measurement_inputs(c, ROOT, "with") != next(
             p["inputs"] for p in plan["cases"] if p["case"] == c["name"])]
         if moved:
             print(f"  ⚠ changed since the run began, so its halves measure two versions: {', '.join(moved)} "
@@ -693,7 +725,21 @@ def main() -> int:
         if not suite:
             print("✔ board is current — nothing has changed since its measurements")
             return 0
-        print(f"  --changed: {len(suite)} case(s) without a fresh measurement")
+        # Which arms, not just which cases. A row stale only because a skill
+        # body moved owes the with-arm; the bare arm never saw that skill and
+        # its number still describes what it measured (0070). A row stale for
+        # the model or the harness owes both, because those touched every
+        # session that ran.
+        for case in suite:
+            entry = entries.get(case["name"])
+            reasons = why_stale(entry, case, ROOT)
+            arms = ARMS if ({"model", "harness", "never measured"} & set(reasons)) \
+                else [a for a in ARMS if a in stale_arms(entry, case, ROOT)]
+            case["arms"] = list(arms) or list(ARMS)
+        halves = sum(1 for c in suite if len(c["arms"]) == 1)
+        print(f"  --changed: {len(suite)} case(s) without a fresh measurement"
+              + (f", {halves} of them owing one arm only — the other still describes what it measured"
+                 if halves else ""))
     if not suite:
         print("✘ no cases selected", file=sys.stderr)
         return 1

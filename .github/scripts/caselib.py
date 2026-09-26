@@ -185,18 +185,26 @@ def rule_text(root: Path, rule_id: str) -> str:
     return ""
 
 
-def measurement_inputs(case: dict, root: Path) -> str:
-    """Hash of what a measurement of this case measures.
+def measurement_inputs(case: dict, root: Path, arm: str = "with") -> str:
+    """Hash of what a measurement of this case, in this arm, measures.
 
-    Three things go in: the case's own files, the text of every rule it
-    claims, and the body of every skill it holds. When any of them moves, a
-    number measured before the move describes something that no longer exists.
+    Three things can move under a number: the case's own files, the text of
+    every rule it claims, and the body of every skill it holds. The first two
+    move under both arms. **The third moves under one.** The bare arm runs
+    `claude -p` with no `--plugin-dir`, so no skill body is in its context and
+    no edit to one can change what it did — a skill rewritten from top to
+    bottom leaves the bare arm measuring exactly what it measured before.
+
+    That is why this takes an arm. `with` hashes all three; `without` hashes
+    the first two. A skill edit then stales half a row instead of a whole one,
+    and the commonest change in this repository costs half of what it did.
+    What it does not do is let a stale baseline hide: change the prompt, the
+    fixture, a grader or a rule and both arms go, because both saw those.
+
     Content-addressed — bytes only, never timestamps or git metadata — so two
-    machines agree about staleness.
-
-    Shared between the runner (which records it) and the board gate (which
-    checks it) for the same reason this reader is shared: so the two cannot
-    disagree about what a measurement is.
+    machines agree about staleness. Shared between the runner (which records
+    it) and the board gate (which checks it) for the same reason this reader
+    is shared: so the two cannot disagree about what a measurement is.
     """
     digest = hashlib.sha256()
     for path in sorted(p for p in case["dir"].rglob("*") if p.is_file()):
@@ -205,11 +213,12 @@ def measurement_inputs(case: dict, root: Path) -> str:
     for rule in sorted(case["claims"]["rules"]):
         digest.update(f"rule:{rule}".encode())
         digest.update(rule_text(root, rule).encode())
-    for skill in sorted(case["claims"]["skills"]):
-        digest.update(f"skill:{skill}".encode())
-        skill_md = root / "skills" / skill / "SKILL.md"
-        if skill_md.exists():
-            digest.update(skill_md.read_bytes())
+    if arm == "with":
+        for skill in sorted(case["claims"]["skills"]):
+            digest.update(f"skill:{skill}".encode())
+            skill_md = root / "skills" / skill / "SKILL.md"
+            if skill_md.exists():
+                digest.update(skill_md.read_bytes())
     return digest.hexdigest()[:16]
 
 
@@ -253,13 +262,34 @@ def why_stale(entry: dict | None, case: dict, root: Path) -> list[str]:
     if not isinstance(entry, dict):
         return ["never measured"]
     reasons: list[str] = []
-    if entry.get("inputs") != measurement_inputs(case, root):
+    if stale_arms(entry, case, root):
         reasons.append("inputs")
     if entry.get("model") != SESSION_MODEL:
         reasons.append("model")
     if entry.get("harness") != harness_fingerprint(root):
         reasons.append("harness")
     return reasons
+
+
+def stale_arms(entry: dict | None, case: dict, root: Path) -> list[str]:
+    """Which arms of this row no longer describe what they measured.
+
+    A row records a hash per arm. A row written before this existed carries
+    one `inputs` hash and no `inputs_without` — and that hash covered all
+    three things, so it is a superset of the bare arm's: if it still matches,
+    the case files and the rules have not moved either, and both arms are
+    current. If it does not match, an old row cannot say which of the three
+    moved, so both arms go.
+    """
+    if not isinstance(entry, dict):
+        return ["with", "without"]
+    with_stale = entry.get("inputs") != measurement_inputs(case, root, "with")
+    if "inputs_without" not in entry:
+        return ["with", "without"] if with_stale else []
+    stale = ["with"] if with_stale else []
+    if entry.get("inputs_without") != measurement_inputs(case, root, "without"):
+        stale.append("without")
+    return stale
 
 
 def is_current(entry: dict | None, case: dict, root: Path) -> bool:
