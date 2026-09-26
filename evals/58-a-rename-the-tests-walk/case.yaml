@@ -1,0 +1,6 @@
+# The fixture for 58: fieldnote whose one workflow is walked by a test naming its id, and a request to rename it in place. The case grades leaving the old id live, landing the new one @planned, and never handing the implementing change a red gate.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, pytest]
+# The sitting (0058): the maintainer answers from person.md — the name is
+# wanted, the mechanics are the session's.
