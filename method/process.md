@@ -71,6 +71,18 @@ comes from; what they never do is produce the deliverable by hand.
   approval: show that diff by itself, say in one line what it changes about who
   this is for or what they do, and get it confirmed *before* asking for approval
   of the spec. **If only one thing is reviewed in a round, it is this one.**
+- **The reading is played back before the file exists.** A skill that
+  interviews somebody is drawing a conclusion from their answers, and the
+  conclusion is the part they can correct and it cannot. So it comes back to
+  them as a paragraph — *here is what I think this means* — **before anything
+  is written**, and the sitting stops there until it is confirmed or fixed.
+  **The reason this needs a rule is that every such skill also shows a diff at
+  the end**, and the two look alike enough that a sitting under pressure does
+  one of them and believes it has done both. They are not the same: a diff is
+  a decision already taken, shown to somebody who can now only agree or ask
+  for a rewrite. A reading costs a paragraph and can still be argued with.
+  Name them differently, put the reading in its own step, and say at the diff
+  that it does not stand in for the reading.
 - **The decision gets the evidence it rests on.** Step 4 is the only place in
   the loop where somebody decides on a thing that does not exist yet, so prose
   is not merely thin there — it is the whole of what is available. The spec

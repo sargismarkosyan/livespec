@@ -69,10 +69,6 @@ not by editing.
   workflow, or a boundary in `spec.md` is worth four that confirm it. Say the
   collision out loud when you hit it — the person answering usually does not know
   that the sentence they just said rules a feature in or out.
-- **Play your reading back before writing anything.** One short paragraph: here
-  is what I think these facts mean for the product. The raw answers are not the
-  persona — the persona is what you concluded from them, and the human is the
-  only one who can tell you the conclusion is wrong.
 - **Ask again when the answer opens something.** One round is a rule of thumb,
   not a limit; three rounds of four beats a guess. Stop when the answers stop
   moving the file.
@@ -87,7 +83,22 @@ never turn on has become scenery), and is what you found drift or a decision.
 Drift is a description that fell behind the person; a decision moves who the
 product is built for.
 
-## 2. Hold every line to a test
+## 2. Play the reading back, before the file exists
+
+**One short paragraph, in your words, before anything is written.** Here is
+what I think these facts mean for the product. The raw answers are not the
+persona — the persona is what you concluded from them, and the human is the
+only one who can tell you the conclusion is wrong. Then stop and let it be
+corrected.
+
+Played back now it costs a paragraph. Played back after the file is on disk it
+is a summary of a decision already taken, and the thing they were here for did
+not happen.
+
+**This is not the diff.** The diff comes at the hand-back, after the file
+exists, and it does not stand in for this.
+
+## 3. Hold every line to a test
 
 These are the operational half of the design-persona literature at the bottom of
 this file. Apply them **line by line to the file**, not to the change on the
@@ -129,7 +140,7 @@ table — that is what makes this a refinement skill rather than an editing one.
   somebody. This file exists to settle design arguments between people. Never
   import one into the other.
 
-## 3. The tester is not the persona
+## 4. The tester is not the persona
 
 The human testing this repo has no file here **on purpose**: a `@persona:` tag
 would let a workflow be written for them. They paste odd input, open devtools and
@@ -140,7 +151,7 @@ gets checked against the persona before it becomes a spec. If a request would be
 served by giving the tester a file here, that is this skill's refusal above,
 wearing a different hat.
 
-## 4. The gate runs both ways
+## 5. The gate runs both ways
 
 | | |
 |---|---|
@@ -175,7 +186,7 @@ So the two edits this skill makes both land in the sibling skill's folder:
 
 A spec commit that leaves `trace` red is not a spec commit.
 
-## 5. Delete, do not shelve
+## 6. Delete, do not shelve
 
 A persona the product has stopped being for is **deleted**, file and README row
 together. Git holds what was dropped and the change spec holds why, so a file
@@ -186,7 +197,7 @@ when it was shelved.
 workflow names *yet*, mid-transition, for a version. If the tag is still on when
 the change lands, the change is not finished.
 
-## 6. Write it, check, hand back
+## 7. Write it, check, hand back
 
 The persona file, from [`templates/persona.md`](../../templates/persona.md),
 and `personas/README.md`, then a numbered change spec at
@@ -197,6 +208,10 @@ this is for* in that spec is, for once, literally the subject.
 Then run the traceability gate — the command is in `specs/setup/README.md`.
 
 Green. Commit the spec on its own — `spec NNNN: <title>`.
+
+**The reading came first, and this does not replace it.** If what these facts
+mean has not been played back in a paragraph and corrected, step 2 has not
+happened and the sitting is not ready to show anything.
 
 **Show the persona diff by itself, first** — the diff, one line on what it
 changes about who this is for, and what that newly allows in the product or newly
