@@ -1,0 +1,3 @@
+# The fixture for 61: fieldnote in good order, and a question about what separates a workflow file from a feature file. The case grades nothing firing on the vocabulary refine-workflows' description carries: workflow, re-cut, orphan, end state.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
