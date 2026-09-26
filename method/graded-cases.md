@@ -139,6 +139,38 @@ That asymmetry is deliberate and it is the whole design:
 re-measuring the whole suite because one file moved is a bill nobody agreed to.
 The fingerprint already says which cases moved; measure those.
 
+### Gate the freshness of what you can afford to keep fresh
+
+The most faithful measurement — the whole session, in its world, with the person
+answering and the tools lent — is also the most expensive, and a freshness gate
+on it turns every edit into a bill. A gate nobody can afford to clear is one that
+gets bypassed, and then it is not a gate.
+
+So measure at **two speeds**. A **cheap tier** is what every edit owes: a single
+turn to see whether the right instructions load at all, a single reply to a
+snapshot of what the session would have read before answering, a reading of the
+instructions beside the rules they owe. Each is fingerprinted by **only what it
+can see** — a routing turn never sees a skill's body, so a body edit cannot stale
+it — and its freshness is what the gate holds. A **faithful tier** — the whole
+sitting — is kept, shown and run on purpose: when the model moves, before a cheap
+tier is trusted, when somebody chooses to. A stale faithful number is marked
+stale and left out of every average, because it must never be presented as
+current; it is not owed, because nothing that cannot be afforded can be owed.
+
+**A cheap tier earns its trust against the faithful one.** Run the same cases
+both ways and believe the cheap number where the verdicts agree. Where it cannot
+see — the later turns, the files written, the commands run — say so wherever its
+numbers are read, and let a rubric that only those could decide be marked as not
+applying rather than failed: a failure the tier could never have avoided is the
+tier's blind spot scored as the product's fault.
+
+**And the sessions already had.** A product used for real leaves its own record,
+and it is the one evidence nobody has to pay to produce. Grade those sessions
+against the rules the product owes — the grading is the only spend — and keep
+them local, because they are somebody's real work. They never go on the board: a
+board row describes the files as they stand, and a real session describes the
+files as they stood the day it happened.
+
 **And the run itself is never automatic.** A suite that costs money every time it
 executes must refuse to start without an explicit approval from the person paying
 — not a setting, not a default, an approval given per run. A stale measurement is

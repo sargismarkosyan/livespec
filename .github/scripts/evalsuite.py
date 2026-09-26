@@ -213,6 +213,32 @@ if runner.exists() and "default=SESSION_MODEL" not in runner_source:
         "on whatever the account defaults to, and the board could not say which model made a number (#130).",
     )
 
+# The cheap tiers spend the same account's money in smaller pieces, and the
+# board gates their freshness — so the stale rows it prints are the commonest
+# reason anybody reaches for this runner at all. The same three guards hold it:
+# it refuses without the maintainer's flag, a pilot never takes a measurement's
+# row, and the model is the bindings' decision rather than the account's (0072).
+tiers = ROOT / "evals" / "runner" / "tiers.py"
+tiers_source = tiers.read_text() if tiers.exists() else ""
+if tiers.exists() and "--i-approve-the-cost" not in tiers_source:
+    fail(
+        "evals/runner/tiers.py",
+        "no longer refuses an unapproved run. Cents a row is still the maintainer's money and session "
+        "limit, and a stale tier row is the commonest reason to reach for it — the flag is theirs to add.",
+    )
+if tiers.exists() and "replaces(" not in tiers_source:
+    fail(
+        "evals/runner/tiers.py",
+        "no longer asks caselib.replaces() before writing the board. A pilot could then overwrite a "
+        "tier row measured at the floor, and clear the staleness that was asking for it (#75).",
+    )
+if tiers.exists() and "default=SESSION_MODEL" not in tiers_source:
+    fail(
+        "evals/runner/tiers.py",
+        f"no longer defaults --model to caselib.SESSION_MODEL ({SESSION_MODEL}). Routing turns and first "
+        "replies would run on whatever the account defaults to, and the rows could not say which (#130).",
+    )
+
 readme = ROOT / "evals" / "README.md"
 if not readme.exists():
     fail("evals/README.md", "is missing; it is where the floor is written down")
@@ -221,6 +247,13 @@ else:
     for required in REQUIRED_INVOCATION:
         if required not in text:
             fail("evals/README.md", f"no longer names {required!r}; the floor says the suite is run with it")
+
+    if tiers.exists() and "python3 evals/runner/tiers.py --changed" not in text:
+        fail(
+            "evals/README.md",
+            "does not document `python3 evals/runner/tiers.py --changed`, the run the board gate asks "
+            "for; a heal nobody can find in the suite's own page is a red nobody knows how to clear",
+        )
 
     if any(case["scaffold"] for case in suite) and "--scaffold" not in text:
         fail(

@@ -77,18 +77,18 @@ session here is most likely to miss:
   case pointing at it, in every consuming repository at once.
 - **A payload file nothing links fails CI.** It would ship to every user unread.
 - **A measurement does not outlive what it measured.** Editing a skill, a rule
-  or an eval case stales its entries in `evals/board.json`, and `verify.py`
-  **exits 2** until `evals/runner/run.py --changed` re-measures exactly those —
-  real sessions, real money. The score is never gated; only its bookkeeping is.
-  Exit 2 is the one red that means nothing is broken and a run is owed; exit 1
-  is a gate, and a tree failing both is 1. Committing and pushing on a 2 is
-  sanctioned — [`method/repository.md`](method/repository.md), *Commits*, says
-  what the commit and the pull request then owe.
+  or an eval case stales its tier rows in `evals/board.json` — `route`, `first`,
+  `review`, cents a row — and `verify.py` **exits 2** until `evals/runner/tiers.py
+  --changed` re-measures exactly those. The sittings `run.py` drives are the
+  canary: shown stale, never owed. The score is never gated; only its
+  bookkeeping is. Exit 2 means nothing is broken and a run is owed; exit 1 is a
+  gate, and a tree failing both is 1. Committing and pushing on a 2 is sanctioned
+  — [`method/repository.md`](method/repository.md), *Commits*, says what is owed.
 - **The suite runs when the maintainer asks for it.** Every run bills their
   account and draws down its session limit — the refusal says what a run would
-  cost, from the board — three runs in one sitting have exhausted it. `run.py`
-  refuses without `--i-approve-the-cost`, `evalsuite.py` fails if that refusal
-  is removed, and the flag is the maintainer's to add rather than the session's.
+  cost, from the board — three runs in one sitting have exhausted it. `run.py` and
+  `tiers.py` refuse without `--i-approve-the-cost`, `evalsuite.py` fails if either
+  refusal is removed, and the flag is the maintainer's to add, not the session's.
   A stale board entry is worth naming and costing out; the decision to spend
   comes from them. Say which cases are stale and what it will cost, then wait —
   the commit and the pull request can be finished with a gap where the numbers
@@ -106,15 +106,15 @@ python3 .github/scripts/trees.py new <name>       # a tree for the next change; 
 claude plugin validate . --strict                 # marketplace manifest
 claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
 claude plugin validate ./skills --strict
-python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold  # maintainer step
+python3 evals/runner/tiers.py --changed --scaffold  # maintainer step: the tiers, cents a row
+python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold  # the canary
 ```
 
-The last one refuses unless the maintainer adds `--i-approve-the-cost`, per the
-rule above. It **costs money per session and never runs in CI** — it drives real
-`claude -p` sessions itself, because the native `claude plugin eval`
-is gated behind early access on this account. The gates hold the eval suite
-structurally — see the bindings, and a green `verify.py` does not mean the
-cases passed.
+The last two refuse unless the maintainer adds `--i-approve-the-cost`, per the
+rule above. They **cost money and never run in CI** — they drive `claude -p`
+themselves, because the native `claude plugin eval` is gated behind early
+access here. The gates hold the eval suite structurally, and a green `verify.py`
+does not mean the cases passed.
 
 ## Layout
 

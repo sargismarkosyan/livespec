@@ -120,27 +120,38 @@ def table(rows: list[tuple[str, tuple[str, ...]]], base: dict | None, head: dict
 
 
 BOARD_ROWS = [
-    ("Measured, still fresh", ("measured",)),
-    ("Stale — inputs changed since", ("stale",)),
-    ("Below the floor — a pilot, not a measurement", ("below",)),
-    ("Never measured", ("never",)),
+    ("Tier rows, still fresh", ("measured",)),
+    ("Tier rows stale — owed a run of cents", ("stale",)),
+    ("Tier rows never measured", ("never",)),
+    ("Canary sittings, fresh", ("canary", "measured")),
+    ("Canary sittings stale — shown, not counted, not owed", ("canary", "stale")),
+    ("Canary below the floor — a pilot, not a measurement", ("canary", "below")),
 ]
+
+
+def _mean_line(label: str, head: dict, base: dict | None, where: tuple[str, ...]) -> list[str]:
+    here, there = head, base
+    for key in where:
+        here = here.get(key) if isinstance(here, dict) else None
+        there = there.get(key) if isinstance(there, dict) else None
+    if not isinstance(here, dict) or not isinstance(here.get("mean_delta"), (int, float)):
+        return [f"No fresh {label} to average yet.", ""]
+    mean = here["mean_delta"]
+    dated = f" (as of {here['as_of']})" if here.get("as_of") else ""
+    was = there.get("mean_delta") if isinstance(there, dict) else None
+    versus = f", was {was:+.2f} on `main`" if isinstance(was, (int, float)) else ""
+    return [f"Mean Δ over the fresh {label}: **{mean:+.2f}**{dated}{versus}.", ""]
 
 
 def board_section(head: dict | None, base: dict | None) -> list[str]:
     # The eval board's counts. A measurement is rarely re-run on a pull
-    # request, so the mean is dated rather than dressed up as current.
+    # request, so each mean is dated rather than dressed up as current. The
+    # tiers carry freshness (0072); the canary is shown and never owed.
     if not isinstance(head, dict):
         return []
     lines = ["## The eval board", ""] + table(BOARD_ROWS, base, head) + [""]
-    mean = head.get("mean_delta")
-    if isinstance(mean, (int, float)):
-        dated = f" (as of {head['as_of']})" if head.get("as_of") else ""
-        was = base.get("mean_delta") if isinstance(base, dict) else None
-        versus = f", was {was:+.2f} on `main`" if isinstance(was, (int, float)) else ""
-        lines += [f"Mean Δ over the fresh measurements: **{mean:+.2f}**{dated}{versus}.", ""]
-    else:
-        lines += ["No fresh measurement to average yet.", ""]
+    lines += _mean_line("first moves", head, base, ())
+    lines += _mean_line("canary sittings", head, base, ("canary",))
     return lines
 
 

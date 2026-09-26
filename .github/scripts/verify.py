@@ -4,7 +4,7 @@
     repository checks      what only this repo knows about itself (checks.py)
     traceability           gate 1: rules <-> eval cases, features -> workflows
     eval suite             gate 2: every skill held, every case able to fail
-    measurement board      gate 5: no eval number outlives the files it measured
+    measurement board      gate 5: no tier row outlives the files it measured
     gate fault injection   every gate broken on purpose, to prove they fire
 
 CI runs this same command. A longer list in CI than a person can run locally is
@@ -64,9 +64,9 @@ OWED = 2
 
 OWED_NOTE = """
   Nothing is broken. A number no longer describes the files it measured, and the
-  only cure is a run of the eval suite — evals/runner/run.py prints what one
-  would cost when it refuses, billed to the maintainer's account and drawn down
-  from its session limit.
+  only cure is a run of the cheap tiers — evals/runner/tiers.py --changed prints
+  what one would cost when it refuses, cents a row, billed to the maintainer's
+  account and drawn down from its session limit.
 
   Committing and pushing this is sanctioned: method/repository.md, "Commits".
   Say in the commit which measurements are waiting; say in the pull request what

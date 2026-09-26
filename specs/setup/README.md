@@ -34,7 +34,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Package manager** | none |
 | **Traceability gate** | `.github/scripts/trace.py [root]` |
 | **Eval-suite gate** | `.github/scripts/evalsuite.py [root]` |
-| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks every gate in it one fault at a time, then breaks the release inputs, which need no fixture. *The fault injection record* below is generated from its three lists and checked against them by `checks.py`, so it cannot fall behind. Two of the three are pure and need no fixture: the release inputs, and `verify.py`'s `verdict()`. It also holds five **controls**: that the unbroken release inputs release, that `report.py` exits zero on every degenerate input, which is what `always-green` rests on, that a run whose only failure is the board reads as a bill rather than a defect, — since [`0056`](../changes/0056-a-fixture-is-a-repository-of-its-own.md) — that a fixture is a repository of its own: built with `GIT_DIR` pointing at a decoy, nothing lands in the decoy, and — since [`0057`](../changes/0057-a-measurement-names-its-model.md) — that a measurement names its model: against a stand-in `claude` on `PATH`, the provider passes the bindings' model and records the one the transcript names, the judge's verdict comes out of its JSON envelope with its price ledgered, and the row carries model, judge and harness; since [`0058`](../changes/0058-a-case-is-a-sitting-not-a-turn.md) the same control drives a sitting — the person's reply in the transcript, the shell as prefix rules, a missing binary refused, an errored verdict left out of the score |
+| **Fault injection** | `.github/scripts/inject.py` — builds a synthetic fixture and breaks every gate in it one fault at a time, then breaks the release inputs, which need no fixture. *The fault injection record* below is generated from its three lists and checked against them by `checks.py`, so it cannot fall behind. Two of the three are pure and need no fixture: the release inputs, and `verify.py`'s `verdict()`. It also holds six **controls**: that the unbroken release inputs release, that `report.py` exits zero on every degenerate input, which is what `always-green` rests on, that a run whose only failure is the board reads as a bill rather than a defect, — since [`0056`](../changes/0056-a-fixture-is-a-repository-of-its-own.md) — that a fixture is a repository of its own: built with `GIT_DIR` pointing at a decoy, nothing lands in the decoy, and — since [`0057`](../changes/0057-a-measurement-names-its-model.md) — that a measurement names its model: against a stand-in `claude` on `PATH`, the provider passes the bindings' model and records the one the transcript names, the judge's verdict comes out of its JSON envelope with its price ledgered, and the row carries model, judge and harness; since [`0058`](../changes/0058-a-case-is-a-sitting-not-a-turn.md) the same control drives a sitting — the person's reply in the transcript, the shell as prefix rules, a missing binary refused, an errored verdict left out of the score; and — since [`0072`](../changes/0072-a-cheap-tier-holds-every-edit.md) — that the cheap tiers are wired as they claim: against the same stand-in, a routing turn keeps the real system prompt with the plugin and `Skill` alone and is scored against what the case holds, a first reply runs under a prompt of its own with no tools and the skill's body in one arm only, a review reads every rule the skill answers for, a written row is fresh at once and a pilot cannot take it, a body edit stales no routing row while a description edit does, the limit is read as the limit, and a real session's firing is found, cut from the person's request and graded |
 | **Release-input gate** | `.github/scripts/version_gate.py [base]` — CI only, on pull requests. Fails a change to `skills/`, `method/`, `templates/`, `tools/` or `.claude-plugin/` that carries no `patch`/`minor`/`major` label, or two, or no `## Changelog` section in the body. Since [`0042`](../changes/0042-the-release-writes-the-list.md) it also fails a change on the audit surface with no `## Ids` section, one that says *unchanged* while the id table moved, a new id row with a typed version, or an id deleted rather than retired |
 | **Spec-surface check** | the same gate, asked separately. Fails a change to a `.feature` under `specs/features/` or `specs/workflows/` whose body carries no ` ```gherkin ` block and no link to a `.feature` pinned at a 40-character SHA. A layer README is not a `.feature` and does not trigger it |
 | **Release** | `.github/workflows/release.yml` on push to `main`, running `.github/scripts/release.py`. Bumps `version`, writes the `CHANGELOG.md` entry, stamps every `next` in `method/gates.md`'s id table with the version — the third file it owns, since [`0042`](../changes/0042-the-release-writes-the-list.md) — stamps this ledger's *Reconciled against* line with the version and the date — the fourth, since [`0044`](../changes/0044-the-release-stamps-its-own-ledger.md) — runs `verify.py --local`, commits all four, pushes, tags with `claude plugin tag --push`, opens the GitHub Release |
@@ -200,20 +200,46 @@ not prove it passes, and no output from `verify.py` should be read as saying it
 does — that is what running the suite is for, and no number from a run is
 trusted before the calibration pass `evals/README.md` describes.
 
-**What survives a run is the board.** `evals/board.json`, committed, one entry
-per case: the last measurement, the model, the judge, the harness fingerprint,
-and a hash of its inputs — the case's files, the rules it claims, the skills it
-holds, computed in `caselib.py` so the runner and the gate cannot disagree. `board.py` (gate 5, in `verify.py`) **fails** a
-case whose inputs changed after its measurement and **warns** on one never
-measured; `run.py --changed` re-runs exactly the stale set. The score is never
-gated — only its bookkeeping. The pull-request report reads the counts from
-`board.py --json`, which always exits 0: in that mode it is a hand-over, not a
-gate.
+**What survives a run is the board.** `evals/board.json`, committed. Since
+[`0072`](../changes/0072-a-cheap-tier-holds-every-edit.md) it holds the three
+**tiers** — `route` (a row per case), `first` (a row per case with a first move:
+not should-not-fire, holding a skill, graded by a rubric) and `review` (a row per
+skill) — written by `evals/runner/tiers.py`, and the **canary**, `cases`, one
+entry per case written by `run.py`: the last sitting, the model, the judge, the
+harness fingerprint, and a hash of its inputs. Every row's hash covers what that
+row can see and nothing else, computed in `caselib.py` so the runners and the
+gate cannot disagree: `route_inputs()` the case's files and **every skill's
+frontmatter**; `measurement_inputs()` per arm the case's files, its rules and —
+with-arm only — its skill bodies, shared by `first` and the canary;
+`review_inputs()` the skill's whole file and its rules' text. A tier row also
+carries `tier_harness_fingerprint()`, of `tiers.py`. `board.py` (gate 5, in
+`verify.py`) **fails** a tier row whose inputs, rubrics, model or harness moved
+after it was measured and **warns** on one never measured; `tiers.py --changed`
+re-runs exactly those. A canary row that went stale **warns** and is left out of
+the canary's mean — shown, never owed — and `run.py --changed` sits exactly
+those when the maintainer chooses. The score is never gated — only its
+bookkeeping. The pull-request report reads the counts from `board.py --json`,
+which always exits 0: in that mode it is a hand-over, not a gate.
+
+**`tiers.py` is held like `run.py`.** It refuses without `--i-approve-the-cost`,
+pricing the selection from each row's last cost or a stated guess; it asks
+`caselib.replaces()` before every write; its `--model` defaults to
+`caselib.SESSION_MODEL`; `evalsuite.py` fails any of the three going missing and
+`evals/README.md` no longer naming `tiers.py --changed`. Every call is `claude -p`
+on the maintainer's account, hermetic as the sittings are. A routing turn keeps
+Claude Code's own system prompt, loads the plugin with `--plugin-dir` and offers
+only `Skill`, one turn; a first reply, and every judge call, replaces the system
+prompt with `--system-prompt` and a reply has `--tools ""`. The account's limit
+stops the run with exit **3**, every finished row already written. First-move
+replies and verdicts land in `evals/results/tiers-<stamp>/`; `--transcripts`
+reads `~/.claude/projects`, leaves out this repository's own sessions, and keeps
+what it graded in `evals/results/transcripts/graded.json`, never on the board.
 
 **The floor is `MIN_RUNS = 3` in `caselib.py`, and it binds both ends.**
 `evalsuite.py` fails a case declaring fewer runs than that; `board.py` **warns**
 on an entry that came back from fewer, keeps it, shows it, and leaves it out of
-both the measured count and the mean. `run.py` calls `caselib.replaces()` before
+both the measured count and the mean. `tiers.py` runs three calls a row by
+default and holds its rows to the same rule. `run.py` calls `caselib.replaces()` before
 every write and will not put a below-floor number into a row a measurement
 holds — `evalsuite.py` fails if that call goes missing, the same way it fails if
 `--i-approve-the-cost` does. Added by [`0028`](../changes/0028-below-the-floor.md)
@@ -375,7 +401,7 @@ did.
 
 | id | boundary | state | since | evidence |
 |---|---|---|---|---|
-| `boundary:model-session` | the model session | **real** | 0012 | `claude -p` through promptfoo, started by `python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold --i-approve-the-cost` — the maintainer's to run, paid per run. Since 0057 the sessions run on `claude-sonnet-5` and every row records the model its transcripts name. The account's session limit, which ended every whole sitting before 0059, is read from the event: the run stops, exits 3, and `--resume` takes it up |
+| `boundary:model-session` | the model session | **real** | 0012 | `claude -p`, started by `python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold --i-approve-the-cost` — the maintainer's to run, paid per run. Since 0057 the sessions run on `claude-sonnet-5` and every row records the model its transcripts name. The account's session limit, which ended every whole sitting before 0059, is read from the event: the run stops, exits 3, and `--resume` takes it up. Since [`0072`](../changes/0072-a-cheap-tier-holds-every-edit.md) the same boundary, the same account, is crossed a call at a time by `python3 evals/runner/tiers.py --changed --scaffold --i-approve-the-cost` — routing turns, first replies, reviews — and by `tiers.py --transcripts`, which reads the maintainer's own session files and sends them to the judge |
 | `boundary:judge` | the judge | **unreachable** — decided | 0042 | a model standing in for the human who would read what came out. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16 rather than left as an apology: the calibration set that would make it a *fake* — verdicts a person has scored, re-scored by the judge on a schedule, [`evals/README.md`](../../evals/README.md#calibration) — is real work nobody has scheduled, and every change touching the judge says so where the change is decided. Since 0057 the judge is the sessions' own model, Sonnet, and its price is ledgered into the row; the same eyes read both arms, so what it prefers in its own kind lands on both sides of Δ — bounded, not removed. Leaves uncovered: everything a person would have scored differently, and a preference for one arm's voice that only the calibration read could show |
 | `boundary:consuming-repository` | the consuming repository a case runs in | **unreachable** — decided | 0042 | a scaffold script's fixture, a stand-in for a repository somebody set up. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16: a case against a live remote, CI and a real tracker is a repository nobody has set aside for it, the reference repository is read by hand, and every change touching the runner says so where the change is decided. Leaves uncovered: a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
 | `boundary:platform` | the platform | **real** | 0021 | `gh` against `sargismarkosyan/livespec`, read back 2026-08-29 with the commands under *Branch protection* below. Leaves uncovered: nothing named |
@@ -456,13 +482,21 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a row for a case nobody has | fails | ✔ |
 | the runner losing its refusal of an unapproved run | fails | ✔ |
 | the runner letting a run below the floor take a measurement's row | fails | ✔ |
+| the tier runner losing its refusal of an unapproved run | fails | ✔ |
+| the tier runner letting a pilot take a measurement's row | fails | ✔ |
+| the tier runner losing the model the bindings name | fails | ✔ |
+| a tier runner the suite's page never documents | fails | ✔ |
 | the runner losing the model the bindings name | fails | ✔ |
 | a measurement whose inputs moved on | fails | ✔ |
 | a measurement whose rule was reworded | fails | ✔ |
-| a case the board has never measured | **warns, does not fail** | ✔ |
+| a tier row the board has never measured | **warns, does not fail** | ✔ |
 | a board entry from fewer runs than the floor | **warns, does not fail** | ✔ |
-| a board row measured on another model | fails | ✔ |
-| a board row from another harness | fails | ✔ |
+| a tier row measured on another model | fails | ✔ |
+| a tier row from another harness | fails | ✔ |
+| a description edited after routing was measured | fails | ✔ |
+| a skill body edited after its first moves were judged | fails | ✔ |
+| a rubric edited after its first moves were judged | fails | ✔ |
+| a stale canary sitting warns rather than fails | **warns, does not fail** | ✔ |
 | an llm grader with an empty rubric | fails | ✔ |
 | every case removed | fails | ✔ |
 | the fault injection record losing a row | fails | ✔ |
@@ -535,7 +569,7 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a judgment clear with no command beside it | fails | ✔ |
 | a fix that strayed into the wiring | fails | ✔ |
 
-**Five controls sit alongside the table and are not faults.** One checks the unbroken release inputs still release; one checks the report cannot fail a build — there is nothing to break there, because the whole promise is that nothing breaks, so what is asserted is that every degenerate input still exits zero. It was confirmed by making `report.py` able to fail and watching the control report it. The third, added by [`0025`](../changes/0025-which-red-it-is.md), asserts the two reds from the side no fault can reach: a green run says nothing, and a run whose only failure is the board exits 2, does not say *verification failed*, and names who can approve the run that clears it. The fourth, from [`0056`](../changes/0056-a-fixture-is-a-repository-of-its-own.md), builds a fixture under a decoy `GIT_DIR` and finds the decoy untouched. The fifth, from [`0057`](../changes/0057-a-measurement-names-its-model.md), runs the eval harness against a stand-in `claude` — the one way to prove it without spending — and finds the model passed and recorded, the judge's price ledgered, and the row naming model, judge and harness — and, since [`0058`](../changes/0058-a-case-is-a-sitting-not-a-turn.md), a sitting driven through two rounds with the person's reply in the transcript, a shell lent as prefix rules, a missing binary refused before anything is spent, and a judge that returned nothing left out of the score.
+**Six controls sit alongside the table and are not faults.** One checks the unbroken release inputs still release; one checks the report cannot fail a build — there is nothing to break there, because the whole promise is that nothing breaks, so what is asserted is that every degenerate input still exits zero. It was confirmed by making `report.py` able to fail and watching the control report it. The third, added by [`0025`](../changes/0025-which-red-it-is.md), asserts the two reds from the side no fault can reach: a green run says nothing, and a run whose only failure is the board exits 2, does not say *verification failed*, and names who can approve the run that clears it. The fourth, from [`0056`](../changes/0056-a-fixture-is-a-repository-of-its-own.md), builds a fixture under a decoy `GIT_DIR` and finds the decoy untouched. The fifth, from [`0057`](../changes/0057-a-measurement-names-its-model.md), runs the eval harness against a stand-in `claude` — the one way to prove it without spending — and finds the model passed and recorded, the judge's price ledgered, and the row naming model, judge and harness — and, since [`0058`](../changes/0058-a-case-is-a-sitting-not-a-turn.md), a sitting driven through two rounds with the person's reply in the transcript, a shell lent as prefix rules, a missing binary refused before anything is spent, and a judge that returned nothing left out of the score. The sixth, from [`0072`](../changes/0072-a-cheap-tier-holds-every-edit.md), drives `tiers.py` against the same stand-in: routing, a first move in both arms, a review, the board rows they write, a pilot refused a measurement's row, a body edit leaving routing fresh and a description edit staling it, the limit, and a real session's firing graded.
 
 The release faults need no fixture. `releaselib.py` is pure — a label list and a pull
 request body in, a decision out — which is the whole reason it is a module rather
