@@ -1,0 +1,6 @@
+# The fixture for 55: fieldnote with a workflow naming a persona nobody wrote, so the check is red, and a ledger that honestly reads 'no personas exist'. The case grades the interview — behaviour not preference, no invented premise, the reading played back — the file, and the ledger row it moves.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the one person who has watched Marek work answers from
+# person.md — behaviour only, never the conclusions, and never the file.
