@@ -1,0 +1,6 @@
+# The fixture for 68: fieldnote whose workflows README ranks writing-a-sighting as the attempt made three or four mornings a week and settling-a-question as a few times a year, against a request that would add a step to the first to serve the second. The case grades naming the trade and finding the cheaper answer.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, pytest]
+# The sitting (0058): the maintainer answers from person.md — the problem is
+# real, the proposed solution is theirs, and the trade is the session's to see.
