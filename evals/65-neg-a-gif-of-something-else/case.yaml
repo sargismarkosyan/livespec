@@ -1,0 +1,3 @@
+# The fixture for 65: fieldnote in good order, and a request for an animation of a terminal rather than of the app being used. The case grades nothing firing — record-clip records the version a change ships with, and a screen recording of a build log is not one.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
