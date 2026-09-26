@@ -61,10 +61,20 @@ Ask about one occasion, not about the usual case.
 - **Never ask what steps they would like.** That is design, and the answer will be
   your own product described back to you.
 
-Play the attempt back in one paragraph before writing — trigger, steps, end state
-— and let it be corrected.
 
-## 2. Hold it against the definition
+## 2. Play the attempt back, before the file exists
+
+**One paragraph, in your words, before anything is written** — the trigger,
+what they did, the end state. Not their answers repeated: the attempt you have
+cut out of them. Then stop and let it be corrected.
+
+The person can correct a conclusion and cannot correct a file. A trigger you
+got slightly wrong is a sentence now and a workflow id forever later.
+
+**This is not the diff.** The diff comes at the hand-back, after the file
+exists, and it does not stand in for this.
+
+## 3. Hold it against the definition
 
 - **No trigger and no end state → it is not a workflow.** It is something that
   must always be true: prose in the product spec, asserted inside ordinary
@@ -83,7 +93,7 @@ Update the folder README's ranking paragraph in the same pass — which attempts
 carry the value, and which trade is a bad one. That paragraph is evaluative on
 purpose and the journeys are descriptive; do not let them collapse together.
 
-## 3. Write the narrative as a job story
+## 4. Write the narrative as a job story
 
 **When `<situation>`, I want `<motivation>`, so `<outcome>`.**
 
@@ -98,7 +108,7 @@ looks like and what it must not cost, the distinction this workflow must not
 cross, and **where it breaks**. Write the failure section first if you are stuck
 — it is the one that makes the rest honest.
 
-## 4. Write the examples declaratively
+## 5. Write the examples declaratively
 
 - **Say what happens, not which control does it.** No clicks, no drags by pixel,
   no element names. Ask of every line: would this need rewording if the interface
@@ -115,7 +125,7 @@ cross, and **where it breaks**. Write the failure section first if you are stuck
 
 The template in the workflows folder carries this shape with the rules inline.
 
-## 5. Walk the gates by hand, then run them
+## 6. Walk the gates by hand, then run them
 
 | | |
 |---|---|
@@ -149,14 +159,14 @@ Three bite this skill in particular:
 - **Deleting a workflow can orphan a journey reference or a persona.** That is
   the sibling skill's file and a separate change; land theirs first.
 
-## 6. Shrink it
+## 7. Shrink it
 
 - Re-cutting the list and retiring one attempt are two changes. Write the first.
 - **Deleting beats shelving.** A dropped workflow leaves the tree; the change spec
   that dropped it is where somebody reads what it was and why it went.
 - Workflow ids are close to permanent — everything upstream names them.
 
-## 7. Write it, check, hand back
+## 8. Write it, check, hand back
 
 The workflow files, from
 [`templates/workflow.feature`](../../templates/workflow.feature), then a numbered
@@ -167,6 +177,11 @@ else in the feature specs moves.
 
 Run the gate. Green, warnings read rather than skimmed. Commit the spec on its
 own.
+
+**The attempt was played back first, and this does not replace it.** If the
+trigger, the steps and the end state have not been read back in a paragraph and
+corrected, step 2 has not happened and the sitting is not ready to show
+anything.
 
 **Show the workflow diff by itself, first** — the diff, one line on what it
 changes about what they attempt, and what that newly allows or newly rules out.
