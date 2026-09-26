@@ -62,8 +62,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / ".github" / "scripts"))
 from caselib import (  # noqa: E402
-    MIN_RUNS, SESSION_MODEL, cases, frontmatter, harness_fingerprint, measurement_inputs, replaces,
-    stale_arms, why_stale,
+    MIN_RUNS, SESSION_MODEL, cases, frontmatter, grader_inputs, harness_fingerprint, measurement_inputs,
+    replaces, stale_arms, why_stale,
 )
 
 # --- the cost gate ------------------------------------------------------------
@@ -586,6 +586,7 @@ def entry_for(s: dict, case: dict, root: Path, sha: str, judge: str) -> dict:
         "harness": harness_fingerprint(root),
         "inputs": measurement_inputs(case, root, "with"),
         "inputs_without": measurement_inputs(case, root, "without"),
+        "graders": grader_inputs(case),
     }
 
 
@@ -660,6 +661,79 @@ def record(measured: dict, suite: list[dict], judge: str) -> None:
               f"pilot's verdicts in the run directory; re-run it at the floor to replace the number.")
 
 
+def rejudge(run_dir: Path, plan: dict, args) -> int:
+    """Judge a finished run again, over the sessions it already holds.
+
+    A session is never shown a rubric. So when the only thing that moved is a
+    grader — which is what happens every time somebody reads the verdicts and
+    sharpens one — the sittings in this directory are still a faithful record
+    of what the skill did, and what is owed is judge calls rather than
+    sessions. That is the difference between cents and dollars on the loop
+    this repository spends most of its money in (0072).
+
+    The graders are re-read from the tree as it now stands, so a rubric added
+    or deleted since the run is honoured. Sessions are not touched, nothing is
+    started, and a case whose sessions are missing is skipped and named.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import asserts  # noqa: E402 — same import the run does, for the same reason
+
+    suite = {case["name"]: case for case in cases(ROOT)}
+    judge = plan.get("judge") or "sonnet"
+    os.environ.setdefault("LIVESPEC_JUDGE_MODEL", judge)
+    planned = [c for c in plan["cases"] if c["case"] in suite]
+    graders_now = {c["case"]: _graders_for(suite[c["case"]]) for c in planned}
+
+    owed = [(c["case"], arm, run) for c in planned
+            for run in range(1, int(plan["repeat"]) + 1)
+            for arm in (c.get("arms") or ARMS)
+            if (job_dir(run_dir, c["case"], arm, run) / "session.json").exists()]
+    if not owed:
+        print(f"✘ {run_dir} holds no finished session to judge again", file=sys.stderr)
+        return 1
+
+    calls = sum(len([g for g in graders_now[case] if g["type"] == "llm"]) for case, _, _ in owed)
+    if not args.approved:
+        print(f"✋ judging {len(owed)} session(s) again — about {calls} judge call(s), roughly "
+              f"${calls * 0.104:.2f} at the last run's rate, and no session is run.")
+        print(f"     (spends real money — the maintainer adds {APPROVAL_FLAG}, nobody else)")
+        return 2
+
+    print(f"  judging {len(owed)} stored session(s) again with the graders as they now stand; "
+          f"no session is run")
+    for case_name, arm, run in owed:
+        directory = job_dir(run_dir, case_name, arm, run)
+        session = _read(directory / "session.json") or {}
+        if "error" in session:
+            continue
+        specs = graders_now[case_name]
+        verdicts = []
+        batched = asserts.judge_many([g["grader"] for g in specs], session.get("output", ""),
+                                     session.get("metadata") or {}, case_name)
+        for grader in specs:
+            if grader["grader"] in batched:
+                result = batched[grader["grader"]]
+            else:
+                result = asserts.get_assert(session.get("output", ""), {
+                    "config": {"grader": grader["grader"]},
+                    "vars": {"case": case_name},
+                    "providerResponse": {"metadata": session.get("metadata") or {}},
+                })
+            verdicts.append(dict(result, assertion={"weight": grader["weight"], "grader": grader["grader"]}))
+        _write(directory / "verdicts.json", verdicts)
+    assemble(run_dir, plan)
+    stats, measured, sessions = collect(run_dir / "results.json")
+    print_summary(stats, sessions, {c["case"] for c in planned if suite[c["case"]]["negative"]})
+    record(measured, [suite[c["case"]] for c in planned], judge)
+    return 0
+
+
+def _graders_for(case: dict) -> list[dict]:
+    """The case's graders as the tree now holds them — path, weight and type."""
+    return [{"grader": str(g["path"].relative_to(ROOT)), "weight": float(g["fields"].get("weight", 1) or 1),
+             "type": g["type"]} for g in case["graders"]]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--ablation", choices=["with-without"],
@@ -682,11 +756,29 @@ def main() -> int:
                         help="take up a run the limit or the machine stopped: runs only the sessions that never "
                              "finished and the verdicts the judge never returned, from the run's own run.json; "
                              "takes no selection flag beside it, because a resumed run is the same run")
+    parser.add_argument("--rejudge", metavar="RUN_DIR",
+                        help="judge a finished run again over the sessions it already has, with the "
+                             "graders as they now stand. For the commonest edit here — reading verdicts "
+                             "and sharpening a rubric — the sittings are still a faithful record of what "
+                             "the skill did, so what is owed is judge calls rather than sessions")
     parser.add_argument(APPROVAL_FLAG, action="store_true", dest="approved",
                         help="the maintainer's approval for this one run. Required — without it this "
                              "refuses. Never add it on an agent's own initiative")
     args = parser.parse_args()
 
+    if args.rejudge and args.resume:
+        print("✘ --rejudge and --resume are two different things: one judges sessions again, "
+              "the other runs the ones that never finished", file=sys.stderr)
+        return 1
+    if args.rejudge:
+        run_dir = Path(args.rejudge)
+        if not run_dir.is_absolute():
+            run_dir = (Path.cwd() / run_dir).resolve()
+        plan = _read(run_dir / "run.json")
+        if not isinstance(plan, dict) or "cases" not in plan:
+            print(f"✘ {run_dir} holds no run.json", file=sys.stderr)
+            return 1
+        return rejudge(run_dir, plan, args)
     if args.resume:
         given = [flag for flag, value in (("--ablation", args.ablation), ("--judge-model", args.judge_model),
                                           ("--allow-tools", args.allow_tools), ("--scaffold", args.scaffold),

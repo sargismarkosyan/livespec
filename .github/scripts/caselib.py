@@ -185,6 +185,36 @@ def rule_text(root: Path, rule_id: str) -> str:
     return ""
 
 
+def _is_grading(path: Path, case: dict) -> bool:
+    """Whether this file is read by the grader rather than by the session.
+
+    The session is handed a prompt, a workspace a scaffold laid down and a
+    person to answer it. It is never shown a rubric. So the graders, and the
+    scripts a command grader runs, decide what a verdict says and decide
+    nothing at all about what the session did.
+    """
+    relative = path.relative_to(case["dir"]).as_posix()
+    return relative.startswith("graders/") or relative.startswith("check_")
+
+
+def grader_inputs(case: dict) -> str:
+    """Hash of what decides a verdict, given a session that already happened.
+
+    Kept apart from `measurement_inputs` because the two answer different
+    questions. Edit a rubric and every session in the run directory is still
+    a faithful record of what the skill did — nothing it saw has changed — so
+    what is owed is a judge call over transcripts that already exist, not a
+    sitting run again. That is the difference between a few cents and a few
+    dollars, and it is the commonest edit anyone makes here: reading verdicts
+    and sharpening the rubric is the whole calibration loop.
+    """
+    digest = hashlib.sha256()
+    for path in sorted(p for p in case["dir"].rglob("*") if p.is_file() and _is_grading(p, case)):
+        digest.update(path.relative_to(case["dir"]).as_posix().encode())
+        digest.update(path.read_bytes())
+    return digest.hexdigest()[:16]
+
+
 def measurement_inputs(case: dict, root: Path, arm: str = "with") -> str:
     """Hash of what a measurement of this case, in this arm, measures.
 
@@ -207,7 +237,7 @@ def measurement_inputs(case: dict, root: Path, arm: str = "with") -> str:
     is shared: so the two cannot disagree about what a measurement is.
     """
     digest = hashlib.sha256()
-    for path in sorted(p for p in case["dir"].rglob("*") if p.is_file()):
+    for path in sorted(p for p in case["dir"].rglob("*") if p.is_file() and not _is_grading(p, case)):
         digest.update(str(path.relative_to(case["dir"])).encode())
         digest.update(path.read_bytes())
     for rule in sorted(case["claims"]["rules"]):
@@ -264,6 +294,8 @@ def why_stale(entry: dict | None, case: dict, root: Path) -> list[str]:
     reasons: list[str] = []
     if stale_arms(entry, case, root):
         reasons.append("inputs")
+    if "graders" in entry and entry.get("graders") != grader_inputs(case):
+        reasons.append("graders")
     if entry.get("model") != SESSION_MODEL:
         reasons.append("model")
     if entry.get("harness") != harness_fingerprint(root):
