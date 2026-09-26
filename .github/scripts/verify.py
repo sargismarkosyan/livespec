@@ -65,7 +65,7 @@ OWED = 2
 OWED_NOTE = """
   Nothing is broken. A number no longer describes the files it measured, and the
   only cure is a run of the cheap tiers — evals/runner/tiers.py --changed prints
-  what one would cost when it refuses, cents a row, billed to the maintainer's
+  what one would cost when it refuses, a call at a time, billed to the maintainer's
   account and drawn down from its session limit.
 
   Committing and pushing this is sanctioned: method/repository.md, "Commits".

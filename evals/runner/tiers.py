@@ -79,7 +79,10 @@ ARMS = ("with", "without")
 
 # What a call costs before the board holds a price for it — a guess, and
 # printed as one. Once a row carries `cost`, the refusal quotes that instead.
-GUESS = {"route": 0.03, "first": 0.08, "review": 0.05, "firing": 0.06, "session": 0.02}
+# From the smoke run of 2026-09-27: a routing turn $0.04, a first reply and
+# its verdict $0.18, a review $0.18; the transcript figures are scaled from
+# the review, which reads about as much.
+GUESS = {"route": 0.04, "first": 0.18, "review": 0.18, "firing": 0.10, "session": 0.03}
 
 HERMETIC = ["--no-session-persistence", "--setting-sources", "project", "--strict-mcp-config"]
 
@@ -87,6 +90,11 @@ WORLD_LIMIT = 60_000      # characters of a case's world a snapshot carries
 FILE_LIMIT = 12_000       # characters of any one file in it
 SEGMENT_LIMIT = 60_000    # characters of a real session's firing a judge reads
 PIECE_LIMIT = 600         # characters kept of one tool call or result
+
+
+# The token counts of the last call this thread made, for the evidence: a
+# price is only arguable when what it bought is on disk beside it.
+_usage = threading.local()
 
 
 class Limit(Exception):
@@ -148,6 +156,7 @@ def ask(prompt: str, *, model: str, system: str, schema: dict | None = None, tim
             if limit_text(envelope):
                 raise Limit(limit_text(envelope))
             cost = float(envelope.get("total_cost_usd") or 0)
+            _usage.last = {"cost": cost, "usage": envelope.get("usage") or {}}
             if schema is None:
                 if envelope.get("is_error"):
                     raise ValueError(str(envelope.get("result") or "an error envelope"))
@@ -389,10 +398,12 @@ def measure_first(case: dict, arms: list[str], runs: int, model: str, judge: str
             if stop.is_set():
                 return None
             reply, spent = ask(first_prompt(case, world, arm), model=model, system=FIRST_SYSTEM)
+            reply_usage = getattr(_usage, "last", {})
             verdicts, judged = judge_first(case, reply, judge)
             cost += spent + judged
-            (evidence / f"{case['name']}-{arm}-{run + 1}.json").write_text(
-                json.dumps({"reply": reply, "verdicts": verdicts}, indent=1))
+            (evidence / f"{case['name']}-{arm}-{run + 1}.json").write_text(json.dumps(
+                {"reply": reply, "verdicts": verdicts, "reply_usage": reply_usage,
+                 "judge_usage": getattr(_usage, "last", {})}, indent=1))
             for name, verdict in verdicts.items():
                 tally = rubrics[name].setdefault(arm, {"pass": 0, "applies": 0, "n": 0})
                 tally["n"] += 1

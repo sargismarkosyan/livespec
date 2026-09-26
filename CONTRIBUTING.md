@@ -150,7 +150,7 @@ back from `inject.py` so it cannot fall behind. What each binding means is in
 If you changed a skill, a rule or an eval case, the evals are no longer
 optional: its tier rows on `evals/board.json` go stale and `verify.py` exits 2
 until `evals/runner/tiers.py --changed` re-measures exactly what moved — a
-routing turn, a first reply, a review, cents a row; see
+routing turn, a first reply, a review, a call each; see
 [`evals/README.md`](evals/README.md). The whole sittings `run.py` drives are
 the canary: shown stale, never owed, run when the model moves or the
 maintainer chooses. Running either stays a maintainer step (they cost money;

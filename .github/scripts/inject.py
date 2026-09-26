@@ -890,7 +890,7 @@ FAULTS = [
     # The tier runner is held by the same three guards (0072).
     ("the tier runner losing its refusal of an unapproved run", SUITE,
      lambda r: write(r, "evals/runner/tiers.py", "# a tier runner that just runs; it is only cents\n"),
-     "fails", "Cents a row is still"),
+     "fails", "A call at a time is still"),
     ("the tier runner letting a pilot take a measurement's row", SUITE,
      lambda r: write(r, "evals/runner/tiers.py", "# refuses without --i-approve-the-cost, writes whatever it ran\n"),
      "fails", "tier row measured at the floor"),
@@ -929,6 +929,8 @@ FAULTS = [
     ("a rubric edited after its first moves were judged", BOARD,
      lambda r: edit(r, "evals/case-walk/graders/outcome.md", "The reply does the thing.", "The reply does the thing well."),
      "fails", "a rubric has changed since"),
+    ("a tier row from fewer runs than the floor", BOARD,
+     lambda r: board_field(r, "case-walk", "runs", 1, "first"), "warns", "first row(s) below the floor"),
     ("a stale canary sitting warns rather than fails", BOARD,
      lambda r: board_field(r, "case-walk", "inputs", "0000000000000000"), "warns", "canary pool"),
     ("an llm grader with an empty rubric", SUITE,

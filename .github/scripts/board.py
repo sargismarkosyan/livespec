@@ -56,7 +56,7 @@ ROOT = Path(args[0]).resolve() if args else Path(__file__).resolve().parents[2]
 # the maintainer for a run, never a licence to start one, and a command that
 # spends money should not be copy-pasteable out of a gate's output.
 HEAL = ("python3 evals/runner/tiers.py --changed --scaffold\n"
-        "      (spends real money, cents a row — the maintainer adds --i-approve-the-cost, nobody else)")
+        "      (spends real money, a call at a time — the maintainer adds --i-approve-the-cost, nobody else)")
 
 TIER_WORDS = {
     "route": "which skill fires",
@@ -83,8 +83,9 @@ tier_as_of = ""
 for tier in TIERS:
     rows = board.get(tier) if isinstance(board.get(tier), dict) else {}
     expected = tier_keys(tier, suite, ROOT)
-    counts = {"measured": 0, "stale": 0, "never": 0}
+    counts = {"measured": 0, "stale": 0, "never": 0, "below": 0}
     never: list[str] = []
+    below: list[str] = []
     for key in expected:
         entry = rows.get(key)
         reasons = tier_why_stale(tier, key, entry, suite, ROOT)
@@ -112,9 +113,16 @@ for tier in TIERS:
                 + f". The number no longer describes these files. Re-measure exactly what changed:\n      {HEAL}"
             )
             continue
+        # A pilot's row is fresh and still not a measurement (#75): kept,
+        # shown, left out of the count and the mean. A review is one reading
+        # and carries no runs.
+        if tier != "review" and not is_measurement(entry):
+            counts["below"] += 1
+            below.append(f"{key} ({entry.get('runs', '?')})")
+            continue
         counts["measured"] += 1
         tier_as_of = max(tier_as_of, str(entry.get("at", "")))
-        if tier == "first" and isinstance(entry.get("delta"), (int, float)) and is_measurement(entry):
+        if tier == "first" and isinstance(entry.get("delta"), (int, float)):
             first_deltas.append(float(entry["delta"]))
     for key in sorted(set(rows) - set(expected)):
         warnings.append(f"evals/board.json: {tier} row for {key!r}, which the {tier} tier no longer measures; remove the row")
@@ -122,6 +130,10 @@ for tier in TIERS:
         listed = ", ".join(never[:5]) + ("…" if len(never) > 5 else "")
         warnings.append(f"{len(never)} {tier} row(s) never measured ({listed}) — the tier fills as runs happen; "
                         f"the bootstrap's to-do list, not a failure")
+    if below:
+        listed = ", ".join(below[:5]) + ("…" if len(below) > 5 else "")
+        warnings.append(f"{len(below)} {tier} row(s) below the floor of {MIN_RUNS} runs ({listed}) — pilots, kept "
+                        f"and shown but not counted as measurements and not in the mean")
     tier_counts[tier] = counts
 
 # --- the canary pool: shown, never gated ------------------------------------
@@ -193,7 +205,8 @@ for warning in warnings:
 for note in notes:
     print(f"  · {note}")
 
-parts = [f"{t} {c['measured']} fresh, {c['stale']} stale, {c['never']} never" for t, c in tier_counts.items()]
+parts = [f"{t} {c['measured']} fresh, {c['stale']} stale, {c['never']} never"
+         + (f", {c['below']} below the floor" if c["below"] else "") for t, c in tier_counts.items()]
 summary = "; ".join(parts)
 if mean(first_deltas) is not None:
     summary += f"; mean first-move Δ {mean(first_deltas):+.2f} (as of {tier_as_of})"

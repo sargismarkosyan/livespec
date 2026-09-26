@@ -19,9 +19,9 @@ the board gate holds fresh. Each is staled only by what it can see:
 
 | tier | one row is | staled by | roughly |
 |---|---|---|---|
-| `route` | one real turn of `claude -p` — Claude Code's own system prompt, the plugin loaded, only the Skill tool — on the case's prompt, in its world, three times: does the right skill fire, or none | **any skill's frontmatter**, the case. Never a body | 3¢ a turn |
-| `first` | one reply to a snapshot — the world as already read, the skill's body as already loaded, the prompt — under a system prompt of our own, judged by the case's **own rubrics**, three times an arm, **both arms**, so Δ survives | the case, a rule it claims, **the skill's body** (the with-arm only, as [`0070`](../specs/changes/0070-half-a-row-goes-stale-not-a-whole-one.md) has it), a rubric | 8¢ a reply and its verdict |
-| `review` | one reading of a skill's whole file beside the text of every rule the cases holding it claim: is each rule still something the body tells the model to do | the skill, a rule it upholds | 5¢ |
+| `route` | one real turn of `claude -p` — Claude Code's own system prompt, the plugin loaded, only the Skill tool — on the case's prompt, in its world, three times: does the right skill fire, or none | **any skill's frontmatter**, the case. Never a body | 4¢ a turn |
+| `first` | one reply to a snapshot — the world as already read, the skill's body as already loaded, the prompt — under a system prompt of our own, judged by the case's **own rubrics**, three times an arm, **both arms**, so Δ survives | the case, a rule it claims, **the skill's body** (the with-arm only, as [`0070`](../specs/changes/0070-half-a-row-goes-stale-not-a-whole-one.md) has it), a rubric | 18¢ a reply and its verdict |
+| `review` | one reading of a skill's whole file beside the text of every rule the cases holding it claim: is each rule still something the body tells the model to do | the skill, a rule it upholds | 18¢ |
 
 A first-move judge marks a rubric **not applying** when only a later turn, a file
 on disk or a command could decide it, rather than failing it; a rubric counts
@@ -35,7 +35,7 @@ python3 evals/runner/tiers.py --changed --scaffold
 ```
 
 refuses, prints what the stale rows would cost, and runs with the maintainer's
-`--i-approve-the-cost` — cents a row is still the maintainer's money and session
+`--i-approve-the-cost` — a call at a time is still the maintainer's money and session
 limit. `--tier`, `--case`, `--skill` and `--runs` narrow it; a run below the
 floor is a pilot and never takes a measurement's row. A call the account's limit
 refuses stops the run with exit 3; every finished row is already on the board,
@@ -463,19 +463,20 @@ agrees with a sitting. Before its numbers are read as the case's:
 Every run is the maintainer's money, so the question before making a change is
 what re-measuring it will cost. Since
 [`0072`](../specs/changes/0072-a-cheap-tier-holds-every-edit.md) the board owes
-the tiers, not the sittings, and the tiers are priced per call. The tier
-figures below are estimates from list prices until the first run writes real
-ones onto the board; the refusal quotes the board's own costs once it has them.
+the tiers, not the sittings, and the tiers are priced per call. The figures
+below are from the smoke run of 2026-09-27 — one routing turn $0.04, one first
+reply and its verdict $0.18, one review $0.18 — and the refusal quotes the
+board's own costs once a row has them.
 
 | what you changed | what goes stale | roughly |
 |---|---|---|
-| one skill's **body** | its `first` rows (with-arm only) and its `review` row | 6 cases × 3 replies ≈ **$1.50** |
-| one skill's **description** | every `route` row — a description can move any prompt | 70 × 3 turns ≈ **$6** |
-| a case's prompt, fixture or graders | its `route` and `first` rows | ≈ $0.60 |
-| a rule's text | the `first` rows of the cases claiming it, the `review` rows of the skills holding it | ≈ $0.50 each |
-| `tiers.py` | **every tier row** | ≈ **$35** |
+| one skill's **body** | its `first` rows (with-arm only) and its `review` row | 6 cases × 3 replies ≈ **$3.40**, against $9 as sittings |
+| one skill's **description** | every `route` row — a description can move any prompt | 70 × 3 turns ≈ **$8.40** |
+| a case's prompt, fixture or graders | its `route` and `first` rows | ≈ $1.20 |
+| a rule's text | the `first` rows of the cases claiming it, the `review` rows of the skills holding it | ≈ $1.25 each |
+| `tiers.py` | **every tier row** | ≈ **$72** |
 | `provider.py`, `asserts.py` | the canary only — nothing owed | $0 until chosen |
-| the model in the bindings | every tier row, and the canary is due | ≈ $35, and a canary |
+| the model in the bindings | every tier row, and the canary is due | ≈ $72, and a canary |
 
 A sitting still costs what it did — a session about **$0.36**, a judge call about
 **$0.10**, a person's round about **$0.06** — and a full canary is about **$200**.

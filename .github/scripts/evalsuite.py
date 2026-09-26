@@ -223,7 +223,7 @@ tiers_source = tiers.read_text() if tiers.exists() else ""
 if tiers.exists() and "--i-approve-the-cost" not in tiers_source:
     fail(
         "evals/runner/tiers.py",
-        "no longer refuses an unapproved run. Cents a row is still the maintainer's money and session "
+        "no longer refuses an unapproved run. A call at a time is still the maintainer's money and session "
         "limit, and a stale tier row is the commonest reason to reach for it — the flag is theirs to add.",
     )
 if tiers.exists() and "replaces(" not in tiers_source:

@@ -78,7 +78,7 @@ session here is most likely to miss:
 - **A payload file nothing links fails CI.** It would ship to every user unread.
 - **A measurement does not outlive what it measured.** Editing a skill, a rule
   or an eval case stales its tier rows in `evals/board.json` — `route`, `first`,
-  `review`, cents a row — and `verify.py` **exits 2** until `evals/runner/tiers.py
+  `review`, a call each — and `verify.py` **exits 2** until `evals/runner/tiers.py
   --changed` re-measures exactly those. The sittings `run.py` drives are the
   canary: shown stale, never owed. The score is never gated; only its
   bookkeeping is. Exit 2 means nothing is broken and a run is owed; exit 1 is a
@@ -106,7 +106,7 @@ python3 .github/scripts/trees.py new <name>       # a tree for the next change; 
 claude plugin validate . --strict                 # marketplace manifest
 claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
 claude plugin validate ./skills --strict
-python3 evals/runner/tiers.py --changed --scaffold  # maintainer step: the tiers, cents a row
+python3 evals/runner/tiers.py --changed --scaffold  # maintainer step: the tiers, a call a row
 python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold  # the canary
 ```
 

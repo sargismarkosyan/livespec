@@ -19,7 +19,7 @@ anything is changed."*
 edit cost and [`0071`](0071-one-judge-call-per-session-not-per-rubric.md)
 batched the judge. Both made the same thing cheaper: **a whole sitting, owed on
 every edit.** The job is not a cheaper sitting. It is being able to change a
-skill and know, the same afternoon and for about the price of a coffee, whether
+skill and know, the same afternoon and for a few dollars rather than tens, whether
 it still does what its rules promise, without that knowledge being fake.
 
 ## Why now
@@ -42,14 +42,14 @@ at all, and what the first reply does with the request.
 
 ## The end value
 
-An edit to a skill is measured for about a dollar, a description edit for a
-few, and the board's freshness gate can be cleared by the person who made the
+An edit to a skill's body is measured for about $3.40 where it cost $9, a
+description edit for about $8, and the board's freshness gate can be cleared by the person who made the
 edit without a budget meeting. Nothing reads more true than it is: the
 sittings stay, are shown as stale when they are, and are never averaged or
 owed while stale.
 
 **How we would know it worked:** the next skill edit's `tiers.py --changed`
-refusal quotes under $3, and its run completes in one sitting of the account's
+refusal quotes under $4, and its run completes in one sitting of the account's
 limit with room to spare.
 
 ## What changes
@@ -157,8 +157,8 @@ rubrics mostly stopped applying is visible; the calibration read looks at it.
 README names when it is due — the model moves, a tier is being calibrated —
 and the board keeps showing how many sittings are stale.
 
-**The bootstrap is not free.** Every tier row starts empty: about $35 at the
-guesses for all three tiers, and about $7 for the 104 real firings. It is the
+**The bootstrap is not free.** Every tier row starts empty: about $72 for all
+three tiers at the smoke run's prices, and about $13 for the 104 real firings. It is the
 maintainer's to approve, like any run.
 
 ## Acceptance checks
@@ -178,3 +178,27 @@ maintainer's to approve, like any run.
    `replaces(`, without the model default, and undocumented.
 6. `python3 .github/scripts/verify.py` is green, with every tier row warned as
    never measured and the canary's fifty stale rows shown and not owed.
+
+## The smoke run, 2026-09-27
+
+Approved by the maintainer, one call a row: `route` on `01` and `06`, `first`
+on `01` in both arms, `review` of `refine-spec`. **$0.62**, four rows, all
+written; the real CLI took every flag as the stand-in does.
+
+| | |
+|---|---|
+| `route 01` | fired `refine-spec` — right; $0.041 |
+| `route 06` (should-not-fire) | fired nothing — right; $0.039 |
+| `first 01` | with 1.00, without 1.00, Δ +0.00 over its one rubric; $0.36 for two replies and two verdicts |
+| `review refine-spec` | 3 of 4 rules held; `the-job-is-found-under-the-request` **weakened** — the skill never says to ask and write nothing when the job cannot be told from the request; $0.18 |
+
+**The first calibration finding is in `first 01`'s bare arm.** The canary
+scored that arm 0.00 over three sittings. Here the bare reply drafted the
+button's spec and Gherkin on its first move, and the judge passed it on
+`finds-the-job` for a "so that" clause. The rubric says a reply that "simply
+accept[s] the button as the requirement and move[s] to how to build it" fails.
+One sample, and it is the leniency *Calibrating a tier against the canary*
+exists to catch: the first-move judge is not trusted on `01` until the read is
+done, and a first reply costs about twice the guess this spec was approved on,
+which the figures above now use.
+

@@ -496,6 +496,7 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a description edited after routing was measured | fails | ✔ |
 | a skill body edited after its first moves were judged | fails | ✔ |
 | a rubric edited after its first moves were judged | fails | ✔ |
+| a tier row from fewer runs than the floor | **warns, does not fail** | ✔ |
 | a stale canary sitting warns rather than fails | **warns, does not fail** | ✔ |
 | an llm grader with an empty rubric | fails | ✔ |
 | every case removed | fails | ✔ |
