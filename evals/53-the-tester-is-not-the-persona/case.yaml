@@ -1,0 +1,5 @@
+# The fixture for 53: fieldnote in good order — one sound persona, one workflow, a green check — and the human testing the app asking to be made a persona. The case grades the refusal the skill calls its first one wearing a different hat.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the tester answers from person.md, and presses once.
