@@ -260,6 +260,7 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
     saw_result = False
     ceiling = False
     limit = ""
+    unreachable = ""
     try:
         send(prompt)
         while True:
@@ -289,6 +290,11 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
                 keep(json.dumps({"type": "person", "round": rounds + 1, "error": error}))
                 if error.startswith("limit: "):
                     limit = error[len("limit: "):]
+                else:
+                    # The judge could not answer as the person. The sitting is
+                    # cut short mid-round, so what the session did or did not
+                    # write from here is the harness's doing, not the agent's.
+                    unreachable = error
                 break
             # A reply is sent whenever there is one. The first pilot's person
             # answered all six questions and set done beside them — "I have
@@ -315,7 +321,8 @@ def _sitting(command: list[str], prompt: str, cwd: Path, timeout: int, sheet: st
         stream.close()
     tail = " / ".join((stderr[0] if stderr else "").strip().splitlines()[-3:])
     code = 0 if saw_result and not killed["yes"] else proc.returncode
-    return "\n".join(lines) + ("\n" if lines else ""), code, rounds, killed["yes"], tail, ceiling, limit
+    return ("\n".join(lines) + ("\n" if lines else ""), code, rounds, killed["yes"], tail,
+            ceiling, limit, unreachable)
 
 
 def call_api(prompt, options, context):
@@ -405,7 +412,7 @@ def call_api(prompt, options, context):
     replies = int(vars_.get("replies") or 0) if sheet else 0
 
     timeout = int(vars_.get("timeout_seconds") or 600)
-    transcript, code, rounds, timed_out, tail, ceiling, limit = _sitting(
+    transcript, code, rounds, timed_out, tail, ceiling, limit, unreachable = _sitting(
         command, prompt, workspace, timeout, sheet, replies, case, arm, session_dir / "transcript.jsonl")
     if limit:
         # Not a measurement and not a harness failure: the account said no.
@@ -416,6 +423,16 @@ def call_api(prompt, options, context):
     if timed_out:
         shutil.move(str(workspace), str(session_dir / "workspace"))
         return {"error": f"session timed out after {timeout}s — transcript in {session_dir}"}
+    if unreachable:
+        # 0058 settled the other end of the sitting: a judge that returns
+        # nothing three times is not a verdict, and is never read as the agent
+        # failing. The same is true at this end. A person who never answered
+        # leaves a sitting stopped mid-round — the graders that then find no
+        # file are measuring the harness — so this is not a score of zero and
+        # not a measurement at all. A resume runs it again (#159).
+        shutil.move(str(workspace), str(session_dir / "workspace"))
+        return {"error": f"the person could not be reached: {unreachable} — transcript in {session_dir}",
+                "person_unreachable": True}
     if code != 0:
         shutil.move(str(workspace), str(session_dir / "workspace"))
         return {"error": f"claude exited {code}: {tail or 'no stderr'} — {session_dir}"}
