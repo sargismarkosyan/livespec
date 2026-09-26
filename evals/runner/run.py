@@ -303,11 +303,25 @@ def perform(job: tuple[str, str, int], plan: dict, run_dir: Path, stop: threadin
     verdicts = _read(directory / "verdicts.json")
     if not isinstance(verdicts, list) or len(verdicts) != len(spec["graders"]):
         verdicts = [None] * len(spec["graders"])
+    # Every llm rubric this session still owes, asked in one call per kind of
+    # evidence rather than one per rubric. The judge's bill is almost all
+    # input and the input is almost all the session, so nine rubrics over one
+    # transcript cost nine transcripts asked separately and one asked together
+    # (0071). A rubric the batch does not return is asked for on its own below.
+    owed = [g["grader"] for index, g in enumerate(spec["graders"])
+            if verdicts[index] is None or verdicts[index].get("errored")]
+    batched = asserts.judge_many(owed, session.get("output", ""),
+                                 session.get("metadata") or {}, case_name) if owed else {}
     for index, grader in enumerate(spec["graders"]):
         if verdicts[index] is not None and not verdicts[index].get("errored"):
             continue
         if stop.is_set():
             break  # what is left is owed; the wall does not move in a minute
+        if grader["grader"] in batched:
+            verdicts[index] = dict(batched[grader["grader"]],
+                                   assertion={"weight": grader["weight"], "grader": grader["grader"]})
+            _write(directory / "verdicts.json", verdicts)
+            continue
         result = asserts.get_assert(session.get("output", ""), {
             "config": {"grader": grader["grader"]},
             "vars": {"case": case_name},

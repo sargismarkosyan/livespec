@@ -222,6 +222,111 @@ def _judge(rubric: str, content: str, case: str = "?", arm: str = "?", grader: s
             "reason": f"judge error after 3 attempts: {last}" + (f" — the CLI said: {stderr_tail}" if stderr_tail else "")}
 
 
+BATCH_SCHEMA = json.dumps({
+    "type": "object",
+    "properties": {"verdicts": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {"id": {"type": "integer"}, "pass": {"type": "boolean"}, "reason": {"type": "string"}},
+            "required": ["id", "pass", "reason"],
+            "additionalProperties": False,
+        },
+    }},
+    "required": ["verdicts"],
+    "additionalProperties": False,
+})
+
+BATCH_INSTRUCTION = """You are grading one session against several rubrics.
+
+The session's evidence is given once, below. Each rubric is numbered and is
+judged **on its own**: a rubric passes or fails on its own terms, and nothing
+about one rubric's verdict may influence another's. Judge every rubric you are
+given, return one verdict per id, and give each a reason that quotes or cites
+what in the evidence decided it.
+"""
+
+
+def judge_many(graders: list[str], output: str, metadata: dict, case: str) -> dict:
+    """Every llm grader of one session, judged in one call per kind of evidence.
+
+    A judge call's cost is almost all input, and the input is almost all the
+    session — so nine rubrics over one transcript cost nine transcripts when
+    each is asked separately, and one when they are asked together. The
+    grouping is by `focus`, because that is what decides which evidence a
+    rubric is shown; two rubrics reading different evidence cannot share a
+    call.
+
+    Returns {grader path: verdict} for what it judged, and says nothing about
+    the rest — a grader missing from the result is judged the ordinary way, so
+    a batch that fails for any reason costs accuracy nothing.
+    """
+    root = Path(os.environ["LIVESPEC_ROOT"])
+    groups: dict[str, list[tuple[str, str]]] = {}
+    for path in graders:
+        try:
+            fields, body = frontmatter(root / path)
+        except OSError:
+            continue
+        if fields.get("type", "") != "llm" or not body.strip():
+            continue
+        groups.setdefault(fields.get("focus", "last_message"), []).append((path, body))
+
+    out: dict[str, dict] = {}
+    for focus, items in groups.items():
+        if len(items) < 2:
+            continue  # one rubric is already one call
+        if focus == "full_transcript" and metadata.get("transcript"):
+            content = _digest(metadata["transcript"], metadata.get("files") or [], metadata.get("workspace") or "")
+        else:
+            content = str(output or "")
+        rubrics = "\n\n".join(f"### Rubric {n}\n\n{body.strip()}" for n, (_, body) in enumerate(items, 1))
+        prompt = (BATCH_INSTRUCTION + "\n\n## The evidence\n\n" + content
+                  + "\n\n## The rubrics\n\n" + rubrics
+                  + f"\n\nReturn exactly {len(items)} verdicts, ids 1 to {len(items)}.")
+        verdicts = _judge_batched(prompt, len(items), case, str(metadata.get("arm") or "?"))
+        if verdicts is None:
+            continue  # fall back to one call per rubric
+        for n, (path, _) in enumerate(items, 1):
+            verdict = verdicts.get(n)
+            if verdict is not None:
+                out[path] = verdict
+    return out
+
+
+def _judge_batched(prompt: str, expected: int, case: str, arm: str) -> dict[int, dict] | None:
+    """One call, several verdicts. None means the batch did not come back
+    whole and every rubric in it should be asked for on its own."""
+    model = os.environ.get("LIVESPEC_JUDGE_MODEL", "sonnet")
+    command = [
+        "claude", "-p", "--model", model, "--output-format", "json",
+        "--max-turns", "1", "--no-session-persistence",
+        "--setting-sources", "project", "--strict-mcp-config",
+        "--json-schema", BATCH_SCHEMA,
+    ]
+    for attempt in range(2):
+        if attempt:
+            time.sleep(5)
+        try:
+            proc = subprocess.run(command, input=prompt, capture_output=True, text=True, timeout=600)
+            envelope = json.loads(proc.stdout.strip())
+            if limit_text(envelope):
+                return None  # the account said no; the single-call path reports it properly
+            answer = envelope.get("structured_output")
+            if not isinstance(answer, dict):
+                answer = json.loads(envelope.get("result") or "")
+            rows = answer.get("verdicts") or []
+            got = {int(r["id"]): {"pass": bool(r["pass"]), "score": 1.0 if r["pass"] else 0.0,
+                                  "reason": str(r.get("reason") or "")} for r in rows}
+            if len(got) != expected or set(got) != set(range(1, expected + 1)):
+                continue
+            _ledger(case, arm, f"batch:{expected}", model, float(envelope.get("total_cost_usd") or 0))
+            return got
+        except Exception:  # noqa: BLE001 — every failure here means: ask one at a time
+            continue
+    return None
+
+
 def get_assert(output, context):
     config = (context or {}).get("config") or {}
     root = Path(os.environ["LIVESPEC_ROOT"])
