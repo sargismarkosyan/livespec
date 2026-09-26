@@ -381,6 +381,57 @@ is roughly that × 3. Sessions, transcripts and created files stay under
 the run directory, which is ignored — the evidence is local and reproducible.
 What survives a run is its summary, on the board.
 
+## What a change costs
+
+Every run is the maintainer's money, so the question before making a change is
+what re-measuring it will cost. From the runs on the board: a session is about
+**$0.36**, a judge call about **$0.10**, a person's round about **$0.06**.
+
+| what you changed | what goes stale | roughly |
+|---|---|---|
+| one skill's body | the cases holding it, **with-arm only** | 6 cases ≈ $9 |
+| three skills, as [`0069`](../specs/changes/0069-the-reading-is-played-back-before-the-file-exists.md) did | 19 cases, with-arm only | ≈ **$27** |
+| a case's prompt, fixture or graders | that case, **both arms** | ≈ $2.50 |
+| a rule's text | the cases claiming it, both arms | ≈ $2.50 each |
+| `provider.py` or `asserts.py` | **everything, both arms** | ≈ **$200** |
+| the model in the bindings | everything, both arms | ≈ $200 |
+
+Three things make those numbers what they are, and each is worth knowing
+before reaching for a cheaper-looking shortcut.
+
+**A skill edit re-measures one arm.** The bare arm runs with no
+`--plugin-dir`, so no skill body was ever in its context and no edit to one
+can change what it did. [`0070`](../specs/changes/0070-half-a-row-goes-stale-not-a-whole-one.md)
+makes the board carry a hash per arm and `--changed` ask for arms rather than
+cases. The row says `carried` for the arm it kept. This is the change that
+makes the suite maintainable: the commonest edit in this repository now costs
+half of what it did, and the bare arm is measured once per case per model
+rather than once per skill edit.
+
+**A session's rubrics share one judge call.**
+[`0071`](../specs/changes/0071-one-judge-call-per-session-not-per-rubric.md)
+groups a session's llm graders by the evidence they read and sends that
+evidence once. 131 llm graders across the suite need 75 calls. `12` alone goes
+from nine calls to one, and it has the longest sitting of any case.
+
+**A grader that can be a script is not a judge call.** Sixteen of the suite's
+graders run a command and cost nothing per run. Every rubric converted to a
+script removes six judge calls from a floor run and removes a judgment from
+somewhere it was never needed — `check_rename.py` and `check_journey.py` read
+the tree for exactly the thing their case is about. Where a claim is
+checkable, check it.
+
+**The last line of that table is why harness edits get batched.** Touching
+`provider.py` or `asserts.py` stales every row, correctly — either file can
+change any verdict. So they are edited deliberately and in groups, not
+whenever something looks tidier, and the run that follows is planned for.
+
+**And full runs are not the maintenance plan.** `--changed` is: it selects
+exactly the rows that no longer describe their files, and after
+[`0070`](../specs/changes/0070-half-a-row-goes-stale-not-a-whole-one.md) it
+selects the arms too. A full floor run is about **$200** and buys nothing a
+`--changed` run does not, except on the day the model or the harness moves.
+
 ## When the limit stops a run
 
 Every whole sitting so far ended at the account's session limit, and until
