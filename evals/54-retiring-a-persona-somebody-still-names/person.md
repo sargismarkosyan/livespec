@@ -1,5 +1,5 @@
 ---
-replies: 3
+replies: 5
 ---
 I maintain fieldnote. Answer what a session asks from this and nothing else.
 

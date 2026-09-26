@@ -4,4 +4,4 @@ target: files
 match: not_contains
 flags: i
 ---
-(^|/)specs/personas/
+(^|/)specs/personas/(?!README\.md$)
