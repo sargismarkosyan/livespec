@@ -1,0 +1,6 @@
+# The fixture for 63: fieldnote at spec 0007, where the flat log became outings and every screen moved. The case grades recording the tour through the workflows that carry the value rather than one corner of the change.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the maintainer answers from person.md; no browser here,
+# so the shot list and the hand-back are what is graded.
