@@ -507,6 +507,71 @@
    "judge": "sonnet",
    "harness": "92c87ba41f9ca320",
    "inputs": "1986e274441b573b"
+  },
+  "52-a-persona-of-biography-and-requirements": {
+   "delta": 0.5,
+   "with": 0.75,
+   "without": 0.25,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 1.99,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "0b84c82b703f9d5c"
+  },
+  "53-the-tester-is-not-the-persona": {
+   "delta": 0.67,
+   "with": 1.0,
+   "without": 0.33,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 1.57,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "a2f02227868fb3bd"
+  },
+  "54-retiring-a-persona-somebody-still-names": {
+   "delta": 0.67,
+   "with": 1.0,
+   "without": 0.33,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 1.68,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "a7ff7d84b63c95e4"
+  },
+  "55-nobody-has-written-down-who-it-is-for": {
+   "delta": 0.0,
+   "with": 0.6,
+   "without": 0.6,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 2.3,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "862908be0ccac7cf"
+  },
+  "56-neg-what-is-a-persona-for": {
+   "delta": 0.0,
+   "with": 1.0,
+   "without": 1.0,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 0.24,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "ea46a20b9968954f"
   }
  }
 }
