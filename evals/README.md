@@ -226,6 +226,20 @@ spec it was about to write. The grader asking where provenance went read that
 as a session that never wrote one. A budget that stops a sitting mid-flow does
 not grade the sitting.
 
+**`55` read Δ +0.00 on its first pilot, and the zero is the finding.** Both
+arms wrote a persona the command grader accepted and the anatomy rubric
+passed; both failed the same two graders, because both wrote the file before
+playing any reading back and both resolved by inference the one fact the sheet
+had flagged as unobserved. `refine-personas` §1 asks for the playback *before
+anything is written*, and the plugin arm did it afterwards, where it is a
+summary rather than a chance to be told the conclusion is wrong. The same
+shape is in `48`, one skill over
+([#158](https://github.com/sargismarkosyan/livespec/issues/158)). Nothing here
+should be softened to make the number move: a case where both arms fail
+honestly is worth more than one where the bar was lowered until the plugin
+cleared it, and this pair is what would notice if the promise started being
+kept.
+
 The negative cases are the ones to watch. Eight skills' descriptions load in
 every session, and the cost of widening one — or, as with `setup`, of making one
 visible at all — is paid here — where it should show up as a scored failure rather than as a user
