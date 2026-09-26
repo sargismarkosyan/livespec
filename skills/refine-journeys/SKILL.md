@@ -60,15 +60,28 @@ phase nobody described is one you invented.
 - **Never ask them to name the phases**, or to draw the map. Synthesis is yours;
   handing it over gets you their mental model of your product, which is not the
   same thing as their experience of it.
-- **Play the arc back in one paragraph** before writing anything, and let it be
-  corrected. Rounds of three or four questions, each carrying a recommendation
-  and one line on what a different answer would change.
+- Ask in rounds of three or four questions, each carrying a recommendation and
+  one line on what a different answer would change.
 
 **When nobody has said anything new**, run as an audit instead: read the journey
 against the workflows it names, id by id and in the order they are first reached,
 and say when it was last true.
 
-## 2. The anatomy a journey must have
+## 2. Play the reading back, before the file exists
+
+**One paragraph, in your words, before anything is written.** Not the answers
+repeated — the arc you have drawn out of them: where it starts, where it dips,
+what you think that means. Then stop and let it be corrected.
+
+The person can correct a conclusion and cannot correct a file. Played back now
+it costs a paragraph; played back after the journey is on disk it is a summary
+of a decision already taken, and the one thing they were here for has been
+skipped.
+
+**This is not the diff.** The diff comes at the hand-back, after the file
+exists, and it does not stand in for this.
+
+## 3. The anatomy a journey must have
 
 Three parts. A file missing any one of them is not a journey.
 
@@ -94,7 +107,7 @@ Three parts. A file missing any one of them is not a journey.
   here is whether anything owns it at all. **A seam nobody owns is the most
   valuable sentence in the layer.** A journey that stops at narration is a poster.
 
-## 3. Name it for the scenario
+## 4. Name it for the scenario
 
 The title is the lens in three words, and journeys get named badly more often
 than personas do.
@@ -115,7 +128,7 @@ than personas do.
 - **Say in the title if it is future-state or assumed.** A predicted arc that
   does not announce itself gets cited as evidence within two versions.
 
-## 4. Keep it in its own layer
+## 5. Keep it in its own layer
 
 Four things it is not, and the test for each:
 
@@ -133,7 +146,7 @@ Four things it is not, and the test for each:
 spec. Seams are where *neither* attempt is at fault — that is the whole reason
 this layer earns its place.
 
-## 5. Keep provenance out of it
+## 6. Keep provenance out of it
 
 Whether the arc was observed or predicted, who was asked and when, how much was
 inferred: **all of it goes in the change spec.** None of it belongs in the
@@ -142,7 +155,7 @@ journey, where it takes the opening lines and gets read as part of the arc.
 What the file does carry is the questions nobody has answered, at the foot, so
 the next reader asks rather than extrapolating.
 
-## 6. The gates, and the one deliberately missing
+## 7. The gates, and the one deliberately missing
 
 | | |
 |---|---|
@@ -168,7 +181,7 @@ question, and until it is a check it is this skill's job, done by hand.
 The warning-hygiene norm this folder owns applies everywhere: **a warning that
 survives two versions either becomes an error or gets deleted.**
 
-## 7. Write it, check, hand back
+## 8. Write it, check, hand back
 
 One journey per change. Re-cutting the workflows a journey describes is the
 workflows skill's job and a different version — those land first, because this
@@ -178,6 +191,10 @@ The journey file, from [`templates/journey.md`](../../templates/journey.md),
 then a numbered change spec at `specs/changes/NNNN-<slug>.md` from
 [`templates/change.md`](../../templates/change.md), one past the highest. Run
 the traceability gate; it must be green. Commit the spec on its own.
+
+**The reading came first, and this does not replace it.** If the arc has not
+been played back in a paragraph and corrected, step 2 has not happened and the
+sitting is not ready to show anything.
 
 **Show the journey diff by itself, first** — the arc as it now reads, one line on
 what it changes about how the attempts connect, and what that newly explains or

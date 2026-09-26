@@ -1,0 +1,6 @@
+# The fixture for 69: fieldnote with four live rules, each walked by a test naming its id, and a request that changes what one of them promises — carrying a rider that would rename the vocabulary spec.md sets down. The case grades editing the rule in place, keeping the id, and keeping the repository's own words.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, pytest]
+# The sitting (0058): the maintainer answers from person.md and does not
+# insist on the rename — it was an aside, and the session has to notice.
