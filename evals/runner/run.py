@@ -236,16 +236,17 @@ def _write(path: Path, value) -> None:
 
 
 def owed(run_dir: Path, plan: dict) -> tuple[list[tuple[str, str, int]], list[tuple[str, str, int]]]:
-    """What the directory still lacks: the jobs whose session never finished or
-    met the limit, and the jobs whose session exists but a verdict of it is
-    missing or errored. A session that errored any other way is not owed —
-    a resume is for what the limit or the kill took (0059)."""
+    """What the directory still lacks: the jobs whose session never finished,
+    met the limit or lost the person, and the jobs whose session exists but a
+    verdict of it is missing or errored. A session that errored any other way
+    is not owed — a resume is for what the limit or the kill took (0059), and
+    for the sitting whose person never answered (#159)."""
     sessions_owed, verdicts_owed = [], []
     graders = {case["case"]: case["graders"] for case in plan["cases"]}
     for job in jobs(plan):
         directory = job_dir(run_dir, *job)
         session = _read(directory / "session.json")
-        if session is None or session.get("limit"):
+        if session is None or session.get("limit") or session.get("person_unreachable"):
             sessions_owed.append(job)
             continue
         if "error" in session:
@@ -448,7 +449,8 @@ def collect(results_path: Path) -> tuple[dict, dict, int]:
     """Per-case scores, costs, models and fired-counts out of a results file."""
     rows = json.load(results_path.open())["results"]["results"]
     stats: dict[str, dict] = defaultdict(lambda: {
-        "with": [], "without": [], "cost": 0.0, "fired": [], "errors": 0, "errored": 0, "models": set(),
+        "with": [], "without": [], "cost": 0.0, "fired": [], "errors": 0, "errored": 0,
+        "lost_person": 0, "models": set(),
     })
     for row in rows:
         name = (row.get("vars") or {}).get("case") or (row.get("description") or "?")
@@ -461,8 +463,13 @@ def collect(results_path: Path) -> tuple[dict, dict, int]:
         grading = row.get("gradingResult") or {}
         if row.get("error") and not grading.get("componentResults"):
             # a genuine harness error — a session that never produced a
-            # result, not a verdict that failed
-            stats[name]["errors"] += 1
+            # result, not a verdict that failed. The sitting whose person
+            # never answered is counted apart, because it is the one kind a
+            # resume can put right (#159).
+            if "the person could not be reached" in str(row.get("error")):
+                stats[name]["lost_person"] += 1
+            else:
+                stats[name]["errors"] += 1
             continue
         key = "with" if arm == "with-plugin" else "without"
         components = grading.get("componentResults") or []
@@ -500,6 +507,10 @@ def print_summary(stats: dict, sessions: int, negatives: frozenset[str] | set[st
         print(f"  {name:<34} {mean(with_arm):>5.2f} {mean(without):>6.2f} {delta:>+6.2f}   {flame}")
     for name in sorted(n for n in stats if stats[n]["errors"]):
         print(f"  ✘ {name}: {stats[name]['errors']} session(s) errored — see the run's sessions/ directory")
+    for name in sorted(n for n in stats if stats[n].get("lost_person")):
+        print(f"  ⚠ {name}: {stats[name]['lost_person']} sitting(s) lost the person — the judge could not "
+              f"answer from the sheet, so the sitting stopped mid-round and was not scored; "
+              f"`--resume` runs them again (#159)")
     for name in sorted(n for n in stats if stats[n].get("errored")):
         print(f"  ⚠ {name}: {stats[name]['errored']} verdict(s) errored — the judge returned nothing three "
               f"times; left out of the score, never counted as a failure (#131)")
