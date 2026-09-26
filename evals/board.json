@@ -442,6 +442,71 @@
    "judge": "sonnet",
    "harness": "080006f7ec79a119",
    "inputs": "c1f22db6ac8148df"
+  },
+  "47-the-workflows-moved-after-the-journey": {
+   "delta": 0.25,
+   "with": 1.0,
+   "without": 0.75,
+   "runs": 3,
+   "at": "2026-09-26",
+   "sha": "c64909a",
+   "cost": 4.36,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "8cb339366552183f"
+  },
+  "48-a-persona-with-no-journey": {
+   "delta": 0.33,
+   "with": 0.8,
+   "without": 0.47,
+   "runs": 3,
+   "at": "2026-09-26",
+   "sha": "c64909a",
+   "cost": 5.3,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "404d828a3f2127db"
+  },
+  "49-a-journey-that-became-a-table": {
+   "delta": 0.22,
+   "with": 0.78,
+   "without": 0.56,
+   "runs": 3,
+   "at": "2026-09-26",
+   "sha": "c64909a",
+   "cost": 3.9,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "62809e5662728995"
+  },
+  "50-two-people-one-arc": {
+   "delta": 0.11,
+   "with": 0.89,
+   "without": 0.78,
+   "runs": 3,
+   "at": "2026-09-26",
+   "sha": "c64909a",
+   "cost": 3.81,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "93ad5304f0fa842b"
+  },
+  "51-neg-what-is-a-seam": {
+   "delta": 0.11,
+   "with": 1.0,
+   "without": 0.89,
+   "runs": 3,
+   "at": "2026-09-26",
+   "sha": "c64909a",
+   "cost": 1.14,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "1986e274441b573b"
   }
  }
 }

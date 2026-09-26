@@ -70,6 +70,11 @@ came out.
 | `01-solution-shaped-request` | `refine-spec` finds the job under the proposed solution | a description edit makes it start building the button |
 | `45-a-request-that-crosses-a-boundary` | **`refine-spec` treats a request that crosses a boundary as one** — `tideboard`, whose Refresh button pulls from a gauge service the bindings name `boundary:network`; the round asks what the harbourmaster must still see when the service is down, slow or refusing, and the rule written is tagged `@crosses:network` with an example of the service misbehaving | the spec covers only the successful refresh, the network is never treated as a boundary the promise depends on, or no crossing is written |
 | `46-neg-a-question-about-clips` | **nothing fires** on a question in the recording vocabulary — GIF or short recording, what size — the price of `0055`'s widened `record-clip` description | `record-clip` fires on the words rather than the ask |
+| `47-the-workflows-moved-after-the-journey` | **`refine-journeys` dates the drift from history and takes the id out** — `sowlog`, a gardener's sowing diary whose journey was written in April over one workflow and never touched when July re-cut it into two; the check the bindings name is red on the retired id, and the audit reads `git log` on both folders, says when the journey was last true, and removes the id rather than swapping in the two new ones | the check is made green by refreshing ids, the drift is undated, or the journey is rewritten from the workflows folder |
+| `48-a-persona-with-no-journey` | **`refine-journeys` interviews for the last season before it writes** — the keeper is on the sheet with a memory of two seasons; the questions are retrospective, the phases are never asked for, the arc is played back and corrected, and the file ends in seams with one owned by nothing, provenance in the change spec and not the journey | the journey is written on the first turn from the workflows folder, the keeper is asked to name the stages, the curve is flat, or the file stops at narration |
+| `49-a-journey-that-became-a-table` | **`refine-journeys` takes the ids out rather than refreshing them** — the journey was written from the workflows folder without asking anyone and is a table of ids with a rules list; the request is to update the retired id, and the answer is that a journey names no workflow, the pointing runs the other way | the ids are refreshed as asked, the drift into a workflows README goes unnamed, or the provenance note stays in the journey |
+| `50-two-people-one-arc` | **`refine-journeys` writes one actor per journey** — a request for one arc over the keeper and the plot neighbour who waters in August; the neighbour's fortnight is part of the keeper's season, not a second lens | one file carries both as actors, or the request is obeyed without the point being raised |
+| `51-neg-what-is-a-seam` | **nothing fires** on a question about the difference between a seam and a workflow's "where it breaks" — the price of the words *journey*, *seam* and *stale* in `refine-journeys`' description | an interview about the season starts, or the journey is offered a rewrite |
 | `02-feedback-from-use` | `todo` files rather than fixes, and pulls out the implicit | it fixes on the spot, or tracks only the stated complaint |
 | `03-persona-to-fit-feature` | `refine-personas` refuses a persona ordered backwards | the refusal softens into "here's the persona, with caveats" |
 | `04-workflow-for-orphan` | `refine-workflows` refuses a workflow shaped like its orphan | satisfying the gate beats telling the truth |
@@ -194,6 +199,27 @@ asking where the hook runs and what it leaves to CI. So the fixture does
 discriminate, the spiral did not recur, and the −0.33 stands as a fact about
 `452bcc3` rather than as a live defect. It is written down here because a Δ that
 size, seen cold, is worth exactly one re-open and no more.
+
+`50-two-people-one-arc` is the narrowest of the five, and it is worth reading
+before its number is. Its pilots read Δ +0.33 and then +0.00, and the floor
+settled it at **+0.11** — the bare arm reaches the one-actor rule by itself in
+two runs of three, from the neighbour's persona file, which says in its own
+words that they are not somebody the diary is built for, and from the sound
+journey already in the fixture carrying one `@persona:` tag. The fixture
+teaches half the answer it is asking for. It still discriminates: the third
+bare run wrote the composite anyway, and one plugin run leaked a workflow id
+into the prose and was caught by the command grader. Leave it, and if the next
+floor run reads +0.00, the neighbour's file is doing the skill's work and the
+case needs a harder fixture rather than a softer rubric.
+
+**`48`'s sheet is five rounds because three measured the round count.** The
+sitting is questions, playback, the journey diff on its own, and only then the
+change spec — which is the order the skill sets out. On 2026-09-25 the plugin
+arm spent its third round asking whether the journey read right, which is
+exactly what it should have been doing, and the run ended before the change
+spec it was about to write. The grader asking where provenance went read that
+as a session that never wrote one. A budget that stops a sitting mid-flow does
+not grade the sitting.
 
 The negative cases are the ones to watch. Eight skills' descriptions load in
 every session, and the cost of widening one — or, as with `setup`, of making one
@@ -508,14 +534,36 @@ bring the person it would have had:
   exit code, so `12` now has a hundred turns a round, which is what a setup
   sitting with a shell takes.
 
+**A person the judge cannot reach is a harness error, not an answer.** In the
+floor run of 2026-09-25 one of `48`'s plugin sessions asked its four
+retrospective questions, promised to play the arc back, and then met
+`person: round 1, error: Expecting value: line 1 column 1` — the judge
+returned nothing parseable, nobody answered, and the sitting ended there. Three
+graders scored 0 against a session that had done exactly what the skill asks,
+and the case's plugin arm read 0.80 instead of 1.00. The judge-error rule from
+[`0058`](../specs/changes/0058-a-case-is-a-sitting-not-a-turn.md) covers a
+verdict that never came back; it does not yet cover a *person* who never
+answered, and until it does a row with one of these in it is worth reading the
+transcripts for. The number on the board is the measured one either way — a
+row edited by hand to say what a run would have said is the one thing worse
+than a low row.
+
 `12`, `16` and `41` carried one first; the sitting of 2026-09-20 read `30`,
 `31`, `38`, `42` and `43` asking setup's six questions of nobody and `29`,
 `33` and `45` stopping at a clarifying question in both arms, so those eight
-carry one since. `24` and the other doctor cases do not — an audit answers to
+carry one since. The four journey cases `47`–`50` were written with one,
+because the skill they hold is an interview and `48` grades the questions
+themselves. `24` and the other doctor cases do not — an audit answers to
 the tree — and `09` must never get one, because the stop it grades is the
 thing a person would answer. Convert the rest as their runs demand it, the
 rule for scaffolds, and read the `PERSON:` lines in the first sitting after
 each conversion.
+
+`48`'s first pilot is why a sheet says the number as well as the fact. Asked
+how long the gap between sowing and the first tray showing was, the person
+answered *about six weeks* from a sheet that says three weeks — a plausible
+improvisation that the journey then carried. A sheet holds the fact; the
+rounds are the judge's, and anything it can round off, it will.
 
 ## When a case needs a shell
 
@@ -553,7 +601,9 @@ so in `case.yaml`:
   is a throwaway under `/tmp` either way.
 
 `12`, `16`, `24` and `41` lend one since `0058`; `40` and `44` granted bare
-`Bash` before it. Two things the first Sonnet pilot taught: a command that
+`Bash` before it; `47`–`50` lend `python3`, `git`, `ls` and `cat`, because
+`refine-journeys` reads the traceability check and `git log` on two folders
+before it believes anything about drift. Two things the first Sonnet pilot taught: a command that
 expands a variable — `echo $CLAUDE_PLUGIN_ROOT` — is refused by the CLI's own
 rule whatever the list says, so a session finds the plugin's tools by the path
 the skill hands it rather than by the variable; and `max_turns` is per round,

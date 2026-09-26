@@ -1,0 +1,7 @@
+# The fixture for 47: sowlog, whose journey was written in April over one workflow and never touched when July re-cut it into two. The check the bindings name is red on the id it still carries; git holds the dates. The case grades an audit that dates the drift from history and takes the id out rather than refreshing it.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+# The skill's first reads are the gate and git log, so the case lends the shell for exactly those.
+shell: [python3, git, ls, cat]
+# The sitting (0058): the keeper answers from person.md. They have nothing new
+# to say about the season, which is what sends the skill down its audit path.
