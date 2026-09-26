@@ -1,7 +1,7 @@
 ---
 tags: [skill:refine-personas]
 max_turns: 60
-timeout_seconds: 1800
+timeout_seconds: 2100
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
 runs: 3
 ---
