@@ -1,0 +1,6 @@
+# The fixture for 62: fieldnote at spec 0007, which moved the store to IndexedDB with a migration — a What-changes section that is almost all internals, over a request from somebody who lost three weeks. The case grades composing for the person who asked rather than for the diff.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the maintainer answers from person.md. No browser here,
+# so what is graded is the shot list and the hand-back, as in 08 and 22.
