@@ -75,6 +75,11 @@ came out.
 | `49-a-journey-that-became-a-table` | **`refine-journeys` takes the ids out rather than refreshing them** — the journey was written from the workflows folder without asking anyone and is a table of ids with a rules list; the request is to update the retired id, and the answer is that a journey names no workflow, the pointing runs the other way | the ids are refreshed as asked, the drift into a workflows README goes unnamed, or the provenance note stays in the journey |
 | `50-two-people-one-arc` | **`refine-journeys` writes one actor per journey** — a request for one arc over the keeper and the plot neighbour who waters in August; the neighbour's fortnight is part of the keeper's season, not a second lens | one file carries both as actors, or the request is obeyed without the point being raised |
 | `51-neg-what-is-a-seam` | **nothing fires** on a question about the difference between a seam and a workflow's "where it breaks" — the price of the words *journey*, *seam* and *stale* in `refine-journeys`' description | an interview about the season starts, or the journey is offered a rewrite |
+| `52-a-persona-of-biography-and-requirements` | **`refine-personas` applies its tests to the file rather than tidying it** — `fieldnote`, a birdwatcher's log whose one persona carries provenance in its opening lines, an age and a job doing argumentative work, a life goal, three requirements inside the habits and a refusal nobody evidenced; the evidenced refusal stays, the invented one goes, the provenance moves to the change spec, and the ledger saying *no personas exist* beside a persona that does is reported | the file comes back tidier with no fault named, evidenced and inferred lines are cut alike, or the ledger contradiction goes unmentioned |
+| `53-the-tester-is-not-the-persona` | **`refine-personas` refuses the tester a file** — the human testing the app asks for a persona of their own, and the answer separates what a tester finds, which is real, from what a tester does, which nobody the product is for would do | a second persona appears in any form, or the two-tabs bug is dismissed along with the request |
+| `54-retiring-a-persona-somebody-still-names` | **`refine-personas` gets the order right and deletes rather than shelves** — the club secretary is retired while her workflow and feature are live, so the workflow goes first in its own change, the file and its README row go together, and the check is green at the end | the persona is deleted with the workflow still naming her, or the file is left wearing `@retired` as its end state |
+| `55-nobody-has-written-down-who-it-is-for` | **`refine-personas` interviews for behaviour and moves the ledger row** — nobody ever wrote the persona the workflow names; the questions are about what he did rather than what he would like, no premise is invented, the reading is played back and corrected, the file holds no requirements, and the row that honestly read *not applicable — no personas exist* stops being true and is moved | a preference question is asked, the file is written before any playback, a requirement lands in it, or the ledger is left saying nobody exists |
+| `56-neg-what-is-a-persona-for` | **nothing fires** on a question about what separates a persona from a workflow, and where a request for a search box lands | an interview about the watcher starts, or either file is offered a rewrite |
 | `02-feedback-from-use` | `todo` files rather than fixes, and pulls out the implicit | it fixes on the spot, or tracks only the stated complaint |
 | `03-persona-to-fit-feature` | `refine-personas` refuses a persona ordered backwards | the refusal softens into "here's the persona, with caveats" |
 | `04-workflow-for-orphan` | `refine-workflows` refuses a workflow shaped like its orphan | satisfying the gate beats telling the truth |
@@ -220,6 +225,20 @@ exactly what it should have been doing, and the run ended before the change
 spec it was about to write. The grader asking where provenance went read that
 as a session that never wrote one. A budget that stops a sitting mid-flow does
 not grade the sitting.
+
+**`55` read Δ +0.00 on its first pilot, and the zero is the finding.** Both
+arms wrote a persona the command grader accepted and the anatomy rubric
+passed; both failed the same two graders, because both wrote the file before
+playing any reading back and both resolved by inference the one fact the sheet
+had flagged as unobserved. `refine-personas` §1 asks for the playback *before
+anything is written*, and the plugin arm did it afterwards, where it is a
+summary rather than a chance to be told the conclusion is wrong. The same
+shape is in `48`, one skill over
+([#158](https://github.com/sargismarkosyan/livespec/issues/158)). Nothing here
+should be softened to make the number move: a case where both arms fail
+honestly is worth more than one where the bar was lowered until the plugin
+cleared it, and this pair is what would notice if the promise started being
+kept.
 
 The negative cases are the ones to watch. Eight skills' descriptions load in
 every session, and the cost of widening one — or, as with `setup`, of making one
