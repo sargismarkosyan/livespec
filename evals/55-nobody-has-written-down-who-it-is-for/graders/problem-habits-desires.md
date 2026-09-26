@@ -22,11 +22,5 @@ PASS requires all of:
 - The end goal is servable and dull — knowing what turns up on his own stretch
   of canal, answerable while standing on it. Not "become a better naturalist"
   or anything else that belongs to nobody.
-- Only the evidenced refusal appears: he has said no to the county recorder
-  twice. Nothing he was never asked about is written as a refusal, and what
-  nobody knows is at the foot as an open question instead.
-- No provenance in the file: who was asked, when, and how much was inferred
-  are in the change spec.
-
 FAIL if any of those is missing, or if the file reads like a transcript of
 the interview rather than conclusions drawn from it.

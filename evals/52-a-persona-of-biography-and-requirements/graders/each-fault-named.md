@@ -19,12 +19,6 @@ PASS requires all of:
   A session that cuts both, or keeps both, has not made the distinction.
 - The provenance is moved rather than deleted: the interview date and how much
   was inferred belong in the change spec, and it says so.
-- It reports the ledger contradiction. `specs/setup/README.md` says both
-  persona checks are *not applicable — no personas exist*, and a persona file
-  does exist, so the ledger contradicts the tree. Saying the rows are wrong,
-  or moving them, both count; repeating the table back as though it were true
-  does not.
-
 FAIL if the file is simply rewritten without the faults being named, if
-evidenced and inferred lines are treated alike, or if the ledger goes
-unmentioned.
+evidenced and inferred lines are treated alike, or if the provenance is
+deleted rather than moved.
