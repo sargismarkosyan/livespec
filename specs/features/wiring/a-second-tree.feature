@@ -2,7 +2,7 @@
 Feature: What an audit reads back about a second tree
 
   @rule:the-trees-row-is-there @planned
-  Rule: The audit tool reports bindings with no row saying where trees live and what makes them as open, and hands the command it names to the reading
+  Rule: The audit tool reports as open bindings with no row saying where trees live and what makes them, or a context file whose commands do not carry that command, and hands the command to the reading
 
     Example: bindings written before the row existed
       Given bindings with no row for trees
@@ -11,9 +11,16 @@ Feature: What an audit reads back about a second tree
 
     Example: the row is there
       Given bindings whose trees row names a directory and a command
+      And a context file whose block of commands carries it
       When the audit tool reads them
       Then the trees row line reads clear
       And the fresh-tree line after it is printed unanswered, carrying that command
+
+    Example: the context file never learned the command
+      Given bindings whose trees row names a command
+      And a context file whose block of commands does not carry it
+      When the audit tool reads them
+      Then the trees row line reads open, naming the context file as what to correct
 
   @rule:a-fresh-tree-is-re-proven @planned
   Rule: The audit makes a throwaway tree with the command the bindings name, runs verification there and cleans it with the same command, and changes nothing but the record

@@ -173,9 +173,11 @@ next audit says so, before the next agent stalls on it.
      - the untracked files verification and the app need, meaning ignored
        files the first tree has and a fresh one would not;
      - everything the app binds, starts or connects to: ports, data
-       directories, servers, containers, queues. For each, it proposes one
-       of the three kinds, recommending *shared, started once* for a server
-       and *own* for what lives on it;
+       directories, servers, containers, queues. It also reads the agent
+       harness's own ignored state in the tree, such as the `.pi/` #166
+       found, which held the checkout the skills load from. For each, it
+       proposes one of the three kinds, recommending *shared, started once*
+       for a server and *own* for what lives on it;
      - which of the app's per-tree values it already reads from its env file,
        and which are fixed in code;
      - where the repository's existing trees already are, from its own
@@ -200,6 +202,11 @@ next audit says so, before the next agent stalls on it.
        to catch a tool walking into the ignored directory.
      - It cleans the throwaway with `clean`, and writes the row from what
        came back.
+   - Section 6 writes the command into the context file's block of commands.
+     Every session reads that file first, under any harness, so an agent
+     starting a change finds `new` without anyone saying it. The command is
+     already in the bindings, but a command only the bindings know is one an
+     agent never reaches for.
    - Section 8's report gains the line. *What this skill refuses* gains
      *committing a secret* and *removing a tree with work in it*.
    - The command is repository tooling, like the hook, and not application
@@ -209,8 +216,10 @@ next audit says so, before the next agent stalls on it.
 
 4. **[`doctor`](../../skills/doctor/SKILL.md) and
    [`tools/doctor.py`](../../tools/doctor.py) — two checks.**
-   - `check:trees-row`, *mechanical, record*: the bindings carry the row.
-     Missing is *open*, closed by the sitting.
+   - `check:trees-row`, *mechanical, record*: the bindings carry the row, and
+     the context file's block of commands carries the command it names.
+     Either missing is *open*: the row is closed by the sitting, and the
+     context file by correcting its line.
    - `check:fresh-tree-green`, *judgment, wiring*: the tool pre-fills it with
      the command the row names. The audit runs `new` for a throwaway tree,
      runs verification there, and runs `clean`. Red is *open*, with the first
@@ -306,6 +315,15 @@ next audit says so, before the next agent stalls on it.
 - **Making contended resources safe.** A resource marked *shared and
   contended, decided* stays contended. The spec makes the decision visible.
   It does not remove the collision.
+
+## How many at once
+
+Nothing caps it. The maintainer expects about five trees at once, on a laptop
+with room for more, and says anyone who wants more may run more. `trees
+list` prints the count, and the bindings may name a number this repository
+runs comfortably. Nothing refuses a sixth tree, and nothing warns about one.
+A cap would be a guess about somebody else's machine and somebody else's
+attention.
 
 ## Data
 

@@ -27,6 +27,12 @@ Feature: What each tree has of its own, and what every tree shares
       When a second tree starts its own
       Then each name carries the tree's name, or the resource is written down as shared
 
+    Example: the agent harness keeps its own state in the tree
+      Given a harness that keeps ignored state in each tree, including the checkout its skills load from
+      When a second tree is made
+      Then that state is written down as the tree's own or as shared, and the command makes it so
+      And no tree runs skills from a different checkout than the first without the bindings saying so
+
     Example: the port is fixed in the app's code
       Given an app that listens on a port nothing outside its code can change
       When the command is written

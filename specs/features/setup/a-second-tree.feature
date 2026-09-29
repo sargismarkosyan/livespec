@@ -15,6 +15,12 @@ Feature: A second tree as ready as the first
       When it is turned down
       Then the bindings row lists the steps a fresh tree needs, in order, and the one directory trees go in
 
+    Example: every session is told the command
+      Given the command exists
+      When the context file is written
+      Then its block of commands carries the command that makes a tree
+      And no harness's name is needed to find it
+
     Example: the agent harness has its own way of making trees
       Given a harness that runs its own setup when it creates a tree
       When the command exists
