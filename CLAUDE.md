@@ -102,6 +102,7 @@ session here is most likely to miss:
 
 ```sh
 python3 .github/scripts/verify.py                 # everything that can pass here
+python3 .github/scripts/trees.py new <name>       # a tree for the next change; list, clean
 claude plugin validate . --strict                 # marketplace manifest
 claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
 claude plugin validate ./skills --strict

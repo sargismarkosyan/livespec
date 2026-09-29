@@ -38,7 +38,7 @@ def repo(bindings: str | None = None, files: dict[str, str] | None = None) -> Pa
     (root / "specs" / "setup" / "README.md").write_text(text, encoding="utf-8")
     (root / "specs" / "changes").mkdir()
     (root / "specs" / "changes" / "0001-first.md").write_text("# Spec 0001\n", encoding="utf-8")
-    (root / "CLAUDE.md").write_text("# The loop\n\n`/livespec:refine-spec` writes the spec.\n", encoding="utf-8")
+    (root / "CLAUDE.md").write_text("# The loop\n\n`/livespec:refine-spec` writes the spec.\n\n```sh\npython3 trees.py new <name>\n```\n", encoding="utf-8")
     for relative, content in (files or {}).items():
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -579,3 +579,28 @@ class CheckOnly(unittest.TestCase):
         result = subprocess.run([sys.executable, str(ROOT / "tools" / "doctor.py"), "--check", str(path)], cwd=root, capture_output=True, text=True)
         self.assertEqual(result.returncode, 1)
         self.assertIn("still unanswered: check:merge-blocked", result.stderr)
+
+
+class Trees(unittest.TestCase):
+    """Where trees live and what makes them, read back by the tool. See specs/changes/0073."""
+
+    @rule("the-trees-row-is-there")
+    def test_bindings_with_no_trees_row_read_open_and_name_the_sitting(self):
+        lines = audit(repo(inject.green_bindings(INSTALLED).replace(inject.ROW_TREES + "\n", "")))
+        self.assertEqual(lines["check:trees-row"]["state"], "open")
+        self.assertIn("setup sitting", lines["check:trees-row"]["evidence"])
+        self.assertEqual(lines["check:fresh-tree-green"]["state"], "n/a")
+
+    @rule("the-trees-row-is-there")
+    def test_a_row_the_context_file_carries_reads_clear_and_hands_the_command_on(self):
+        lines = audit(repo())
+        self.assertEqual(lines["check:trees-row"]["state"], "clear", lines["check:trees-row"]["evidence"])
+        self.assertEqual(lines["check:fresh-tree-green"]["state"], "unanswered")
+        self.assertIn("python3 trees.py new <throwaway>", lines["check:fresh-tree-green"]["evidence"])
+        self.assertIn("clean", lines["check:fresh-tree-green"]["evidence"])
+
+    @rule("the-trees-row-is-there")
+    def test_a_context_file_that_never_learned_the_command_reads_open(self):
+        lines = audit(repo(files={"CLAUDE.md": "# The loop\n\n`/livespec:refine-spec` writes the spec.\n"}))
+        self.assertEqual(lines["check:trees-row"]["state"], "open")
+        self.assertIn("CLAUDE.md", lines["check:trees-row"]["evidence"])

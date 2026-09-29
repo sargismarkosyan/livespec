@@ -6,3 +6,4 @@ __pycache__/
 evals/results/
 # a virtual environment for the eval fixtures' runners; run.py puts .venv/bin on the path (0058)
 .venv/
+.worktrees/

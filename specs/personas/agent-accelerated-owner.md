@@ -40,6 +40,10 @@ to find the handful of files they do read still true when they come back.
   what they do when they have spare time.
 - **A setup they did not agree to gets stopped and questioned** rather than
   inherited.
+- **Several changes in flight in one repository, one tree each.** On the day
+  it was reported, one repository had six worktrees open, two of them opening
+  merge requests five minutes apart — each readied by hand, and no two readied
+  the same way.
 - Working alone today. Contributors are expected and have not arrived.
 
 Four things stated outright, because each one silently decides designs:

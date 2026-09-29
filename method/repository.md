@@ -86,6 +86,81 @@ about nothing. Read the settings, write down what came back, and record the
 command that reads them again — the command is a binding, and it belongs in
 `specs/setup/README.md` beside the table.
 
+### Several changes at once
+
+**Several changes in flight at once is the ordinary case.** An agent makes a
+second change as cheap to start as the first, so a person driving several
+works one change per branch and one branch per tree — a linked worktree, a
+second clone, whatever the platform calls it. Every rule above is per change
+and holds as it is. What they assume, and what this section says out loud, is
+that every tree is as able to keep them as the first.
+
+**Every tree of a repository lives in one directory, and one command makes,
+lists and cleans them.** Both are bindings. A directory per person per week
+is how a repository ends up with trees in two folders under overlapping names
+and nobody able to say which of them holds work. The directory belongs to the
+repository, not to any agent harness: a harness's own way of making a tree
+calls the command, and the command never calls a harness. Somebody who
+changes harness, or runs two, then still has one set of trees and one way to
+make the next.
+
+**A fresh tree is made ready by that command, never by hand.** A tree readied
+by hand is readied differently from the last, and the difference that matters
+is the one nobody sees: a hook turned on as a side effect of an install only
+one tree had, so the checks before a push run in some trees and not in
+others, and a tree without them reads exactly like one whose checks passed.
+
+**Every resource a tree touches is one of three kinds, and the bindings say
+which.** What does not scale is a property of the project, not of the tree,
+so it is decided once rather than discovered by the second agent.
+
+- **The tree's own** — a port, a database on the shared server, a data
+  directory, a queue or cache prefix, the names the runtime gives what it
+  starts. Each is worked out per tree by the command, and each name carries
+  the tree's name.
+- **Shared, started once** — a database server, a network, a package store
+  that is safe to share. A second tree reuses what the first started, and
+  never starts a second copy of something one copy can serve.
+- **Shared and contended, decided** — trees knowingly writing one development
+  database, one callback address, one account's limit. Sometimes that is
+  acceptable. It is written down with the reason, so it reads as a choice and
+  not as a collision nobody saw.
+
+The agent harness's own state kept inside a tree is a resource like any
+other, and sorted the same way.
+
+**One env file configures a tree.** Everything a tree varies is read from it.
+The command copies it from one source outside every tree's history, changes
+only the lines the tree has of its own, keeps it ignored, and never commits
+it. A value the app reads from anywhere else — a port or a path fixed in its
+code — is a setting only the app can move into the file, and that change is
+filed rather than worked around.
+
+**A tree's own values are worked out from the tree, not picked when it
+starts.** The same tree gets the same port every time, so what is running
+where can be read off the list of trees rather than guessed.
+
+**Cleaning goes by the repository's own record of its trees, never by deleting
+a directory.** The record finds every tree, including one a harness made
+somewhere else; a deleted directory leaves the record claiming a tree that is
+gone. A tree is removed only when it has nothing to lose — nothing uncommitted
+or untracked, every commit on the main branch, not locked, not the tree the
+command runs from — and it goes with what it held of its own: what it started
+is stopped and its own database dropped, while what is shared stays up. Every
+other tree is listed with the reason it stayed. The rule is written as what
+it keeps, because it is the one step here that destroys anything.
+
+**And all of it is watched, not assumed.** Before the bindings say a fresh
+tree works, a throwaway one is made by the command, verification runs green
+in it — and the app, beside the first tree's — and the command cleans it
+again. Verification in the first tree, run while the throwaway exists, counts
+what it counted before, so a tool walking into the directory is caught
+rather than inherited. A readiness nobody watched is the same claim as a gate
+nobody broke.
+
+Nothing caps how many trees run at once. That is a fact about one machine and
+one person's attention, and the list of trees is where the number is read.
+
 ### Every pull request shows what it did
 
 **A pull request that changes what the app looks like shows it, in the body.**

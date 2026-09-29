@@ -27,6 +27,8 @@ headers and the stamp line below, so keep those as they are.
 | **Where the app runs** | `<command>`, or *nowhere — there is no app* |
 | **Deliverable of a version** | <which changes owe a picture and in what form — a recording, a still — and which owe none and get *nothing to see* in the pull request instead; three answers, per kind of change, never one for the repository> |
 | **What a change here must show** | <which changes owe a picture, in what form, and where it goes> |
+| **Trees** | <the one directory every tree lives in, ignored; the command that makes, lists and cleans them; and the date a throwaway tree it made last went green — or *unproven*, with why> |
+| **What trees share** | <each resource a tree touches, as *own* (and how the command works it out), *shared* (and what starts it once) or *shared and contended, decided* (and why that is acceptable); and the env file's one source, with the lines each tree changes> |
 | **A sketch is owed** | <which changes owe one before approval — a repository with no app still has change specs> |
 | **CLAUDE.md ceiling** | <the size the file may not exceed, in a unit the gate reads — written from what the file is when the sitting has finished with it, with the command that reads it and the change that set it; raised only in the change that needs the room, and never above the limit the method names> |
 | **What proves a rule** | <an ordinary test suite, or graded cases — and why> |

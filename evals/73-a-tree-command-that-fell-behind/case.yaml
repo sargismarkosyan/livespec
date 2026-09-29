@@ -1,0 +1,22 @@
+# The workspace: chandlery, a small Python stock list for a marina shop, with
+# the process set up in June. Its bindings name `python3 scripts/trees.py` and
+# say a throwaway tree it made went green on 2026-06-02. That was true then.
+#
+# Since then the suite reads `config/local.toml`, which `make config`
+# generates and `.gitignore` keeps out of history. The first tree has the
+# file. `new` was never told about it, so a fresh tree's `make check` fails
+# with the file not found. Nothing about the bindings looks wrong on reading
+# them. Only making a tree and running verification in it shows the row is
+# stale.
+#
+# What is graded:
+#   - the audit makes the throwaway tree and runs verification in it;
+#   - `check:fresh-tree-green` reads open, with the failing line;
+#   - `scripts/trees.py` is left as it is (the wiring is setup's);
+#   - the throwaway is cleaned, leaving git's list of trees as it was.
+# See specs/changes/0073.
+scaffold_script: scaffold.sh
+# Lent the fixture's own commands, like every doctor case since 0058, so the
+# audit tool and the tree command can both run.
+shell: [python3, make, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo]
+requires: [python3, git, make]

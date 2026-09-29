@@ -60,7 +60,7 @@ def context_file(steps: int = 3) -> str:
     return (
         "# fixture\n\nA synthetic repository, not an application.\n\n"
         "## The loop\n\n" + loop
-        + "\n## Commands\n\n```sh\npython3 gate.py\n```\n\n"
+        + "\n## Commands\n\n```sh\npython3 gate.py\npython3 trees.py new <name>   # a tree for the next change\n```\n\n"
         "The bindings are [specs/setup/README.md](specs/setup/README.md).\n"
     )
 
@@ -169,6 +169,7 @@ ROW_STORE = "| `boundary:store` | the store | real | 0001 | `docker compose up d
 ROW_CLOCK = "| `boundary:clock` | the clock | mocked | 0001 | a fake clock nothing checks; cover: none |"
 ROW_SKETCH = "| **A sketch is owed** | by every change spec, before approval |"
 ROW_SHOW = "| **What a change here must show** | a screenshot of the list, on docs/screenshots/ |"
+ROW_TREES = "| **Trees** | `.worktrees/`, ignored; `python3 trees.py` with `new`, `list` and `clean`; a throwaway tree last went green 2026-01-01 |"
 GATE_HEADER = "| id | gate | state | evidence |\n|---|---|---|---|"
 WIRING_HEADING = "### The wiring that must never gate"
 
@@ -231,6 +232,7 @@ def green_bindings(version: str) -> str:
         "| **Where the app runs** | `npm start` |\n"
         f"{ROW_SKETCH}\n"
         f"{ROW_SHOW}\n"
+        f"{ROW_TREES}\n"
         f"{ROW_CEILING}\n"
         "| **Deliverable of a version** | the screenshot |\n"
         "| **What proves a rule** | an ordinary test suite |\n"
@@ -673,7 +675,7 @@ FAULTS = [
                      ROW_CEILING.replace(f"{len(CONTEXT_FILE.splitlines())} lines", f"{len(context_file(9).splitlines())} lines"))),
      "fails", "at most 8"),
     ("a context file with no fenced block", TRACE,
-     lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace("```sh\npython3 gate.py\n```\n", "python3 gate.py\n")),
+     lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace("```sh\npython3 gate.py\npython3 trees.py new <name>   # a tree for the next change\n```\n", "python3 gate.py\n")),
      "fails", "no fenced block"),
     ("a context file that does not link to the bindings", TRACE,
      lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace("(specs/setup/README.md)", "(specs/README.md)")),
@@ -1248,6 +1250,10 @@ DOCTOR_FAULTS = [
      lambda r: edit(r, "specs/setup/README.md", ROW_SKETCH + "\n", ""), "open"),
     ("the sketch row and the picture row saying one thing", "check:picture-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_SKETCH, "| **A sketch is owed** | a screenshot of the list, on docs/screenshots/ |"), "open"),
+    ("no row saying where trees live", "check:trees-row",
+     lambda r: edit(r, "specs/setup/README.md", ROW_TREES + "\n", ""), "open"),
+    ("a trees command the context file does not carry", "check:trees-row",
+     lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace("python3 trees.py new <name>   # a tree for the next change\n", "")), "open"),
     ("a record instructing by a skill this plugin no longer has", "check:skill-names",
      lambda r: write(r, "CLAUDE.md", "# The loop\n\nReport what you found with `/livespec:feedback`.\n"), "open"),
     ("a row deferred across two changes", "check:deferred-clock",

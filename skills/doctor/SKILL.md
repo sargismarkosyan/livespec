@@ -140,6 +140,13 @@ The questions worth the judgment, and what decides them:
   rule-bound test and watched the gate refuse it. A bindings sentence saying
   the runner cannot report per test is a decision to leave as written, with
   what it leaves open beside it.
+- **A fresh tree** (`check:trees-row`, `check:fresh-tree-green`). The tool has
+  read the row and handed you its command. Make a throwaway tree with `new`,
+  outside anything the record covers, run verification there, and `clean`
+  it — then read the tree list, which must be as it was. Red is `open` with the
+  first failing line and the command left as it is; a secret this session
+  cannot reach is `not-read`, with why. Clean nothing but the throwaway: every
+  other tree may hold somebody's work, and clearing them is the person's call.
 - **The run beside the claim** (`wiring:run-beside-claim`, `check:run-row`).
   The row reads *unobserved* until somebody has watched the pipeline's run and
   a pull request's run block disagree on the page; where the repository's pull
@@ -217,6 +224,7 @@ nothing written.
 
 ## What this skill refuses
 
+- **Cleaning anybody's trees** but the throwaway it made.
 - **Wiring anything.** Not a gate, not a report, not a threshold — including
   the one it just found is wrong. It writes the record; `setup` writes the wiring.
 - **Running a command it read from the bindings itself.** The tool prints

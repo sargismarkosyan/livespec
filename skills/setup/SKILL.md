@@ -74,6 +74,14 @@ Find out what is true, and say it back before you touch a file:
   it gets said out loud rather than left blank.
 - **Greenfield or occupied?** A repository with 40,000 lines already in it is a
   different job from an empty one, and section 7 is about the difference.
+- **What a second tree would be missing, and what two would fight over.** The
+  ignored files verification and the app need, which a fresh tree would not
+  have; everything the app binds, starts or connects to — ports, data
+  directories, servers, containers, queues — and which of its per-tree values
+  it already reads from its env file; the agent harness's own state kept in
+  the tree; and where the repository's existing trees are, read from git's own
+  record of them rather than from a folder. Section 4 turns this into the
+  command.
 
 Say what you found in a short paragraph. If the repo has no tests and no CI at
 all, say that too — the process still installs, but the coverage gate has nothing
@@ -382,6 +390,45 @@ the results in `specs/setup/README.md`.**
 This is the step that gets skipped, and skipping it is how a repository spends
 six months with a required check that has been passing on an empty glob.
 
+### Then make a second tree as ready as the first
+
+Several changes in flight at once is the ordinary case —
+[`repository.md`](../../method/repository.md#several-changes-at-once) says what
+every tree must be. This is where it gets a directory and a command, and where
+they get proved.
+
+**Propose the home and the command, then wait**, the way the hook was offered.
+The home is one directory for every tree, ignored — recommend `.worktrees/` at
+the repository root: a newcomer sees it, deleting the checkout deletes the
+trees, and it sits under no harness's directory. The command is the
+repository's own, in its own language, with three verbs: `new` makes a tree on
+a branch of the same name and makes it ready — the install, the hook, the env
+file copied from its one source with only the tree's own lines changed, a
+database of its own on the server already running; `list` shows every tree git
+knows about, wherever it lives, with whether it is safe to remove; `clean`
+removes every tree with nothing to lose, with its branch and what it held, and
+lists the rest with why they stayed. Say what it would write. **Then stop.** A
+decline is an answer: the row lists the steps a fresh tree needs, in order,
+and the directory.
+
+**Sort every resource from section 1 into its kind** — the tree's own, shared
+and started once, or shared and contended — recommending *shared* for a server
+and *own* for what lives on it, and asking only where one is contended whether
+that is acceptable here. A value the app reads from its code rather than its
+env file is named as a change for the app, the person's to file — the sitting
+writes tooling and never application code. Where a harness in use has its own
+way of making a tree, point it at `new`; never give it a second copy of the
+steps, and never name the harness in the command.
+
+**Then prove it, the way the gates were proved.** Make a throwaway tree with
+`new`, run verification in it, and — where there is an app — start it beside
+the first tree's. Run verification in the first tree while the throwaway
+exists and compare the count, so a tool walking into the directory is caught.
+Clean the throwaway with `clean` and see the tree list as it was. What came
+back goes in the row with the date; a proof that could not be run — a secret
+this session cannot reach — makes the row *unproven*, with why, never
+*works*.
+
 ## 5. Write `specs/setup/README.md` — the bindings
 
 This is the file every other skill reads, and it is written from
@@ -409,6 +456,11 @@ falls back to guessing, and a guess that lands in the wrong tracker is invisible
 to everybody: no error, no second copy, and nobody told. Write the row even when
 the answer is the obvious one, and write *"there is no tracker"* when there is
 none rather than leaving it blank.
+
+**Write the two tree rows from section 4** — **Trees**, with the directory, the
+command and the date its proof went green, and **What trees share**, one line
+per resource in its kind and the env file's one source. The audit reads the
+first back and re-runs the proof.
 
 **One of those rows is easy to leave out and expensive to add later.** A pull
 request in this repository carries the deliverable — the picture, and the Gherkin
@@ -561,6 +613,11 @@ Then the remedy follows the finding, per
   disk stays as it was until the answer comes; a no leaves it, with the
   line-level fixes made and the rest reported.
 
+**Its block of commands carries the tree command** — `new`, at least — so an
+agent starting a change in any harness reaches for it rather than making a
+tree by hand. The audit reports the row open while the file does not carry
+it.
+
 The ones an occupied repository's own file is usually missing, because nothing
 ever made anybody write them: **#2** (who writes what), **#4** (the line between
 the plugin and this repository), and **#10** (where issues go — which you found
@@ -610,6 +667,8 @@ Then report, short:
   for each whether it is deferred or cannot apply here;
 - **which boundaries read *mocked* or *unreachable***, read off the third
   table, and for each what would move it;
+- where trees live, the command that makes them, and whether a throwaway tree
+  went green — or what kept it *unproven*;
 - the requirement list from section 6, and anything in CLAUDE.md still missing;
 - **what is still empty** — the personas, the workflows and the journeys.
 
@@ -685,6 +744,8 @@ command rather than an act of memory.
 - **Answering the interviews it starts.** Section 8 runs three skills; it does
   not supply their replies. A chain that fills in the human's answers has
   installed the process on top of a persona nobody chose.
+- **Removing a tree with work in it**, or a secret committed, copied into a
+  tracked file, or given to a tree any way but from its one source.
 - **Adding a dependency** to make the process fit. If the gate needs a library,
   it is too big.
 - **A coverage number nobody chose.** Copied from another repository, or
