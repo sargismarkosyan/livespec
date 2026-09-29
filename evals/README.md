@@ -471,12 +471,12 @@ board's own costs once a row has them.
 | what you changed | what goes stale | roughly |
 |---|---|---|
 | one skill's **body** | its `first` rows (with-arm only) and its `review` row | 6 cases × 3 replies ≈ **$3.40**, against $9 as sittings |
-| one skill's **description** | every `route` row — a description can move any prompt | 70 × 3 turns ≈ **$8.40** |
+| one skill's **description** | every `route` row — a description can move any prompt | 73 × 3 turns ≈ **$8.80** |
 | a case's prompt, fixture or graders | its `route` and `first` rows | ≈ $1.20 |
 | a rule's text | the `first` rows of the cases claiming it, the `review` rows of the skills holding it | ≈ $1.25 each |
-| `tiers.py` | **every tier row** | ≈ **$72** |
+| `tiers.py` | **every tier row** | ≈ **$76** |
 | `provider.py`, `asserts.py` | the canary only — nothing owed | $0 until chosen |
-| the model in the bindings | every tier row, and the canary is due | ≈ $72, and a canary |
+| the model in the bindings | every tier row, and the canary is due | ≈ $76, and a canary |
 
 A sitting still costs what it did — a session about **$0.36**, a judge call about
 **$0.10**, a person's round about **$0.06** — and a full canary is about **$200**.
