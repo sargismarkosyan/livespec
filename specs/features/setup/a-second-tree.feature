@@ -54,37 +54,8 @@ Feature: A second tree as ready as the first
       When the proof is attempted
       Then the row says the fresh tree is unproven, and why
 
-  @rule:what-two-trees-fight-over-is-derived @planned
-  Rule: What two trees would contend for is worked out per tree by the command and named in the bindings, never typed into each tree by hand
-
-    Example: the app listens on a port written in its env file
-      Given an app whose port is a line in its env file
-      When the command makes a second tree
-      Then the second tree's port is worked out from that tree
-      And the bindings name the port as something each tree has its own of
-
-    Example: the port is fixed in the app's code
-      Given an app that listens on a port nothing outside its code can change
-      When the command is written
-      Then the bindings name the port as a collision only the app can remove
-      And the hand-back says that change is the person's to file, not the sitting's to make
-
-  @rule:a-shared-secret-has-one-source @planned
-  Rule: What every tree shares comes from one source outside every tree's history, stays ignored in every tree it reaches, and is never committed
-
-    Example: one env file holds a key and a port
-      Given an env file holding an API key and the port the app listens on
-      When the command is written
-      Then the key comes from the one source every tree reads
-      And the port is the tree's own
-
-    Example: the copy would show up as a file to add
-      Given the command copies the env file into a fresh tree
-      When the fresh tree's status is read
-      Then the env file is not in it, or the command is not written as working
-
   @rule:clean-removes-only-what-is-safe @planned
-  Rule: Cleaning removes every tree with nothing to lose, with its branch, and lists every other tree with why it was kept
+  Rule: Cleaning removes every tree with nothing to lose, with its branch and whatever it held on its own, and lists every other tree with why it was kept
 
     Example: most trees are merged and clean
       Given eighteen trees, seventeen of them clean with every commit on the main branch
@@ -96,6 +67,12 @@ Feature: A second tree as ready as the first
       Given a tree created by an agent harness outside the directory the bindings name
       When the trees are listed
       Then it is listed with the others, from the repository's own record of its trees
+
+    Example: a tree that held its own database and port
+      Given a clean, merged tree whose command made it a database on the shared server and gave it a port
+      When the trees are cleaned
+      Then its database is dropped and whatever it started is stopped
+      And the shared server stays up for the other trees
 
     Example: the tree somebody is working in
       Given a session standing in a clean, merged tree

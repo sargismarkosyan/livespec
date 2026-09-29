@@ -99,6 +99,9 @@ next audit says so, before the next agent stalls on it.
   the command, and the date a throwaway tree was last watched going green.
   Making a tree with it and running verification there is green with nothing
   else typed, under any harness or none.
+- Two builds of one app run side by side on two ports, against one database
+  server holding a database per tree, with nothing typed after `new` in
+  either tree.
 - Listing the trees in this repository after a month of work shows each one's
   state. Cleaning them leaves only the trees with work in them.
 - In the repository #166 came from, `doctor` reports the trees row *open*.
@@ -108,7 +111,7 @@ next audit says so, before the next agent stalls on it.
 
 1. **The method, [`repository.md`](../../method/repository.md) — a section
    *Several changes at once*** under *Branches and pull requests*. It says
-   six things and names no command, path or harness:
+   seven things and names no command, path or harness:
    - several changes in flight is the ordinary case: one change, one branch,
      one tree;
    - **every tree of a repository lives in one directory the bindings name**,
@@ -116,17 +119,38 @@ next audit says so, before the next agent stalls on it.
    - a fresh tree is **made ready by that command**, because a tree readied by
      hand is readied differently from the last, and the difference that
      matters is the one nobody sees;
-   - what two trees would contend for is **worked out per tree** by that
-     command and named — ports, data directories, database names, caches that
-     are not safe to share;
-   - what every tree shares, secrets above all, **has one source outside every
-     tree's history**, reaches each tree as an ignored file, and is never
-     committed. A file mixing the two kinds, such as a key beside a port, is
-     split;
+   - **every resource a tree touches is one of three kinds, and the bindings
+     say which.** What does not scale is a property of the project, not of
+     the tree, so it is decided once and written down rather than discovered
+     by the second agent:
+     - **its own**: a port, a database on the shared server, a data
+       directory, a queue or cache-key prefix, the names the runtime gives
+       containers. Each is worked out per tree, and each name carries the
+       tree's name;
+     - **shared, started once**: the database server, a container network, a
+       package store that is safe to share. A second tree reuses what the
+       first started. It never starts a second copy of something one copy
+       can serve, such as two database containers for two builds of one app;
+     - **shared and contended, decided**: trees knowingly writing the same
+       development database, one webhook URL, one account's rate limit.
+       Sometimes that is fine. It is written down with the reason, so it
+       reads as a choice and not a collision nobody saw;
+   - **one env file configures a tree.** Everything a tree varies is read
+     from it. The command copies it from one source outside every tree's
+     history and changes only the lines the tree has of its own. The result
+     stays ignored and is never committed. Secrets are copied as the source
+     has them. A value the app reads from anywhere else, such as a port or
+     a path in code, is named as a setting only the app can move into the
+     file;
+   - **a tree's own values are worked out, not picked when it starts**,
+     from the tree itself. The same tree gets the same port every time, and
+     the list of trees can show which tree holds what;
    - **cleaning goes by the repository's own record of its trees, never by
      deleting a directory.** It removes a tree only when it has nothing to
-     lose, and it lists every other tree with why it stayed. The record
-     finds every tree, including one a harness made somewhere else. A
+     lose, and it lists every other tree with why it stayed. When it removes
+     one, it releases what that tree held of its own: it stops what the tree
+     started and drops the tree's database. The shared server stays up. The
+     record finds every tree, including one a harness made somewhere else. A
      deleted directory leaves the record claiming a tree that is gone.
 
    **A harness's own tree mechanism calls the command. The command never
@@ -138,16 +162,26 @@ next audit says so, before the next agent stalls on it.
    - **Trees**: the directory they live in, the command and its three verbs,
      and the date a throwaway tree was last watched going green, or
      *unproven* with why.
-   - **What trees keep apart**: what each tree has its own of and how the
-     command works it out, and what they share and where its one source is.
+   - **What trees share**: one line per resource a tree touches, marked
+     *own* (and how the command works it out), *shared* (and what starts it
+     once), or *shared and contended, decided* (and why that is acceptable).
+     It also names the env file's one source and the lines each tree
+     changes.
 
 3. **[`setup`](../../skills/setup/SKILL.md).**
-   - Section 1 reads three more things:
+   - Section 1 reads four more things:
      - the untracked files verification and the app need, meaning ignored
        files the first tree has and a fresh one would not;
-     - what binds a port or a data directory;
+     - everything the app binds, starts or connects to: ports, data
+       directories, servers, containers, queues. For each, it proposes one
+       of the three kinds, recommending *shared, started once* for a server
+       and *own* for what lives on it;
+     - which of the app's per-tree values it already reads from its env file,
+       and which are fixed in code;
      - where the repository's existing trees already are, from its own
        record of them.
+   - Section 2 gains no question. Whether a contended resource is
+     acceptable is asked inside the tree offer, only when one is found.
    - Section 4 gains a subsection after the hook offer: *Then make a second
      tree as ready as the first*.
      - It proposes the home. The recommendation is **a `.worktrees/`
@@ -195,9 +229,13 @@ next audit says so, before the next agent stalls on it.
      take no dependencies, and `core.hooksPath` is shared config pointing at
      a tracked `.githooks`, so a clone that opted in has the hook in every
      tree.
-   - **What trees keep apart:** `evals/results/` is per tree already. What the
-     command cannot separate is named: the account's session limit, which is
-     one across every tree.
+   - **What trees share:**
+     - *own*: `evals/results/`;
+     - *shared*: the plugin install and `~/.claude` transcripts;
+     - *shared and contended, decided*: the account's session limit, which
+       is one across every tree. The reason is that the suite runs only when
+       the maintainer approves each run. There is no env file and no port,
+       and the row says so.
    - `trace.py` and `evalsuite.py` read fixed paths from the root. The proof
      confirms that neither walks into `.worktrees/`.
 
@@ -207,9 +245,10 @@ next audit says so, before the next agent stalls on it.
      repository's `trees.py`. Those are both code, so both are held the
      ordinary way.
    - Eval cases claim the other five rules. The expected cut is three:
-     - a `setup` case whose fixture needs an install, a hook and an env file
-       holding a key beside a port (`trees-have-one-home-and-one-command`,
-       `what-two-trees-fight-over-is-derived`, `a-shared-secret-has-one-source`);
+     - a `setup` case whose fixture needs an install, a hook, a database
+       server in a container and an env file holding a key beside a port and
+       a database name (`trees-have-one-home-and-one-command`,
+       `every-resource-is-own-or-shared`, `one-env-file-configures-a-tree`);
      - a `setup` case whose command leaves the hook off
        (`a-fresh-tree-is-watched-going-green`);
      - a `doctor` case whose command has fallen behind an install step
@@ -221,9 +260,9 @@ next audit says so, before the next agent stalls on it.
 |---|---|---|
 | `trees-have-one-home-and-one-command` | [`features/setup/a-second-tree.feature`](../features/setup/a-second-tree.feature) | new |
 | `a-fresh-tree-is-watched-going-green` | same | new |
-| `what-two-trees-fight-over-is-derived` | same | new |
-| `a-shared-secret-has-one-source` | same | new |
 | `clean-removes-only-what-is-safe` | same | new |
+| `every-resource-is-own-or-shared` | [`features/setup/what-trees-share.feature`](../features/setup/what-trees-share.feature) | new |
+| `one-env-file-configures-a-tree` | same | new |
 | `the-trees-row-is-there` | [`features/wiring/a-second-tree.feature`](../features/wiring/a-second-tree.feature) | new |
 | `a-fresh-tree-is-re-proven` | same | new |
 
@@ -260,6 +299,13 @@ next audit says so, before the next agent stalls on it.
   person's call.
 - **Choosing a mechanism for the shared source, or a port scheme.** The method
   states the invariant, and the repository chooses the mechanism.
+- **Running the shared services.** The command reuses a shared server and
+  starts it only when nothing is running. Managing that server's lifecycle,
+  and deciding when it goes down, stays with whatever the repository already
+  uses for it.
+- **Making contended resources safe.** A resource marked *shared and
+  contended, decided* stays contended. The spec makes the decision visible.
+  It does not remove the collision.
 
 ## Data
 
@@ -279,8 +325,10 @@ nothing moves one.
   written as what it keeps. It removes only a tree with no uncommitted or
   untracked files, with every commit on the main branch or its merged remote
   branch deleted, that is not locked and is not the current tree. It takes
-  the local branch with it only when git agrees the branch is merged. Its
-  unit test is the one in this change that must break on purpose.
+  the local branch with it only when git agrees the branch is merged. It
+  drops only the database the command made for that tree, which it knows by
+  the tree's name and never by a pattern. Its unit test is the one in this
+  change that must break on purpose.
 - **Nested trees and the tools that walk them.** A home inside the repository
   is the easy one to find, and it is also one a test runner or watcher can
   wander into. The proof is written to catch that, not to assume it away.
