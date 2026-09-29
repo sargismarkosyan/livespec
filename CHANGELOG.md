@@ -12,6 +12,16 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.17.0 — 2026-09-29
+
+**Several changes at once, one tree each.** The method now says what every tree of a repository must be, and names no harness:
+- trees live in one directory, and one command makes, lists and cleans them;
+- every resource is the tree's own, shared and started once, or contended by decision;
+- one env file configures a tree, copied from one source;
+- `clean` removes only a tree with nothing to lose.
+
+The bindings gain **Trees** and **What trees share**. `setup` offers the command, proves it in a throwaway tree and writes it into the context file. `doctor` re-proves it with `check:trees-row` and `check:fresh-tree-green`. The first audit after upgrading reports the row open, and the sitting closes it.
+
 ## 1.16.3 — 2026-09-25
 
 `refine-workflows` now loads on hosts that read skill frontmatter as strict YAML. Pi was silently dropping it because its description contained an unquoted `: `. The repository checks now read every skill's frontmatter the way a strict reader does, so the next such colon fails the build instead of making a skill disappear on another host.

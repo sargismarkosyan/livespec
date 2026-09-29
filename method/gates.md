@@ -559,8 +559,8 @@ does not name — held to the same states, required by nothing.
 | `check:run-row` | mechanical | 1.13.0 | wiring | — | | it holds the row for the run beside the claim |
 | `check:sketch-row` | mechanical | 0.27.0 | record | — | | the bindings say which changes owe a sketch |
 | `check:picture-row` | mechanical | 0.29.0 | record | — | | the bindings say what a change here must show, and it is not the sketch row |
-| `check:trees-row` | mechanical | next | record | — | | the bindings say where trees live and what makes, lists and cleans them, and the context file's commands carry that command |
-| `check:fresh-tree-green` | judgment | next | wiring | — | | a throwaway tree made by the command the bindings name runs verification green, and the same command cleans it |
+| `check:trees-row` | mechanical | 1.17.0 | record | — | | the bindings say where trees live and what makes, lists and cleans them, and the context file's commands carry that command |
+| `check:fresh-tree-green` | judgment | 1.17.0 | wiring | — | | a throwaway tree made by the command the bindings name runs verification green, and the same command cleans it |
 | `check:skill-names` | mechanical | 1.0.0 | record | — | | every skill the record instructs by exists in this plugin |
 | `check:word-not-a-skill` | judgment | 1.0.0 | record | — | | the same word used as ordinary prose is left alone |
 | `check:loop-per-claude-md` | judgment | 1.1.0 | record | — | | the loop's own account says what the method now asks of each step |
