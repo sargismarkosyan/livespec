@@ -1,7 +1,7 @@
 @feature:setup-a-second-tree @workflow:adopt-the-process
 Feature: A second tree as ready as the first
 
-  @rule:trees-have-one-home-and-one-command @planned
+  @rule:trees-have-one-home-and-one-command
   Rule: The bindings name one directory every tree lives in and one command that makes, lists and cleans them, and where there is none the sitting offers to write it and waits
 
     Example: a fresh tree needs an install, a hook and an env file
@@ -27,7 +27,7 @@ Feature: A second tree as ready as the first
       Then the harness's setup calls the command rather than carrying a second copy of its steps
       And nothing in the bindings or the command names that harness
 
-  @rule:a-fresh-tree-is-watched-going-green @planned
+  @rule:a-fresh-tree-is-watched-going-green
   Rule: Before the row is written, a throwaway tree is made by that command and runs verification — and the app beside the first tree's, where there is one — and is cleaned by it
 
     Example: the throwaway tree goes green
@@ -60,7 +60,7 @@ Feature: A second tree as ready as the first
       When the proof is attempted
       Then the row says the fresh tree is unproven, and why
 
-  @rule:clean-removes-only-what-is-safe @planned
+  @rule:clean-removes-only-what-is-safe
   Rule: Cleaning removes every tree with nothing to lose, with its branch and whatever it held on its own, and lists every other tree with why it was kept
 
     Example: most trees are merged and clean

@@ -1,7 +1,7 @@
 @feature:setup-what-trees-share @workflow:adopt-the-process
 Feature: What each tree has of its own, and what every tree shares
 
-  @rule:every-resource-is-own-or-shared @planned
+  @rule:every-resource-is-own-or-shared
   Rule: Every resource a tree touches is written in the bindings as the tree's own, as shared and started once, or as shared and contended with the decision and its reason
 
     Example: two builds of the app and one port
@@ -39,7 +39,7 @@ Feature: What each tree has of its own, and what every tree shares
       Then the bindings name the port as a collision only the app can remove
       And the hand-back says that change is the person's to file, not the sitting's to make
 
-  @rule:one-env-file-configures-a-tree @planned
+  @rule:one-env-file-configures-a-tree
   Rule: Everything a tree varies is read from one env file, which the command copies from one source outside every tree's history, adjusts only in the lines each tree has of its own, keeps ignored, and never commits
 
     Example: a fresh tree's env file

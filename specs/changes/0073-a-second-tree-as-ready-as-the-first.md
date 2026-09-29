@@ -1,6 +1,6 @@
 # Spec 0073: a second tree as ready as the first
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-09-29
 - **Issue:** [#166](https://github.com/sargismarkosyan/livespec/issues/166)
 - **Numbered 0073, not 0068**, because `main` ends at 0067 and the open
   [#165](https://github.com/sargismarkosyan/livespec/pull/165) already holds

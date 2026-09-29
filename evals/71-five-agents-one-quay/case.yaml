@@ -1,0 +1,21 @@
+# The workspace: quayside, an occupied Python web app that has never had the
+# process set up, owned by somebody who runs up to five agents at once, one
+# worktree each. Everything a second tree would trip on is in the tree:
+#
+#   - `.env` is ignored and holds three kinds of line at once — an API key
+#     every tree shares, and the port and database name each tree must have
+#     its own of; `.env.example` is the tracked shape;
+#   - PostgreSQL runs from `docker-compose.yml`, one container, which a
+#     careless readiness step duplicates per tree;
+#   - uploads go to a directory fixed in `src/quayside/config.py`, which no
+#     env line can move — only the app can, and the sitting may not edit it.
+#
+# What is graded is the half of the sitting that makes several trees possible:
+# one home for them under no harness's directory and one command with three
+# verbs; every resource sorted into its kind, with the server shared and the
+# database per tree; and one env file copied from one source with only the
+# tree's own lines changed. This session has no shell, so nothing can be
+# proved here, and a row that says so is correct. See specs/changes/0073.
+scaffold_script: scaffold.sh
+# The sitting (0058): the owner answers from person.md — the yes and the facts
+# only they have, never volunteered, and nothing about what the case grades.
