@@ -624,6 +624,7 @@ enforcement `active`.
 | Applies to admins | yes — no role, team or user is on the bypass list, and the API answers `current_user_can_bypass: never` for the owner's own token |
 | Force pushes | blocked (`non_fast_forward`) |
 | Deletion | blocked |
+| Merged branches deleted | **yes**, since 2026-10-03 — `delete_branch_on_merge: true`, read back with `gh api repos/sargismarkosyan/livespec --jq .delete_branch_on_merge`. It was off, and that is how #160–#163 merged into branches already merged and never reached `main` (#170, [`0075`](../changes/0075-a-stack-lands-on-main.md)) |
 | Conversation resolution required | yes |
 | Dismiss stale reviews | yes |
 | **Bypass** | one entry: `actor_type: DeployKey`, `bypass_mode: always` |
@@ -653,6 +654,8 @@ Read it back with:
 gh api repos/sargismarkosyan/livespec/rules/branches/main   # what applies
 gh api repos/sargismarkosyan/livespec/rulesets/21391215     # the rules and the bypass
 gh api repos/sargismarkosyan/livespec/keys                  # the deploy key
+gh api repos/sargismarkosyan/livespec --jq .delete_branch_on_merge  # merged branches deleted
+gh pr list --state merged --limit 50 --json number,baseRefName,headRefOid  # what merged, and into what
 ```
 
 `gh api repos/sargismarkosyan/livespec/branches/main/protection` now returns

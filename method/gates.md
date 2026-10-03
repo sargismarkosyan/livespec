@@ -551,6 +551,8 @@ does not name — held to the same states, required by nothing.
 | `check:check-name` | judgment | 0.21.0 | platform | — | | the required check's name is the one the platform has |
 | `check:who-bypasses` | judgment | 0.21.0 | platform | — | | who can bypass is read back, tokens and keys included |
 | `check:credentials-present` | judgment | 0.21.0 | platform | — | | a credential the bindings claim is missing is read back from where the platform keeps it |
+| `check:merged-branch-deleted` | judgment | next | platform | — | | the platform deletes a merged pull request's branch, so a pull request stacked on it is retargeted to the main branch |
+| `check:merged-off-main` | judgment | next | wiring | — | | no pull request merged since the stamp into a branch other than main is missing from main |
 | `check:read-back-or-not` | mechanical | 0.21.0 | record | — | | every judgment line is read back with its command, or not read with why |
 | `check:prose-phrases` | judgment | 0.21.0 | record | — | | the prose is read for *not built yet*, *to do*, *we should*, *for now* |
 | `check:second-table` | mechanical | 0.21.0 | wiring | — | | the table for wiring that must never gate exists |

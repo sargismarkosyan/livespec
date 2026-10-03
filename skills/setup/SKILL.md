@@ -520,6 +520,17 @@ wiring needs: *there is no token for this* is a claim about the platform, and
 tokens inherited from a level above the repository are invisible to anybody
 reading the repository.
 
+**Read back, with the rest, whether a merged pull request's branch is
+deleted.** A pull request stacked on another merges into its base, and only
+the deletion of a merged base retargets it to the main branch; with deletion
+off it merges into a dead branch, reads *Merged*, and never reaches a release
+([`repository.md`](../../method/repository.md#branches-and-pull-requests)).
+Off: say that in a line, **offer to turn it on** — the setting and the
+command — **and wait**, the way the hook is offered: it is a change to the
+platform, not to the tree. On: write it into the protection table with the
+command that reads it and the date. A token the platform refuses makes it
+*unobserved*, with who can read it.
+
 **Every fact in it is about this repository.** If a sentence could survive being
 moved to another repo, it belongs in this plugin instead, and putting it here is
 how the two copies start to disagree.
@@ -757,6 +768,7 @@ command rather than an act of memory.
 - **Answering the interviews it starts.** Section 8 runs three skills; it does
   not supply their replies. A chain that fills in the human's answers has
   installed the process on top of a persona nobody chose.
+- **Changing a protection setting unasked**, deletion on merge included.
 - **Creating a label in the tracker unasked.** The claim marker is offered, never
   made on the way past.
 - **Removing a tree with work in it**, or a secret committed, copied into a
