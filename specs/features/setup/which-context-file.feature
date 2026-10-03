@@ -1,7 +1,7 @@
 @feature:setup-which-context-file @workflow:adopt-the-process
 Feature: The sitting writes or audits the context file the repository already has
 
-  @planned @rule:the-sitting-names-the-context-file
+  @rule:the-sitting-names-the-context-file
   Rule: The sitting reads which instructions file the repository's harnesses already read, writes or audits that one, names it in the bindings, and never creates a second file beside it
 
     Example: a repository that keeps one AGENTS.md

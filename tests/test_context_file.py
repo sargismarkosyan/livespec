@@ -16,8 +16,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / ".github" / "scripts"))
+sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import doctor  # noqa: E402
 import inject  # noqa: E402
 from rulelib import rule  # noqa: E402
 
@@ -80,7 +82,7 @@ class TheCeiling(Fixture):
         bindings.write_text(bindings.read_text().replace(inject.ROW_CEILING + "\n", ""))
         code, out = trace(self.root)
         self.assertEqual(code, 1, out)
-        self.assertIn("names no CLAUDE.md ceiling", out)
+        self.assertIn("names no context file ceiling", out)
 
 
 class TheShape(Fixture):
@@ -146,3 +148,55 @@ class WhatOnlyAMindCanRead(Fixture):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WhichFile(Fixture):
+    """The gate and the audit read the file the repository has. See specs/changes/0079."""
+
+    def agents_only(self) -> None:
+        bindings = self.root / "specs" / "setup" / "README.md"
+        bindings.write_text(bindings.read_text().replace(inject.ROW_CONTEXT + "\n", ""))
+        self.context.rename(self.root / "AGENTS.md")
+
+    @rule("the-context-file-is-the-one-the-repository-has")
+    def test_a_repository_whose_only_file_is_agents_md_is_held_to_it(self):
+        self.agents_only()
+        code, out = trace(self.root)
+        self.assertEqual(code, 0, out)
+        (self.root / "AGENTS.md").write_text(inject.CONTEXT_FILE + "\nOne more line than the bindings allow.\n")
+        code, out = trace(self.root)
+        self.assertEqual(code, 1, out)
+        self.assertIn("AGENTS.md", out)
+        self.assertIn(f"against a ceiling of {FIXTURE_LINES}", out)
+        self.assertNotIn("no context file at the root", out)
+
+    @rule("the-context-file-is-the-one-the-repository-has")
+    def test_the_audit_reads_agents_md_and_names_it(self):
+        self.agents_only()
+        ctx = doctor.context(self.root, self.root / "specs" / "setup" / "README.md")
+        line = {l["id"]: l for l in doctor.emit(ctx)}["check:loop-per-claude-md"]
+        self.assertEqual(ctx["context_name"], "AGENTS.md")
+        self.assertIn("read AGENTS.md", line["evidence"])
+
+    @rule("the-context-file-is-the-one-the-repository-has")
+    def test_the_row_decides_when_both_files_are_there(self):
+        (self.root / "AGENTS.md").write_text("# not the file the bindings name\n")
+        code, out = trace(self.root)
+        self.assertEqual(code, 0, out)
+
+    @rule("the-context-file-is-the-one-the-repository-has")
+    def test_a_ceiling_row_under_its_old_label_is_still_read(self):
+        bindings = self.root / "specs" / "setup" / "README.md"
+        bindings.write_text(bindings.read_text().replace("**Context file ceiling**", "**CLAUDE.md ceiling**"))
+        code, out = trace(self.root)
+        self.assertEqual(code, 0, out)
+        self.assertNotIn("names no context file ceiling", out)
+
+    @rule("the-context-file-is-the-one-the-repository-has")
+    def test_no_file_at_all_names_the_three_looked_for(self):
+        bindings = self.root / "specs" / "setup" / "README.md"
+        bindings.write_text(bindings.read_text().replace(inject.ROW_CONTEXT + "\n", ""))
+        self.context.unlink()
+        code, out = trace(self.root)
+        self.assertEqual(code, 1, out)
+        self.assertIn("looked for AGENTS.override.md, AGENTS.md, CLAUDE.md", out)

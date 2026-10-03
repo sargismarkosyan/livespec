@@ -1,6 +1,6 @@
 # Spec 0079: the file the harness reads
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-10-03
 - **Issue:** [#164](https://github.com/sargismarkosyan/livespec/issues/164)
 
 ## Who this is for
@@ -118,8 +118,8 @@ read, and nothing asks for a second file.
 
 | Rule id | Feature file | New or changed |
 |---|---|---|
-| `the-context-file-is-the-one-the-repository-has` | [`features/wiring/which-context-file.feature`](../features/wiring/which-context-file.feature) | new, `@planned` until the implementing commit |
-| `the-sitting-names-the-context-file` | [`features/setup/which-context-file.feature`](../features/setup/which-context-file.feature) | new, `@planned` until the implementing commit |
+| `the-context-file-is-the-one-the-repository-has` | [`features/wiring/which-context-file.feature`](../features/wiring/which-context-file.feature) | new, live since the implementing commit |
+| `the-sitting-names-the-context-file` | [`features/setup/which-context-file.feature`](../features/setup/which-context-file.feature) | new, live since the implementing commit |
 | `a-context-file-past-its-ceiling-fails-the-build` | [`features/wiring/context-file.feature`](../features/wiring/context-file.feature) | changed: "A CLAUDE.md" → "A context file", id kept |
 | `a-context-file-without-its-shape-fails-the-build` | same | changed: the same rewording, id kept |
 | `the-ceiling-is-a-number-in-the-bindings` | [`features/setup/context-file.feature`](../features/setup/context-file.feature) | changed: the same rewording, id kept |

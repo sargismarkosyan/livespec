@@ -1,7 +1,7 @@
 @feature:wiring-which-context-file @workflow:adopt-the-process
 Feature: The gates and the audit read the context file the repository has
 
-  @planned @rule:the-context-file-is-the-one-the-repository-has
+  @rule:the-context-file-is-the-one-the-repository-has
   Rule: The context-file gates and the audit read the file the bindings name as the context file, or where they name none, the first of AGENTS.override.md, AGENTS.md and CLAUDE.md that exists, and every line they print names the file they read
 
     Example: a repository whose only instructions file is AGENTS.md

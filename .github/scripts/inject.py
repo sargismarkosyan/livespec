@@ -66,7 +66,8 @@ def context_file(steps: int = 3) -> str:
 
 
 CONTEXT_FILE = context_file()
-ROW_CEILING = f"| **CLAUDE.md ceiling** | {len(CONTEXT_FILE.splitlines())} lines, `wc -l CLAUDE.md`, set at 0001 |"
+ROW_CONTEXT = "| **Context file** | `CLAUDE.md` |"
+ROW_CEILING = f"| **Context file ceiling** | {len(CONTEXT_FILE.splitlines())} lines, `wc -l CLAUDE.md`, set at 0001 |"
 
 FIXTURE: dict[str, str] = {
     "CLAUDE.md": CONTEXT_FILE,
@@ -238,6 +239,7 @@ def green_bindings(version: str) -> str:
         f"{ROW_TREES}\n"
         f"{ROW_CLAIM}\n"
         f"{ROW_MERGES}\n"
+        f"{ROW_CONTEXT}\n"
         f"{ROW_CEILING}\n"
         "| **Deliverable of a version** | the screenshot |\n"
         "| **What proves a rule** | an ordinary test suite |\n"
@@ -812,7 +814,7 @@ FAULTS = [
      lambda r: write(r, "CLAUDE.md", CONTEXT_FILE + "\nOne more line than the bindings allow.\n"),
      "fails", "against a ceiling of"),
     ("a context file with no ceiling row", TRACE,
-     lambda r: edit(r, "specs/setup/README.md", ROW_CEILING + "\n", ""), "fails", "names no CLAUDE.md ceiling"),
+     lambda r: edit(r, "specs/setup/README.md", ROW_CEILING + "\n", ""), "fails", "names no context file ceiling"),
     ("a ceiling above the reader's limit", TRACE,
      lambda r: edit(r, "specs/setup/README.md", ROW_CEILING,
                     ROW_CEILING.replace(f"{len(CONTEXT_FILE.splitlines())} lines", "250 lines")),

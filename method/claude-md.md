@@ -1,4 +1,4 @@
-# What a CLAUDE.md has to contain
+# What the context file has to contain
 
 **This is a list of requirements, not a file to copy.** There is no CLAUDE.md
 template on purpose: a file assembled by filling in somebody else's blanks reads
@@ -75,6 +75,18 @@ belongs there, so a new file lands in the right place without an argument.
   and `git log` and the change specs are where it goes.
 - **Anything aspirational.** A rule nobody follows teaches an agent that the file
   is decorative, and it will then discount the rules that are real.
+
+## Which file
+
+**The context file is the instructions file the harnesses in use read first**
+— `CLAUDE.md` for one harness, the cross-harness `AGENTS.md` for several. The
+requirements on this page are the same whatever it is called; the page says
+CLAUDE.md because that is where it started. **The bindings name the file**, so
+the gates and the audit read the one the repository meant rather than guess;
+where they name none, the first of the names the harnesses read in their own
+order is read, and every line says which. **One file, never two** — not even
+a line in a second file pointing at the first: two instructions files are two
+copies, and they start disagreeing the day one of them is edited.
 
 ## Where it goes
 

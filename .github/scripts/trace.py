@@ -424,14 +424,33 @@ for value, entry in sorted(personas.items()):
 # link to the bindings that resolves. What it says is a mind's to read — setup
 # §6 at the sitting, the audit after — and nothing here pretends otherwise.
 
-CONTEXT_FILE = "CLAUDE.md"
 BINDINGS = Path("specs") / "setup" / "README.md"
+# Which file that is: the one the bindings' *Context file* row names, else the
+# first of these that exists — the order Pi reads them in. A repository keeps
+# one; the gate reads that one and names it. See specs/changes/0079.
+CONTEXT_FILE_NAMES = ("AGENTS.override.md", "AGENTS.md", "CLAUDE.md")
+CONTEXT_ROW = re.compile(r"^\|\s*\*\*Context file\*\*\s*\|(.*)\|\s*$", re.IGNORECASE)
+
+
+def context_file_named(bindings_text: str) -> str:
+    """The file the bindings' Context file row names, or '' where there is no row."""
+    for line in bindings_text.splitlines():
+        match = CONTEXT_ROW.match(line)
+        if match:
+            span = re.search(r"`([^`\n]+)`", match.group(1))
+            return (span.group(1) if span else match.group(1).strip().split(" ")[0]).strip()
+    return ""
+
+
+_bindings_text = (ROOT / BINDINGS).read_text(encoding="utf-8") if (ROOT / BINDINGS).is_file() else ""
+CONTEXT_NAMED = context_file_named(_bindings_text)
+CONTEXT_FILE = CONTEXT_NAMED or next((n for n in CONTEXT_FILE_NAMES if (ROOT / n).is_file()), "CLAUDE.md")
 MAX_LOOP_STEPS = 8
 # The one number the method carries: the reader's own target for a CLAUDE.md,
 # past which its documentation says adherence drops. A repository's ceiling is
 # its own only up to here. See method/claude-md.md, Length, and specs/changes/0049.
 MAX_CONTEXT_FILE_LINES = 200
-CEILING_ROW = re.compile(r"^\|\s*\*\*CLAUDE\.md ceiling\*\*\s*\|(.*)\|\s*$", re.IGNORECASE)
+CEILING_ROW = re.compile(r"^\|\s*\*\*(?:Context file|CLAUDE\.md) ceiling\*\*\s*\|(.*)\|\s*$", re.IGNORECASE)
 FENCE = re.compile(r"^\s*(```|~~~)")
 ORDERED = re.compile(r"^\s*(\d+)\.\s")
 LINK_TARGET = re.compile(r"\]\((?!https?:|#|mailto:)([^)\s]+)\)")
@@ -484,17 +503,20 @@ for number, names in sorted(by_number.items()):
 
 context_path = ROOT / CONTEXT_FILE
 if not context_path.is_file():
-    fail(CONTEXT_FILE, "no CLAUDE.md at the root; the file every session reads first is missing")
+    if CONTEXT_NAMED:
+        fail(CONTEXT_FILE, f"no {CONTEXT_FILE} at the root, which the bindings name as the context file; the file every session reads first is missing")
+    else:
+        fail(CONTEXT_FILE, f"no context file at the root — looked for {', '.join(CONTEXT_FILE_NAMES)}, and the bindings name none; the file every session reads first is missing")
 else:
     context_lines = context_path.read_text(encoding="utf-8").splitlines()
     bindings_path = ROOT / BINDINGS
     ceiling = ceiling_in(bindings_path.read_text(encoding="utf-8")) if bindings_path.is_file() else None
     if ceiling is None:
-        fail(str(BINDINGS), "names no CLAUDE.md ceiling; a number nobody wrote is not a pass — write the row from the file's size")
+        fail(str(BINDINGS), f"names no context file ceiling for {CONTEXT_FILE}; a number nobody wrote is not a pass — write the row from the file's size")
     elif ceiling > MAX_CONTEXT_FILE_LINES:
         fail(
             str(BINDINGS),
-            f"names a CLAUDE.md ceiling of {ceiling} lines, above the {MAX_CONTEXT_FILE_LINES} the reader's own "
+            f"names a context file ceiling of {ceiling} lines, above the {MAX_CONTEXT_FILE_LINES} the reader's own "
             "documentation allows; the number is the repository's only up to there",
         )
     elif len(context_lines) > ceiling:

@@ -623,7 +623,17 @@ when the wiring actually moved; a ledger re-stamped for a run that changed
 nothing has learned to lie. Rows you cannot date honestly say **predates the
 ledger** rather than getting an invented change number.
 
-## 6. Write CLAUDE.md, or audit the one that is there
+## 6. Write the context file, or audit the one that is there
+
+**First, which file.** The context file is the instructions file the
+harnesses here read first — `AGENTS.md` where the repository keeps the
+cross-harness one, `CLAUDE.md` where it keeps that. Section 1 already saw
+which exists: write or audit **that** one, name it in the bindings' **Context
+file** row, and **never create a second beside it** — not even a line
+pointing at the other; two files are two copies that start disagreeing.
+Where there is none, ask which name the harnesses in use read, recommending
+`AGENTS.md` when more than one harness is in use, before writing either. The
+rest of this section calls it CLAUDE.md for short; it means that file.
 
 Follow [`claude-md.md`](../../method/claude-md.md) — it says what has to be in
 it, what must stay out, and why. **It is a list of requirements, not a file to
@@ -668,7 +678,7 @@ there.
 **Then write the ceiling row in the bindings, from what the file is now.**
 [`claude-md.md`](../../method/claude-md.md#length) puts the number in the
 repository rather than in the method: once the file is written, or the audit's
-edits are made, measure it and write **CLAUDE.md ceiling** with the size, the
+edits are made, measure it and write **Context file ceiling** with the size, the
 command that reads it and this change — never before the file is finished,
 never from a figure the method does not have, and never above the one it does:
 two hundred lines, the reader's own limit, per
