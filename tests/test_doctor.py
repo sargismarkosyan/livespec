@@ -604,3 +604,36 @@ class Trees(unittest.TestCase):
         lines = audit(repo(files={"CLAUDE.md": "# The loop\n\n`/livespec:refine-spec` writes the spec.\n"}))
         self.assertEqual(lines["check:trees-row"]["state"], "open")
         self.assertIn("CLAUDE.md", lines["check:trees-row"]["evidence"])
+
+
+class Claims(unittest.TestCase):
+    """The marker that says an issue is taken, read back by the tool. See specs/changes/0074."""
+
+    @rule("the-claim-row-is-there")
+    def test_bindings_with_no_claim_row_read_open_and_name_the_sitting(self):
+        lines = audit(repo(inject.green_bindings(INSTALLED).replace(inject.ROW_CLAIM + "\n", "")))
+        self.assertEqual(lines["check:claim-row"]["state"], "open")
+        self.assertIn("setup sitting", lines["check:claim-row"]["evidence"])
+        self.assertEqual(lines["check:claims-in-flight"]["state"], "n/a")
+
+    @rule("the-claim-row-is-there")
+    def test_a_row_naming_a_label_reads_clear_and_hands_the_label_on(self):
+        lines = audit(repo())
+        self.assertEqual(lines["check:claim-row"]["state"], "clear", lines["check:claim-row"]["evidence"])
+        self.assertIn("`in-progress`", lines["check:claim-row"]["evidence"])
+        self.assertEqual(lines["check:claims-in-flight"]["state"], "unanswered")
+        self.assertIn("gh issue list --label in-progress", lines["check:claims-in-flight"]["evidence"])
+        self.assertIn("release none", lines["check:claims-in-flight"]["evidence"])
+
+    @rule("the-claim-row-is-there")
+    def test_a_repository_with_no_tracker_decides_the_row_and_reads_nothing(self):
+        decided = "| **Claiming an issue** | not applicable, decided: there is no tracker |"
+        lines = audit(repo(inject.green_bindings(INSTALLED).replace(inject.ROW_CLAIM, decided)))
+        self.assertEqual(lines["check:claim-row"]["state"], "clear")
+        self.assertEqual(lines["check:claims-in-flight"]["state"], "n/a")
+
+    @rule("the-claim-row-is-there")
+    def test_a_row_naming_no_marker_reads_open(self):
+        vague = "| **Claiming an issue** | we put a label on it |"
+        lines = audit(repo(inject.green_bindings(INSTALLED).replace(inject.ROW_CLAIM, vague)))
+        self.assertEqual(lines["check:claim-row"]["state"], "open")

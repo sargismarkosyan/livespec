@@ -1,0 +1,6 @@
+# The fixture for 74: fieldnote, whose bindings name a tracker client and the label that marks an issue taken, with issue 12 free. The case grades the claim going on before anything is written about the issue, and coming off when the person turns the spec down.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See specs/changes/0074.
+scaffold_script: scaffold.sh
+# The tracker client is the fixture's own script, so python3 reaches it; no real tracker is lent.
+shell: [python3, git, ls, cat, printenv]
+# The sitting (0058): the maintainer answers from person.md, and turns the spec down.

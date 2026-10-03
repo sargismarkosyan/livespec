@@ -170,6 +170,7 @@ ROW_CLOCK = "| `boundary:clock` | the clock | mocked | 0001 | a fake clock nothi
 ROW_SKETCH = "| **A sketch is owed** | by every change spec, before approval |"
 ROW_SHOW = "| **What a change here must show** | a screenshot of the list, on docs/screenshots/ |"
 ROW_TREES = "| **Trees** | `.worktrees/`, ignored; `python3 trees.py` with `new`, `list` and `clean`; a throwaway tree last went green 2026-01-01 |"
+ROW_CLAIM = "| **Claiming an issue** | label `in-progress`: `gh issue edit <n> --add-label in-progress` puts it on and `--remove-label` takes it off; `gh issue list --label in-progress` lists the claimed |"
 GATE_HEADER = "| id | gate | state | evidence |\n|---|---|---|---|"
 WIRING_HEADING = "### The wiring that must never gate"
 
@@ -233,6 +234,7 @@ def green_bindings(version: str) -> str:
         f"{ROW_SKETCH}\n"
         f"{ROW_SHOW}\n"
         f"{ROW_TREES}\n"
+        f"{ROW_CLAIM}\n"
         f"{ROW_CEILING}\n"
         "| **Deliverable of a version** | the screenshot |\n"
         "| **What proves a rule** | an ordinary test suite |\n"
@@ -1459,6 +1461,8 @@ DOCTOR_FAULTS = [
      lambda r: edit(r, "specs/setup/README.md", ROW_TREES + "\n", ""), "open"),
     ("a trees command the context file does not carry", "check:trees-row",
      lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace("python3 trees.py new <name>   # a tree for the next change\n", "")), "open"),
+    ("no row saying how an issue is claimed", "check:claim-row",
+     lambda r: edit(r, "specs/setup/README.md", ROW_CLAIM + "\n", ""), "open"),
     ("a record instructing by a skill this plugin no longer has", "check:skill-names",
      lambda r: write(r, "CLAUDE.md", "# The loop\n\nReport what you found with `/livespec:feedback`.\n"), "open"),
     ("a row deferred across two changes", "check:deferred-clock",

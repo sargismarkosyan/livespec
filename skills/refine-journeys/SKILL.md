@@ -39,6 +39,29 @@ reading, do not write it.
   journeys folder. **If the workflows moved after the journey did, assume the
   journey is wrong until you have read both.**
 
+**If the work came from an issue, claim it before writing anything.** The
+marker and its commands are the bindings' *Claiming an issue* row; the rule
+is [`repository.md`](../../method/repository.md#several-changes-at-once)'s.
+Where the bindings carry no such row, the comment alone is the claim, and the
+hand-back names the row as missing.
+
+- **Read the claim first** — the marker, its comment, an open pull request
+  that closes the issue. A tracker that does not answer is said, and the
+  person decides: an unread claim is not an absent one.
+- **Claimed:** report where the work is — branch, tree, harness, session id —
+  and how old the claim is, then stop until the person answers. A claim with
+  nothing behind it is reported the same way; nothing releases one by age.
+  Told to take it over, the new comment names the claim it replaces.
+- **Free:** put the marker on, then one comment — the branch you will work
+  on, the tree, the harness, your session id as your harness gives it (or
+  *not exposed*, never one made up), and the date. A marker the tracker
+  refuses is said in the hand-back and the comment written anyway; the label
+  is never created here.
+- **Asked for the next issue**, choose among the unclaimed and say which you
+  skipped.
+- **Turned down, or stopped,** take the marker off, with a comment saying
+  why. A pull request that closes the issue ends the claim on its own.
+
 ## 1. Interview for the arc, not for the steps
 
 Nobody here has lived the arc. Every fact about it comes from whoever has, and a

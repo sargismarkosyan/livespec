@@ -457,6 +457,19 @@ to everybody: no error, no second copy, and nobody told. Write the row even when
 the answer is the obvious one, and write *"there is no tracker"* when there is
 none rather than leaving it blank.
 
+**Then the claim row, beside it — *Claiming an issue*.** With several trees,
+an issue handed to two of them is found only when both specs exist, so the
+refining skills claim an issue before writing about it
+([`repository.md`](../../method/repository.md#several-changes-at-once)), and
+they read the marker from here. Read the tracker's labels first: one that
+already means *in progress* is the marker, and a second is not made beside it.
+Where there is none, **offer to create `in-progress`** — the name and the
+command — **and wait**: a label is a write to somebody's tracker, offered the
+way the hook is. The row names the marker, the command that puts it on and
+takes it off, and the command that lists the issues carrying it. A tracker
+that refuses the label goes into the row as *unmade*, with the refusal and
+who can make it; no tracker reads *not applicable, decided*.
+
 **Write the two tree rows from section 4** — **Trees**, with the directory, the
 command and the date its proof went green, and **What trees share**, one line
 per resource in its kind and the env file's one source. The audit reads the
@@ -744,6 +757,8 @@ command rather than an act of memory.
 - **Answering the interviews it starts.** Section 8 runs three skills; it does
   not supply their replies. A chain that fills in the human's answers has
   installed the process on top of a persona nobody chose.
+- **Creating a label in the tracker unasked.** The claim marker is offered, never
+  made on the way past.
 - **Removing a tree with work in it**, or a secret committed, copied into a
   tracked file, or given to a tree any way but from its one source.
 - **Adding a dependency** to make the process fit. If the gate needs a library,
