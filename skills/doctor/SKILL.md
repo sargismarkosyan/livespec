@@ -179,7 +179,7 @@ The questions worth the judgment, and what decides them:
 
 ## 2. Correct the record — and only the record
 
-Write the corrections in place: the bindings, `CLAUDE.md`, and nothing else.
+Write the corrections in place: the bindings, the context file the bindings name (`CLAUDE.md`, `AGENTS.md` — the tool says which it read), and nothing else.
 `check:record-only` reads the working tree and says so if anything strayed.
 Show each row as it will read, then write it. Where the ledger predates the
 template, **write the id the tool matched into each row, and leave the columns
@@ -199,7 +199,7 @@ not that sitting.
   the clock is the same: real, given a suite, or *unreachable* with the reason.
 - A gap the prose names — *not built yet*, *to do*, *we should*, *for now* —
   is a row or it is nothing; the tool listed every hit.
-- A `CLAUDE.md` out of line beyond its lines — a requirement missing, the
+- A context file out of line beyond its lines — a requirement missing, the
   plugin's own rules copied into it — is **not rewritten here**. Correct the
   lines that are record, a loop step or a skill name, and leave
   `check:loop-per-claude-md` open with the rewrite as what closes it and the

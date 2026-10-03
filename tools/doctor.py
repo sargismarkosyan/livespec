@@ -379,9 +379,26 @@ def inventory(root: Path) -> dict:
 # --- the context every check reads ------------------------------------------
 
 
+CONTEXT_FILE_NAMES = ("AGENTS.override.md", "AGENTS.md", "CLAUDE.md")
+
+
+def context_file_name(root: Path, keys: dict[str, str]) -> str:
+    """The repository's context file: the one the bindings name, else the first of the three that exists, else ''.
+
+    The order is the one Pi reads them in. See specs/changes/0079.
+    """
+    named = keys.get("context file", "")
+    span = re.search(r"`([^`\n]+)`", named)
+    name = (span.group(1) if span else named.split(" ")[0] if named else "").strip()
+    if name:
+        return name
+    return next((n for n in CONTEXT_FILE_NAMES if (root / n).is_file()), "")
+
+
 def context(root: Path, bindings_path: Path) -> dict:
     text = read(bindings_path) or ""
     keys = key_table(text)
+    context_name = context_file_name(root, keys)
     gates, gate_shape = ledger_rows(text, "Gate wiring", LEDGER_STATES, ("id", "gate", "state", "evidence"))
     wiring, wiring_shape = ledger_rows(text, "The wiring that must never gate", LEDGER_STATES, ("id", "wiring", "state", "evidence"))
     bounds, bounds_shape = ledger_rows(text, "The boundaries", BOUNDARY_STATES, ("id", "boundary", "state", "since", "evidence"))
@@ -405,7 +422,8 @@ def context(root: Path, bindings_path: Path) -> dict:
         "ids": id_rows(read(PLUGIN / "method" / "gates.md") or ""),
         "skills": skills,
         "latest_change": changes[-1] if changes else None,
-        "claude_md": read(root / "CLAUDE.md") or "",
+        "context_name": context_name,
+        "claude_md": (read(root / context_name) or "") if context_name else "",
         "layers": {
             layer: sorted(p.name for p in (root / "specs" / layer).glob("*") if p.is_file() and p.name != "README.md")
             for layer in ("personas", "journeys", "workflows", "features", "changes")
@@ -719,7 +737,7 @@ def c_trees_row(ctx: dict) -> tuple[str, str]:
     if not command:
         return "clear", f"*{row[0]}* names no command and lists the steps instead: {row[1][:60]}"
     if command not in ctx["claude_md"]:
-        return "open", f"*{row[0]}* names `{command}` and the context file's commands do not carry it — correct CLAUDE.md"
+        return "open", f"*{row[0]}* names `{command}` and the context file's commands do not carry it — correct {ctx['context_name'] or 'the context file'}"
     return "clear", f"*{row[0]}*: `{command}`, and the context file carries it"
 
 
@@ -750,7 +768,7 @@ def c_claim_row(ctx: dict) -> tuple[str, str]:
 
 def skill_hits(ctx: dict) -> list[tuple[str, int, str]]:
     hits: list[tuple[str, int, str]] = []
-    for name, text in (("CLAUDE.md", ctx["claude_md"]), (str(ctx["bindings_path"].name), ctx["text"])):
+    for name, text in ((ctx["context_name"] or "CLAUDE.md", ctx["claude_md"]), (str(ctx["bindings_path"].name), ctx["text"])):
         for number, line in enumerate(text.splitlines(), 1):
             for match in re.finditer(r"/livespec:([a-z][a-z-]*)|`([a-z][a-z-]*)`", line):
                 word = match.group(1) or match.group(2)
@@ -761,7 +779,7 @@ def skill_hits(ctx: dict) -> list[tuple[str, int, str]]:
 def instructs_by(ctx: dict) -> list[tuple[str, int, str]]:
     """The instruction form only: /livespec:<name>, which is what a record tells a session to type."""
     hits: list[tuple[str, int, str]] = []
-    for name, text in (("CLAUDE.md", ctx["claude_md"]), (str(ctx["bindings_path"].name), ctx["text"])):
+    for name, text in ((ctx["context_name"] or "CLAUDE.md", ctx["claude_md"]), (str(ctx["bindings_path"].name), ctx["text"])):
         for number, line in enumerate(text.splitlines(), 1):
             for match in re.finditer(r"/livespec:([a-z][a-z-]*)", line):
                 hits.append((name, number, match.group(1)))
@@ -795,7 +813,7 @@ def c_hook_no_row(ctx: dict) -> tuple[str, str]:
 
 
 def c_record_only(ctx: dict) -> tuple[str, str]:
-    allowed = {"CLAUDE.md", str(ctx["bindings_path"].relative_to(ctx["root"])) if ctx["bindings_path"].is_relative_to(ctx["root"]) else ctx["bindings_path"].name}
+    allowed = {ctx["context_name"] or "CLAUDE.md", str(ctx["bindings_path"].relative_to(ctx["root"])) if ctx["bindings_path"].is_relative_to(ctx["root"]) else ctx["bindings_path"].name}
     record = ctx["keys"].get("audit record", "")
     for token in re.findall(r"`?([\w./-]+\.md)`?", record):
         allowed.add(token)
@@ -996,7 +1014,7 @@ def j_merge_queue(ctx: dict) -> tuple[str, str]:
 
 def j_word_not_a_skill(ctx: dict) -> tuple[str, str]:
     old_names = [f"{f}:{n} `{w}` (now `{FORMER_SKILLS[w]}`)" for f, n, w in skill_hits(ctx) if w in FORMER_SKILLS and w not in ctx["skills"]]
-    prose = [f"{f}:{n} `{w}`" for f, n, w in skill_hits(ctx) if w in ctx["skills"] and not re.search(rf"/livespec:{w}\b", (ctx["claude_md"] if f == "CLAUDE.md" else ctx["text"]).splitlines()[n - 1])]
+    prose = [f"{f}:{n} `{w}`" for f, n, w in skill_hits(ctx) if w in ctx["skills"] and not re.search(rf"/livespec:{w}\b", (ctx["claude_md"] if f == (ctx["context_name"] or "CLAUDE.md") else ctx["text"]).splitlines()[n - 1])]
     if not old_names and not prose:
         return "n/a", "no skill name appears as ordinary prose"
     parts = []
@@ -1009,8 +1027,9 @@ def j_word_not_a_skill(ctx: dict) -> tuple[str, str]:
 
 def j_loop_per_claude_md(ctx: dict) -> tuple[str, str]:
     if not ctx["claude_md"]:
-        return "unanswered", "no CLAUDE.md at the root — read method/claude-md.md for what the loop's account must carry"
-    return "unanswered", f"read CLAUDE.md ({len(ctx['claude_md'].splitlines())} lines) against method/claude-md.md — does each step say what the method now asks of it?"
+        return "unanswered", (f"no context file at the root — looked for {', '.join(CONTEXT_FILE_NAMES)}, and the bindings name none; "
+                              "read method/claude-md.md for what the loop's account must carry")
+    return "unanswered", f"read {ctx['context_name']} ({len(ctx['claude_md'].splitlines())} lines) against method/claude-md.md — does each step say what the method now asks of it?"
 
 
 def j_fresh_tree_green(ctx: dict) -> tuple[str, str]:
@@ -1213,7 +1232,7 @@ def refusals(ctx: dict, rows: dict[str, dict[str, str]], record_path: Path) -> l
         elif row["state"] == "not-read" and not row["evidence"].strip():
             problems.append(f"{check_id} reads not-read and gives no reason")
     problems += generated_lines(rows)[0]
-    allowed = {"CLAUDE.md"}
+    allowed = {ctx["context_name"] or "CLAUDE.md"}
     for path in (ctx["bindings_path"], record_path):
         try:
             allowed.add(str(path.resolve().relative_to(ctx["root"].resolve())))

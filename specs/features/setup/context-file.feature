@@ -2,7 +2,7 @@
 Feature: What CLAUDE.md is held to, and what it is not held to
 
   @rule:the-ceiling-is-a-number-in-the-bindings
-  Rule: The size CLAUDE.md may not exceed is a number in the repository's own bindings, written from what the file is when the sitting has finished with it, and the method names no figure of its own
+  Rule: The size the context file may not exceed is a number in the repository's own bindings, written from what the file is when the sitting has finished with it, and the method names no figure of its own
 
     Example: the sitting writes the number after the file
       Given a consuming repository having the process set up
@@ -31,7 +31,7 @@ Feature: What CLAUDE.md is held to, and what it is not held to
       And the change specs and the version history are named as where it goes
 
   @rule:the-requirements-are-the-only-reference
-  Rule: A CLAUDE.md is held to the requirements and to no other repository's file
+  Rule: A context file is held to the requirements and to no other repository's file
 
     Example: a file shaped like nobody else's
       Given a consuming repository whose CLAUDE.md is shaped like no other repository's

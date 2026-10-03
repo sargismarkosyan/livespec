@@ -32,7 +32,8 @@ headers and the stamp line below, so keep those as they are.
 | **Claiming an issue** | <the marker that says an issue is taken, the command that puts it on and takes it off, and the command that lists the issues carrying it — or *not applicable, decided*, when there is no tracker> |
 | **Several merges at once** | <the platform's merge queue — the setting, the event the required checks run on, and the date a merge was watched through it — or *not available, decided*, with the platform's refusal, the fallback's settings (update a branch from main, merge once green) and the commands that drive it, one pull request at a time> |
 | **A sketch is owed** | <which changes owe one before approval — a repository with no app still has change specs> |
-| **CLAUDE.md ceiling** | <the size the file may not exceed, in a unit the gate reads — written from what the file is when the sitting has finished with it, with the command that reads it and the change that set it; raised only in the change that needs the room, and never above the limit the method names> |
+| **Context file** | <the one instructions file the harnesses here read first — `AGENTS.md`, `CLAUDE.md`, or another — named so the gates and the audit read it rather than guess> |
+| **Context file ceiling** | <the size the file may not exceed, in a unit the gate reads — written from what the file is when the sitting has finished with it, with the command that reads it and the change that set it; raised only in the change that needs the room, and never above the limit the method names> |
 | **What proves a rule** | <an ordinary test suite, or graded cases — and why> |
 | **How a test claims its rule** | <the helper and its import> |
 | **Rule discovery** | <where rules live and what one looks like> |
