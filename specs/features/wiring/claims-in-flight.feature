@@ -1,7 +1,7 @@
 @feature:wiring-claims-in-flight @workflow:adopt-the-process
 Feature: What an audit reads back about issues marked as taken
 
-  @planned @rule:the-claim-row-is-there
+  @rule:the-claim-row-is-there
   Rule: The audit tool reports as open bindings with no row naming the claim marker, and hands the marker to the reading
 
     Example: bindings written before the row existed
@@ -15,7 +15,7 @@ Feature: What an audit reads back about issues marked as taken
       Then the claim row line reads clear
       And the claims line after it is printed unanswered, carrying that label
 
-  @planned @rule:a-claim-with-nothing-behind-it-is-listed @crosses:consuming-repository
+  @rule:a-claim-with-nothing-behind-it-is-listed @crosses:consuming-repository
   Rule: The audit reads every open issue carrying the claim marker and lists each one whose branch, tree and pull request are all gone, with its age and session, and releases none of them
 
     Example: two claims, one stranded

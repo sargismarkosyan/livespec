@@ -158,6 +158,27 @@ what it counted before, so a tool walking into the directory is caught
 rather than inherited. A readiness nobody watched is the same claim as a gate
 nobody broke.
 
+**An issue is taken once.** With trees cheap, the same issue can be handed
+to two of them, and nothing shows it until both specs exist. So work on an
+issue starts with a **claim**, in the tracker, because the tracker is the one
+place every tree and every machine reads; a file in one tree is invisible to
+the next until it merges. The claim is a marker the bindings name, for a list
+of issues to filter on, and one comment saying where the work is: the branch,
+the tree, the harness, and the session's id as that harness gives it — or
+*not exposed*, never an id made up — so the person can resume the session
+rather than start the work again.
+
+The claim is read before anything is written about the issue, and a claimed
+issue is reported, not taken; asked for *the next issue*, a session chooses
+among the unclaimed and says which it skipped. **Nothing releases a claim by
+age.** From outside, a slow session and a dead one look alike, so a claim
+with no branch, no tree and no pull request behind it is shown to the person
+with its age, and taking it over is their call — the new comment naming the
+claim it replaced. A claim ends with the pull request that closes the issue,
+or with the session that drops the work, which takes the marker off and says
+why. A tracker that does not answer is said: an unread claim is not an absent
+one.
+
 Nothing caps how many trees run at once. That is a fact about one machine and
 one person's attention, and the list of trees is where the number is read.
 

@@ -1,6 +1,6 @@
 # Spec 0074: an issue is taken once
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-10-03
 - **Issue:** [#171](https://github.com/sargismarkosyan/livespec/issues/171)
 
 ## Who this is for
@@ -172,18 +172,27 @@ in this spec's commit.
    - Eval cases claim the rest. Each world is a scaffolded repository with a
      stand-in tracker CLI on `PATH`, which answers with the issue, its labels
      and its comments and records what was called. The expected cut is four:
-     - `refine-spec` on a free issue: it claims before writing
-       (`an-issue-is-claimed-before-anything-is-written`);
+     - `refine-spec` on a free issue: it claims before writing, and the
+       person then turns the spec down, so the claim comes off
+       (`an-issue-is-claimed-before-anything-is-written`,
+       `a-dropped-claim-is-released-by-whoever-dropped-it`). Built as
+       [`74`](../../evals/74-an-issue-nobody-has-taken/prompt.md). The
+       release first sat in the next case, but nothing is claimed there to
+       release;
      - `refine-spec` on an issue another tree holds: it reports and writes
-       nothing (`a-claimed-issue-is-not-taken-twice`,
-       `a-dropped-claim-is-released-by-whoever-dropped-it` by way of the
-       turned-down hand-back);
+       nothing (`a-claimed-issue-is-not-taken-twice`), built as
+       [`75`](../../evals/75-an-issue-another-tree-holds/prompt.md);
      - `setup` with a tracker lacking the label
-       (`the-claim-marker-is-bound`);
+       (`the-claim-marker-is-bound`), built as
+       [`76`](../../evals/76-a-tracker-with-no-claim-marker/prompt.md);
      - `doctor` with one stranded claim
-       (`a-claim-with-nothing-behind-it-is-listed`).
+       (`a-claim-with-nothing-behind-it-is-listed`), built as
+       [`77`](../../evals/77-a-claim-nobody-is-behind/prompt.md).
+   - The tracker in every case is the fixture's own client script, which
+     the bindings name. A real `gh` lent to a session could write to a live
+     repository.
 
-**Rules added**, all `@planned` until the implementing commit:
+**Rules added**, live since the implementing commit:
 
 | Rule id | Feature file | New or changed |
 |---|---|---|

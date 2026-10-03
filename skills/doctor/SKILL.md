@@ -147,6 +147,15 @@ The questions worth the judgment, and what decides them:
   first failing line and the command left as it is; a secret this session
   cannot reach is `not-read`, with why. Clean nothing but the throwaway: every
   other tree may hold somebody's work, and clearing them is the person's call.
+- **Claims in flight** (`check:claim-row`, `check:claims-in-flight`). The tool
+  has read the row and handed you the listing command and the marker. For each
+  open issue carrying it, read the claim comment's branch against the
+  repository's list of trees, the remote's branches and the open pull requests.
+  Each with all three gone is listed with its age and session, and the line
+  reads `open`; a marker the tracker does not have is `open` too, not `clear`
+  for want of issues. A tracker that does not answer is `not-read`, with why.
+  **Release none**: a slow session and a dead one look alike from here, and
+  taking a claim over is the person's call.
 - **The run beside the claim** (`wiring:run-beside-claim`, `check:run-row`).
   The row reads *unobserved* until somebody has watched the pipeline's run and
   a pull request's run block disagree on the page; where the repository's pull
@@ -225,6 +234,7 @@ nothing written.
 ## What this skill refuses
 
 - **Cleaning anybody's trees** but the throwaway it made.
+- **Releasing a claim**, or writing anything to the tracker.
 - **Wiring anything.** Not a gate, not a report, not a threshold — including
   the one it just found is wrong. It writes the record; `setup` writes the wiring.
 - **Running a command it read from the bindings itself.** The tool prints

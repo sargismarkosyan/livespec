@@ -1,7 +1,7 @@
 @feature:refining-an-issue-already-taken @workflow:adopt-the-process
 Feature: An issue one session has taken is not taken again by another
 
-  @planned @rule:an-issue-is-claimed-before-anything-is-written @crosses:consuming-repository
+  @rule:an-issue-is-claimed-before-anything-is-written @crosses:consuming-repository
   Rule: Before a refining skill writes anything about an issue, it reads whether the issue is already claimed, and if it is not, claims it in the tracker with the marker the bindings name and one comment saying where the work is
 
     Example: the issue is free
@@ -21,7 +21,7 @@ Feature: An issue one session has taken is not taken again by another
       Then the comment is still written, and the hand-back says the marker was refused and why
       And no label is created by the refining skill
 
-  @planned @rule:a-claimed-issue-is-not-taken-twice @crosses:consuming-repository
+  @rule:a-claimed-issue-is-not-taken-twice @crosses:consuming-repository
   Rule: An issue already claimed is reported with where its work is and how old the claim is, and nothing is written about it until the person says to take it over; nothing releases a claim by age
 
     Example: another tree is already on it
@@ -52,7 +52,7 @@ Feature: An issue one session has taken is not taken again by another
       Then it says the claim could not be read and asks before writing anything
       And it does not treat an unread claim as no claim
 
-  @planned @rule:a-dropped-claim-is-released-by-whoever-dropped-it
+  @rule:a-dropped-claim-is-released-by-whoever-dropped-it
   Rule: A session that stops work on a claimed issue without a pull request takes the marker off and says so in a comment; a pull request that closes the issue is the claim's end, and nothing else releases it
 
     Example: the spec is turned down

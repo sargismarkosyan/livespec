@@ -1,7 +1,7 @@
 @feature:setup-claiming-an-issue @workflow:adopt-the-process
 Feature: The sitting says how an issue is marked as taken
 
-  @planned @rule:the-claim-marker-is-bound @crosses:consuming-repository
+  @rule:the-claim-marker-is-bound @crosses:consuming-repository
   Rule: The bindings name the marker that says an issue is taken, and where the tracker lacks it the sitting offers to create it and waits
 
     Example: the tracker has no such marker

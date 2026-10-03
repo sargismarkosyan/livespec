@@ -1,0 +1,5 @@
+# The fixture for 75: fieldnote with issue 12 already claimed: the label is on, the comment names a branch, a tree, a harness and a session, and the tree is really there. The case grades a second session reporting the issue as in flight and writing nothing.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See specs/changes/0074.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, printenv]
+# The sitting (0058): the maintainer answers from person.md and leaves the claim where it is.
