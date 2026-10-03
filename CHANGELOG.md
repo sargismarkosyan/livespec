@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.22.0 — 2026-10-03
+
+**A sketch that shows.** `refine-spec`'s sketch guidance now says how to show the evidence, not only what to carry. It asks for one real instance the spec names, drawn now and after in frames laid out alike, with counts as sentences under the frames, and the form the evidence has (a flow, a grid with a legend, a tree or pipeline diff) before any tile or table, plus at most one headline line from *What changes*. `templates/sketch.html` is the page to start from. The two sketch rules waiting on a case since 0031 are live.
+
 ## 1.21.0 — 2026-10-03
 
 **Many merges, no hand rebases.** With several changes in flight, Strict stays and the platform keeps every branch up to date. Merges go through the platform's merge queue where it offers one, with the required checks running on the queue's own event. Where it offers none, the platform updates each branch from main and merges it once green, one pull request at a time. The bindings gain **Several merges at once**. `setup` reads availability from the platform, offers the queue with its trigger or the fallback's settings, and waits. `doctor` gains `check:merge-queue`.
