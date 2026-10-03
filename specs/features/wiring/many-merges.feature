@@ -1,7 +1,7 @@
 @feature:wiring-many-merges @workflow:adopt-the-process
 Feature: What an audit reads back about how several pull requests merge
 
-  @planned @rule:the-queue-is-read-back @crosses:consuming-repository
+  @rule:the-queue-is-read-back @crosses:consuming-repository
   Rule: The audit reads the merge queue row back from the platform and the pipeline, and reports it open when the queue, its trigger or the named fallback is not what the platform has
 
     Example: no row at all

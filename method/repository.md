@@ -57,7 +57,7 @@ What the protection should enforce:
 |---|---|
 | Pull request required | No direct push to `main`, ever |
 | Required status check | The verification job — traceability, tests, coverage |
-| Strict | The branch must be up to date with `main` before merging |
+| Strict | The branch must be up to date with `main` before merging — with several changes in flight, a queue or the platform's own update keeps it, never a rebase by hand |
 | Applies to admins | The repository owner has no bypass |
 | No force pushes, no deletion | `main`'s history cannot be rewritten or removed |
 | Merged branches deleted | A pull request stacked on one is retargeted to `main`, not merged into a branch nobody merges again |
@@ -73,6 +73,20 @@ anyone approve their own pull request, so requiring one locks the repository
 against its only contributor. Zero still forces every change through a pull
 request and through the check; it drops only a second pair of human eyes that
 does not exist.
+
+**Several merges at once keep Strict, and the updating is the platform's.**
+Each merge puts every other open pull request out of date, so five green
+changes merged by hand cost ten rebases. Where the platform offers a merge
+queue, merging goes through it: it tests each change against `main` and the
+changes ahead of it and merges them in order — and the required checks must
+run on the queue's own event, or every queued merge waits forever. Where it
+offers none, the platform updates each branch from `main` itself and merges
+it once green, one pull request at a time and in order: the reruns are still
+paid, and nobody types a rebase. Which of the two applies is read back from
+the platform, never inferred from the pipeline file, and a queue nobody has
+watched one merge through is *unobserved*. Dropping Strict to save the reruns
+is the trade this paragraph exists to refuse: two changes green alone can be
+red together.
 
 **A pull request may be based on another's branch, and it lands on `main`.**
 Parallel changes are sometimes dependent, and a stack is their natural shape.

@@ -1,7 +1,7 @@
 @feature:setup-many-merges @workflow:adopt-the-process
 Feature: The sitting says how several pull requests merge without anybody rebasing by hand
 
-  @planned @rule:several-merges-go-through-a-queue-or-its-fallback @crosses:consuming-repository
+  @rule:several-merges-go-through-a-queue-or-its-fallback @crosses:consuming-repository
   Rule: The sitting reads back whether the platform offers a merge queue; where it does, it offers to turn it on with the event its checks must run on, and waits; where it does not, the row says so with the fallback that keeps every merge up to date without a rebase by hand
 
     Example: the platform offers a queue nobody turned on

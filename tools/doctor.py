@@ -123,6 +123,7 @@ CHECKS = [
     ("check:credentials-present", "judgment", "platform", "a credential the bindings claim is missing is read back from where the platform keeps it"),
     ("check:merged-branch-deleted", "judgment", "platform", "the platform deletes a merged pull request's branch, so a pull request stacked on it is retargeted to the main branch"),
     ("check:merged-off-main", "judgment", "wiring", "no pull request merged since the stamp into a branch other than main is missing from main"),
+    ("check:merge-queue", "judgment", "platform", "how several pull requests merge — the platform's queue and the event its checks run on, or the fallback's settings — is what the platform has"),
     ("check:read-back-or-not", "mechanical", "record", "every judgment line is read back with its command, or not read with why"),
     ("check:prose-phrases", "judgment", "record", "the prose is read for *not built yet*, *to do*, *we should*, *for now*"),
     ("check:second-table", "mechanical", "wiring", "the table for wiring that must never gate exists"),
@@ -971,6 +972,27 @@ def j_merged_off_main(ctx: dict) -> tuple[str, str]:
     return status, evidence
 
 
+def merges_row(ctx: dict) -> tuple[str, str] | None:
+    """The bindings' row saying how several pull requests merge; see specs/changes/0076."""
+    return next(((k, v) for k, v in ctx["keys"].items() if k.startswith("several merges") or "merge queue" in k), None)
+
+
+def j_merge_queue(ctx: dict) -> tuple[str, str]:
+    row = merges_row(ctx)
+    if not row:
+        return "open", "no row says how several pull requests merge — the setup sitting writes it"
+    if "not available" in row[1].lower():
+        question = ("no queue, by the row: are the fallback's settings — updating a branch from main, merging once green — "
+                    "both on as the platform has them? either off is open")
+    else:
+        question = ("the queue, by the row: is it required on the main branch as the platform has it, and do the required "
+                    "checks run on the queue's own event in the pipeline? either missing is open")
+    read_back = [c for c in commands_in(row[1]) if any(w in c for w in ("api", "settings", "protection", "ruleset"))]
+    if read_back:
+        return "unanswered", f"run: {read_back[0]} — {question}"
+    return platform_line(ctx, question, prefer=("merge_queue", "allow_update_branch", "settings"))
+
+
 def j_word_not_a_skill(ctx: dict) -> tuple[str, str]:
     old_names = [f"{f}:{n} `{w}` (now `{FORMER_SKILLS[w]}`)" for f, n, w in skill_hits(ctx) if w in FORMER_SKILLS and w not in ctx["skills"]]
     prose = [f"{f}:{n} `{w}`" for f, n, w in skill_hits(ctx) if w in ctx["skills"] and not re.search(rf"/livespec:{w}\b", (ctx["claude_md"] if f == "CLAUDE.md" else ctx["text"]).splitlines()[n - 1])]
@@ -1036,6 +1058,7 @@ JUDGMENT = {
     "check:credentials-present": j_credentials_present,
     "check:merged-branch-deleted": j_merged_branch_deleted,
     "check:merged-off-main": j_merged_off_main,
+    "check:merge-queue": j_merge_queue,
     "check:word-not-a-skill": j_word_not_a_skill,
     "check:loop-per-claude-md": j_loop_per_claude_md,
     "check:fresh-tree-green": j_fresh_tree_green,

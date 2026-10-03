@@ -531,6 +531,22 @@ platform, not to the tree. On: write it into the protection table with the
 command that reads it and the date. A token the platform refuses makes it
 *unobserved*, with who can read it.
 
+**Then how several pull requests merge — the *Several merges at once* row.**
+Strict stays; what the row decides is who keeps it
+([`repository.md`](../../method/repository.md#branches-and-pull-requests)).
+Read from the platform whether it offers a merge queue here. Where only a
+write would answer, the write is a rule with enforcement off, aimed at a
+branch that does not exist, removed straight after — and a probe that
+unexpectedly lands is removed at once and said.
+- **A queue is offered:** offer to require it, and to add the queue's own
+  event to the workflow that runs the required checks — without it every
+  queued merge waits forever. Wait. Then watch one pull request merge through
+  the queue before the row says it works.
+- **None is offered:** the row reads *not available, decided*, with the
+  refusal, and the fallback: the platform updates a branch from main and
+  merges it once green, one pull request at a time. Where its settings are
+  off, offer them and wait.
+
 **Every fact in it is about this repository.** If a sentence could survive being
 moved to another repo, it belongs in this plugin instead, and putting it here is
 how the two copies start to disagree.

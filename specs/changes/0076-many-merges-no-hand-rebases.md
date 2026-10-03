@@ -1,6 +1,6 @@
 # Spec 0076: many merges, no hand rebases
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-10-03
 - **Issue:** [#169](https://github.com/sargismarkosyan/livespec/issues/169)
 
 ## Who this is for
@@ -142,7 +142,7 @@ driven by the agent. The bindings say which, read back.
      - a `doctor` case whose row says fallback and whose forge has the update
        setting off (`the-queue-is-read-back`).
 
-**Rules added**, all `@planned` until the implementing commit:
+**Rules added**, live since the implementing commit:
 
 | Rule id | Feature file | New or changed |
 |---|---|---|
