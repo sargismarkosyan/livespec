@@ -33,6 +33,7 @@ for. It fails on any of:
 | a rule-bound test marked skipped, focused, or expected to fail | It claims nothing. The rule it names is untested, and the gate says so rather than counting the marker as a test. What counts as a marker is the runner's word, and a binding. |
 | fewer rule-bound tests ran than the tree holds | The runner did not see what the gate sees: a harness that stopped early, a file the discovery pattern missed, a class the runner does not collect, or a count somebody edited. Whatever the summary line says, the build fails. More than the tree holds is not a failure. |
 | a rule crossing a boundary the bindings have no row for | A `@crosses:<id>` names a boundary nobody declared — a dangling reference, like a workflow that does not exist. Add the boundary row, or name one that exists. |
+| two change specs sharing a number | Two trees cut from one main each took *the next* number, and git saw no conflict because the slugs differ. Renumber the one that has not merged: its file, its heading, its links. A gap — a closed pull request's number — is not a fault. |
 
 It should **warn without failing** when a unit test claims a rule — it probably
 belongs with the behaviour tests — when a test that asserts nothing happened
@@ -507,6 +508,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:context-file-shape` | gate | 1.9.0 | wiring | — | | the context file missing, or without its loop, its commands, or its pointer to the bindings, fails |
 | `gate:skipped-test-claims-nothing` | gate | 1.12.0 | wiring | — | | a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails |
 | `gate:fewer-ran-than-exist` | gate | 1.12.0 | wiring | — | | the runner reporting fewer rule-bound tests than the tree holds fails |
+| `gate:change-number-unique` | gate | next | wiring | — | | two change specs sharing a number fail, whatever their slugs; a gap does not |
 | `gate:crossing-names-a-boundary` | gate | 1.14.0 | boundary | — | | a rule tagged as crossing a boundary the bindings declare no row for fails |
 | `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire |
 
@@ -616,6 +618,7 @@ each one in turn and read the message it produces:
 | a skipped rule-bound test claiming a rule | fails |
 | the runner ran fewer rule-bound tests than the tree holds | fails |
 | a rule crossing a boundary the bindings have no row for | fails |
+| two change specs sharing a number | fails |
 | a crossing rule with a single example | warns, does not fail |
 
 If you change either gate, re-check it the same way, and keep the results in the

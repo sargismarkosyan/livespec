@@ -212,6 +212,7 @@ def green_bindings(version: str) -> str:
             "| `gate:crossing-names-a-boundary` | a rule crossing a boundary the bindings have no row for | automated | `python3 gate.py` |",
             "| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | automated | `python3 gate.py` |",
             "| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | automated | `python3 gate.py test` |",
+            "| `gate:change-number-unique` | two change specs sharing a number | automated | `python3 gate.py` |",
             "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
         ]
     )
@@ -842,6 +843,11 @@ FAULTS = [
     ("a crossing rule with a single example", TRACE,
      lambda r: edit(r, "specs/features/core/core.feature", "@rule:one\n", "@rule:one @crosses:store\n"),
      "warns", "boundary misbehaving"),
+    # Two change specs never share a number. The fixture holds 0001-first; a
+    # second 0001 under another slug is the collision. See specs/changes/0078.
+    ("two change specs sharing a number", TRACE,
+     lambda r: write(r, "specs/changes/0001-second.md", "# Spec 0001: the second\n"),
+     "fails", "share the number"),
     ("case graded only by what fired", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: tool_used\ntool: Skill\nmin: 1\n---\n"),
      "fails", "never by what came out"),
