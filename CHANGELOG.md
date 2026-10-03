@@ -12,6 +12,12 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.18.0 — 2026-10-03
+
+**A cheap tier holds every edit, and three interviews play back before they write.** `refine-journeys`, `refine-personas` and `refine-workflows` play back, in one paragraph, what they concluded from the person's answers, and wait for a correction before any file exists. Two eval suites had caught the file written first (0069). `method/graded-cases.md` gains *Gate the freshness of what you can afford to keep fresh*: measure at two speeds. The cheap tier is fingerprinted by only what it can see, and its freshness is gated. The faithful sitting is kept and shown, and never owed while stale. The cheap tier is calibrated against the faithful one, and real sessions are graded as evidence kept locally (0072). In this repository's own suite, `evals/runner/tiers.py` measures every edit a call at a time: which skill fires, the first move judged by the case's own rubrics in both arms, and each skill's body read against its rules. It also grades the maintainer's real sessions. The board gate holds those fresh, and shows the whole sittings as a canary nothing owes. Nineteen cases join the suite (52–70). Only half a row goes stale when only a skill moved (0070). A session's rubrics share one judge call (0071). A person who never answered is no longer scored (0068). `run.py --rejudge` judges existing sittings again without re-running them.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
 ## 1.17.0 — 2026-09-29
 
 **Several changes at once, one tree each.** The method now says what every tree of a repository must be, and names no harness:
