@@ -254,7 +254,7 @@ what moved was what the numbers were allowed to be called.
 
 ## Gate wiring
 
-**Reconciled against livespec 1.22.0 on 2026-10-03.** One row per gate named in
+**Reconciled against livespec 1.23.0 on 2026-10-03.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
