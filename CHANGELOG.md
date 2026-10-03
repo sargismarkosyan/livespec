@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.20.0 — 2026-10-03
+
+**A stack lands on main.** A pull request based on another's branch merges only into the main branch. The platform retargets a stack when it deletes a merged branch, so *Merged branches deleted* joins the protection table and is read back. `setup` offers to turn it on and waits. `doctor` gains `check:merged-branch-deleted` and `check:merged-off-main`, which lists every pull request merged since the stamp that never reached the main branch, and moves none of them.
+
 ## 1.19.0 — 2026-10-03
 
 **An issue is taken once.** With several trees in flight, two of them can pick up the same issue. The method now has work on an issue start with a **claim** in the tracker: the marker the bindings name, plus one comment giving the branch, the tree, the harness and the session id (or *not exposed*), so the person can resume the right session. The claim is read before anything is written, and a claimed issue is reported, never taken. Nothing releases a claim by age.
