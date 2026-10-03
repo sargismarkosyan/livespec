@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.21.0 — 2026-10-03
+
+**Many merges, no hand rebases.** With several changes in flight, Strict stays and the platform keeps every branch up to date. Merges go through the platform's merge queue where it offers one, with the required checks running on the queue's own event. Where it offers none, the platform updates each branch from main and merges it once green, one pull request at a time. The bindings gain **Several merges at once**. `setup` reads availability from the platform, offers the queue with its trigger or the fallback's settings, and waits. `doctor` gains `check:merge-queue`.
+
 ## 1.20.0 — 2026-10-03
 
 **A stack lands on main.** A pull request based on another's branch merges only into the main branch. The platform retargets a stack when it deletes a merged branch, so *Merged branches deleted* joins the protection table and is read back. `setup` offers to turn it on and waits. `doctor` gains `check:merged-branch-deleted` and `check:merged-off-main`, which lists every pull request merged since the stamp that never reached the main branch, and moves none of them.
