@@ -1,0 +1,5 @@
+# The fixture for 82: fieldnote, the sighting log, whose log is one newest-first list across every outing. The request is to show it as one block per outing. No publishing tool is granted, so the sketch is written to a file; the case grades that page.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See specs/changes/0077.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the maintainer answers from person.md and asks to see the sketch before approving.

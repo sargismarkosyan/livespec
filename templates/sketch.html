@@ -1,0 +1,171 @@
+<!doctype html>
+<!--
+  The reference sketch. refine-spec starts here: keep the structure, replace
+  every example, and delete the parts this change has no evidence for.
+
+  - Every word between EXAMPLE markers is a placeholder from a made-up change
+    (spec 0012, "one place to report a bug"). None of it survives into a real
+    sketch.
+  - The instance is ONE real thing the spec names, drawn twice in frames laid
+    out alike. Change the steps, never the frame.
+  - Counts are sentences under their frame, in the reader's own units.
+  - Use the form the evidence has: a flow for a process, a grid with a legend
+    for which-covers-which, a tree diff for files, a pipeline diff for steps.
+    Drop the forms with nothing to show. A table is for options side by side.
+  - The headline is one sentence from the spec's "What changes". Who it is
+    for, the job, why now and the end value stay in the spec.
+  - No external scripts or fonts: the page must open as a file, offline, in
+    light and dark.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Place to Report — 0012</title><!-- EXAMPLE: the change's name, then its number -->
+<style>
+/* layout: headline line · two frames on one instance · the forms the evidence has · the ledger */
+:root{
+  --bg:#f6f7f5; --panel:#ffffff; --fg:#1d2420; --muted:#5c6862; --line:#d8ddd9;
+  --now:#b5452c; --after:#1f7a52; --add-bg:#e5f3ea; --del-bg:#f8e6e1; --step:#eef1ef;
+  --full:#1f7a52; --part:#a8d5bd; --none:transparent;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2320; --fg:#e4ebe7; --muted:#9aa7a0; --line:#2e3833;
+  --now:#f08a6f; --after:#6fd3a4; --add-bg:#173326; --del-bg:#3a201a; --step:#232b27;
+  --full:#6fd3a4; --part:#2f5f48; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2320; --fg:#e4ebe7; --muted:#9aa7a0; --line:#2e3833;
+  --now:#f08a6f; --after:#6fd3a4; --add-bg:#173326; --del-bg:#3a201a; --step:#232b27;
+  --full:#6fd3a4; --part:#2f5f48; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);padding:32px 16px 48px}
+main{max-width:1000px;margin:0 auto;display:grid;gap:32px}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.15;margin:0;text-wrap:balance}
+h2{font-size:17px;margin:0 0 12px}
+a{color:var(--after)}
+code{font:0.9em var(--mono)}
+.oneline{margin:10px 0 0;padding:10px 14px;border-left:3px solid var(--fg);background:var(--panel);max-width:75ch}
+.oneline b{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.pair{grid-template-columns:1fr}}
+.frame{min-width:0;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--now);border-radius:6px;padding:14px 16px;display:grid;gap:12px;align-content:start}
+.frame.after{border-top-color:var(--after)}
+.frame .tag{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--now)}
+.frame.after .tag{color:var(--after)}
+.flow{display:grid;gap:6px}
+.step{background:var(--step);border-radius:4px;padding:7px 10px;font-size:14px}
+.step.bad{box-shadow:inset 3px 0 0 var(--now)}
+.step.good{box-shadow:inset 3px 0 0 var(--after)}
+.arrow{color:var(--muted);font:12px var(--mono);padding-left:10px}
+.count{font-size:14px;border-top:1px dashed var(--line);padding-top:10px;margin:0}
+.count strong{font-variant-numeric:tabular-nums}
+.wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.grid{border-collapse:collapse;font-size:13.5px;min-width:520px;width:100%}
+.grid th,.grid td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left}
+.grid th{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cell{display:inline-block;width:16px;height:16px;border-radius:3px;border:1.5px solid var(--full);vertical-align:middle}
+.cell.full{background:var(--full)} .cell.part{background:var(--part)} .cell.none{border-style:dashed;border-color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--muted);padding:10px 12px}
+.legend span{display:flex;gap:6px;align-items:center}
+.tree{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 0;font:13px/1.8 var(--mono);overflow-x:auto}
+.tree div{padding:0 16px;display:flex;gap:16px;white-space:nowrap}
+.tree .add{background:var(--add-bg)} .tree .del{background:var(--del-bg)}
+.tree .del .p{text-decoration:line-through;color:var(--now)}
+.tree .add .p{color:var(--after)}
+.tree .n{color:var(--muted);font-family:var(--body);white-space:normal}
+.ledger{width:100%;border-collapse:collapse;font-size:14px}
+.ledger td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.ledger td:first-child{font:13px var(--mono)}
+.mv{font:600 12px var(--mono);white-space:nowrap} .mv.m{color:var(--after)} .mv.s{color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <!-- EXAMPLE start: the change's name, and one sentence from the spec's "What changes" -->
+    <h1>One place to report a bug</h1>
+    <p class="oneline"><b>In one line</b>The in-app report, the support inbox and the chat form become one report, filed straight into the tracker. From <a href="../specs/changes/0012-one-place-to-report.md">spec 0012</a></p>
+    <!-- EXAMPLE end -->
+  </header>
+
+  <!-- 1. One instance, drawn twice. The same frame, the same steps where nothing changes. -->
+  <section>
+    <h2>One report, Ana's crash on export, from her click to the tracker</h2><!-- EXAMPLE: the real thing the spec names -->
+    <div class="pair">
+      <div class="frame"><span class="tag">Now</span>
+        <div class="flow"><!-- EXAMPLE start -->
+          <div class="step">Ana hits the crash on export</div>
+          <div class="arrow">↓ three ways in, none of them chosen</div>
+          <div class="step bad">in-app report · support inbox · chat form</div>
+          <div class="arrow">↓ someone copies it by hand</div>
+          <div class="step bad">a tracker issue, written a day later, missing the version</div>
+        </div>
+        <p class="count"><strong>3</strong> places a report can land, <strong>1</strong> copy by hand, and <strong>0</strong> of them carry the app version.</p><!-- EXAMPLE end -->
+      </div>
+      <div class="frame after"><span class="tag">After</span>
+        <div class="flow"><!-- EXAMPLE start -->
+          <div class="step">Ana hits the crash on export</div>
+          <div class="arrow">↓ one way in</div>
+          <div class="step good">in-app report, with the version and the last screen attached</div>
+          <div class="arrow">↓ filed as she sends it</div>
+          <div class="step good">a tracker issue, the same minute, with the version</div>
+        </div>
+        <p class="count"><strong>1</strong> place a report lands, <strong>0</strong> copies by hand, and <strong>every</strong> report carries the app version.</p><!-- EXAMPLE end -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Which covers which: a grid with a legend. Delete if nothing here is a coverage question. -->
+  <section>
+    <h2>Which check holds which step</h2>
+    <div class="wrap">
+      <table class="grid">
+        <thead><tr><th>check</th><th>send</th><th>attach version</th><th>file in tracker</th></tr></thead>
+        <tbody><!-- EXAMPLE start -->
+          <tr><td>unit tests</td><td><i class="cell full"></i></td><td><i class="cell full"></i></td><td><i class="cell none"></i></td></tr>
+          <tr><td>tracker contract test</td><td><i class="cell none"></i></td><td><i class="cell part"></i></td><td><i class="cell full"></i></td></tr>
+        </tbody><!-- EXAMPLE end -->
+      </table>
+      <div class="legend">
+        <span><i class="cell full"></i>checked on every commit</span>
+        <span><i class="cell part"></i>checked against a stand-in</span>
+        <span><i class="cell none"></i>not checked</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Files: a tree diff. Added marked, removed struck through, one note per line. -->
+  <section>
+    <h2>Files</h2>
+    <div class="tree"><!-- EXAMPLE start -->
+      <div class="add"><span class="p">+ src/report/send.ts</span><span class="n">the one report, filing into the tracker</span></div>
+      <div class="del"><span class="p">src/support/inbox-forward.ts</span><span class="n">nothing forwards by hand any more</span></div>
+      <div class="del"><span class="p">src/chat/bug-form.tsx</span><span class="n">the chat form links to the report instead</span></div>
+      <div><span class="p">  src/app/version.ts</span><span class="n">unchanged, now read by the report</span></div>
+    </div><!-- EXAMPLE end -->
+  </section>
+
+  <!-- 4. Steps and gates: a pipeline diff, the same way. Delete if no step moves. -->
+  <section>
+    <h2>Verification</h2>
+    <div class="tree"><!-- EXAMPLE start -->
+      <div><span class="p">  npm run lint</span><span class="n"></span></div>
+      <div><span class="p">  npm test</span><span class="n"></span></div>
+      <div class="add"><span class="p">+ npm run test:tracker-contract</span><span class="n">holds the filing against the tracker's recorded API</span></div>
+    </div><!-- EXAMPLE end -->
+  </section>
+
+  <!-- 5. What moves and what stays, with the reason against each. -->
+  <section>
+    <h2>What moves and what stays</h2>
+    <div class="wrap"><table class="ledger"><tbody><!-- EXAMPLE start -->
+      <tr><td>the in-app report</td><td class="mv m">moves</td><td>It becomes the only way in, and attaches the version</td></tr>
+      <tr><td>the support inbox</td><td class="mv s">stays</td><td>For billing. Bug reports there get a reply pointing at the report.</td></tr>
+      <tr><td>the chat form</td><td class="mv m">goes</td><td>It was a second copy of the report with less in it</td></tr>
+    </tbody><!-- EXAMPLE end --></table></div>
+  </section>
+</main>
+</body>
+</html>

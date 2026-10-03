@@ -1,15 +1,8 @@
 @feature:showing-before-it-is-built @workflow:adopt-the-process
 Feature: What the one decision a person holds gets to look at
 
-  @rule:the-decision-gets-what-the-prose-cannot-carry @planned
+  @rule:the-decision-gets-what-the-prose-cannot-carry
   Rule: Before approval is asked for, the person deciding is shown the evidence the change spec argues from and cannot carry at reading speed
-
-    # @planned here means *nothing holds it yet*, not *nobody built it*: the
-    # instruction ships in refine-spec's section 7. Until 0031 no case could
-    # reach it at all — a headless session had no way to render a page, so no
-    # arm could watch a sketch being drawn. A sketch written to a file is
-    # readable, so what keeps the tag on is only that no case claims this yet.
-    # It comes off when one does. See 0031, *What we are not doing*.
 
     Example: the change alters something that has a before and an after
       Given a change spec proposing a different state for something a person already uses
@@ -29,13 +22,8 @@ Feature: What the one decision a person holds gets to look at
       Then the sketch is there with it
       And it did not have to be asked for after the decision was already due
 
-  @rule:what-is-shown-is-not-the-spec-again @planned
+  @rule:what-is-shown-is-not-the-spec-again
   Rule: The sketch carries the evidence and sends the reader to the spec for the reasoning, so nobody is left holding two versions of the same argument
-
-    # @planned alongside the rule above and now for the same reason: a written
-    # sketch is readable by a case, and no case claims either of them yet.
-    # What *is* watched today is that nothing is put in a sketch's place, held
-    # by the rule below rather than softened into this one.
 
     Example: the spec already argues its case under its own headings
       Given a change spec saying who this is for, the job behind the request, why now and the end value
