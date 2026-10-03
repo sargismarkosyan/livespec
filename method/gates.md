@@ -561,8 +561,8 @@ does not name — held to the same states, required by nothing.
 | `check:picture-row` | mechanical | 0.29.0 | record | — | | the bindings say what a change here must show, and it is not the sketch row |
 | `check:trees-row` | mechanical | 1.17.0 | record | — | | the bindings say where trees live and what makes, lists and cleans them, and the context file's commands carry that command |
 | `check:fresh-tree-green` | judgment | 1.17.0 | wiring | — | | a throwaway tree made by the command the bindings name runs verification green, and the same command cleans it |
-| `check:claim-row` | mechanical | next | record | — | | the bindings name the marker that says an issue is taken, and the commands that put it on and list it |
-| `check:claims-in-flight` | judgment | next | record | — | | every open issue carrying the marker has a branch, a tree or a pull request behind it, and none is released by the audit |
+| `check:claim-row` | mechanical | 1.19.0 | record | — | | the bindings name the marker that says an issue is taken, and the commands that put it on and list it |
+| `check:claims-in-flight` | judgment | 1.19.0 | record | — | | every open issue carrying the marker has a branch, a tree or a pull request behind it, and none is released by the audit |
 | `check:skill-names` | mechanical | 1.0.0 | record | — | | every skill the record instructs by exists in this plugin |
 | `check:word-not-a-skill` | judgment | 1.0.0 | record | — | | the same word used as ordinary prose is left alone |
 | `check:loop-per-claude-md` | judgment | 1.1.0 | record | — | | the loop's own account says what the method now asks of each step |
