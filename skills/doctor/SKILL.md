@@ -123,6 +123,12 @@ The questions worth the judgment, and what decides them:
   is listed with its base and the commit, and the line reads `open`; a stack
   whose commits arrived another way is not. Move nothing: retargeting,
   cherry-picking or reopening is a change of its own.
+- **How several pull requests merge** (`merge-queue`). The row says a queue
+  or the fallback. A queue: read back that it is required on the main branch
+  and that the required checks run on its event in the pipeline — a queue
+  whose checks never run hangs every merge and fails nothing. The fallback:
+  read back that both its settings are on. Anything not as the row says is
+  `open`, naming it; turning a setting on is setup's.
 - **The range** (`entry-moved-here`). The tool lists the entries between the
   stamp and the plugin installed, and the ids that arrived in them. Read each
   entry for *where to look*, never as a list of tasks: what it asks of this

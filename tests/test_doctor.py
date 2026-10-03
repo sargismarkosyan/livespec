@@ -659,3 +659,29 @@ class Stacks(unittest.TestCase):
         self.assertEqual(line["state"], "unanswered")
         self.assertIn(f"since {ctx['stamp_date']}", line["evidence"])
         self.assertIn("move nothing", line["evidence"])
+
+
+class ManyMerges(unittest.TestCase):
+    """How several pull requests merge, read back by the audit. See specs/changes/0076."""
+
+    @rule("the-queue-is-read-back")
+    def test_bindings_with_no_row_read_open_and_name_the_sitting(self):
+        lines = audit(repo(inject.green_bindings(INSTALLED).replace(inject.ROW_MERGES + "\n", "")))
+        self.assertEqual(lines["check:merge-queue"]["state"], "open")
+        self.assertIn("setup sitting", lines["check:merge-queue"]["evidence"])
+
+    @rule("the-queue-is-read-back")
+    def test_a_fallback_row_hands_on_its_own_read_back_and_asks_after_the_settings(self):
+        line = audit(repo())["check:merge-queue"]
+        self.assertEqual(line["state"], "unanswered")
+        self.assertEqual(line["severity"], "platform")
+        self.assertIn("run: gh api repos/o/r --jq .allow_update_branch", line["evidence"])
+        self.assertIn("fallback", line["evidence"])
+
+    @rule("the-queue-is-read-back")
+    def test_a_queue_row_asks_after_the_event_the_checks_run_on(self):
+        queued = "| **Several merges at once** | the merge queue, required on main; `checks.yml` runs on `merge_group`; read back with `gh api repos/o/r/rulesets` |"
+        line = audit(repo(inject.green_bindings(INSTALLED).replace(inject.ROW_MERGES, queued)))["check:merge-queue"]
+        self.assertEqual(line["state"], "unanswered")
+        self.assertIn("gh api repos/o/r/rulesets", line["evidence"])
+        self.assertIn("queue's own event", line["evidence"])

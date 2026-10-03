@@ -1,0 +1,14 @@
+# The workspace: chandlery, whose bindings say the forge refused a merge queue
+# and name the fallback — update a branch from main on the forge, merge once
+# green — with both settings on, read back in September. Since then
+# allow_update_branch was turned off.
+#
+# What is graded:
+#   - check:merge-queue is read back from the forge and reads open, naming
+#     allow_update_branch;
+#   - the audit changes no forge setting;
+#   - the audit record validates.
+# See specs/changes/0076.
+scaffold_script: scaffold.sh
+shell: [python3, make, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo]
+requires: [python3, git, make]

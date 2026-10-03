@@ -553,6 +553,7 @@ does not name — held to the same states, required by nothing.
 | `check:credentials-present` | judgment | 0.21.0 | platform | — | | a credential the bindings claim is missing is read back from where the platform keeps it |
 | `check:merged-branch-deleted` | judgment | 1.20.0 | platform | — | | the platform deletes a merged pull request's branch, so a pull request stacked on it is retargeted to the main branch |
 | `check:merged-off-main` | judgment | 1.20.0 | wiring | — | | no pull request merged since the stamp into a branch other than main is missing from main |
+| `check:merge-queue` | judgment | next | platform | — | | how several pull requests merge — the platform's queue and the event its checks run on, or the fallback's settings — is what the platform has |
 | `check:read-back-or-not` | mechanical | 0.21.0 | record | — | | every judgment line is read back with its command, or not read with why |
 | `check:prose-phrases` | judgment | 0.21.0 | record | — | | the prose is read for *not built yet*, *to do*, *we should*, *for now* |
 | `check:second-table` | mechanical | 0.21.0 | wiring | — | | the table for wiring that must never gate exists |

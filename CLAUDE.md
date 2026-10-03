@@ -41,8 +41,7 @@ Getting this wrong is how two copies of a method start disagreeing.
 1. The human uses the plugin somewhere else and reports what they found.
 2. `todo` files researched GitHub issues. It does not fix.
 3. `refine-spec` writes the Gherkin rules and a numbered change spec.
-4. The human approves the spec, holding the sketch drawn from it, or asks for
-   changes.
+4. The human approves the spec, holding the sketch drawn from it, or asks for changes.
 5. Implement: drop `@planned`, write the eval case — or, for the code under
    `tools/`, the test — that claims the rule, get `verify.py` green, commit.
 6. Open the pull request, carrying what the pipeline cannot work out: one
@@ -52,8 +51,9 @@ Getting this wrong is how two copies of a method start disagreeing.
    section saying what the id list did: `unchanged`, or the ids added and
    retired. **Do not touch `version`, `CHANGELOG.md`, or a `since` in
    `gates.md`** — a new id row reads `next`, and the release writes the rest.
-7. Both required checks must pass; `main` is protected. Merging releases:
-   `release.yml` writes the bump, the entry, the tag and the GitHub Release.
+7. Both required checks must pass; `main` is protected. Several in flight merge one
+   at a time: `gh pr update-branch <n>`, then `gh pr merge <n> --auto --merge`.
+   Merging releases: `release.yml` writes the bump, the entry, the tag and the Release.
 8. Close the issue with what was asked, what shipped, and why they differ.
 
 ## The rules easiest to lose here
