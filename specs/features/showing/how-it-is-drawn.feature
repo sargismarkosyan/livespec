@@ -1,7 +1,7 @@
 @feature:showing-how-it-is-drawn @workflow:adopt-the-process
 Feature: How a sketch shows what changes
 
-  @planned @rule:a-sketch-draws-one-instance-twice
+  @rule:a-sketch-draws-one-instance-twice
   Rule: A sketch shows the change on one real thing the spec names, drawn as it is now and as it would be in two frames of the same layout, with each count as a sentence under its frame, and draws the evidence in the form it has before reaching for a tile or a bare table
 
     Example: a change to how something is done

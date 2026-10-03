@@ -1,6 +1,6 @@
 # Spec 0077: a sketch that shows
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-10-03
 - **Issue:** [#168](https://github.com/sargismarkosyan/livespec/issues/168)
 
 ## Who this is for
@@ -84,10 +84,10 @@ spec is worth opening.
    - **One headline sentence at most**, taken from the spec's *What
      changes*, never from *The end value*. *Evidence, never argument* stands.
    - **The reference page is
-     `templates/sketch.html`:** start from
+     [`templates/sketch.html`](../../templates/sketch.html):** start from
      it, keep its structure, replace its example.
 
-2. **`templates/sketch.html` — new.** One
+2. **[`templates/sketch.html`](../../templates/sketch.html) — new.** One
    self-contained page that carries the vocabulary with a worked example:
    - the headline line;
    - two Now/After frames, each with its count sentence;
@@ -119,7 +119,7 @@ spec is worth opening.
 
 | Rule id | Feature file | New or changed |
 |---|---|---|
-| `a-sketch-draws-one-instance-twice` | [`features/showing/how-it-is-drawn.feature`](../features/showing/how-it-is-drawn.feature) | new, `@planned` until the implementing commit |
+| `a-sketch-draws-one-instance-twice` | [`features/showing/how-it-is-drawn.feature`](../features/showing/how-it-is-drawn.feature) | new, live since the implementing commit |
 | `the-decision-gets-what-the-prose-cannot-carry` | [`features/showing/before-it-is-built.feature`](../features/showing/before-it-is-built.feature) | `@planned` comes off; wording unchanged |
 | `what-is-shown-is-not-the-spec-again` | same | `@planned` comes off; wording unchanged |
 
@@ -155,7 +155,7 @@ since they are pages for one decision, so nothing already drawn is affected.
 
 ## Acceptance checks
 
-1. Open `templates/sketch.html` as a file, in light and dark. Every part of
+1. Open [`templates/sketch.html`](../../templates/sketch.html) as a file, in light and dark. Every part of
    the vocabulary renders with no network.
 2. Read *How it is shown* and confirm it names the template and restates
    none of the four sections.

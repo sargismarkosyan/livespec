@@ -277,6 +277,25 @@ That is not a screen-only list. A command's output, a config file, a rule about
 what gets counted — all have a before, a ledger and a count, and a repository
 with nothing on a screen still has a change spec.
 
+**How it is shown** — the list above says what to carry, and left there it
+comes out as a form: a tile per count, a table per list, a code block per
+state. Start from [`templates/sketch.html`](../../templates/sketch.html), keep
+its structure, and replace every example in it.
+
+- **One instance, drawn twice.** The one real thing the change touches most
+  that the spec names — a request, a workflow, a file, a command — drawn as
+  it is and as it would be, in two frames laid out alike, so the only thing
+  that differs is what the change changes.
+- **A count is a sentence under its frame**, in the reader's units — *three
+  places a report lands, none carrying the version* — never a number alone
+  in a tile.
+- **The form the evidence has:** a flow of real artifacts for a process; a
+  grid with a legend for which covers which; a tree diff — added marked,
+  removed struck through, a note a line — for files; the same for a
+  pipeline's steps. A table is for options side by side, not the default.
+- **At most one line above it**, taken from *What changes*. That is where the
+  reader starts; the reasons stay in the spec.
+
 **What must never go in it.** *Who this is for*, *The job behind the request*,
 *Why now*, *The end value* — the four sections this skill spent its whole effort
 on. They are in the spec, the sketch points at the spec for them, and a page
