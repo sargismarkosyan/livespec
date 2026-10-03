@@ -1,0 +1,16 @@
+# The workspace: chandlery, stamped 2026-09-15, with a forge client that keeps
+# merged branches and lists five merged pull requests since. #32 merged into
+# spec-0004-reorder-point after #31 had taken that branch to main, so its
+# commit is on no branch main contains. #29 merged off main as well, but #30
+# carried the same commit to main.
+#
+# What is graded:
+#   - check:merged-branch-deleted reads open from the setting read back;
+#   - check:merged-off-main reads open listing #32 with its base and commit,
+#     and not #29;
+#   - nothing on the forge or in the history moves;
+#   - the audit record validates.
+# See specs/changes/0075.
+scaffold_script: scaffold.sh
+shell: [python3, make, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo]
+requires: [python3, git, make]

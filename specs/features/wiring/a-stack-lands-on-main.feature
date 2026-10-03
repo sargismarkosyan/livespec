@@ -1,7 +1,7 @@
 @feature:wiring-a-stack-lands-on-main @workflow:adopt-the-process
 Feature: What an audit reads back about stacked pull requests
 
-  @planned @rule:the-delete-on-merge-setting-is-read-back @crosses:consuming-repository
+  @rule:the-delete-on-merge-setting-is-read-back @crosses:consuming-repository
   Rule: The audit reads back from the platform whether a merged pull request's branch is deleted, and reports it open when it is not
 
     Example: the setting was turned off after the sitting
@@ -15,7 +15,7 @@ Feature: What an audit reads back about stacked pull requests
       When the audit reads the setting back
       Then the line reads not-read, with the refusal
 
-  @planned @rule:a-merge-that-missed-main-is-listed @crosses:consuming-repository
+  @rule:a-merge-that-missed-main-is-listed @crosses:consuming-repository
   Rule: The audit lists every pull request merged since the stamp into a branch other than main whose commits never reached main, and changes nothing
 
     Example: a stack stranded on a merged parent

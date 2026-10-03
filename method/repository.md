@@ -60,6 +60,7 @@ What the protection should enforce:
 | Strict | The branch must be up to date with `main` before merging |
 | Applies to admins | The repository owner has no bypass |
 | No force pushes, no deletion | `main`'s history cannot be rewritten or removed |
+| Merged branches deleted | A pull request stacked on one is retargeted to `main`, not merged into a branch nobody merges again |
 | Conversation resolution required | Review threads get answered, not merged past |
 
 **The required check is matched by name, and the name is the job's `name:`** —
@@ -72,6 +73,17 @@ anyone approve their own pull request, so requiring one locks the repository
 against its only contributor. Zero still forces every change through a pull
 request and through the check; it drops only a second pair of human eyes that
 does not exist.
+
+**A pull request may be based on another's branch, and it lands on `main`.**
+Parallel changes are sometimes dependent, and a stack is their natural shape.
+What the protection on `main` cannot see is a merge into anything else: when
+the base merges first and its branch stays, the pull request on top merges
+into that dead branch, reads *Merged*, and never reaches a release. So a
+stacked pull request merges only into `main`, retargeted there when its base
+merges — and the platform does the retargeting itself when it deletes a merged
+branch, which is why deletion is in the table above rather than left as a
+habit. **Merged is not the same as on `main`**: what arrived is read from
+`main`.
 
 Branch protection is the one gate that does not live in the repository, so it
 cannot be reviewed in a diff. That is why the table above is written down: it is

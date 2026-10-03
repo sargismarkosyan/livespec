@@ -121,6 +121,8 @@ CHECKS = [
     ("check:check-name", "judgment", "platform", "the required check's name is the one the platform has"),
     ("check:who-bypasses", "judgment", "platform", "who can bypass is read back, tokens and keys included"),
     ("check:credentials-present", "judgment", "platform", "a credential the bindings claim is missing is read back from where the platform keeps it"),
+    ("check:merged-branch-deleted", "judgment", "platform", "the platform deletes a merged pull request's branch, so a pull request stacked on it is retargeted to the main branch"),
+    ("check:merged-off-main", "judgment", "wiring", "no pull request merged since the stamp into a branch other than main is missing from main"),
     ("check:read-back-or-not", "mechanical", "record", "every judgment line is read back with its command, or not read with why"),
     ("check:prose-phrases", "judgment", "record", "the prose is read for *not built yet*, *to do*, *we should*, *for now*"),
     ("check:second-table", "mechanical", "wiring", "the table for wiring that must never gate exists"),
@@ -923,14 +925,16 @@ def j_fake_suite_green(ctx: dict) -> tuple[str, str]:
     return boundary_lines(ctx, "fake", "does the suite against the real thing exist, and when was it last green?")
 
 
-def platform_line(ctx: dict, question: str) -> tuple[str, str]:
+def platform_line(ctx: dict, question: str, prefer: tuple[str, ...] = ()) -> tuple[str, str]:
+    """A platform question, handed the read-back command that names its subject where one does, else the first."""
     text = section(ctx["text"], "Branch protection") or ""
     cmds = commands_in(text)
     if not cmds:
         for key in ("required checks", "branch protection"):
             cmds += commands_in(ctx["keys"].get(key, ""))
     if cmds:
-        return "unanswered", f"run: {cmds[0]} — {question}"
+        chosen = next((c for c in cmds if any(word in c for word in prefer)), cmds[0])
+        return "unanswered", f"run: {chosen} — {question}"
     return "unanswered", f"{question} — the bindings name no read-back command; the row must name one before this can be read"
 
 
@@ -952,6 +956,19 @@ def j_credentials_present(ctx: dict) -> tuple[str, str]:
     if not claims:
         return "n/a", "the bindings claim no credential is missing"
     return platform_line(ctx, f"the bindings claim a credential is missing at {', '.join(claims[:4])} — is it present where the platform keeps it?")
+
+
+def j_merged_branch_deleted(ctx: dict) -> tuple[str, str]:
+    return platform_line(ctx, "does the platform delete a merged pull request's branch, so a pull request stacked on it is retargeted to the main branch? off is open",
+                         prefer=("delete_branch", "settings"))
+
+
+def j_merged_off_main(ctx: dict) -> tuple[str, str]:
+    since = f"since {ctx['stamp_date']}" if ctx["stamp_date"] else "since the bindings were written (no stamp date)"
+    status, evidence = platform_line(ctx, (
+        f"list the pull requests merged {since} whose base was not the main branch; for each, is its head commit on "
+        "the main branch? list each that is not, with its base and the commit, and move nothing"), prefer=("pulls", "prs", "pr list"))
+    return status, evidence
 
 
 def j_word_not_a_skill(ctx: dict) -> tuple[str, str]:
@@ -1017,6 +1034,8 @@ JUDGMENT = {
     "check:check-name": j_check_name,
     "check:who-bypasses": j_who_bypasses,
     "check:credentials-present": j_credentials_present,
+    "check:merged-branch-deleted": j_merged_branch_deleted,
+    "check:merged-off-main": j_merged_off_main,
     "check:word-not-a-skill": j_word_not_a_skill,
     "check:loop-per-claude-md": j_loop_per_claude_md,
     "check:fresh-tree-green": j_fresh_tree_green,

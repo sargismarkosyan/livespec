@@ -637,3 +637,25 @@ class Claims(unittest.TestCase):
         vague = "| **Claiming an issue** | we put a label on it |"
         lines = audit(repo(inject.green_bindings(INSTALLED).replace(inject.ROW_CLAIM, vague)))
         self.assertEqual(lines["check:claim-row"]["state"], "open")
+
+
+class Stacks(unittest.TestCase):
+    """Where a stacked pull request lands, read back by the audit. See specs/changes/0075."""
+
+    @rule("the-delete-on-merge-setting-is-read-back")
+    def test_the_setting_is_handed_to_a_mind_with_the_protection_read_back(self):
+        lines = audit(repo())
+        line = lines["check:merged-branch-deleted"]
+        self.assertEqual(line["state"], "unanswered")
+        self.assertEqual(line["severity"], "platform")
+        self.assertIn("retargeted", line["evidence"])
+        self.assertTrue(line["evidence"].startswith("run: "), line["evidence"])
+
+    @rule("a-merge-that-missed-main-is-listed")
+    def test_the_look_back_starts_at_the_stamp_and_moves_nothing(self):
+        root = repo()
+        ctx = doctor.context(root, root / "specs" / "setup" / "README.md")
+        line = {l["id"]: l for l in doctor.emit(ctx)}["check:merged-off-main"]
+        self.assertEqual(line["state"], "unanswered")
+        self.assertIn(f"since {ctx['stamp_date']}", line["evidence"])
+        self.assertIn("move nothing", line["evidence"])

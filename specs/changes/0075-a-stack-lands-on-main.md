@@ -1,6 +1,6 @@
 # Spec 0075: a stack lands on main
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-10-03
 - **Issue:** [#170](https://github.com/sargismarkosyan/livespec/issues/170)
 
 ## Who this is for
@@ -124,7 +124,7 @@ says it didn't, naming the pull request and the commit `main` lacks.
      the bindings name, the same way 0074 stood in for the tracker. A real
      `gh` lent to a session could change a live repository's settings.
 
-**Rules added**, all `@planned` until the implementing commit:
+**Rules added**, live since the implementing commit:
 
 | Rule id | Feature file | New or changed |
 |---|---|---|

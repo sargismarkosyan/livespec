@@ -1,7 +1,7 @@
 @feature:setup-a-stack-lands-on-main @workflow:adopt-the-process
 Feature: The sitting makes a stacked pull request land on the main branch
 
-  @planned @rule:merged-branches-are-deleted-so-stacks-retarget @crosses:consuming-repository
+  @rule:merged-branches-are-deleted-so-stacks-retarget @crosses:consuming-repository
   Rule: The sitting reads back whether the platform deletes a merged pull request's branch, and where it does not, offers to turn that on and waits, because that deletion is what retargets a pull request stacked on it
 
     Example: the setting is off
