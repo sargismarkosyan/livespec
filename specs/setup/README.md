@@ -289,6 +289,7 @@ that gap is the thing a later `setup` run offers to close.
 | `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | automated | `trace.py`, since [`0048`](../changes/0048-the-file-every-session-reads-first.md) — the root, the longest numbered run outside fenced blocks between one and eight, at least one fenced block, a relative link resolving to this file; broken by five faults. What it leaves unread is the prose, which `check:loop-per-claude-md` hands to a mind |
 | `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped or expected to fail claims no rule | automated | `trace.py`, since [`0051`](../changes/0051-a-test-that-did-not-run-claims-nothing.md) — reads the tests by their syntax and empties a claim under `unittest`'s `skip`, `skipIf`, `skipUnless` or `expectedFailure`, on the method or on its class, naming the test, the marker and the rule; broken by *a skipped rule-bound test claiming a rule* |
 | `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | automated | `tests.py`, since [`0051`](../changes/0051-a-test-that-did-not-run-claims-nothing.md) — counts the `test_*` methods under `tests/` against the *Ran N* `unittest` prints and fails on fewer with both numbers; more is inheritance and passes; broken by *the runner ran fewer rule-bound tests than the tree holds*. The cases have the same reconciliation from the board's own faults, *a case with no row in the table* and *a row for a case nobody has* |
+| `gate:change-number-unique` | two change specs sharing a number | automated | `trace.py`, since [`0078`](../changes/0078-a-number-nobody-else-holds.md) — reads `specs/changes/` and fails two files whose four-digit numbers match, naming both; a gap passes. Broken by *two change specs sharing a number*, held by `tests/test_change_numbers.py` |
 
 **No row is deferred**, so nothing in this table is on the two-change clock; the
 two rows in *The boundaries* below that read *mocked* from 0039 passed it at
@@ -466,6 +467,7 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a context file that does not link to the bindings | fails | ✔ |
 | a rule crossing a boundary the bindings have no row for | fails | ✔ |
 | a crossing rule with a single example | **warns, does not fail** | ✔ |
+| two change specs sharing a number | fails | ✔ |
 | case graded only by what fired | fails | ✔ |
 | case run fewer times than the floor | fails | ✔ |
 | a claimed rule no grader tests | fails | ✔ |

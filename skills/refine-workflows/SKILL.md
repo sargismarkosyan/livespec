@@ -192,11 +192,14 @@ Three bite this skill in particular:
 ## 8. Write it, check, hand back
 
 The workflow files, from
-[`templates/workflow.feature`](../../templates/workflow.feature), then a numbered
-change spec at `specs/changes/NNNN-<slug>.md` from
-[`templates/change.md`](../../templates/change.md), one past the highest. Feature
-*retagging* needed to keep the gate green belongs in the same commit; nothing
-else in the feature specs moves.
+[`templates/workflow.feature`](../../templates/workflow.feature), then a
+numbered change spec at `specs/changes/NNNN-<slug>.md` from
+[`templates/change.md`](../../templates/change.md), one past the highest in
+flight, per
+[`repository.md`](../../method/repository.md#several-changes-at-once) — say the
+numbers stepped past and where each was held, and say so when the open pull
+requests could not be read. Feature *retagging* needed to keep the gate green
+belongs in the same commit; nothing else in the feature specs moves.
 
 Run the gate. Green, warnings read rather than skimmed. Commit the spec on its
 own.

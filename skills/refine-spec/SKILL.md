@@ -191,14 +191,17 @@ The step must be small enough to be one screenshot's worth of change.
   no row declares and warns one written with a single example.
 
 **The change spec** at `specs/changes/NNNN-<slug>.md`, from
-[`templates/change.md`](../../templates/change.md), numbered one past the highest
-existing. The template carries placeholders where the repo differs — the persona
-by name, the always-promise most at risk, the storage contract. Fill them from
-the repo you are standing in; a spec that ships with an angle bracket in it was
-not written, it was pasted. Fill in
-*Who this is for*, *The job behind the request*, *Why now*, and *The end value*
-properly — those four sections are the whole point of this skill, and a spec
-that has them filled with restated feature description has failed.
+[`templates/change.md`](../../templates/change.md), numbered one past the
+highest in flight, per
+[`repository.md`](../../method/repository.md#several-changes-at-once) — say the
+numbers stepped past and where each was held, and say so when the open pull
+requests could not be read. The template carries placeholders where the repo
+differs — the persona by name, the always-promise most at risk, the storage
+contract. Fill them from the repo you are standing in; a spec that ships with an
+angle bracket in it was not written, it was pasted. Fill in *Who this is for*,
+*The job behind the request*, *Why now*, and *The end value* properly — those
+four sections are the whole point of this skill, and a spec that has them filled
+with restated feature description has failed.
 
 **Prose specs.** If this changes a decision or adds vocabulary, update
 `specs/spec.md`, the area `spec.md`, or the workflow's own `.feature` in the same

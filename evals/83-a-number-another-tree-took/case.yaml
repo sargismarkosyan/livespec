@@ -1,0 +1,5 @@
+# The fixture for 83: fieldnote, main ending at spec 0006, an open pull request adding 0007 and a claim naming spec-0008-dawn-chorus, read through the fixture's own tracker client. The case grades the new change spec being numbered 0009.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See specs/changes/0078.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, printenv]
+# The sitting (0058): the maintainer answers from person.md and holds approval back.

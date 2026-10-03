@@ -222,11 +222,15 @@ the change lands, the change is not finished.
 
 ## 7. Write it, check, hand back
 
-The persona file, from [`templates/persona.md`](../../templates/persona.md),
-and `personas/README.md`, then a numbered change spec at
+The persona file, from [`templates/persona.md`](../../templates/persona.md), and
+`personas/README.md`, then a numbered change spec at
 `specs/changes/NNNN-<slug>.md` from
-[`templates/change.md`](../../templates/change.md), one past the highest. *Who
-this is for* in that spec is, for once, literally the subject.
+[`templates/change.md`](../../templates/change.md), one past the highest in
+flight, per
+[`repository.md`](../../method/repository.md#several-changes-at-once) — say the
+numbers stepped past and where each was held, and say so when the open pull
+requests could not be read. *Who this is for* in that spec is, for once,
+literally the subject.
 
 Then run the traceability gate — the command is in `specs/setup/README.md`.
 

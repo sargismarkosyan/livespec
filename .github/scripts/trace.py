@@ -469,6 +469,19 @@ def longest_numbered_run(lines: list[str]) -> int:
     return longest
 
 
+# Two change specs never share a number, whatever their slugs: two trees cut
+# from one main each take "the next" and git sees no conflict. A gap is not a
+# fault — a closed pull request's number stays unused. See specs/changes/0078.
+CHANGE_NUMBER = re.compile(r"^(\d{4})-")
+by_number: dict[str, list[str]] = {}
+for spec in sorted((ROOT / "specs" / "changes").glob("*.md")):
+    match = CHANGE_NUMBER.match(spec.name)
+    if match:
+        by_number.setdefault(match.group(1), []).append(spec.name)
+for number, names in sorted(by_number.items()):
+    if len(names) > 1:
+        fail("specs/changes", f"{len(names)} change specs share the number {number}: {', '.join(names)} — renumber the one that has not merged yet")
+
 context_path = ROOT / CONTEXT_FILE
 if not context_path.is_file():
     fail(CONTEXT_FILE, "no CLAUDE.md at the root; the file every session reads first is missing")

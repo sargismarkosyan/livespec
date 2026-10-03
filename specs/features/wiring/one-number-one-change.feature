@@ -1,7 +1,7 @@
 @feature:wiring-one-number-one-change @workflow:adopt-the-process
 Feature: Two change specs never share a number
 
-  @planned @rule:two-change-specs-never-share-a-number
+  @rule:two-change-specs-never-share-a-number
   Rule: Verification fails when two change specs carry the same number, naming both files, whatever their slugs
 
     Example: two trees took the same number

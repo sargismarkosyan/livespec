@@ -212,8 +212,12 @@ file is downstream of them.
 
 The journey file, from [`templates/journey.md`](../../templates/journey.md),
 then a numbered change spec at `specs/changes/NNNN-<slug>.md` from
-[`templates/change.md`](../../templates/change.md), one past the highest. Run
-the traceability gate; it must be green. Commit the spec on its own.
+[`templates/change.md`](../../templates/change.md), one past the highest in
+flight, per
+[`repository.md`](../../method/repository.md#several-changes-at-once) — say the
+numbers stepped past and where each was held, and say so when the open pull
+requests could not be read. Run the traceability gate; it must be green. Commit
+the spec on its own.
 
 **The reading came first, and this does not replace it.** If the arc has not
 been played back in a paragraph and corrected, step 2 has not happened and the

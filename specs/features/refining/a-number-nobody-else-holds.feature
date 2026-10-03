@@ -1,7 +1,7 @@
 @feature:refining-a-number-nobody-else-holds @workflow:adopt-the-process
 Feature: A change spec takes a number no other change in flight holds
 
-  @planned @rule:a-change-number-is-taken-past-everything-in-flight @crosses:consuming-repository
+  @rule:a-change-number-is-taken-past-everything-in-flight @crosses:consuming-repository
   Rule: A refining skill numbers its change spec one past the highest it can see on the main branch, in the open pull requests and in the branches the open claims name, and says which it read
 
     Example: another tree already holds the next number

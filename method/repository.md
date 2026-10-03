@@ -205,6 +205,19 @@ or with the session that drops the work, which takes the marker off and says
 why. A tracker that does not answer is said: an unread claim is not an absent
 one.
 
+**A number nobody else holds.** A change spec is numbered one past the
+highest anywhere in flight — the main branch, the change specs in open pull
+requests, and the branches the open claims name — because a tree's own
+checkout sees only the first, and two trees cut from one main each take *the
+next*. The claim reserves the number: the branch it names carries it, from
+the moment the comment is written. **Gaps stay gaps** — a closed pull
+request's number is never reused, so a link that cited it never comes to mean
+something else. If two collide anyway, the one not yet merged is renumbered:
+its file, its heading, every link to it; the branch may keep its old name. An
+application's own numbered files — migrations numbered one past the highest —
+collide the same way, and what catches them is Strict and a pipeline that
+runs them, which is why the bindings name that command.
+
 Nothing caps how many trees run at once. That is a fact about one machine and
 one person's attention, and the list of trees is where the number is read.
 

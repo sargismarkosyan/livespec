@@ -86,6 +86,7 @@ GATES = [
     ("gate:crossing-names-a-boundary", "boundary", "", "a rule tagged as crossing a boundary the bindings declare no row for fails"),
     ("gate:skipped-test-claims-nothing", "wiring", "", "a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails"),
     ("gate:fewer-ran-than-exist", "wiring", "", "the runner reporting fewer rule-bound tests than the tree holds fails"),
+    ("gate:change-number-unique", "wiring", "", "two change specs sharing a number fail, whatever their slugs; a gap does not"),
     ("gate:verified-to-fire", "wiring", "both gates verified to fire", "every gate is broken on purpose and seen to fire"),
 ]
 

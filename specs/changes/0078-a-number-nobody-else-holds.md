@@ -1,6 +1,6 @@
 # Spec 0078: a number nobody else holds
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-10-03
 - **Issue:** [#167](https://github.com/sargismarkosyan/livespec/issues/167)
 
 ## Who this is for
@@ -113,7 +113,7 @@ so before the second one merges, naming both files.
    - The client gains a verb for open pull requests, the way 0075's forge
      client listed merged ones.
 
-**Rules added**, all `@planned` until the implementing commit:
+**Rules added**, live since the implementing commit:
 
 | Rule id | Feature file | New or changed |
 |---|---|---|
