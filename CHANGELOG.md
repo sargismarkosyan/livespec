@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.24.0 — 2026-10-03
+
+**The file the harness reads.** The context-file gates and the audit now read the instructions file the bindings name in a new *Context file* row. With no row, they read the first of `AGENTS.override.md`, `AGENTS.md` and `CLAUDE.md` that exists, and every line names the file it read. A repository that keeps one `AGENTS.md` for Pi, Codex and Claude Code is held to it, and nothing asks for a `CLAUDE.md` beside it. The ceiling row becomes *Context file ceiling*, and the old label is still read. `setup` settles which file before writing or auditing it, and never creates a second.
+
 ## 1.23.0 — 2026-10-03
 
 **A number nobody else holds.** A change spec is numbered one past the highest anywhere in flight: the main branch, the change specs in open pull requests, and the branches open claims name. The claim reserves the number, gaps are never reused, and a collision renumbers the change that hasn't merged. All four refining skills follow this and say what they stepped past. The new gate `gate:change-number-unique` fails two change specs sharing a number. The first audit after upgrading reports its ledger row missing, and the sitting wires it.
