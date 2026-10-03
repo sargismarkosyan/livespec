@@ -2,7 +2,7 @@
 Feature: What the build refuses about the file every session reads first
 
   @rule:a-context-file-past-its-ceiling-fails-the-build
-  Rule: A CLAUDE.md larger than the ceiling its own bindings name fails verification, and a context file with no ceiling row fails it too
+  Rule: A context file larger than the ceiling its own bindings name fails verification, and a context file with no ceiling row fails it too
 
     Example: the file has grown past the number
       Given a consuming repository whose bindings set the ceiling at the size the file was
@@ -27,7 +27,7 @@ Feature: What the build refuses about the file every session reads first
       And the file's own size is not what decided it
 
   @rule:a-context-file-without-its-shape-fails-the-build
-  Rule: A CLAUDE.md that is missing, or that carries no loop, no commands, or no pointer to the bindings, fails verification
+  Rule: A context file that is missing, or that carries no loop, no commands, or no pointer to the bindings, fails verification
 
     Example: three lines pass nothing
       Given a consuming repository whose CLAUDE.md is a title and one sentence
