@@ -1,0 +1,6 @@
+# The fixture for 52: fieldnote, whose one persona carries every fault the skill's line-by-line tests name, beside observed paragraphs that must survive; the ledger reads 'no personas exist' while one does. The case grades the audit.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the watcher's colleague answers from person.md. Nothing
+# new about Marek, which is what sends the skill down its audit path.

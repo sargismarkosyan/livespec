@@ -1,0 +1,6 @@
+# The fixture for 54: fieldnote with two personas, the club secretary's workflow and feature live, and the decision to stop being for the club. The case grades deleting rather than shelving, and the order — the workflow naming her goes first, in its own change — with the check green at the end either way.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the maintainer answers from person.md — the decision is
+# made, the order is the session's to work out.

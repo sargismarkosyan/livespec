@@ -507,6 +507,154 @@
    "judge": "sonnet",
    "harness": "92c87ba41f9ca320",
    "inputs": "1986e274441b573b"
+  },
+  "52-a-persona-of-biography-and-requirements": {
+   "delta": 0.5,
+   "with": 0.75,
+   "without": 0.25,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 1.99,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "0b84c82b703f9d5c"
+  },
+  "53-the-tester-is-not-the-persona": {
+   "delta": 0.67,
+   "with": 1.0,
+   "without": 0.33,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 1.57,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "a2f02227868fb3bd"
+  },
+  "54-retiring-a-persona-somebody-still-names": {
+   "delta": 0.67,
+   "with": 1.0,
+   "without": 0.33,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 1.68,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "a7ff7d84b63c95e4"
+  },
+  "55-nobody-has-written-down-who-it-is-for": {
+   "delta": 0.0,
+   "with": 0.6,
+   "without": 0.6,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 2.3,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "862908be0ccac7cf"
+  },
+  "56-neg-what-is-a-persona-for": {
+   "delta": 0.0,
+   "with": 1.0,
+   "without": 1.0,
+   "runs": 1,
+   "at": "2026-09-26",
+   "sha": "068fb99",
+   "cost": 0.24,
+   "model": "claude-sonnet-5",
+   "judge": "sonnet",
+   "harness": "92c87ba41f9ca320",
+   "inputs": "ea46a20b9968954f"
+  }
+ },
+ "route": {
+  "01-solution-shaped-request": {
+   "at": "2026-09-27",
+   "cost": 0.0409,
+   "expected": "refine-spec",
+   "fired": [
+    "refine-spec"
+   ],
+   "harness": "4dacf697e8cbac6b",
+   "hits": 1,
+   "inputs": "1893113801cf758e",
+   "model": "claude-sonnet-5",
+   "runs": 1,
+   "score": 1.0,
+   "sha": "3222281"
+  },
+  "06-neg-commit-message": {
+   "at": "2026-09-27",
+   "cost": 0.0388,
+   "expected": "none",
+   "fired": [
+    "none"
+   ],
+   "harness": "4dacf697e8cbac6b",
+   "hits": 1,
+   "inputs": "20c01fc02f44ed16",
+   "model": "claude-sonnet-5",
+   "runs": 1,
+   "score": 1.0,
+   "sha": "3222281"
+  }
+ },
+ "first": {
+  "01-solution-shaped-request": {
+   "applicable": 1,
+   "at": "2026-09-27",
+   "cost": 0.3649,
+   "delta": 0.0,
+   "graders": "d21568fb91de03c5",
+   "harness": "4dacf697e8cbac6b",
+   "inputs": "017e7a2ce20c4ae7",
+   "inputs_without": "adf35d1c810ac8cc",
+   "judge": "sonnet",
+   "model": "claude-sonnet-5",
+   "rubrics": {
+    "finds-the-job.md": {
+     "with": {
+      "pass": 1,
+      "applies": 1,
+      "n": 1
+     },
+     "without": {
+      "pass": 1,
+      "applies": 1,
+      "n": 1
+     }
+    }
+   },
+   "runs": 1,
+   "sha": "3222281",
+   "with": 1.0,
+   "without": 1.0
+  }
+ },
+ "review": {
+  "refine-spec": {
+   "at": "2026-09-27",
+   "cost": 0.1782,
+   "harness": "4dacf697e8cbac6b",
+   "held": 3,
+   "inputs": "1932c552be9115ef",
+   "judge": "sonnet",
+   "not_held": [
+    {
+     "id": "the-job-is-found-under-the-request",
+     "verdict": "weakened",
+     "reason": "The skill pushes hard to find the job ('If you cannot write this without naming a UI element, you have not found it yet') and argues the spec from the job rather than the solution, covering the first example. But for the case where the job genuinely cannot be told from the request, it never says explicitly 'ask the person and write nothing until they answer' \u2014 its general question-asking mechanism"
+    }
+   ],
+   "rules": 4,
+   "sha": "3222281"
   }
  }
 }

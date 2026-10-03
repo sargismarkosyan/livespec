@@ -1,0 +1,7 @@
+# The fixture for 59: fieldnote with one workflow and a second attempt the watcher plainly makes that nothing describes. The friend who has watched him is on the sheet with one occasion rather than the usual case. The case grades the interview, the job story's situation-first form, the failure section and the return example.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, pytest]
+# The sitting (0058): one occasion, in the watcher's friend's words, and never
+# the steps — asking what steps somebody would like is design, and the sheet
+# refuses it.

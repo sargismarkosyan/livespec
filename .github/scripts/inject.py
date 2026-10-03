@@ -316,7 +316,23 @@ def build(root: Path) -> None:
         }
         for case in cases(root)
     }
-    (root / "evals" / "board.json").write_text(json.dumps({"format": 1, "cases": entries}, indent=1))
+    # The tiers (0072), measured the same way: every case routed, every case
+    # with a first move judged in both arms, every skill reviewed — so the
+    # unbroken fixture is fresh in the tiers and each fault below is one edit.
+    suite = cases(root)
+    stamp = {"at": "2026-09-27", "sha": "0000000", "cost": 0.01, "harness": tier_harness_fingerprint(root)}
+    route = {case["name"]: dict(stamp, runs=3, hits=3, score=1.0, fired=["refine-spec"] * 3, expected="refine-spec",
+                                model=SESSION_MODEL, inputs=route_inputs(case, root)) for case in suite}
+    first = {case["name"]: dict(stamp, runs=3, delta=0.5, applicable=1, model=SESSION_MODEL, judge="sonnet",
+                                inputs=measurement_inputs(case, root, "with"),
+                                inputs_without=measurement_inputs(case, root, "without"),
+                                graders=grader_inputs(case), rubrics={}, **{"with": 1.0, "without": 0.5})
+             for case in suite if first_move_holds(case)}
+    review = {skill.parent.name: dict(stamp, held=1, rules=1, not_held=[], judge="sonnet",
+                                      inputs=review_inputs(skill.parent.name, suite, root))
+              for skill in sorted((root / "skills").glob("*/SKILL.md"))}
+    (root / "evals" / "board.json").write_text(json.dumps(
+        {"format": 1, "cases": entries, "route": route, "first": first, "review": review}, indent=1))
     # The case table, for the same reason as the bindings: generated from what it
     # describes, so the unbroken fixture is green by construction.
     readme = root / "evals" / "README.md"
@@ -334,20 +350,20 @@ def build(root: Path) -> None:
     (root / "tests" / "rulelib.py").write_text((REPO / "tests" / "rulelib.py").read_text())
 
 
-def drop_board_entry(root: Path, name: str) -> None:
+def drop_board_entry(root: Path, name: str, section: str = "cases") -> None:
     path = root / "evals" / "board.json"
     data = json.loads(path.read_text())
-    del data["cases"][name]
+    del data[section][name]
     path.write_text(json.dumps(data, indent=1))
 
 
-def board_field(root: Path, name: str, field: str, value: str) -> None:
+def board_field(root: Path, name: str, field: str, value: str, section: str = "cases") -> None:
     """Rewrite one field of one board row — the model it was made on, the
     harness that made it — leaving the inputs hash true. The two faults that
     use it are rows a Sonnet board may not carry as measurements (0057)."""
     path = root / "evals" / "board.json"
     data = json.loads(path.read_text())
-    data["cases"][name][field] = value
+    data[section][name][field] = value
     path.write_text(json.dumps(data, indent=1))
 
 
@@ -392,7 +408,10 @@ def drop(root: Path, relative: str) -> None:
 # versions without ever being known to fire.
 
 sys.path.insert(0, str(SCRIPTS))
-from caselib import SESSION_MODEL, cases, harness_fingerprint, measurement_inputs  # noqa: E402
+from caselib import (  # noqa: E402
+    SESSION_MODEL, cases, first_move_holds, grader_inputs, harness_fingerprint, measurement_inputs, review_inputs,
+    route_inputs, tier_harness_fingerprint,
+)
 import verify  # noqa: E402
 from verify import GATES as VERIFY_GATES  # noqa: E402
 from releaselib import (  # noqa: E402
@@ -487,6 +506,136 @@ RELEASE_FAULTS = [
 ]
 
 BODY_WITH_RUN = GOOD_BODY + "\n```\n$ python3 gate.py\n✔ 3 tests, every gate green\n```\n"
+
+
+def tiers_control() -> None:
+    """The cheap tiers are wired as they claim (0072). Against the stand-in
+    `claude`: a routing turn runs the real system prompt with the plugin and
+    Skill alone, and is scored against what the case holds; a first move is one
+    reply under a system prompt of our own, both arms, the skill's body only in
+    one, judged per rubric; a review reads every rule the skill answers for; a
+    row carries its model, harness and inputs, reads fresh at once, and a pilot
+    never takes a measurement's row; the account's limit stops the run rather
+    than being retried; and a real session's firing is found, cut from the
+    person's request, and graded. A body edit stales no routing row."""
+    import argparse
+    import importlib
+
+    with tempfile.TemporaryDirectory(prefix="livespec-tiers-") as workspace:
+        ws = Path(workspace)
+        stub_dir = ws / "bin"
+        stub_dir.mkdir()
+        (stub_dir / "claude").write_text(STUB_CLAUDE)
+        (stub_dir / "claude").chmod(0o755)
+        log = ws / "argv.jsonl"
+        original = dict(os.environ)
+        os.environ.update({"PATH": f"{stub_dir}{os.pathsep}{os.environ.get('PATH', '')}",
+                           "LIVESPEC_STUB_LOG": str(log), "LIVESPEC_ROOT": str(REPO)})
+        sys.path.insert(0, str(REPO / "evals" / "runner"))
+        try:
+            tiers = importlib.import_module("tiers")
+            tiers.BOARD = ws / "board.json"
+            tiers.RESULTS = ws / "results"
+            suite = {c["name"]: c for c in cases(REPO)}
+            stop = __import__("threading").Event()
+
+            # route
+            held = next(c for c in suite.values() if "refine-spec" in c["claims"]["skills"] and c["scaffold"])
+            negative = next(c for c in suite.values() if c["negative"])
+            row = tiers.measure_route(held, 3, SESSION_MODEL, True, stop)
+            assert row["hits"] == 3 and row["fired"] == ["refine-spec"] * 3, f"a right routing was not scored: {row}"
+            wrong = tiers.measure_route(negative, 1, SESSION_MODEL, True, stop)
+            assert wrong["hits"] == 0, f"a should-not-fire case that fired was scored right: {wrong}"
+            os.environ["LIVESPEC_STUB_SKILL"] = ""
+            quiet = tiers.measure_route(negative, 1, SESSION_MODEL, True, stop)
+            assert quiet["hits"] == 1 and quiet["fired"] == ["none"], f"nothing firing was not read as none: {quiet}"
+            del os.environ["LIVESPEC_STUB_SKILL"]
+            turn = next(json.loads(l) for l in log.read_text().splitlines() if "Skill" in l)
+            for flag, value in (("--plugin-dir", str(REPO)), ("--tools", "Skill"), ("--model", SESSION_MODEL),
+                                ("--max-turns", "1")):
+                assert flag in turn and turn[turn.index(flag) + 1] == value, f"the routing turn lacks {flag} {value}: {turn}"
+            assert "--system-prompt" not in turn, "the routing turn replaced the system prompt it exists to test"
+
+            # first
+            world = "=== CLAUDE.md ===\nhello"
+            with_arm, bare = tiers.first_prompt(held, world, "with"), tiers.first_prompt(held, world, "without")
+            assert '<skill name="livespec:refine-spec">' in with_arm and "<skill" not in bare, "the arms differ in more or less than the skill"
+            evidence = ws / "evidence"
+            evidence.mkdir()
+            first = tiers.measure_first(held, ["with", "without"], 1, SESSION_MODEL, "sonnet", True, stop, None, evidence)
+            assert first["with"] == 1.0 and first["without"] == 1.0 and first["applicable"] >= 1, f"the first move was not scored: {first}"
+            reply = next(json.loads(l) for l in log.read_text().splitlines() if "--system-prompt" in l and "--json-schema" not in l)
+            assert reply[reply.index("--tools") + 1] == "" and reply[reply.index("--model") + 1] == SESSION_MODEL, (
+                f"a first reply may reach for tools or runs on another model: {reply}")
+            assert len(list(evidence.glob("*.json"))) == 2, "a reply and its verdicts were not kept as evidence"
+
+            # review
+            review = tiers.measure_review("refine-spec", list(suite.values()), "sonnet", stop)
+            assert review["rules"] >= 1 and review["held"] == review["rules"], f"the review lost a rule: {review}"
+
+            # the board
+            assert tiers.record("route", held["name"], row, "0000000"), "a routing row was not written"
+            assert tiers.record("first", held["name"], first, "0000000"), "a pilot may fill a row that holds nothing"
+            board = json.loads(tiers.BOARD.read_text())
+            written = board["route"][held["name"]]
+            assert written["harness"] == tier_harness_fingerprint(REPO) and written["model"] == SESSION_MODEL, (
+                f"the row does not name its harness and model: {written}")
+            from caselib import tier_why_stale  # noqa: E402
+            assert tier_why_stale("route", held["name"], written, list(suite.values()), REPO) == [], "a row just written is stale"
+            pilot = dict(row, runs=1)
+            assert tiers.record("route", held["name"], pilot, "0000000") is False, "a pilot took a measurement's row"
+
+            # a body edit stales no routing row; a description edit does
+            copy = ws / "copy"
+            shutil.copytree(REPO / "skills", copy / "skills")
+            shutil.copytree(held["dir"], copy / "evals" / held["name"])
+            case = next(c for c in cases(copy) if c["name"] == held["name"])
+            before = route_inputs(case, copy)
+            skill_md = copy / "skills" / "refine-spec" / "SKILL.md"
+            skill_md.write_text(skill_md.read_text() + "\nOne more sentence of body.\n")
+            assert route_inputs(case, copy) == before, "a body edit staled a routing row"
+            skill_md.write_text(skill_md.read_text().replace("description:", "description: Always", 1))
+            assert route_inputs(case, copy) != before, "a description edit left routing fresh"
+
+            # the limit
+            limit_file = ws / "limit"
+            limit_file.write_text("")
+            os.environ["LIVESPEC_STUB_LIMIT_JUDGE"] = str(limit_file)
+            try:
+                tiers.ask("x", model="sonnet", system="s", schema={"type": "object", "properties": {"pass": {"type": "boolean"}}})
+            except tiers.Limit:
+                pass
+            else:
+                raise AssertionError("the account's limit was not read as the limit")
+
+            # the sessions already had
+            project = ws / "projects" / "-home-someone-app"
+            project.mkdir(parents=True)
+            session = [
+                {"type": "user", "message": {"role": "user", "content": "I wish the list could be cleared at once"}},
+                {"type": "assistant", "message": {"content": [{"type": "text", "text": "Filing it."},
+                                                              {"type": "tool_use", "name": "Skill", "input": {"skill": "livespec:todo"}}]}},
+                {"type": "user", "message": {"content": [{"type": "tool_result", "content": "Launching skill: livespec:todo"}]}},
+                {"type": "user", "isMeta": True, "message": {"content": "Base directory for this skill: x"}},
+                {"type": "assistant", "message": {"content": [{"type": "text", "text": "Filed as #3."}]}},
+            ]
+            (project / "s1.jsonl").write_text("\n".join(json.dumps(e) for e in session) + "\n")
+            events, firings = tiers.read_session(project / "s1.jsonl", {"todo", "refine-spec"})
+            assert [f["skill"] for f in firings] == ["todo"], f"the firing was not found: {firings}"
+            cut = tiers.segment(events, firings, 0)
+            assert cut.startswith("PERSON: I wish") and "Base directory" not in cut, f"the segment is not the person's request onward: {cut[:200]}"
+            args = argparse.Namespace(source=str(ws / "projects"), include_self=False, regrade=False, limit=None,
+                                      approved=True, judge_model="sonnet", max_concurrency=1)
+            assert tiers.transcripts(args, list(suite.values())) == 0, "grading real sessions failed"
+            graded = json.loads((ws / "results" / "transcripts" / "graded.json").read_text())
+            assert "s1.jsonl#0" in graded["firings"] and "s1.jsonl" in graded["sessions"], f"nothing was graded: {graded}"
+            assert all(r["verdict"] == "held" for r in graded["firings"]["s1.jsonl#0"]["rules"]), "the rules were not read back"
+            args.approved = False
+            assert tiers.transcripts(args, list(suite.values())) == 0, "what was graded was graded again"
+        finally:
+            os.environ.clear()
+            os.environ.update(original)
+            sys.path.remove(str(REPO / "evals" / "runner"))
 
 
 def report_control() -> None:
@@ -738,6 +887,20 @@ FAULTS = [
      lambda r: write(r, "evals/runner/run.py",
                      "# refuses without --i-approve-the-cost, and writes the board whatever it ran\n"),
      "fails", "caselib.replaces()"),
+    # The tier runner is held by the same three guards (0072).
+    ("the tier runner losing its refusal of an unapproved run", SUITE,
+     lambda r: write(r, "evals/runner/tiers.py", "# a tier runner that just runs; it is only cents\n"),
+     "fails", "A call at a time is still"),
+    ("the tier runner letting a pilot take a measurement's row", SUITE,
+     lambda r: write(r, "evals/runner/tiers.py", "# refuses without --i-approve-the-cost, writes whatever it ran\n"),
+     "fails", "tier row measured at the floor"),
+    ("the tier runner losing the model the bindings name", SUITE,
+     lambda r: write(r, "evals/runner/tiers.py", "# refuses without --i-approve-the-cost, asks replaces( first\n"),
+     "fails", "Routing turns and first replies"),
+    ("a tier runner the suite's page never documents", SUITE,
+     lambda r: write(r, "evals/runner/tiers.py",
+                     "# refuses without --i-approve-the-cost, asks replaces( first, default=SESSION_MODEL\n"),
+     "fails", "does not document `python3 evals/runner/tiers.py --changed`"),
     # A measurement names its model. See specs/changes/0057 and #130.
     ("the runner losing the model the bindings name", SUITE,
      lambda r: write(r, "evals/runner/run.py",
@@ -748,14 +911,28 @@ FAULTS = [
      lambda r: edit(r, "evals/case-rule/prompt.md", "Do the thing.", "Do the other thing."), "fails", "changed since"),
     ("a measurement whose rule was reworded", BOARD,
      lambda r: edit(r, "specs/features/core/core.feature", "the thing is there", "the thing is elsewhere"), "fails", "changed since"),
-    ("a case the board has never measured", BOARD,
-     lambda r: drop_board_entry(r, "case-walk"), "warns", "never measured"),
+    ("a tier row the board has never measured", BOARD,
+     lambda r: drop_board_entry(r, "case-walk", "route"), "warns", "never measured"),
     ("a board entry from fewer runs than the floor", BOARD,
      lambda r: board_runs(r, "case-walk", 1), "warns", "below the floor"),
-    ("a board row measured on another model", BOARD,
-     lambda r: board_field(r, "case-walk", "model", "claude-opus-5[1m]"), "fails", "measured on"),
-    ("a board row from another harness", BOARD,
-     lambda r: board_field(r, "case-walk", "harness", "0000000000000000"), "fails", "harness that has since changed"),
+    ("a tier row measured on another model", BOARD,
+     lambda r: board_field(r, "case-walk", "model", "claude-opus-5[1m]", "route"), "fails", "measured on"),
+    ("a tier row from another harness", BOARD,
+     lambda r: board_field(r, "case-walk", "harness", "0000000000000000", "first"), "fails", "harness that has since changed"),
+    # The tiers carry freshness; each is staled by what it can see (0072).
+    ("a description edited after routing was measured", BOARD,
+     lambda r: edit(r, "skills/refine-spec/SKILL.md", "description: Turns a request into a spec.",
+                    "description: Turns any request at all into a spec."), "fails", "a skill's description or the case"),
+    ("a skill body edited after its first moves were judged", BOARD,
+     lambda r: edit(r, "skills/refine-spec/SKILL.md", "# Refine\n", "# Refine, and ask first\n"),
+     "fails", "a skill it holds has changed since"),
+    ("a rubric edited after its first moves were judged", BOARD,
+     lambda r: edit(r, "evals/case-walk/graders/outcome.md", "The reply does the thing.", "The reply does the thing well."),
+     "fails", "a rubric has changed since"),
+    ("a tier row from fewer runs than the floor", BOARD,
+     lambda r: board_field(r, "case-walk", "runs", 1, "first"), "warns", "first row(s) below the floor"),
+    ("a stale canary sitting warns rather than fails", BOARD,
+     lambda r: board_field(r, "case-walk", "inputs", "0000000000000000"), "warns", "canary pool"),
     ("an llm grader with an empty rubric", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: llm\nweight: 1\n---\n"),
      "fails", "will pass on anything"),
@@ -946,6 +1123,7 @@ file is consumed; LIVESPEC_STUB_LIMIT_JUDGE does the same to one judge call.
 """
 import json
 import os
+import re
 import sys
 
 LIMIT = {"type": "result", "subtype": "success", "is_error": True, "api_error_status": 429,
@@ -971,11 +1149,38 @@ if "--json-schema" in args:
     elif limited("JUDGE"):
         print(json.dumps(LIMIT))
         sys.exit(1)
+    elif '"applies"' in schema:
+        # a first move's rubrics (0072): every one applies and passes
+        wanted = int(re.search(r"Return exactly (\d+) verdicts", prompt).group(1))
+        answer = {"verdicts": [{"id": n, "applies": True, "pass": True, "reason": "the stand-in approves"}
+                               for n in range(1, wanted + 1)]}
+    elif '"weakened"' in schema or '"not-tested"' in schema:
+        # a review, or a real session's firing: every rule headed is held
+        ids = re.findall(r"^### (\S+)$", prompt, re.M)
+        answer = {"rules": [{"id": i, "verdict": "held", "quote": "q", "reason": "the stand-in approves"} for i in ids]}
+    elif '"findings"' in schema:
+        answer = {"findings": []}
     else:
         answer = {"pass": True, "reason": "the stand-in approves"}
     print(json.dumps({"type": "result", "subtype": "success", "structured_output": answer,
                       "result": json.dumps(answer), "total_cost_usd": 0.04}))
     sys.exit(0)
+if "--system-prompt" in args:
+    # a first move: one reply, no tools, the envelope --output-format json prints
+    sys.stdin.read()
+    print(json.dumps({"type": "result", "subtype": "success", "result": "What is the job under this?",
+                      "total_cost_usd": 0.01}))
+    sys.exit(0)
+if "--tools" in args and args[args.index("--tools") + 1] == "Skill":
+    # a routing turn: reaches for the skill LIVESPEC_STUB_SKILL names, then hits its one-turn ceiling
+    sys.stdin.read()
+    skill = os.environ.get("LIVESPEC_STUB_SKILL", "livespec:refine-spec")
+    print(json.dumps({"type": "system", "subtype": "init", "model": args[args.index("--model") + 1]}))
+    if skill:
+        print(json.dumps({"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Skill", "input": {"skill": skill}}]}}))
+    print(json.dumps({"type": "result", "subtype": "error_max_turns", "result": "", "total_cost_usd": 0.02}))
+    sys.exit(1)
 model = args[args.index("--model") + 1] if "--model" in args else "the-account-default"
 print(json.dumps({"type": "system", "subtype": "init", "model": model, "tools": []}), flush=True)
 turn, cost, hit, wants = 0, 0.0, False, False
@@ -1496,6 +1701,15 @@ def main() -> int:
         runner_control()
     except (AssertionError, StopIteration, OSError) as error:
         problems.append(f"a measurement does not name its model: {error}")
+
+    try:
+        # the runner prints its summaries; here they are noise around the faults
+        import contextlib
+        import io
+        with contextlib.redirect_stdout(io.StringIO()):
+            tiers_control()
+    except (AssertionError, StopIteration, OSError, RuntimeError, KeyError, ValueError) as error:
+        problems.append(f"the cheap tiers are not wired as they claim: {error}")
 
     for name, attempt, phrase in RELEASE_FAULTS:
         try:

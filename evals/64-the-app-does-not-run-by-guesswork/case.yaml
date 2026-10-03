@@ -1,0 +1,6 @@
+# The fixture for 64: fieldnote at spec 0007, an ES-module app whose bindings name `make serve` on port 8123 and a 900x640 viewport, and whose boundary table carries a mocked species list and an unreachable weather field. The case grades reading the bindings rather than guessing, and saying which world the picture was taken over.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See 0054 / #123.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, make]
+# The sitting (0058): the maintainer answers from person.md and will not say
+# how to serve it — the bindings do, and finding that is what is graded.

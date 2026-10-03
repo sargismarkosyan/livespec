@@ -62,7 +62,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / ".github" / "scripts"))
 from caselib import (  # noqa: E402
-    MIN_RUNS, SESSION_MODEL, cases, frontmatter, harness_fingerprint, measurement_inputs, replaces, why_stale,
+    MIN_RUNS, SESSION_MODEL, cases, frontmatter, grader_inputs, harness_fingerprint, measurement_inputs,
+    replaces, stale_arms, why_stale,
 )
 
 # --- the cost gate ------------------------------------------------------------
@@ -187,7 +188,8 @@ def plan_cases(suite: list[dict], granted: set[str], scaffold: bool) -> list[dic
         planned.append({
             "case": case["name"],
             "negative": bool(case["negative"]),
-            "inputs": measurement_inputs(case, ROOT),
+            "inputs": measurement_inputs(case, ROOT, "with"),
+            "arms": list(case.get("arms") or ARMS),
             "vars": {
                 "prompt": body.strip(),
                 "case": case["name"],
@@ -211,11 +213,15 @@ def plan_cases(suite: list[dict], granted: set[str], scaffold: bool) -> list[dic
 def jobs(plan: dict) -> list[tuple[str, str, int]]:
     """Every (case, arm, run) the plan asks for, case by case and run by run,
     both arms together — so a run the limit cuts short has finished whole
-    cases rather than half of every case."""
+    cases rather than half of every case.
+
+    A case may owe one arm rather than two. `--changed` asks for the arms
+    whose inputs moved, and a skill edit moves only the with-arm's, because
+    the bare arm never had the skill in its context (0070)."""
     return [(case["case"], arm, run)
             for case in plan["cases"]
             for run in range(1, int(plan["repeat"]) + 1)
-            for arm in ARMS]
+            for arm in (case.get("arms") or ARMS)]
 
 
 def job_dir(run_dir: Path, case: str, arm: str, run: int) -> Path:
@@ -236,16 +242,17 @@ def _write(path: Path, value) -> None:
 
 
 def owed(run_dir: Path, plan: dict) -> tuple[list[tuple[str, str, int]], list[tuple[str, str, int]]]:
-    """What the directory still lacks: the jobs whose session never finished or
-    met the limit, and the jobs whose session exists but a verdict of it is
-    missing or errored. A session that errored any other way is not owed —
-    a resume is for what the limit or the kill took (0059)."""
+    """What the directory still lacks: the jobs whose session never finished,
+    met the limit or lost the person, and the jobs whose session exists but a
+    verdict of it is missing or errored. A session that errored any other way
+    is not owed — a resume is for what the limit or the kill took (0059), and
+    for the sitting whose person never answered (#159)."""
     sessions_owed, verdicts_owed = [], []
     graders = {case["case"]: case["graders"] for case in plan["cases"]}
     for job in jobs(plan):
         directory = job_dir(run_dir, *job)
         session = _read(directory / "session.json")
-        if session is None or session.get("limit"):
+        if session is None or session.get("limit") or session.get("person_unreachable"):
             sessions_owed.append(job)
             continue
         if "error" in session:
@@ -296,11 +303,25 @@ def perform(job: tuple[str, str, int], plan: dict, run_dir: Path, stop: threadin
     verdicts = _read(directory / "verdicts.json")
     if not isinstance(verdicts, list) or len(verdicts) != len(spec["graders"]):
         verdicts = [None] * len(spec["graders"])
+    # Every llm rubric this session still owes, asked in one call per kind of
+    # evidence rather than one per rubric. The judge's bill is almost all
+    # input and the input is almost all the session, so nine rubrics over one
+    # transcript cost nine transcripts asked separately and one asked together
+    # (0071). A rubric the batch does not return is asked for on its own below.
+    owed = [g["grader"] for index, g in enumerate(spec["graders"])
+            if verdicts[index] is None or verdicts[index].get("errored")]
+    batched = asserts.judge_many(owed, session.get("output", ""),
+                                 session.get("metadata") or {}, case_name) if owed else {}
     for index, grader in enumerate(spec["graders"]):
         if verdicts[index] is not None and not verdicts[index].get("errored"):
             continue
         if stop.is_set():
             break  # what is left is owed; the wall does not move in a minute
+        if grader["grader"] in batched:
+            verdicts[index] = dict(batched[grader["grader"]],
+                                   assertion={"weight": grader["weight"], "grader": grader["grader"]})
+            _write(directory / "verdicts.json", verdicts)
+            continue
         result = asserts.get_assert(session.get("output", ""), {
             "config": {"grader": grader["grader"]},
             "vars": {"case": case_name},
@@ -448,7 +469,8 @@ def collect(results_path: Path) -> tuple[dict, dict, int]:
     """Per-case scores, costs, models and fired-counts out of a results file."""
     rows = json.load(results_path.open())["results"]["results"]
     stats: dict[str, dict] = defaultdict(lambda: {
-        "with": [], "without": [], "cost": 0.0, "fired": [], "errors": 0, "errored": 0, "models": set(),
+        "with": [], "without": [], "cost": 0.0, "fired": [], "errors": 0, "errored": 0,
+        "lost_person": 0, "models": set(),
     })
     for row in rows:
         name = (row.get("vars") or {}).get("case") or (row.get("description") or "?")
@@ -461,8 +483,13 @@ def collect(results_path: Path) -> tuple[dict, dict, int]:
         grading = row.get("gradingResult") or {}
         if row.get("error") and not grading.get("componentResults"):
             # a genuine harness error — a session that never produced a
-            # result, not a verdict that failed
-            stats[name]["errors"] += 1
+            # result, not a verdict that failed. The sitting whose person
+            # never answered is counted apart, because it is the one kind a
+            # resume can put right (#159).
+            if "the person could not be reached" in str(row.get("error")):
+                stats[name]["lost_person"] += 1
+            else:
+                stats[name]["errors"] += 1
             continue
         key = "with" if arm == "with-plugin" else "without"
         components = grading.get("componentResults") or []
@@ -500,6 +527,10 @@ def print_summary(stats: dict, sessions: int, negatives: frozenset[str] | set[st
         print(f"  {name:<34} {mean(with_arm):>5.2f} {mean(without):>6.2f} {delta:>+6.2f}   {flame}")
     for name in sorted(n for n in stats if stats[n]["errors"]):
         print(f"  ✘ {name}: {stats[name]['errors']} session(s) errored — see the run's sessions/ directory")
+    for name in sorted(n for n in stats if stats[n].get("lost_person")):
+        print(f"  ⚠ {name}: {stats[name]['lost_person']} sitting(s) lost the person — the judge could not "
+              f"answer from the sheet, so the sitting stopped mid-round and was not scored; "
+              f"`--resume` runs them again (#159)")
     for name in sorted(n for n in stats if stats[n].get("errored")):
         print(f"  ⚠ {name}: {stats[name]['errored']} verdict(s) errored — the judge returned nothing three "
               f"times; left out of the score, never counted as a failure (#131)")
@@ -553,8 +584,26 @@ def entry_for(s: dict, case: dict, root: Path, sha: str, judge: str) -> dict:
         "model": "+".join(models) if models else "",
         "judge": judge,
         "harness": harness_fingerprint(root),
-        "inputs": measurement_inputs(case, root),
+        "inputs": measurement_inputs(case, root, "with"),
+        "inputs_without": measurement_inputs(case, root, "without"),
+        "graders": grader_inputs(case),
     }
+
+
+def _carried(s: dict, prior: dict | None) -> dict:
+    """This run's scores, with an arm it did not run filled from the board.
+
+    A run that measured one arm is still a measurement of a delta, because the
+    other arm's number is still true: nothing it saw has changed. What would
+    not be true is pretending it ran — so the row marks the arm as carried and
+    keeps its own inputs hash, which is what a later edit to the case will
+    stale.
+    """
+    out = {**s, "with": list(s["with"]), "without": list(s["without"])}
+    for arm in ARMS:
+        if not out[arm] and isinstance(prior, dict) and isinstance(prior.get(arm), (int, float)):
+            out[arm] = [float(prior[arm])] * int(prior.get("runs") or 1)
+    return out
 
 
 def record(measured: dict, suite: list[dict], judge: str) -> None:
@@ -583,12 +632,21 @@ def record(measured: dict, suite: list[dict], judge: str) -> None:
         sha = "unknown"
     written, held = 0, []
     for name, s in measured.items():
-        runs = min(len(s["with"]), len(s["without"]))
         prior = board["cases"].get(name)
+        # An arm this run did not perform keeps the number it had, and the row
+        # says so by carrying that arm's hash forward untouched. The commonest
+        # change here edits a skill, which only the with-arm ever saw (0070).
+        kept = _carried(s, prior)
+        runs = min(len(kept["with"]), len(kept["without"]))
         if not replaces(prior, runs):
             held.append((name, runs, prior))
             continue
-        board["cases"][name] = entry_for(s, by_name[name], ROOT, sha, judge)
+        row = entry_for(kept, by_name[name], ROOT, sha, judge)
+        for arm, field in (("with", "inputs"), ("without", "inputs_without")):
+            if not s[arm] and isinstance(prior, dict) and prior.get(field):
+                row[field] = prior[field]          # not re-measured, so not re-dated
+                row.setdefault("carried", []).append(arm)
+        board["cases"][name] = row
         written += 1
     board["cases"] = dict(sorted(board["cases"].items()))
     BOARD.write_text(json.dumps(board, indent=1) + "\n")
@@ -601,6 +659,79 @@ def record(measured: dict, suite: list[dict], judge: str) -> None:
         print(f"  ✋ {name}: {runs} run(s) is below the floor of {MIN_RUNS}, and the board already holds "
               f"a {prior['runs']}-run measurement ({shown}{prior.get('at', 'undated')}). Kept. Read this "
               f"pilot's verdicts in the run directory; re-run it at the floor to replace the number.")
+
+
+def rejudge(run_dir: Path, plan: dict, args) -> int:
+    """Judge a finished run again, over the sessions it already holds.
+
+    A session is never shown a rubric. So when the only thing that moved is a
+    grader — which is what happens every time somebody reads the verdicts and
+    sharpens one — the sittings in this directory are still a faithful record
+    of what the skill did, and what is owed is judge calls rather than
+    sessions. That is the difference between cents and dollars on the loop
+    this repository spends most of its money in (0072).
+
+    The graders are re-read from the tree as it now stands, so a rubric added
+    or deleted since the run is honoured. Sessions are not touched, nothing is
+    started, and a case whose sessions are missing is skipped and named.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import asserts  # noqa: E402 — same import the run does, for the same reason
+
+    suite = {case["name"]: case for case in cases(ROOT)}
+    judge = plan.get("judge") or "sonnet"
+    os.environ.setdefault("LIVESPEC_JUDGE_MODEL", judge)
+    planned = [c for c in plan["cases"] if c["case"] in suite]
+    graders_now = {c["case"]: _graders_for(suite[c["case"]]) for c in planned}
+
+    owed = [(c["case"], arm, run) for c in planned
+            for run in range(1, int(plan["repeat"]) + 1)
+            for arm in (c.get("arms") or ARMS)
+            if (job_dir(run_dir, c["case"], arm, run) / "session.json").exists()]
+    if not owed:
+        print(f"✘ {run_dir} holds no finished session to judge again", file=sys.stderr)
+        return 1
+
+    calls = sum(len([g for g in graders_now[case] if g["type"] == "llm"]) for case, _, _ in owed)
+    if not args.approved:
+        print(f"✋ judging {len(owed)} session(s) again — about {calls} judge call(s), roughly "
+              f"${calls * 0.104:.2f} at the last run's rate, and no session is run.")
+        print(f"     (spends real money — the maintainer adds {APPROVAL_FLAG}, nobody else)")
+        return 2
+
+    print(f"  judging {len(owed)} stored session(s) again with the graders as they now stand; "
+          f"no session is run")
+    for case_name, arm, run in owed:
+        directory = job_dir(run_dir, case_name, arm, run)
+        session = _read(directory / "session.json") or {}
+        if "error" in session:
+            continue
+        specs = graders_now[case_name]
+        verdicts = []
+        batched = asserts.judge_many([g["grader"] for g in specs], session.get("output", ""),
+                                     session.get("metadata") or {}, case_name)
+        for grader in specs:
+            if grader["grader"] in batched:
+                result = batched[grader["grader"]]
+            else:
+                result = asserts.get_assert(session.get("output", ""), {
+                    "config": {"grader": grader["grader"]},
+                    "vars": {"case": case_name},
+                    "providerResponse": {"metadata": session.get("metadata") or {}},
+                })
+            verdicts.append(dict(result, assertion={"weight": grader["weight"], "grader": grader["grader"]}))
+        _write(directory / "verdicts.json", verdicts)
+    assemble(run_dir, plan)
+    stats, measured, sessions = collect(run_dir / "results.json")
+    print_summary(stats, sessions, {c["case"] for c in planned if suite[c["case"]]["negative"]})
+    record(measured, [suite[c["case"]] for c in planned], judge)
+    return 0
+
+
+def _graders_for(case: dict) -> list[dict]:
+    """The case's graders as the tree now holds them — path, weight and type."""
+    return [{"grader": str(g["path"].relative_to(ROOT)), "weight": float(g["fields"].get("weight", 1) or 1),
+             "type": g["type"]} for g in case["graders"]]
 
 
 def main() -> int:
@@ -625,11 +756,29 @@ def main() -> int:
                         help="take up a run the limit or the machine stopped: runs only the sessions that never "
                              "finished and the verdicts the judge never returned, from the run's own run.json; "
                              "takes no selection flag beside it, because a resumed run is the same run")
+    parser.add_argument("--rejudge", metavar="RUN_DIR",
+                        help="judge a finished run again over the sessions it already has, with the "
+                             "graders as they now stand. For the commonest edit here — reading verdicts "
+                             "and sharpening a rubric — the sittings are still a faithful record of what "
+                             "the skill did, so what is owed is judge calls rather than sessions")
     parser.add_argument(APPROVAL_FLAG, action="store_true", dest="approved",
                         help="the maintainer's approval for this one run. Required — without it this "
                              "refuses. Never add it on an agent's own initiative")
     args = parser.parse_args()
 
+    if args.rejudge and args.resume:
+        print("✘ --rejudge and --resume are two different things: one judges sessions again, "
+              "the other runs the ones that never finished", file=sys.stderr)
+        return 1
+    if args.rejudge:
+        run_dir = Path(args.rejudge)
+        if not run_dir.is_absolute():
+            run_dir = (Path.cwd() / run_dir).resolve()
+        plan = _read(run_dir / "run.json")
+        if not isinstance(plan, dict) or "cases" not in plan:
+            print(f"✘ {run_dir} holds no run.json", file=sys.stderr)
+            return 1
+        return rejudge(run_dir, plan, args)
     if args.resume:
         given = [flag for flag, value in (("--ablation", args.ablation), ("--judge-model", args.judge_model),
                                           ("--allow-tools", args.allow_tools), ("--scaffold", args.scaffold),
@@ -662,7 +811,7 @@ def main() -> int:
         if missing:
             print(f"✘ the run names a case the tree no longer has: {', '.join(sorted(missing))}", file=sys.stderr)
             return 1
-        moved = [c["name"] for c in suite if measurement_inputs(c, ROOT) != next(
+        moved = [c["name"] for c in suite if measurement_inputs(c, ROOT, "with") != next(
             p["inputs"] for p in plan["cases"] if p["case"] == c["name"])]
         if moved:
             print(f"  ⚠ changed since the run began, so its halves measure two versions: {', '.join(moved)} "
@@ -682,7 +831,21 @@ def main() -> int:
         if not suite:
             print("✔ board is current — nothing has changed since its measurements")
             return 0
-        print(f"  --changed: {len(suite)} case(s) without a fresh measurement")
+        # Which arms, not just which cases. A row stale only because a skill
+        # body moved owes the with-arm; the bare arm never saw that skill and
+        # its number still describes what it measured (0070). A row stale for
+        # the model or the harness owes both, because those touched every
+        # session that ran.
+        for case in suite:
+            entry = entries.get(case["name"])
+            reasons = why_stale(entry, case, ROOT)
+            arms = ARMS if ({"model", "harness", "never measured"} & set(reasons)) \
+                else [a for a in ARMS if a in stale_arms(entry, case, ROOT)]
+            case["arms"] = list(arms) or list(ARMS)
+        halves = sum(1 for c in suite if len(c["arms"]) == 1)
+        print(f"  --changed: {len(suite)} case(s) without a fresh measurement"
+              + (f", {halves} of them owing one arm only — the other still describes what it measured"
+                 if halves else ""))
     if not suite:
         print("✘ no cases selected", file=sys.stderr)
         return 1

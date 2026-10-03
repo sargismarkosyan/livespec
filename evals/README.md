@@ -6,6 +6,64 @@ the persona or workflow invented to make a wanted thing legal. None of that is
 checkable by reading the files. This suite is how a change to a skill is held
 against it.
 
+## Two speeds: the tiers every edit owes, the canary nothing owes
+
+Since [`0072`](../specs/changes/0072-a-cheap-tier-holds-every-edit.md) the suite
+measures at two speeds, because one speed could not be kept up. A sitting — a
+real session in the case's world, a person answering, a shell, three runs, both
+arms, the judge — is the most faithful measurement here, and at $9 for one skill
+edit and $200 for a harness edit it was also a bill nobody could keep paying.
+
+**The tiers** are what every edit is measured by, one call at a time, and what
+the board gate holds fresh. Each is staled only by what it can see:
+
+| tier | one row is | staled by | roughly |
+|---|---|---|---|
+| `route` | one real turn of `claude -p` — Claude Code's own system prompt, the plugin loaded, only the Skill tool — on the case's prompt, in its world, three times: does the right skill fire, or none | **any skill's frontmatter**, the case. Never a body | 4¢ a turn |
+| `first` | one reply to a snapshot — the world as already read, the skill's body as already loaded, the prompt — under a system prompt of our own, judged by the case's **own rubrics**, three times an arm, **both arms**, so Δ survives | the case, a rule it claims, **the skill's body** (the with-arm only, as [`0070`](../specs/changes/0070-half-a-row-goes-stale-not-a-whole-one.md) has it), a rubric | 18¢ a reply and its verdict |
+| `review` | one reading of a skill's whole file beside the text of every rule the cases holding it claim: is each rule still something the body tells the model to do | the skill, a rule it upholds | 18¢ |
+
+A first-move judge marks a rubric **not applying** when only a later turn, a file
+on disk or a command could decide it, rather than failing it; a rubric counts
+for the case when it applied in at least half the sessions read, both arms
+together, so the arms are scored over the same rubrics. A case none of whose
+rubrics apply at the first move says so on its row — that case is the canary's
+to hold. Should-not-fire cases have no first move: routing holds them.
+
+```
+python3 evals/runner/tiers.py --changed --scaffold
+```
+
+refuses, prints what the stale rows would cost, and runs with the maintainer's
+`--i-approve-the-cost` — a call at a time is still the maintainer's money and session
+limit. `--tier`, `--case`, `--skill` and `--runs` narrow it; a run below the
+floor is a pilot and never takes a measurement's row. A call the account's limit
+refuses stops the run with exit 3; every finished row is already on the board,
+and `--changed` measures the rest. Each first move's reply and verdicts are kept
+under `evals/results/tiers-<stamp>/`.
+
+**The canary** is the sittings below — `run.py`, every case, both arms, the
+person and the shell. It stays runnable and stays on the board, and it is
+**shown and never owed**: a stale canary row is marked stale, left out of every
+mean, and asks for nothing. It is run when the model the bindings name moves,
+before trusting a tier that has not been calibrated against it, or whenever the
+maintainer chooses — and the calibration read below is how a tier earns trust:
+run a case both ways and use its first-move number only where the verdicts agree.
+
+**And the sessions already had.** The maintainer uses the plugin in other
+repositories, and every one of those sessions is on disk. `tiers.py
+--transcripts` reads `~/.claude/projects`, leaves out this repository's own,
+finds every firing of a livespec skill, cuts it from the person's request
+onward, and has the judge say for each rule the skill answers for whether the
+session held it, broke it, or never met the situation; and it reads each
+session's messages for turns where a skill should have fired and did not. It
+spends judge calls only, grades each firing once, keeps what it graded under
+`evals/results/transcripts/` — never committed, because it is somebody's real
+work — and never touches the board, because it measures the past rather than
+the tree.
+
+### The canary: the sittings
+
 ```
 python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold
 ```
@@ -75,6 +133,25 @@ came out.
 | `49-a-journey-that-became-a-table` | **`refine-journeys` takes the ids out rather than refreshing them** — the journey was written from the workflows folder without asking anyone and is a table of ids with a rules list; the request is to update the retired id, and the answer is that a journey names no workflow, the pointing runs the other way | the ids are refreshed as asked, the drift into a workflows README goes unnamed, or the provenance note stays in the journey |
 | `50-two-people-one-arc` | **`refine-journeys` writes one actor per journey** — a request for one arc over the keeper and the plot neighbour who waters in August; the neighbour's fortnight is part of the keeper's season, not a second lens | one file carries both as actors, or the request is obeyed without the point being raised |
 | `51-neg-what-is-a-seam` | **nothing fires** on a question about the difference between a seam and a workflow's "where it breaks" — the price of the words *journey*, *seam* and *stale* in `refine-journeys`' description | an interview about the season starts, or the journey is offered a rewrite |
+| `52-a-persona-of-biography-and-requirements` | **`refine-personas` applies its tests to the file rather than tidying it** — `fieldnote`, a birdwatcher's log whose one persona carries provenance in its opening lines, an age and a job doing argumentative work, a life goal, three requirements inside the habits and a refusal nobody evidenced; the evidenced refusal stays, the invented one goes, the provenance moves to the change spec, and the ledger saying *no personas exist* beside a persona that does is reported | the file comes back tidier with no fault named, evidenced and inferred lines are cut alike, or the ledger contradiction goes unmentioned |
+| `53-the-tester-is-not-the-persona` | **`refine-personas` refuses the tester a file** — the human testing the app asks for a persona of their own, and the answer separates what a tester finds, which is real, from what a tester does, which nobody the product is for would do | a second persona appears in any form, or the two-tabs bug is dismissed along with the request |
+| `54-retiring-a-persona-somebody-still-names` | **`refine-personas` gets the order right and deletes rather than shelves** — the club secretary is retired while her workflow and feature are live, so the workflow goes first in its own change, the file and its README row go together, and the check is green at the end | the persona is deleted with the workflow still naming her, or the file is left wearing `@retired` as its end state |
+| `55-nobody-has-written-down-who-it-is-for` | **`refine-personas` interviews for behaviour and moves the ledger row** — nobody ever wrote the persona the workflow names; the questions are about what he did rather than what he would like, no premise is invented, the reading is played back and corrected, the file holds no requirements, and the row that honestly read *not applicable — no personas exist* stops being true and is moved | a preference question is asked, the file is written before any playback, a requirement lands in it, or the ledger is left saying nobody exists |
+| `56-neg-what-is-a-persona-for` | **nothing fires** on a question about what separates a persona from a workflow, and where a request for a search box lands | an interview about the watcher starts, or either file is offered a rewrite |
+| `57-a-category-is-not-an-attempt` | **`refine-workflows` refuses to file a sixth thing under a category** — `managing-the-log` has a role-first narrative, an end state of *how he wants it*, five unrelated features and five examples sharing no attempt; the evening correction, the same-morning duplicate and the question about last April are different attempts, and the check stays green through whatever cut lands | the merge feature is filed under it and the file left as it was, or the only objection is that the workflow is getting large |
+| `58-a-rename-the-tests-walk` | **`refine-workflows` lands a rename in two changes** — the old id stays live and still walked, the new one arrives `@planned`, the walkthrough test is not this change's to move, and the gate is green for the implementing change to pick up | the id is renamed in place, the new one lands live with nothing walking it, or the tests are edited to follow |
+| `59-an-attempt-nobody-has-written-down` | **`refine-workflows` interviews for one occasion and writes the job story** — the trigger is an argument on the towpath rather than a decision to use the app, the end state is a date he can say out loud, the five-minute ceiling reaches the file, and the examples are declarative with a last one that comes back and finds the log as left | a step nobody described is invented, the trigger reads as *when he wants to look something up*, or the file is written before the attempt is played back |
+| `60-an-always-true-promise-is-not-an-attempt` | **`refine-workflows` says what is not a workflow, and where it goes instead** — never losing a sighting has no trigger and no end state, it is already an always-promise in the product spec, and it is asserted inside ordinary features and every walkthrough; the person presses once and is answered rather than refused | a `keeping-the-log-safe` file appears, or the person is left with a refusal and nowhere for the promise to live |
+| `61-neg-workflow-or-feature` | **nothing fires** on a question about what separates a workflow file from a feature file, and where a new rule lands | a re-cut is offered, or an interview about what the watcher attempts starts |
+| `62-a-shot-for-whoever-asked` | **`record-clip` composes for the person holding the request** — 0007's *What changes* is a store moved to IndexedDB with a migration, and the request behind it is somebody who lost three weeks and wants to stop wondering; the shot shows the log surviving what used to empty it, not the storage layer | the sequence walks the internals, or shows only that the app still runs |
+| `63-the-core-moved-so-walk-it` | **`record-clip` records the tour when the core moved** — 0007 turned a flat log into outings and touched every screen, so the shot is the short walk through the workflows that carry the value, and *keep it short* is answered with fewer frames rather than half a tour | one corner of the change is recorded, or the walk is cut to the empty state |
+| `64-the-app-does-not-run-by-guesswork` | **`record-clip` serves the app the way the bindings say** — `make serve` on port 8123, 900 x 640, never `file://` for an ES-module app; and the hand-back says the species list under the place field is the fixture that has stood in since 0006 | the serve command is guessed, `file://` is planned, or the stand-in is handed over as the real dataset |
+| `65-neg-a-gif-of-something-else` | **nothing fires** on a request to animate a build log for the contributing guide — a terminal is not the app being used, and this is not the picture a version ships with | a shot list of the app appears, or `docs/screenshots/` is proposed |
+| `66-the-request-is-really-a-persona` | **`refine-spec` hands the persona question over** — ring numbers and scheme codes pay off only for somebody the persona rules out, so the decision is `refine-personas`' and its own change, and what it would cost is said rather than the fields being added with a note | a ring-number rule is written, the persona is widened in passing, or the answer is only that it is out of scope |
+| `67-a-request-that-crosses-the-line` | **`refine-spec` stops at a boundary rather than specifying around it** — the product spec says sending records anywhere is out and the watcher refused twice, while the want belongs to the maintainer; the session holds when pressed and says what moving the line would mean | the submit button is specced with the boundary noted as a risk, or the refusal collapses under one push |
+| `68-a-step-on-the-daily-attempt` | **`refine-spec` weighs the trade and finds the cheaper answer** — a dropdown on the attempt made four mornings a week, to serve one made a few times a year, against a promise of one field and one keypress; the job is that looking back fails on three spellings, and there are answers that leave the morning alone | the dropdown is specced as asked, or the cost lands as a risk line rather than a decision |
+| `69-the-rule-keeps-its-id` | **`refine-spec` edits a rule in place and keeps the vocabulary** — the id is what the walkthrough test names forever, and the aside asking for *entry* instead of *sighting* is declined from the product spec's own words; a command grader reads both | a new id orphans the test, or the rename is carried out because nobody insisted it should not be |
+| `70-neg-how-does-a-spec-get-written` | **nothing fires** on a newcomer's question about what `specs/changes/` is for against `specs/features/`, and when the Gherkin gets written | a spec is started, or the reader is asked what they want built |
 | `71-five-agents-one-quay` | **`setup` makes a repository ready for several trees** — `quayside`, whose owner runs up to five agents at once under more than one harness. It has one Postgres container, an env file mixing a key with a port and a database name, and an upload directory fixed in code. The sitting gives trees one home under no harness's directory and one command to make, list and clean them. It sorts the server as shared and the port and database as each tree's own, copies the env file from one source changing only those lines, and hands the fixed directory back as the app's change | trees go under `.claude/` or a harness feature stands in for the command, a Postgres container per tree is proposed, the key lands in a tracked file, or `src/` is edited |
 | `72-a-tree-without-its-hook` | **`setup` proves a fresh tree past a green verification** — `slipway`, whose trees command makes a tree where `make check` passes but `.hooks/`, generated and ignored, is missing, so a push runs no checks. The proof notices, the row is not written as working until `new` makes the hook, and the throwaway is cleaned | the row is written as proven on the green run, no throwaway is made, or it is left behind |
 | `73-a-tree-command-that-fell-behind` | **`doctor` re-proves the trees row rather than trusting its date** — `chandlery`, proven in June. Since then the suite reads a generated, ignored `config/local.toml` that `new` never makes. The audit makes a throwaway tree, sees `make check` fail, records `check:fresh-tree-green` open with the failing line, leaves the command to setup, and cleans the throwaway | the line reads clear from the row's date, the audit edits the command to make it pass, or the throwaway is left behind |
@@ -224,6 +301,20 @@ spec it was about to write. The grader asking where provenance went read that
 as a session that never wrote one. A budget that stops a sitting mid-flow does
 not grade the sitting.
 
+**`55` read Δ +0.00 on its first pilot, and the zero is the finding.** Both
+arms wrote a persona the command grader accepted and the anatomy rubric
+passed; both failed the same two graders, because both wrote the file before
+playing any reading back and both resolved by inference the one fact the sheet
+had flagged as unobserved. `refine-personas` §1 asks for the playback *before
+anything is written*, and the plugin arm did it afterwards, where it is a
+summary rather than a chance to be told the conclusion is wrong. The same
+shape is in `48`, one skill over
+([#158](https://github.com/sargismarkosyan/livespec/issues/158)). Nothing here
+should be softened to make the number move: a case where both arms fail
+honestly is worth more than one where the bar was lowered until the plugin
+cleared it, and this pair is what would notice if the promise started being
+kept.
+
 The negative cases are the ones to watch. Eight skills' descriptions load in
 every session, and the cost of widening one — or, as with `setup`, of making one
 visible at all — is paid here — where it should show up as a scored failure rather than as a user
@@ -348,6 +439,79 @@ is roughly that × 3. Sessions, transcripts and created files stay under
 the run directory, which is ignored — the evidence is local and reproducible.
 What survives a run is its summary, on the board.
 
+### Calibrating a tier against the canary
+
+A first-move number is a claim about a snapshot, and it is believed where it
+agrees with a sitting. Before its numbers are read as the case's:
+
+1. Run the tier on the cases the canary has fresh rows for —
+   `tiers.py --tier first --case <name> --scaffold` — and put each case's
+   first-move verdicts beside the sitting's, rubric by rubric.
+2. Read the replies in `evals/results/tiers-<stamp>/`. A reply that narrates
+   what it would do instead of doing it is the snapshot's voice, not the
+   skill's; a rubric failed for that is a rubric the tier should mark as not
+   applying.
+3. Read which rubrics were marked **not applying**. One that plainly could be
+   decided from a first reply, marked otherwise, is a judge worth correcting
+   before anybody reads a Δ.
+4. Where the two disagree and the transcript sides with the sitting, the case
+   is the canary's: say so in its row of *What each case is for*, and read its
+   first-move number as a direction.
+
+## What a change costs
+
+Every run is the maintainer's money, so the question before making a change is
+what re-measuring it will cost. Since
+[`0072`](../specs/changes/0072-a-cheap-tier-holds-every-edit.md) the board owes
+the tiers, not the sittings, and the tiers are priced per call. The figures
+below are from the smoke run of 2026-09-27 — one routing turn $0.04, one first
+reply and its verdict $0.18, one review $0.18 — and the refusal quotes the
+board's own costs once a row has them.
+
+| what you changed | what goes stale | roughly |
+|---|---|---|
+| one skill's **body** | its `first` rows (with-arm only) and its `review` row | 6 cases × 3 replies ≈ **$3.40**, against $9 as sittings |
+| one skill's **description** | every `route` row — a description can move any prompt | 73 × 3 turns ≈ **$8.80** |
+| a case's prompt, fixture or graders | its `route` and `first` rows | ≈ $1.20 |
+| a rule's text | the `first` rows of the cases claiming it, the `review` rows of the skills holding it | ≈ $1.25 each |
+| `tiers.py` | **every tier row** | ≈ **$76** |
+| `provider.py`, `asserts.py` | the canary only — nothing owed | $0 until chosen |
+| the model in the bindings | every tier row, and the canary is due | ≈ $76, and a canary |
+
+A sitting still costs what it did — a session about **$0.36**, a judge call about
+**$0.10**, a person's round about **$0.06** — and a full canary is about **$200**.
+The difference is that nothing owes one any more.
+
+**A tier is cheap because of what it leaves out.** A routing turn is one turn
+with one tool. A first move replaces Claude Code's system prompt with a short one
+of its own, which is most of a session's input, and reads a world that is already
+laid out rather than exploring it. The judge calls do the same. What that leaves
+out is the subject of *What the tiers cannot see*, below.
+
+**Harness edits get batched.** `tiers.py` stales every tier row, correctly —
+it decides what every call is and how it is judged — so it is edited
+deliberately and in groups, and the run that follows is planned for. The same
+holds for `provider.py` and `asserts.py`, whose edits stale the canary.
+
+**A grader that can be a script is not a judge call.** Sixteen of the suite's
+graders run a command and cost nothing per run. The tiers never run them — a
+first move writes no files — so they are the canary's; every rubric converted
+to a script removes a judgment from somewhere it was never needed.
+
+### What the tiers cannot see
+
+- **The interview.** A first move is the first question. Whether the skill plays
+  back what it heard and only then writes — the arc most of these skills exist
+  for — is held by the canary and by real use, not by any tier.
+- **The shell.** For `setup` and `doctor` a snapshot shows what they would say
+  first, not what they would actually wire. Their cases lean on the canary most.
+- **Claude Code itself.** A first move's system prompt is ours, not the
+  product's. The routing turn is the exception, and the reason it runs the real
+  one: routing is the thing that prompt decides.
+- **Δ per edit, under the full product.** The first-move tier keeps both arms, so
+  Δ survives — over a snapshot. Δ over whole sittings is the canary's, measured
+  when the model moves.
+
 ## When the limit stops a run
 
 Every whole sitting so far ended at the account's session limit, and until
@@ -390,23 +554,34 @@ halves is warned about by name, because its halves would measure two versions.
 
 ## The board
 
-[`evals/board.json`](board.json) — committed — holds, per case, what the last
-run measured: `delta`, both arms, `runs`, when, at what commit, what it cost
-— sessions and judge — the `model` the sessions ran on, read from each
+[`evals/board.json`](board.json) — committed — holds four sections. `route`,
+`first` and `review` are the tiers, one row per case or skill, written by
+`tiers.py` the moment each row exists. `cases` is the canary: per case, what the
+last sitting measured — `delta`, both arms, `runs`, when, at what commit, what
+it cost — sessions and judge — the `model` the sessions ran on, read from each
 transcript's `init` event rather than from the flag, the `judge`, a `harness`
 fingerprint of `provider.py` and `asserts.py`, and an `inputs` hash of what the
 number was a measurement *of* — the case's own files, the text of every rule it
-claims, and the body of every skill it holds.
-`run.py` updates the entries for whatever it ran, automatically; a `--case`
-smoke updates one row, and its `runs` field says how much weight it deserves.
+claims, and the body of every skill it holds. Every tier row carries the same
+kind of fingerprint, of exactly what that tier can see, and a `harness`
+fingerprint of `tiers.py`.
 
-Change any of those inputs and the hash stops matching: the entry is **stale**.
-So is a row measured on a model other than the one the bindings name, or by a
-harness whose two files have since changed — three reasons, each said in its
-own words in the failure, and `caselib.why_stale()` decides all three for the
-gate and for `run.py --changed` alike. The board gate — `.github/scripts/board.py`,
-run by `verify.py` — fails the build naming the cases and the one command that
-heals them:
+Change any of a tier row's inputs and the hash stops matching: the row is
+**stale**. So is a row made on a model other than the one the bindings name, or
+by a `tiers.py` that has since changed. `caselib.tier_why_stale()` decides it for
+the gate and for `tiers.py --changed` alike. The board gate —
+`.github/scripts/board.py`, run by `verify.py` — fails the build naming the rows
+and the one command that heals them:
+
+```
+python3 evals/runner/tiers.py --changed --scaffold
+```
+
+**A stale canary row is shown, not failed.** `caselib.why_stale()` still decides
+it — the case, a rule, a skill body, the model or `provider.py`/`asserts.py`
+moved — and the board says so, leaves the number out of the canary's mean, and
+asks for nothing. When the maintainer chooses to sit it again, `run.py --changed`
+selects exactly those:
 
 ```
 python3 evals/runner/run.py --changed --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold
@@ -420,10 +595,11 @@ nobody priced, and a board that could not have said which model made any of it
 made before `0057` carries no model and reads stale for that reason until it is
 measured again.
 
-`--changed` selects exactly the cases without a fresh measurement — a reworded
-rule re-measures the cases that claim it, never the whole suite. A case with no
-entry at all only **warns**: that is the bootstrap state, and the warning list
-is the first pilot's to-do list.
+`--changed` selects exactly the rows without a fresh measurement — a reworded
+rule re-measures the rows that read it, never the whole suite. A tier row that
+does not exist yet only **warns**: that is the bootstrap state, and the warning
+list is the first run's to-do list. A case the canary has never sat is a note,
+not a warning — nothing is owed.
 
 **An entry below the floor warns too, and is not counted.** `runs` is read
 rather than merely recorded: an entry from fewer than three runs is listed, kept
@@ -445,9 +621,11 @@ gate enforces is that a number still describes the files it claims to — gating
 the number itself would turn the suite into something to be optimised at, which
 is the same failure this repository already refuses for coverage.
 
-The pull-request report carries the board's counts — measured, stale, never —
-and the mean Δ over the fresh entries, dated, because a pull request rarely
-re-runs the suite and the row must say so rather than look current.
+The pull-request report carries the board's counts — the tier rows fresh, stale
+and never measured, the canary's fresh, stale and below the floor — and two
+means, the first moves' Δ and the canary's, each over the fresh rows and dated,
+because a pull request rarely re-runs the suite and the row must say so rather
+than look current.
 
 ## When a case needs a repository
 
