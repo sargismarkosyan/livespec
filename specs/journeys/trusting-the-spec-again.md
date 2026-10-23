@@ -28,6 +28,9 @@ where it was not. Nothing here is invented.*
 | **Thinking** | *"the spec was old and not up to date"* — *"whenever I ask something it causes some regressions all the time"* | *(paraphrase) gates first, then who it is for and what they attempt* | *"now I have less need of doing babysitting"* | *"fix the pipeline error, not bypass"* | *(paraphrase) still true — go* |
 | **Feeling** | ▂ | ▄ | ▆ | ▃ | ▇ |
 
+**Where it goes round.** From *Coming back*, and from *Where it does not fit*,
+it goes back to *The changes after*: the arc is many short returns, not one pass.
+
 **The curve.** It starts at the bottom and the bottom is *before the product* —
 a spec that had gone quietly wrong is worse than no spec, because it is still
 being trusted. It climbs through the changes that follow, where the payoff turns

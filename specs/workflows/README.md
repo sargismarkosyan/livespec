@@ -25,7 +25,10 @@ for somebody to discover from a green run.
 
 One file per workflow, `.feature`, `@workflow:<id> @persona:<id> @journey:<id>`
 on the first line, no `Rule:` anywhere in it, and the shape is in
-[the template](../../templates/workflow.feature).
+[the template](../../templates/workflow.feature). Since
+[`0084`](../changes/0084-a-workflow-names-its-phase.md) the first line may also
+name the phases of its journey the attempt is made in, `@phase:<heading>`, and
+the gate's map lists each phase with what is made in it.
 
 ## Reading this as a map
 

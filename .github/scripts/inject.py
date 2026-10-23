@@ -73,9 +73,14 @@ FIXTURE: dict[str, str] = {
     "CLAUDE.md": CONTEXT_FILE,
     "skills/refine-spec/SKILL.md": "---\nname: refine-spec\ndescription: Turns a request into a spec.\n---\n\n# Refine\n\nThe gates are in [gates.md](../../method/gates.md).\n",
     "specs/personas/reader.md": "@persona:reader\n\n# Reader — wants the thing in front of them\n",
-    "specs/journeys/arc.md": "@journey:arc\n\n# Arriving with a list already in hand\n",
+    # A map with two phases, and the workflow naming one: the fixture holds the
+    # phase gate green before a fault breaks it. See specs/changes/0084.
+    "specs/journeys/arc.md": (
+        "@journey:arc\n\n# Arriving with a list already in hand\n\n## The map\n\n"
+        "| | **Before** | **Coming back** |\n|---|---|---|\n| **Doing** | 1. Keeps a list | 2. Reads it |\n"
+    ),
     "specs/workflows/read-it.feature": (
-        "@workflow:read-it @persona:reader @journey:arc\n"
+        "@workflow:read-it @persona:reader @journey:arc @phase:coming-back\n"
         "Feature: Read the thing\n\n"
         "  Example: it opens on what was left\n"
         "    Given a list\n"
@@ -202,6 +207,7 @@ def green_bindings(version: str) -> str:
             "| `gate:persona-to-workflow` | a persona named by no workflow | automated | `python3 gate.py` |",
             "| `gate:journey-to-workflow` | a journey naming a workflow that does not exist | automated | `python3 gate.py` |",
             "| `gate:workflow-to-journey` | a workflow naming no journey — warns | automated | `python3 gate.py` |",
+            "| `gate:workflow-to-phase` | a workflow naming a phase that no journey it names has | automated | `python3 gate.py` |",
             ROW_STRUCTURE,
             ROW_COVERAGE,
             "| `gate:boundary-double` | a rule-bound test doubling a boundary declared real | not applicable | no rule-bound doubles here |",
@@ -799,7 +805,12 @@ FAULTS = [
      lambda r: edit(r, "specs/features/core/core.feature", "@rule:two @refusal", "@rule:two"),
      "warns", "promises a behaviour"),
     ("workflow naming no journey", TRACE,
-     lambda r: edit(r, "specs/workflows/read-it.feature", " @journey:arc", ""), "warns", "names no @journey:"),
+     lambda r: edit(r, "specs/workflows/read-it.feature", " @journey:arc @phase:coming-back", ""), "warns", "names no @journey:"),
+    # A phase is the heading of a column in the journey's map; naming one the
+    # map does not have is a dangling reference. See specs/changes/0084.
+    ("a workflow naming a phase its journey does not have", TRACE,
+     lambda r: edit(r, "specs/workflows/read-it.feature", "@phase:coming-back", "@phase:going-back"),
+     "fails", "which no journey it names has"),
     # The two soft limits. Warnings on purpose — small files are the point and a
     # hard cap is not — and until these two, the one shape check in trace.py
     # nothing had ever seen speak. See specs/changes/0047.

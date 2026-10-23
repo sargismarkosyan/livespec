@@ -1,7 +1,7 @@
 @feature:refining-where-an-attempt-sits-in-the-arc @workflow:adopt-the-process
 Feature: A workflow says where in the arc it is made, and a journey says where the arc goes round
 
-  @rule:a-workflow-names-the-phase-it-is-made-in @planned
+  @rule:a-workflow-names-the-phase-it-is-made-in
   Rule: A workflow refined against a journey with a map names the phase or phases of that journey the attempt is made in, read from the map's headings, and never adds or renames a phase to fit one
 
     Example: the journey has the phase
@@ -16,7 +16,7 @@ Feature: A workflow says where in the arc it is made, and a journey says where t
       Then it names no phase, and the hand-back says that none fits
       And no phase is added to the journey to make one fit
 
-  @rule:a-journey-says-where-it-goes-round @planned
+  @rule:a-journey-says-where-it-goes-round
   Rule: Where the arc goes back to an earlier phase, the journey says so in one line under its map, naming both phases by their headings, and never as a phase of its own
 
     Example: a year that starts again

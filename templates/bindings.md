@@ -68,6 +68,7 @@ tree carries how it was read back: the command, and when.
 | `gate:persona-to-workflow` | a persona named by no workflow | | |
 | `gate:journey-to-workflow` | a journey naming a workflow that does not exist | | |
 | `gate:workflow-to-journey` | a workflow naming no journey — warns, does not fail | | |
+| `gate:workflow-to-phase` | a workflow naming a phase that no journey it names has | | |
 | `gate:structure` | one feature per file, unique ids, every rule with an example, no example outside a rule | | |
 | `gate:coverage` | lines, branches, functions | | |
 | `gate:boundary-double` | a rule-bound test doubling a boundary declared real | | |

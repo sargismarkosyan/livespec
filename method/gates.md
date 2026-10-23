@@ -58,6 +58,7 @@ workflow  →  test                   no walkthrough nothing walks
 workflow  →  persona                no workflow for nobody
 persona   →  workflow               no persona nobody does anything as
 journey   →  workflow               no dangling reference
+workflow  →  phase                  no dangling reference
 ```
 
 | Failure | What it means |
@@ -70,6 +71,7 @@ journey   →  workflow               no dangling reference
 | a persona named by no workflow | Nobody does anything as them. Give them a workflow, or tag the file `@retired` — which is for a persona no workflow names *yet*, not a shelf. |
 | a `@planned` workflow that *is* claimed | Same as a `@planned` rule with a test: the tag should have come off. |
 | a journey naming a workflow that does not exist | A dangling reference is factually wrong, not a judgment call. |
+| a workflow naming a phase that no journey it names has | The same, one level down: a typo, or a phase whose heading was renamed in the journey and whose workflows were not retagged. Naming no phase is not a failure and not a warning — the phase is optional. |
 
 **One warning, not four.** Where an attempt sits in the arc is a judgment, so a
 workflow naming no `@journey:` warns rather than fails. Keep such warnings
@@ -99,6 +101,11 @@ fail is worse than an absent one.
 Every workflow, who it is for, and the feature files serving it — **generated,
 never typed**. A hand-maintained list of what implements what is a list that has
 already drifted; the only question is whether anybody has noticed yet.
+
+And every journey, its phases in the order of its map, and under each the
+workflows that name it. A phase nothing names says so — that is a moment in
+their life no attempt is made in — and a workflow naming the journey and no
+phase is listed apart, as not yet placed.
 
 ## The id system
 
@@ -141,6 +148,11 @@ Feature: <what this component does>
 - `@persona:<id>` and `@journey:<id>` on every workflow. **Not on features** —
   every feature reaches a persona through its workflow, and a second path to the
   same fact is a second thing to keep true.
+- `@phase:<name>` on a workflow, optional and repeatable: the phase of its
+  journey the attempt is made in. **The name is the phase's heading in the
+  journey's map**, in lower case with every run of other characters one hyphen
+  — *Putting it in* is `putting-it-in` — so the journey itself carries no tag.
+  It is looked up in the journeys the workflow names.
 - **Workflow and persona ids are permanent for the same reason rule ids are.**
 
 The reader should also enforce structure: one feature per file, no scenario
@@ -498,6 +510,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:persona-to-workflow` | gate | 0.6.0 | wiring | — | persona → workflow | a persona named by no workflow fails |
 | `gate:journey-to-workflow` | gate | 0.6.0 | wiring | — | journey → workflow | a journey naming a workflow that does not exist fails |
 | `gate:workflow-to-journey` | gate | 0.6.0 | wiring | — | workflow → journey | a workflow naming no journey warns, and does not fail |
+| `gate:workflow-to-phase` | gate | next | wiring | — | | a workflow naming a phase that no journey it names has fails; naming none passes |
 | `gate:structure` | gate | 0.6.0 | wiring | — | structure | one feature per file, unique ids, every rule with an example, no example outside a rule |
 | `gate:coverage` | gate | 0.6.0 | wiring | — | coverage · coverage — lines, branches, functions | a module under the thresholds fails |
 | `gate:boundary-double` | gate | 1.2.0 | boundary | — | a rule-bound test doubling a boundary declared real | a rule-bound test standing a double in for a boundary reading real fails |
@@ -599,6 +612,7 @@ each one in turn and read the message it produces:
 | persona named by no workflow, tag removed | fails |
 | journey naming a workflow that does not exist | fails |
 | workflow naming no journey | warns, does not fail |
+| a workflow naming a phase its journey does not have | fails |
 | a feature holding more rules than the soft limit | warns, does not fail |
 | a feature longer than the soft limit | warns, does not fail |
 | a module well under the coverage thresholds | fails |

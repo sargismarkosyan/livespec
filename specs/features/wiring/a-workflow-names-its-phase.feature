@@ -1,7 +1,7 @@
 @feature:wiring-a-workflow-names-its-phase @workflow:adopt-the-process
 Feature: A workflow names the phases of its journey it is made in, and the map places it there
 
-  @rule:a-workflow-names-only-phases-its-journey-has @planned
+  @rule:a-workflow-names-only-phases-its-journey-has
   Rule: Verification fails when a workflow names a phase that no journey it names has, and says which phases exist; a workflow naming no phase passes without a warning
 
     Example: a phase the journey does not have
@@ -21,7 +21,7 @@ Feature: A workflow names the phases of its journey it is made in, and the map p
       When verification runs
       Then it passes, and says nothing about phases in its warnings
 
-  @rule:the-map-places-each-workflow-in-its-phases @planned
+  @rule:the-map-places-each-workflow-in-its-phases
   Rule: The map the gate prints lists every journey's phases in the order of its map, with the workflows naming each, says where nothing does, and lists apart the workflows naming the journey and no phase
 
     Example: a journey with a phase nothing reaches

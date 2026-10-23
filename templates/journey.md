@@ -18,6 +18,9 @@ https://www.nngroup.com/articles/journey-mapping-101/
   well is a wish.
 - Name the scenario in their words, gerund-first. If the title sounds like
   something completable in one sitting, it is a workflow, not a journey.
+- The phase headings in the map are names. A workflow says which phase it is
+  made in by the heading, so keep them short, and renaming one moves every
+  workflow naming it.
 -->
 
 ## The lens
@@ -53,6 +56,13 @@ that decide anything.
 actually said and paraphrased where it was not — never invented. **Feeling** is a
 curve: `▁▂▃▄▅▆▇`, and it has to move. If every phase carries the same block,
 either the arc is wrong or nobody has been asked yet.
+
+**Where it goes round.** The phases run left to right in the order they are
+lived, and an arc is often not one pass. Where it goes back to an earlier phase
+— a return that starts the next round, a setback that sends them back a step —
+say so in one line under the table, naming both phases by their headings:
+*from <Phase 4> it goes back to <Phase 2>.* A loop is a way between two phases,
+never a column of its own. An arc lived once says nothing here.
 
 **The curve.** One paragraph: where it peaks, where it bottoms out, and what
 happens at the bottom. The trough is the phase the product is judged on.
