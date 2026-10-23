@@ -1,7 +1,7 @@
 @feature:wiring-what-a-feature-uses @workflow:adopt-the-process
 Feature: What the build holds a feature to when it names another feature it uses
 
-  @rule:a-feature-uses-only-features-that-exist @planned
+  @rule:a-feature-uses-only-features-that-exist
   Rule: Verification fails when a feature's @uses names no feature in the tree, naming the file and the id, and asks nothing of a feature that names none
 
     Example: the feature it uses is there

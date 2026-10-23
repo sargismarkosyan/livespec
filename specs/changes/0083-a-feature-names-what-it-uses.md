@@ -79,7 +79,8 @@ that still points at the old id, in the same change that did the renaming.
      the reference is to a feature and has one place to live. The prose of the
      rule still says which rule it builds on and what it adds.
    - A new gate, `gate:feature-to-feature`, `since` reading `next`, and a
-     fault in *Both gates are verified to fire*.
+     fault for each of its two failures in *Both gates are verified to
+     fire*.
 
 2. **The feature template, [`feature.feature`](../../templates/feature.feature).**
    Its tags section explains `@uses`. The example header stays as it is,
@@ -100,8 +101,8 @@ that still points at the old id, in the same change that did the renaming.
 5. **This repository.**
    - `trace.py` reads `@uses` from a feature's tag lines and fails one naming
      no feature, or one on a Rule:.
-   - `inject.py` gains the fault *a feature using a feature that does not
-     exist*.
+   - `inject.py` gains two faults: *a feature using a feature that does not
+     exist*, and *a feature's @uses on a rule rather than the feature*.
    - The ledger in [`setup/README.md`](../setup/README.md) gains the row,
      and the fault record follows.
    - `tests/test_uses.py` claims `a-feature-uses-only-features-that-exist`

@@ -214,6 +214,7 @@ def green_bindings(version: str) -> str:
             "| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | automated | `python3 gate.py` |",
             "| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | automated | `python3 gate.py test` |",
             "| `gate:change-number-unique` | two change specs sharing a number | automated | `python3 gate.py` |",
+            "| `gate:feature-to-feature` | a feature using a feature that does not exist | automated | `python3 gate.py` |",
             "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
         ]
     )
@@ -850,6 +851,16 @@ FAULTS = [
     ("two change specs sharing a number", TRACE,
      lambda r: write(r, "specs/changes/0001-second.md", "# Spec 0001: the second\n"),
      "fails", "share the number"),
+    # A feature names what it uses. The fixture holds one feature, `core`; a
+    # @uses naming any other id is the reference left behind by a rename, and
+    # one on a Rule: is in the wrong place. See specs/changes/0083.
+    ("a feature using a feature that does not exist", TRACE,
+     lambda r: edit(r, "specs/features/core/core.feature", "@feature:core @workflow:read-it\n",
+                    "@feature:core @workflow:read-it\n@uses:card\n"),
+     "fails", "names no feature"),
+    ("a feature's @uses on a rule rather than the feature", TRACE,
+     lambda r: edit(r, "specs/features/core/core.feature", "@rule:one\n", "@rule:one @uses:core\n"),
+     "fails", "goes on the Feature: line"),
     ("case graded only by what fired", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: tool_used\ntool: Skill\nmin: 1\n---\n"),
      "fails", "never by what came out"),

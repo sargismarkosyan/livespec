@@ -1,7 +1,7 @@
 @feature:refining-what-a-feature-builds-on @workflow:adopt-the-process
 Feature: A feature that builds on another names it, and says only what it adds
 
-  @rule:a-feature-names-the-feature-it-builds-on @planned
+  @rule:a-feature-names-the-feature-it-builds-on
   Rule: When a spec writes a feature that builds on a rule another feature owns, the feature carries @uses with that feature's id, and its own rule says what it adds and cites the shared rule by id rather than restating it
 
     Example: looking back reuses the species suggestions
