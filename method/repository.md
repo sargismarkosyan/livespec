@@ -309,6 +309,44 @@ bindings name — the same check the Gherkin block gets, for the same reason.
 Whether the output is real is a reading, and the report is what makes the
 reading cheap.
 
+### And the point, before the evidence
+
+**Everything above is what a body carries. This is how it is read.** A
+reviewer opens a pull request to decide on a change, and every item above is
+there to back that decision, not to replace it. An agent writes down
+everything it checked, and every item looks owed, so a body written that way
+grows until the change cannot be found in it. The reviewer then spends an hour
+on it, or approves it unread, and either way the evidence has stopped doing its
+job.
+
+So the body is written for the person reading it:
+
+- **The point comes first.** What changed and why, in two or three plain
+  lines, then what the reviewer should look at in the diff: the file, the
+  decision they are being asked to make. Somebody who stops reading there
+  knows what they are approving.
+- **The evidence comes after, and backs the point.** All of it is still owed:
+  the picture, the Gherkin, the run. None of it is dropped to make the body
+  short. The picture sits inline under the point. Run logs, case matrices and
+  caveats are folded where the platform can fold a block, and linked where it
+  cannot.
+- **Each fact once.** A caveat is stated where it applies and nowhere else.
+  Two pull requests that belong together link each other instead of carrying
+  the same block, so the two copies cannot start to disagree.
+- **In words the reviewer already has.** A name the session made up for
+  something it built or noticed is the one word in the body the reviewer has
+  never seen. Write what it names instead.
+
+**The message asking for review follows the same rule.** It is shorter still:
+the point, the link, and what the reviewer is asked to decide.
+
+**No gate can hold this.** Whether the first lines are the point is a reading,
+which is what review is for. A gate on length would be met by cutting words,
+not by putting the point first. What a report that already reads the body can
+do is count the words before its first heading, code block or folded block,
+and print that count where the reviewer is looking. It gates on nothing there,
+for the same reason it does not gate on the run.
+
 ## Commits
 
 One change spec, one commit. Message format:

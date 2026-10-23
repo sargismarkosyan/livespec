@@ -96,6 +96,14 @@ it is in.
 - **Recorded on the branch, before the pull request is opened**, and embedded in
   the body by a raw URL pinned to the commit. A branch URL rots when the branch
   is deleted on merge.
+- **The body around it is written for whoever reviews it**, per
+  [`repository.md`](../../method/repository.md#and-the-point-before-the-evidence).
+  The point first: what changed and why in two or three plain lines, then what
+  to look at in the diff. The picture inline under that; the run, case
+  matrices and caveats after it, the long ones folded or linked, and nothing
+  owed left out. Each fact once: a companion pull request is linked, not
+  copied. No name the session made up. The message asking for review follows
+  the same rule.
 - **Never touch `src/` or `specs/`.** If the recording shows something broken,
   that is a finding: file it with the `todo` skill. Do not fix it here, and
   do not re-record around it.

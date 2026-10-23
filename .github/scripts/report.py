@@ -20,7 +20,10 @@ unavailable, which is honest and still worth reading. The next two are
 skipped rather than guessed. The last two are the pipeline's own verification
 output and the pull request's body: the report prints the last lines of the
 one beside the run block in the other, and gates on nothing there, the two
-disagreeing included. See specs/changes/0052.
+disagreeing included. See specs/changes/0052. Since 0082 it also counts the
+words the body says before its first heading, code block or folded block —
+what a reviewer reads before the evidence — and prints the count, judging
+nothing.
 
 Nothing here may exit non-zero for any reason. See `always-green` in
 specs/spec.md: a report that can fail a build is a gate nobody declared.
@@ -29,6 +32,7 @@ specs/spec.md: a report that can fail a build is a gate nobody declared.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -73,6 +77,67 @@ def run_section(run_text: str | None, body_text: str | None, command: str | None
     lines += [
         "<sub>Two commands, when they differ by one line: a person runs the whole of verification, "
         "which exits 2 for the board; the required check runs `--local` and leaves the board to its own job.</sub>", "",
+    ]
+    return lines
+
+
+FENCE = re.compile(r"^\s{0,3}(```|~~~)")
+HEADING = re.compile(r"^\s{0,3}#{1,6}(\s|$)")
+FOLD = re.compile(r"^\s*<details\b", re.IGNORECASE)
+COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+LINK_TARGET = re.compile(r"\]\([^)]*\)")
+
+
+def opening(body: str) -> tuple[int, str | None]:
+    """The words a body says before its evidence, and what stopped the count.
+
+    The opening runs from the first line to the first heading, code block or
+    folded block. A heading on the very first line titles the opening rather
+    than ending it, so it is skipped. HTML comments and link targets are not
+    words a reviewer reads. Returns the count and what ended it — `None` when
+    the body ran out first. See specs/changes/0082."""
+    lines = COMMENT.sub("", body).splitlines()
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if lines and HEADING.match(lines[0]):
+        lines.pop(0)
+    words, stop = 0, None
+    for line in lines:
+        if HEADING.match(line):
+            stop = "heading"
+        elif FENCE.match(line):
+            stop = "code block"
+        elif FOLD.match(line):
+            stop = "folded block"
+        if stop:
+            break
+        words += len(LINK_TARGET.sub("]", line).split())
+    return words, stop
+
+
+def opening_section(body_text: str | None) -> list[str]:
+    """How much a body says before its evidence. Counted, never judged: whether
+    those words are the point is the reviewer's reading, and a count cannot
+    tell a point from padding. Nothing here may raise — see the module
+    docstring."""
+    if body_text is None:
+        return []
+    lines = ["## The opening", ""]
+    if not body_text.strip():
+        return lines + ["The body is empty.", ""]
+    words, stop = opening(body_text)
+    counted = f"**{words} word{'s' if words != 1 else ''}**"
+    if stop is None:
+        lines.append(f"The body says {counted} and has no heading, code block or folded block.")
+    elif words:
+        lines.append(f"The body says {counted} before its first {stop}.")
+    else:
+        lines.append(f"The body opens straight into its evidence: nothing is said before its first {stop}.")
+    lines += [
+        "",
+        "<sub>What a reviewer reads first. `method/repository.md` asks for the point there — what "
+        "changed and why in two or three plain lines, then what to look at in the diff. Counted, "
+        "never judged, and nothing fails on it.</sub>", "",
     ]
     return lines
 
@@ -163,6 +228,10 @@ def build(
     for heading, rows in SECTIONS:
         lines += [f"## {heading}", ""] + table(rows, base, head) + [""]
     lines += board_section(board_head, board_base)
+    try:
+        lines += opening_section(body_text)
+    except Exception:  # noqa: BLE001 — a body the count cannot read is a missing section, not a failure
+        pass
     if run_text is not None or body_text is not None:
         lines += run_section(run_text, body_text, command)
 
