@@ -521,7 +521,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:persona-to-workflow` | gate | 0.6.0 | wiring | — | persona → workflow | a persona named by no workflow fails |
 | `gate:journey-to-workflow` | gate | 0.6.0 | wiring | — | journey → workflow | a journey naming a workflow that does not exist fails |
 | `gate:workflow-to-journey` | gate | 0.6.0 | wiring | — | workflow → journey | a workflow naming no journey warns, and does not fail |
-| `gate:workflow-to-phase` | gate | next | wiring | — | | a workflow naming a phase that no journey it names has fails; naming none passes |
+| `gate:workflow-to-phase` | gate | 1.29.0 | wiring | — | | a workflow naming a phase that no journey it names has fails; naming none passes |
 | `gate:structure` | gate | 0.6.0 | wiring | — | structure | one feature per file, unique ids, every rule with an example, no example outside a rule |
 | `gate:coverage` | gate | 0.6.0 | wiring | — | coverage · coverage — lines, branches, functions | a module under the thresholds fails |
 | `gate:boundary-double` | gate | 1.2.0 | boundary | — | a rule-bound test doubling a boundary declared real | a rule-bound test standing a double in for a boundary reading real fails |

@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.29.0 — 2026-10-23
+
+A workflow can name the phases of its journey it is made in, with `@phase:<name>` on its first line, where the name is the phase's heading in the journey's map, lower-cased and hyphenated. It is optional. A new gate, `gate:workflow-to-phase`, fails a phase that no journey the workflow names has. The gate's map lists every journey's phases in order with the workflows in each. The journey template says where an arc goes round, in one line under the map. `refine-workflows` names the phase from the map, and `refine-journeys` writes the loop line and retags a workflow when it renames a phase.
+
 ## 1.28.0 — 2026-10-23
 
 A feature that builds on a rule another feature owns can say so with `@uses:<feature-id>` on its Feature line. The new gate `gate:feature-to-feature` fails a `@uses` that names no feature, or one put on a Rule, so renaming or splitting a shared feature can no longer leave a stale citation behind. The tag is opt-in and one-way: a feature with no `@uses` is asked nothing, and the shared feature doesn't list who uses it. `refine-spec` writes the tag, and the new rule cites the shared rule by id instead of restating it. The feature template explains the tag. After you upgrade, `doctor` asks for the new gate's row in your ledger.
