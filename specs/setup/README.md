@@ -274,6 +274,7 @@ that gap is the thing a later `setup` run offers to close.
 | `gate:persona-to-workflow` | persona → workflow | automated | `trace.py` |
 | `gate:journey-to-workflow` | journey → workflow | automated | `trace.py` |
 | `gate:workflow-to-journey` | workflow → journey | automated | `trace.py`, as a **warning** — where an attempt sits in the arc is a judgment |
+| `gate:workflow-to-phase` | a workflow naming a phase that no journey it names has | automated | `trace.py`, since [`0084`](../changes/0084-a-workflow-names-its-phase.md) — reads each journey's phases from the header row of the first table under *The map*, a heading lower-cased and hyphenated, and fails a `@phase:` none of the workflow's journeys has, naming the phases they do; naming none passes silently. Broken by *a workflow naming a phase its journey does not have*, held by `tests/test_journey_phases.py` |
 | `gate:structure` | structure — one feature per file, unique ids, every rule with an example, no example outside a rule | automated | `trace.py` — and the soft limits, six rules and 120 lines per file, **warn and do not fail**, broken by two faults since [`0047`](../changes/0047-a-warning-that-has-never-fired.md), each expected to warn |
 | `gate:verified-to-fire` | both gates verified to fire | automated | `inject.py` — every gate broken in a fixture and the release inputs broken as pure functions, re-run by every `verify.py`. **`checks.py` is in that set only since [`0022`](../changes/0022-nobody-types-the-record.md)**, which is when it first took a root and could be pointed at a fixture at all; before that it was the one gate here never known to fire |
 | `local:enumerations-read-back` | the enumerations in this file read back from what owns them | automated | `checks.py`, added by [`0022`](../changes/0022-nobody-types-the-record.md) — *The fault injection record* against `inject.py`, *What it runs* against `verify.py`. Both were typed, and both had drifted |
@@ -458,6 +459,7 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | example outside any rule | fails | ✔ |
 | refusal rule losing the tag that makes its case legitimate | **warns, does not fail** | ✔ |
 | workflow naming no journey | **warns, does not fail** | ✔ |
+| a workflow naming a phase its journey does not have | fails | ✔ |
 | a feature holding more rules than the soft limit | **warns, does not fail** | ✔ |
 | a feature longer than the soft limit | **warns, does not fail** | ✔ |
 | a context file past its ceiling | fails | ✔ |

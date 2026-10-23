@@ -121,7 +121,12 @@ Three parts. A file missing any one of them is not a journey.
 - **The lens — one actor, one scenario.** A journey that covers two personas
   covers neither; it is two journeys. Name both in the first lines.
 - **The spine — phases, in time order.** If the sections can be reordered without
-  breaking anything, it is a category list, not a journey.
+  breaking anything, it is a category list, not a journey. **Where the arc goes
+  back to an earlier phase**, say so in one line under the map, naming both
+  phases by their headings — never as a column of its own, which is a map that
+  has stopped saying what happens. The headings are also names: a workflow
+  names the phase it is made in by its heading, so renaming or dropping one
+  breaks that workflow's tag, and the workflow is retagged in the same change.
 - **The heart — what they do, what they think, and how it feels**, phase by
   phase. Actions alone make a flow chart. The emotional line is the reason this
   layer exists in prose: it is the part no assertion can carry.
@@ -184,8 +189,9 @@ the next reader asks rather than extrapolating.
 |---|---|
 | a journey naming a workflow that does not exist | error |
 | a workflow naming no journey | warning |
+| a workflow naming a phase its journey does not have | error |
 
-Whether either one is *wired here* is a different question, and the gate wiring
+Whether any one is *wired here* is a different question, and the gate wiring
 ledger in `specs/setup/README.md` is where it is answered. Read it before
 repeating the table above: a journey layer that arrived after `setup` did may
 have no check over it at all. Move the row this change makes applicable, report a
