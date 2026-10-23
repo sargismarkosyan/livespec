@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.27.0 — 2026-10-23
+
+**A pull request body puts the point before the evidence.** `method/repository.md` gains *And the point, before the evidence*. The body opens with what changed and why in two or three plain lines, then says where to look in the diff. The evidence comes after: the picture inline, long blocks folded or linked, and nothing owed dropped to make the body short. Each fact appears once: a companion pull request is linked, not copied. A name the session made up is replaced with what it names. The message asking for review follows the same rule. `record-clip` carries the rule in one bullet. The pull-request report now prints how many words a body says before its first heading, code block or folded block, and gates on nothing.
+
 ## 1.26.0 — 2026-10-23
 
 **A closing line that closes.** A pull request's closing line now has to be one the platform registers, and the step that opens the pull request checks it. The keyword goes straight before a bare reference or the issue's full URL. The full URL also links, so it suits a repository that links every reference. A keyword in front of a Markdown link closes nothing on GitLab, and the method now says so beside the "words between" case. The loop's pull-request step (`process.md` step 6, `claude-md.md` requirement 6) reads back from the platform which issues the merge will close, and an empty or wrong list is fixed before the pull request is handed back. The command is a binding now, not a GitHub line in the method: `setup` writes a *What a pull request will close* row from the platform the repository is on and runs it once before writing it, and the next audit's loop check reaches a repository set up earlier. Two rules, held by two `setup` cases on a forge that is not GitHub.
