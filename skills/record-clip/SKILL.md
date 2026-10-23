@@ -73,12 +73,13 @@ that reads like somebody's real data.
    the change is *about*, and the last frame, so a loop does not snap.
 5. Stitch, then clean up:
    ```sh
-   python3 "$CLAUDE_PLUGIN_ROOT/tools/clip.py" docs/screenshots/.frames docs/screenshots/vNNN-<slug>.gif
+   python3 <plugin root>/tools/clip.py docs/screenshots/.frames docs/screenshots/vNNN-<slug>.gif
    rm -rf docs/screenshots/.frames
    ```
 
-   The stitcher ships with this plugin. If `$CLAUDE_PLUGIN_ROOT` is not set,
-   it is `tools/clip.py` two levels up from this skill file.
+   The stitcher ships with this plugin. The plugin root is two directories up
+   from this skill file, under either host; `$CLAUDE_PLUGIN_ROOT` names the
+   same place where it is set.
 6. Stop the background server.
 
 **A still is steps 1, 2 and one screenshot**, written straight to
