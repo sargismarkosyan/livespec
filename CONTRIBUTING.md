@@ -102,8 +102,8 @@ at fails CI, because it ships to every user unread.
 
 ```bash
 python3 .github/scripts/verify.py     # the one command: both gates, and proof they fire
-claude plugin validate . --strict     # marketplace manifest
-claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
+.github/scripts/validate-manifest.sh . # marketplace manifest; see specs/setup/
+.github/scripts/validate-manifest.sh ./.claude-plugin/plugin.json  # the same
 claude plugin validate ./skills --strict
 ```
 
