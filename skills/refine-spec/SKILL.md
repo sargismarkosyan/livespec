@@ -189,6 +189,12 @@ The step must be small enough to be one screenshot's worth of change.
   `@crosses:<id>` — the boundary's row id — and an Example of that boundary
   misbehaving, not only of it working. The build fails a crossing to a boundary
   no row declares and warns one written with a single example.
+- A feature that builds on a rule another feature owns — a component specced
+  once and reused — carries `@uses:<feature-id>` on its Feature line. Its own
+  rule says only what it adds and cites the shared rule by id; restating that
+  rule is a second copy that drifts. The shared feature does not list who uses
+  it. The build fails a `@uses` naming no feature, so a rename cannot strand
+  the citation.
 
 **The change spec** at `specs/changes/NNNN-<slug>.md`, from
 [`templates/change.md`](../../templates/change.md), numbered one past the

@@ -12,6 +12,13 @@ Feature: <What this component does — the thing, not the change that added it>
   # anybody wrote down fails the gate — and the fix is usually that the attempt is
   # missing from the workflows, not that this file needs a tag.
   #
+  # @uses:<feature-id> goes beside it when this feature builds on a rule another
+  # feature owns — a component specced once and reused here. It may repeat, and
+  # a feature that builds on nothing carries none. The rule here says what it
+  # adds and cites the shared rule by id rather than restating it; the tag is
+  # what lets the gate fail when that feature is renamed or split. The shared
+  # feature does not list who uses it, and the tag never goes on a Rule.
+  #
   # **No @persona: and no @journey: here.** Every feature reaches a persona
   # through its workflow. A second path to the same fact is a second thing to
   # keep true.
