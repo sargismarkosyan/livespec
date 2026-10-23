@@ -12,6 +12,17 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.25.0 — 2026-10-23
+
+livespec runs under Pi as well as Claude Code.
+
+- **Commands:** wherever a skill tells you what to type, it names both forms, `/livespec:<name>` and `/skill:<name>`.
+- **Tools:** skills reach livespec's tools two directories up from the skill file, so they no longer depend on `$CLAUDE_PLUGIN_ROOT`.
+- **Enabling:** the setup sitting enables livespec for each host the repository runs. For Pi, that is a `packages` entry in `.pi/settings.json` pinned to the release tag. The hand-back says Pi loads it only once the folder is trusted.
+- **Two instructions files:** where `AGENTS.md` and `CLAUDE.md` are both at the root, Pi reads only `AGENTS.md`. The audit reports this as `check:one-context-file`. The sitting proposes one file, carries over what only the other one knew, and waits for a yes before removing either.
+- **The audit:** doctor reads `/skill:<name>` as an instruction. Its last line names the sitting in the form of the host running it.
+- **Docs:** `method/README.md` has an *Under Pi* section.
+
 ## 1.24.0 — 2026-10-03
 
 **The file the harness reads.** The context-file gates and the audit now read the instructions file the bindings name in a new *Context file* row. With no row, they read the first of `AGENTS.override.md`, `AGENTS.md` and `CLAUDE.md` that exists, and every line names the file it read. A repository that keeps one `AGENTS.md` for Pi, Codex and Claude Code is held to it, and nothing asks for a `CLAUDE.md` beside it. The ceiling row becomes *Context file ceiling*, and the old label is still read. `setup` settles which file before writing or auditing it, and never creates a second.

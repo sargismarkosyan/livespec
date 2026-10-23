@@ -166,22 +166,22 @@ jobs:
       # Conditioned on the install rather than on `!cancelled()` alone, because
       # these *do* depend on something: with the CLI missing all three fail
       # saying so, which is one finding reported three times.
+      # The two manifests run without --strict, and the step does what --strict
+      # would, minus exactly two warnings it names. --strict treats every warning
+      # as an error, and this repository is a plugin root that deliberately keeps
+      # its project CLAUDE.md at the root, where `plugin validate` warns, correctly
+      # for a consumer and wrongly for us. Since CLI 2.1.30x the warning comes from
+      # the marketplace call too, and both calls append a *plugin directory*
+      # section (icon, catalog notes) that the CLI says does not change the result:
+      # it grades a submission to Anthropic's catalog, which this plugin is not.
+      # Any *other* warning still fails the job. See specs/setup/README.md,
+      # "Why the manifests are not --strict".
       - name: Validate the marketplace manifest
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: claude plugin validate . --strict
-      # --strict is dropped here alone. It treats warnings as errors, and this
-      # repository is a plugin root that deliberately keeps its project CLAUDE.md
-      # at the root — where `plugin validate` warns, correctly for a consumer and
-      # wrongly for us. Any *other* warning still fails the job.
+        run: .github/scripts/validate-manifest.sh .
       - name: Validate the plugin manifest
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: |
-          out=$(claude plugin validate ./.claude-plugin/plugin.json 2>&1) || { echo "$out"; exit 1; }
-          echo "$out"
-          if echo "$out" | grep -F '❯' | grep -vq 'CLAUDE.md at the plugin root'; then
-            echo "::error::unexpected warning from plugin validate"
-            exit 1
-          fi
+        run: .github/scripts/validate-manifest.sh ./.claude-plugin/plugin.json
       - name: Validate the skills
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: claude plugin validate ./skills --strict

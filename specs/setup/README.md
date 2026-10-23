@@ -61,7 +61,7 @@ wherever the method says *test*, this repository means **eval case**:
 | **Context file** | `CLAUDE.md` — the one instructions file here; no `AGENTS.md` beside it. Named since [`0079`](../changes/0079-the-file-the-harness-reads.md), so the gates and the audit read this file by the row, not by a guess |
 | **Context file ceiling** | **139 lines**, read with `wc -l CLAUDE.md`; raised from 138 by [`0073`](../changes/0073-a-second-tree-as-ready-as-the-first.md) for the one line that tells every session how to make a tree; set at [`0046`](../changes/0046-a-number-and-no-file-to-copy.md) to the size the file was that day, per [`claude-md.md`](../../method/claude-md.md#length), and under the two hundred that page allows since [`0049`](../changes/0049-the-readers-own-limit.md). Raised only in the change that needs the room, with the reason written here beside the number. Read by `trace.py` since [`0048`](../changes/0048-the-file-every-session-reads-first.md): a file past it fails the build, and so does this table without the row. `check:loop-per-claude-md` still hands the prose to a mind |
 | **Deliverable of a version** | the pull request description. No picture in any form — see *What does not apply* |
-| **Manifest validation** | `claude plugin validate . --strict`, `./.claude-plugin/plugin.json`, `./skills` — offline, no credentials |
+| **Manifest validation** | `.github/scripts/validate-manifest.sh .` and `… ./.claude-plugin/plugin.json` (`claude plugin validate` minus two named warnings), `claude plugin validate ./skills --strict` — offline, no credentials |
 | **What a contributor owes a release** | one `patch`/`minor`/`major` label on the pull request, and a `## Changelog` section in its body — plus the Gherkin block when the change moves a `.feature`, and an `## Ids` section when it moves the audit surface (`skills/doctor/`, `tools/doctor.py`, `templates/bindings.md`, `method/gates.md`): *unchanged*, or the ids added and retired, held to the id table's diff. Nothing else — `version`, `CHANGELOG.md` and every `since` in `gates.md` are written by the pipeline and must not be typed in a branch; a new id row reads `next`. Since [`0042`](../changes/0042-the-release-writes-the-list.md). And since [`0052`](../changes/0052-the-run-beside-the-claim.md), **the run block** when the change touches `tests/`, `evals/` or `.github/scripts/`: a fenced block opening with `python3 .github/scripts/verify.py` — the *Verification* row above, which is where `version_gate.py` reads it — and the runner's own output beneath |
 
 ## The tag contract
@@ -256,7 +256,7 @@ what moved was what the numbers were allowed to be called.
 
 ## Gate wiring
 
-**Reconciled against livespec 1.24.0 on 2026-10-03.** One row per gate named in
+**Reconciled against livespec 1.25.0 on 2026-10-23.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
@@ -751,12 +751,13 @@ from being confused, and this section is where the confusion would have landed.
 - **`docs/feedback/`.** Issues here are filed from reading, not from using an
   app, so there are no screenshots to attach or to `git rm` on close.
 
-## Why one validation is not `--strict`
+## Why the manifests are not `--strict`
 
 `CLAUDE.md` is at the repository root, where a project's CLAUDE.md belongs and
 where every consuming repository will have it. This root is also a **plugin
-root**, and `claude plugin validate ./.claude-plugin/plugin.json` warns about
-that:
+root**, and `claude plugin validate` warns about that, for the marketplace
+manifest and the plugin manifest alike (the marketplace call started warning
+in CLI 2.1.30x):
 
 ```
 ❯ root: CLAUDE.md at the plugin root is not loaded as project context.
@@ -764,12 +765,24 @@ that:
 
 The warning is right for a consumer — nobody installing livespec gets that file
 as context — and wrong here, where it is project context for people working in
-this repository. `--strict` turns warnings into errors, so that one call runs
-without it. **The other two validations keep `--strict`**, and the job still
-fails on any warning that is not this exact one; the workflow greps for it by
-name rather than trusting that nothing else will ever warn.
+this repository.
 
-Trading one narrowed flag for a conventionally placed `CLAUDE.md` is the better
+The same CLI versions append a **plugin directory** section to both calls: no
+icon, and a note that a folder holding a marketplace manifest is checked as one
+plugin. The CLI says those checks *do not change the result below*; they grade a
+submission to Anthropic's plugin catalog, which this plugin is not.
+
+`--strict` turns every warning into an error, so the two manifest calls run
+without it, through
+[`validate-manifest.sh`](../../.github/scripts/validate-manifest.sh), which does
+what `--strict` would minus exactly those two: it drops the plugin directory
+section by its own opening and closing lines, and fails on any `❯` line left
+that is not the CLAUDE.md warning, or on the CLI failing. **`./skills` keeps
+`--strict`.** The script names what it lets through rather than trusting that
+nothing else will ever warn, so the next new warning fails the job and gets
+read.
+
+Trading two narrowed flags for a conventionally placed `CLAUDE.md` is the better
 side of that deal: this repository should look like the repositories it sets up.
 
 ## Running the plugin on itself
