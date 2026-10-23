@@ -103,8 +103,8 @@ session here is most likely to miss:
 ```sh
 python3 .github/scripts/verify.py                 # everything that can pass here
 python3 .github/scripts/trees.py new <name>       # a tree for the next change; list, clean
-claude plugin validate . --strict                 # marketplace manifest
-claude plugin validate ./.claude-plugin/plugin.json          # not --strict; see specs/setup/
+.github/scripts/validate-manifest.sh .    # marketplace manifest; see specs/setup/
+.github/scripts/validate-manifest.sh ./.claude-plugin/plugin.json  # the same
 claude plugin validate ./skills --strict
 python3 evals/runner/tiers.py --changed --scaffold  # maintainer step: the tiers, a call a row
 python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold  # the canary
