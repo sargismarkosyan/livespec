@@ -1,0 +1,13 @@
+# The fixture for 89: fieldnote on the branch for spec 0012 — an outing splits
+# where the watcher says — with its picture already recorded and a notes file
+# from the session that built it: a 40-line run, a 16-row case matrix, three
+# caveats (one written twice), a lockfile line that is not this change's, a
+# companion pull request in fieldnote-export carrying the same before-and-after
+# block, and a name the session made up for its fixture ("the shadow log").
+# The case grades the body and the review request being written for Ana, who
+# has read none of it. See specs/changes/0082.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, wc]
+requires: [python3]
+# The sitting (0058): the maintainer answers from person.md. Nothing to record:
+# the picture is on the branch, so what is graded is the two files.
