@@ -1475,6 +1475,8 @@ DOCTOR_FAULTS = [
      lambda r: edit(r, "specs/setup/README.md", ROW_CLAIM + "\n", ""), "open"),
     ("a record instructing by a skill this plugin no longer has", "check:skill-names",
      lambda r: write(r, "CLAUDE.md", "# The loop\n\nReport what you found with `/livespec:feedback`.\n"), "open"),
+    ("an AGENTS.md beside the CLAUDE.md the gates hold", "check:one-context-file",
+     lambda r: write(r, "AGENTS.md", CONTEXT_FILE), "open"),
     ("a row deferred across two changes", "check:deferred-clock",
      lambda r: (edit(r, "specs/setup/README.md", ROW_STRUCTURE, "| `gate:structure` | structure | deferred | since 0001 — later |"),
                 write(r, "specs/changes/0003-later.md", "# Spec 0003\n")), "open"),

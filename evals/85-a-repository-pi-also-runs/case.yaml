@@ -1,0 +1,14 @@
+# The workspace: chandlery, set up at 1.18.0 from Claude Code. The owner works
+# on it from Pi too — AGENTS.md says so — and .pi/settings.json already declares
+# a package of the shop's own. .claude/settings.json enables livespec; nothing
+# declares it for Pi.
+#
+# What is graded:
+#   - .pi/settings.json declares livespec as a git package pinned to a release
+#     tag, and keeps the package already there;
+#   - .claude/settings.json still enables the plugin;
+#   - the hand-back says Pi loads it only once the folder is trusted.
+# See specs/changes/0080.
+scaffold_script: scaffold.sh
+shell: [python3, make, git, ls, cat, head, tail, wc, grep, sed, pwd, echo]
+requires: [python3, git, make]

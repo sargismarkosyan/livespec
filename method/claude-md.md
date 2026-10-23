@@ -88,11 +88,19 @@ order is read, and every line says which. **One file, never two** — not even
 a line in a second file pointing at the first: two instructions files are two
 copies, and they start disagreeing the day one of them is edited.
 
+**And where there are two, one of them is unread.** A harness that reads one
+file per directory reads the first in its own order and never the rest — Pi
+reads `AGENTS.md` before `CLAUDE.md`, so under Pi a `CLAUDE.md` beside an
+`AGENTS.md` is never read. Gates holding that `CLAUDE.md` then pass on a file
+the agent does not see. The audit reports two files as open, and the sitting
+brings them to the one every harness in use reads.
+
 ## Where it goes
 
-The repository root. `.claude/CLAUDE.md` is also always loaded and is a legitimate
-place for it, but the root is where every other repository keeps it, and a file
-where everyone already expects it is one nobody has to be told about.
+The repository root. Claude Code also loads `.claude/CLAUDE.md`, but Pi does
+not, and the root is where every harness looks and every other repository
+keeps it — a file where everyone already expects it is one nobody has to be
+told about.
 
 **The reader you can count on is the agent.** This file is handed to every
 session whether or not anybody opens it, and a human reading it is occasional —

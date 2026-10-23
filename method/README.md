@@ -26,6 +26,12 @@ repository shares.
 
 ## Adding the marketplace and the plugin
 
+livespec has two named hosts. **Claude Code** loads it as a plugin, from the
+marketplace below. **Pi** loads the same skills as a package — see
+[*Under Pi*](#under-pi). The skills and the method are the same in both; what
+differs is how it is installed, how a skill is typed, and which settings file
+enables it for a repository.
+
 Two steps, in Claude Code:
 
 ```
@@ -42,7 +48,7 @@ loaded before the update.
 **To check it took**, start a session and look at the skill names: they arrive
 prefixed, as `livespec:refine-spec`, `livespec:todo`, `livespec:setup` and so
 on. Any of them can be typed directly — `/livespec:setup` is the usual way to
-start the install — and Claude can also reach `setup` itself, in which case it
+start the install, and under Pi it is `/skill:setup` — and Claude can also reach `setup` itself, in which case it
 says what it would write and waits rather than starting. A bare `refine-spec`
 with no prefix means a local copy in `.claude/skills/` is shadowing the plugin.
 
@@ -115,3 +121,41 @@ committed file only enables the plugin.
 Iterate there, and push when something settles. The alternative — editing the
 skills in `.claude/skills/` of whatever repo you are in — is how two copies of a
 method start disagreeing, which is the thing this plugin exists to stop.
+
+## Under Pi
+
+Pi does not load Claude Code plugins, but it implements the Agent Skills
+layout `skills/` is written in, and installs a git repository as a package:
+
+```
+pi install git:github.com/sargismarkosyan/livespec
+```
+
+**The skills arrive bare** — `setup`, `todo`, `refine-spec` — and are typed
+`/skill:setup`, `/skill:refine-spec`, where Claude Code takes
+`/livespec:setup`. Where two packages ship a skill of the same name, Pi keeps
+the first it found and warns at startup; the warning names which one won.
+
+**To wire it into the repository**, declare the package in `.pi/settings.json`,
+pinned to a release tag:
+
+```json
+{ "packages": ["git:github.com/sargismarkosyan/livespec@livespec--v<version>"] }
+```
+
+`pi install git:github.com/sargismarkosyan/livespec@livespec--v<version> -l`
+writes the same line. That is what [`setup`](../skills/setup/SKILL.md) writes
+beside `.claude/settings.json` when the repository is run from Pi too.
+**Pi reads it only once the folder is trusted** — until then the declaration
+is inert, as Claude Code's is before the folder is trusted there.
+
+**Updating** is moving the tag: Pi does not move a pinned ref on its own. A
+skill reaches the tools it ships from its own place — two directories up from
+the skill file — so nothing depends on a variable only Claude Code sets.
+
+**Working on the method itself**, `pi -e ~/Projects/livespec` loads a local
+checkout for one session, without touching any settings file.
+
+**The instructions file Pi reads** is the first of `AGENTS.override.md`,
+`AGENTS.md` and `CLAUDE.md` in a directory, and only that one — see
+[claude-md.md](claude-md.md#which-file).

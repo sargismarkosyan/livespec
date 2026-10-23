@@ -22,9 +22,11 @@ gate that keeps them honest — and then, in section 8, it starts them.
 things, and the gap between them is this section.
 
 Setting the process up writes `CLAUDE.md`, creates a `specs/` tree, adds gate
-scripts, edits `.claude/settings.json` and — since section 8 — continues into
-three more interviews. That is a decision with the human's name on it, and a
-repository looking ready for it is not the same as somebody asking for it.
+scripts, edits each host's settings file — `.claude/settings.json`, and
+`.pi/settings.json` where Pi is in use — and — since section 8 — continues
+into three more interviews. That is a decision with the human's name on it,
+and a repository looking ready for it is not the same as somebody asking for
+it.
 
 So before anything is written, say in a few lines:
 
@@ -40,9 +42,9 @@ all answers. Silence is not, and neither is a request that merely sounds nearby:
 somebody asking what the CI does, or tidying a `specs/` folder that already
 exists, has not asked for this.
 
-If they came here by typing `/livespec:setup`, they have already asked to start
-the skill — but they have not yet seen the list, so they still get it and still
-get the stop. It is shorter that time, because the answer is usually yes.
+If they came here by typing `/livespec:setup` — `/skill:setup` in Pi — they
+have already asked to start the skill — but they have not yet seen the list,
+so they still get it and still get the stop. It is shorter that time, because the answer is usually yes.
 
 **A request that already says to write is the answer, given in advance.** *Go
 ahead and write*, *you do not need to check back with me before each file* —
@@ -72,6 +74,12 @@ Find out what is true, and say it back before you touch a file:
   will go looking for it** — every other requirement falls out of work you are
   already doing, and that one does not. "There is no convention" is an answer;
   it gets said out loud rather than left blank.
+- **Which hosts run here.** The one this session is in — Pi sets
+  `PI_CODING_AGENT=true` in the shell; under Claude Code the skills arrive
+  named `livespec:<name>` — and any other the tree shows: a `.claude/`
+  directory, a `.pi/` directory. Never assume Claude Code. Section 8 enables
+  livespec for each host found, and section 6 reads the instructions files
+  knowing which of them each host reads.
 - **Greenfield or occupied?** A repository with 40,000 lines already in it is a
   different job from an empty one, and section 7 is about the difference.
 - **What a second tree would be missing, and what two would fight over.** The
@@ -131,9 +139,11 @@ yourself and record.
   <name>` writes the suite**, cases as folders of a prompt and its graders.
   Where that tool is gated or absent here, the fallback is said at the same
   moment: the cases are written in the format that tool reads, and a platform
-  that already runs graded suites runs them. **A case format of this
-  repository's own is never the answer**, and a sitting that finds the tool it
-  cannot run has found the format, not a reason to invent one.
+  that already runs graded suites runs them. Under Pi it is absent — it is
+  Claude Code's — and that is the same fallback: nobody is sent to install
+  another host to get a tool. **A case format of this repository's own is
+  never the answer**, and a sitting that finds the tool it cannot run has
+  found the format, not a reason to invent one.
 - **What does this talk to, and which of those can a test reach for real from a
   session here?** The store, the clock, the network and each service on it, the
   browser or terminal it is used through, whoever it signs people in with — one
@@ -223,8 +233,8 @@ uses to name its rule.
   bespoke layout invented in a sitting has one user and no documentation.
   **And run the tool before the sitting recommends it.** Where it is gated or
   absent — `plugin eval` is behind early access on some accounts, and livespec's
-  own suite hit exactly this — say so in one line, write the cases in the
-  format the tool reads anyway — a folder per case holding `prompt.md`, its
+  own suite hit exactly this; under Pi there is no `claude` to run — say so in
+  one line, write the cases in the format the tool reads anyway — a folder per case holding `prompt.md`, its
   `case.yaml`, and `graders/*.md`, which is the format this plugin's own
   `evals/` is in — and set up a platform that already runs graded suites to
   run them, so the native runner arriving later is a bonus, not a migration.
@@ -615,8 +625,9 @@ the table's *aliases* column lists, and the id is written into the row; a row
 two ids could claim is shown with both and left for the person; a row no id
 matches is either one of this repository's own — give it `local:` — or a row
 for nothing, which the person decides. Then move the rows, verbatim, into the
-template's tables — `python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --reshape`
-prints them in that shape, ids filled from the aliases, unmatched rows marked —
+template's tables — `python3 <plugin root>/tools/doctor.py --reshape`, the
+plugin root being two directories up from this skill file, prints them in that
+shape, ids filled from the aliases, unmatched rows marked —
 and apply what it printed with the person in the room. The reshaping is this
 sitting's; the audit alone never moves a column. Re-stamp the version only
 when the wiring actually moved; a ledger re-stamped for a run that changed
@@ -634,6 +645,18 @@ pointing at the other; two files are two copies that start disagreeing.
 Where there is none, ask which name the harnesses in use read, recommending
 `AGENTS.md` when more than one harness is in use, before writing either. The
 rest of this section calls it CLAUDE.md for short; it means that file.
+
+**Where the repository already keeps both** — `AGENTS.md` and `CLAUDE.md` at
+the root — it already has the two copies, and one host reads only one of
+them: Pi reads the first of `AGENTS.override.md`, `AGENTS.md` and `CLAUDE.md`
+in a directory and never the rest, so under Pi a `CLAUDE.md` beside an
+`AGENTS.md` is never read, whichever one the gates hold. Say which file each
+host found in section 1 reads. Then propose the one file every host in use
+reads — `AGENTS.md` wherever Pi is one of them — harvesting what only the
+other knew, as below for a rewrite. Show it, and **wait**: removing a file
+somebody wrote is the same yes as replacing one. Once it is given, the other
+file goes, and the **Context file** row names the one that stayed. A no
+leaves both, and says that the audit will keep reporting it open.
 
 Follow [`claude-md.md`](../../method/claude-md.md) — it says what has to be in
 it, what must stay out, and why. **It is a list of requirements, not a file to
@@ -705,9 +728,25 @@ The temptation is to spec what is already built. Do not.
 
 ## 8. Enable the plugin, then keep going
 
-Declare the marketplace and enable the plugin in the repository's
-`.claude/settings.json`, so a fresh clone gets the process without a manual
-install.
+Declare livespec for every host section 1 found, each in that host's own
+committed file, so a fresh clone gets the process without a manual install.
+Merge into a file that is already there; never drop what it declared.
+
+- **Claude Code** — declare the marketplace and enable the plugin in
+  `.claude/settings.json`, as
+  [`method/README.md`](../../method/README.md#wire-it-into-the-repository-instead-of-the-machine)
+  shows.
+- **Pi** — add livespec to `packages` in `.pi/settings.json`, pinned to the
+  release tag of the plugin installed:
+  `git:github.com/sargismarkosyan/livespec@livespec--v<version>`, the version
+  read from `.claude-plugin/plugin.json` at the plugin root. Pi does not move
+  a pinned ref on update, so the pin is what the repository runs until
+  somebody moves it. **Say in the hand-back that Pi loads it only once the
+  folder is trusted** — a first Pi session that looks ordinary is usually an
+  untrusted folder, not a failed install.
+
+A host nobody here runs gets no file: a `.pi/` directory in a repository only
+Claude Code opens is a second thing to maintain.
 
 Then report, short:
 
