@@ -30,6 +30,7 @@ headers and the stamp line below, so keep those as they are.
 | **Trees** | <the one directory every tree lives in, ignored; the command that makes, lists and cleans them; and the date a throwaway tree it made last went green — or *unproven*, with why> |
 | **What trees share** | <each resource a tree touches, as *own* (and how the command works it out), *shared* (and what starts it once) or *shared and contended, decided* (and why that is acceptable); and the env file's one source, with the lines each tree changes> |
 | **Claiming an issue** | <the marker that says an issue is taken, the command that puts it on and takes it off, and the command that lists the issues carrying it — or *not applicable, decided*, when there is no tracker> |
+| **What a pull request will close** | <the platform's own command that lists the issues a pull request will close when it merges, read from the platform this repository is on, and the date it was watched listing one — or *not applicable, decided*, where a merge here closes nothing: no tracker, or issues on another host than the pull requests> |
 | **Several merges at once** | <the platform's merge queue — the setting, the event the required checks run on, and the date a merge was watched through it — or *not available, decided*, with the platform's refusal, the fallback's settings (update a branch from main, merge once green) and the commands that drive it, one pull request at a time> |
 | **A sketch is owed** | <which changes owe one before approval — a repository with no app still has change specs> |
 | **Context file** | <the one instructions file the harnesses here read first — `AGENTS.md`, `CLAUDE.md`, or another — named so the gates and the audit read it rather than guess> |
@@ -77,6 +78,7 @@ tree carries how it was read back: the command, and when.
 | `gate:boundaries-table` | rule-bound tests present and no boundaries table | | |
 | `gate:crossing-names-a-boundary` | a rule tagged `@crosses:` a boundary the bindings have no row for | | |
 | `gate:change-number-unique` | two change specs sharing a number | | |
+| `gate:feature-to-feature` | a feature using a feature that does not exist | | |
 | `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | |
 | `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | |
 | `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | | |

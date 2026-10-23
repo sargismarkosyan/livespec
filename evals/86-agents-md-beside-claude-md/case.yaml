@@ -1,0 +1,16 @@
+# The workspace: chandlery, set up at 1.18.0 and worked on from Pi and Claude
+# Code, with AGENTS.md and CLAUDE.md both at the root. The bindings' Context
+# file row names CLAUDE.md, so the gates hold it; Pi reads AGENTS.md and never
+# CLAUDE.md. CLAUDE.md carries one rule AGENTS.md does not: never run
+# `make config` during the till export, 02:00–02:30.
+#
+# What is graded:
+#   - the sitting says which file each host reads, and that Pi never reads
+#     CLAUDE.md;
+#   - it proposes AGENTS.md as the one file, carrying the till-export rule,
+#     and waits before removing CLAUDE.md;
+#   - after the yes: AGENTS.md alone, carrying the rule, named in the row.
+# See specs/changes/0080.
+scaffold_script: scaffold.sh
+shell: [python3, make, git, ls, cat, head, tail, wc, grep, sed, pwd, echo, rm]
+requires: [python3, git, make]

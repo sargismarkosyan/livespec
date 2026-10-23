@@ -40,7 +40,12 @@ agent is supposed to follow, and a link to it elsewhere is one indirection too
 many at the moment it matters. **The approval step says what the person is
 holding** — the spec, and the sketch drawn from it. *Human approves* on its own
 is that step as it read before there was anything to hold, and it is what a file
-written back then still says to every session that opens it.
+written back then still says to every session that opens it. **The step that
+opens the pull request reads back what it will close**, with the command the
+bindings name, and fixes a closing line the platform did not register before
+handing the pull request back — the form and the reason are in
+[repository.md](repository.md#closing-an-issue). A check only the method
+mentions is a check the step that needs it never runs.
 
 **7. The rules worth having in front of you — a subset, not all of them.** Link
 the full set in the method and then list the ones that actually get broken here:
@@ -88,11 +93,19 @@ order is read, and every line says which. **One file, never two** — not even
 a line in a second file pointing at the first: two instructions files are two
 copies, and they start disagreeing the day one of them is edited.
 
+**And where there are two, one of them is unread.** A harness that reads one
+file per directory reads the first in its own order and never the rest — Pi
+reads `AGENTS.md` before `CLAUDE.md`, so under Pi a `CLAUDE.md` beside an
+`AGENTS.md` is never read. Gates holding that `CLAUDE.md` then pass on a file
+the agent does not see. The audit reports two files as open, and the sitting
+brings them to the one every harness in use reads.
+
 ## Where it goes
 
-The repository root. `.claude/CLAUDE.md` is also always loaded and is a legitimate
-place for it, but the root is where every other repository keeps it, and a file
-where everyone already expects it is one nobody has to be told about.
+The repository root. Claude Code also loads `.claude/CLAUDE.md`, but Pi does
+not, and the root is where every harness looks and every other repository
+keeps it — a file where everyone already expects it is one nobody has to be
+told about.
 
 **The reader you can count on is the agent.** This file is handed to every
 session whether or not anybody opens it, and a human reading it is occasional —

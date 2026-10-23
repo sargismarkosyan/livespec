@@ -220,6 +220,7 @@ def green_bindings(version: str) -> str:
             "| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | automated | `python3 gate.py` |",
             "| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | automated | `python3 gate.py test` |",
             "| `gate:change-number-unique` | two change specs sharing a number | automated | `python3 gate.py` |",
+            "| `gate:feature-to-feature` | a feature using a feature that does not exist | automated | `python3 gate.py` |",
             "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
         ]
     )
@@ -683,6 +684,44 @@ def report_control() -> None:
             assert result.returncode == 0, f"the report exited {result.returncode} on {name}"
             assert result.stdout.strip(), f"the report printed nothing on {name}"
 
+        # The body is read twice — for its run block and, since 0082, for the
+        # words it says before its evidence. Neither may cost a zero exit, and a
+        # body that could be counted is counted.
+        bodies = {
+            "an empty body": b"",
+            "a body that is only a folded block": b"<details><summary>Run</summary>\n\nlog\n</details>\n",
+            "a fence that never closes": b"The point.\n```\n$ run\nno end\n",
+            "bytes that are not text": bytes(range(256)) * 4,
+            "a body of ten thousand words": b"word " * 10000,
+        }
+        for name, content in bodies.items():
+            body = Path(workspace) / "body.md"
+            body.write_bytes(content)
+            result = subprocess.run(
+                [sys.executable, str(REPORT), str(good), str(good), str(missing), str(missing), str(missing), str(body)],
+                capture_output=True, text=True,
+            )
+            assert result.returncode == 0, f"the report exited {result.returncode} on {name}"
+            assert "## The opening" in result.stdout, f"the report printed no opening on {name}"
+
+        # The fault: a count that raises. The report is still built, the rest
+        # of it printed, and the exit is still zero; only the section goes.
+        broken = (
+            "import sys\n"
+            f"sys.path.insert(0, {str(SCRIPTS)!r})\n"
+            "import report\n"
+            "def opening(body):\n    raise RuntimeError('the count broke')\n"
+            "report.opening = opening\n"
+            "sys.exit(report.main())\n"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", broken, str(good), str(good), str(missing), str(missing), str(missing), str(body)],
+            capture_output=True, text=True,
+        )
+        assert result.returncode == 0, f"a count that raises made the report exit {result.returncode}"
+        assert "## Spec health" in result.stdout, "a count that raises took the rest of the report with it"
+        assert "## The opening" not in result.stdout, "a count that raised still printed a count"
+
 
 def verdict_control() -> None:
     """The two reds verify.py must keep apart, asserted from the correct side.
@@ -861,6 +900,16 @@ FAULTS = [
     ("two change specs sharing a number", TRACE,
      lambda r: write(r, "specs/changes/0001-second.md", "# Spec 0001: the second\n"),
      "fails", "share the number"),
+    # A feature names what it uses. The fixture holds one feature, `core`; a
+    # @uses naming any other id is the reference left behind by a rename, and
+    # one on a Rule: is in the wrong place. See specs/changes/0083.
+    ("a feature using a feature that does not exist", TRACE,
+     lambda r: edit(r, "specs/features/core/core.feature", "@feature:core @workflow:read-it\n",
+                    "@feature:core @workflow:read-it\n@uses:card\n"),
+     "fails", "names no feature"),
+    ("a feature's @uses on a rule rather than the feature", TRACE,
+     lambda r: edit(r, "specs/features/core/core.feature", "@rule:one\n", "@rule:one @uses:core\n"),
+     "fails", "goes on the Feature: line"),
     ("case graded only by what fired", SUITE,
      lambda r: write(r, "evals/case-rule/graders/outcome.md", "---\ntype: tool_used\ntool: Skill\nmin: 1\n---\n"),
      "fails", "never by what came out"),
@@ -1486,6 +1535,8 @@ DOCTOR_FAULTS = [
      lambda r: edit(r, "specs/setup/README.md", ROW_CLAIM + "\n", ""), "open"),
     ("a record instructing by a skill this plugin no longer has", "check:skill-names",
      lambda r: write(r, "CLAUDE.md", "# The loop\n\nReport what you found with `/livespec:feedback`.\n"), "open"),
+    ("an AGENTS.md beside the CLAUDE.md the gates hold", "check:one-context-file",
+     lambda r: write(r, "AGENTS.md", CONTEXT_FILE), "open"),
     ("a row deferred across two changes", "check:deferred-clock",
      lambda r: (edit(r, "specs/setup/README.md", ROW_STRUCTURE, "| `gate:structure` | structure | deferred | since 0001 — later |"),
                 write(r, "specs/changes/0003-later.md", "# Spec 0003\n")), "open"),

@@ -5,6 +5,7 @@
     case      ->  rule          every case names what it exists for, and a
                                 should-not-fire case claims only @refusal rules
     feature   ->  workflow      every feature says what it serves
+    feature   ->  feature       every @uses names a feature that exists
     workflow  ->  feature/case/persona/journey/phase
 
 The tests in this repository are eval cases: the product is judgment, and the
@@ -43,6 +44,17 @@ ROOT = Path(arguments[0]).resolve() if arguments else Path(__file__).resolve().p
 
 NS_TAG = re.compile(r"@(feature|rule|workflow|persona|journey|phase|crosses):([A-Za-z0-9][A-Za-z0-9._-]*)")
 FLAG = re.compile(r"@(planned|retired|refusal)\b")
+
+# A feature names another feature it builds on with @uses:<feature-id>, on its
+# Feature: line beside @workflow:, and may repeat it. It is opt-in and one-way:
+# only a feature declaring it is checked, and the shared feature never lists who
+# uses it. A @uses naming no feature is a dangling reference, like a workflow
+# that does not exist; one on a Rule: has the wrong place. See specs/changes/0083.
+USES_TAG = re.compile(r"@uses:([A-Za-z0-9][A-Za-z0-9._-]*)")
+
+
+def uses_of(lines: list[str]) -> list[str]:
+    return [value for line in lines for value in USES_TAG.findall(line)]
 
 # The boundaries a @crosses:<name> may name, read from this repository's
 # boundaries table — the `boundary:<name>` cells 0039 writes. The tag carries
@@ -105,6 +117,7 @@ def parse_gherkin(path: Path) -> dict:
         "features": 0,
         "rules": [],
         "loose_examples": 0,
+        "uses": [],
     }
     pending: list[str] = []
     current: dict | None = None
@@ -118,6 +131,7 @@ def parse_gherkin(path: Path) -> dict:
         if line.startswith("Feature:"):
             doc["features"] += 1
             doc["ids"], doc["flags"] = tags_of(pending)
+            doc["uses"] = uses_of(pending)
             doc["name"] = line[len("Feature:") :].strip()
             if not doc["name"]:
                 fail(rel(path), f"line {number}: the Feature: line has no name")
@@ -133,6 +147,7 @@ def parse_gherkin(path: Path) -> dict:
                 "planned": "planned" in flags,
                 "refusal": "refusal" in flags,
                 "crosses": ids.get("crosses", []),
+                "uses": uses_of(pending),
                 "examples": 0,
                 "line": number,
             }
@@ -259,6 +274,16 @@ for doc in features:
         if rule["crosses"] and rule["examples"] < 2:
             warn(where, f"@rule:{rule['id']} crosses {', '.join(rule['crosses'])} and has {rule['examples']} example(s); a crossing with no example of the boundary misbehaving has specced the demo")
         (planned_rules if rule["planned"] else live_rules)[rule["id"]] = {"doc": doc, "rule": rule}
+
+feature_ids = {value for doc in features for value in doc["ids"].get("feature", [])}
+for doc in features:
+    where = rel(doc["path"])
+    for value in doc["uses"]:
+        if value not in feature_ids:
+            fail(where, f"@uses:{value}, which names no feature; name the id that feature carries now, or remove the tag")
+    for rule in doc["rules"]:
+        for value in rule["uses"]:
+            fail(where, f"@rule:{rule['id']} carries @uses:{value}; @uses goes on the Feature: line, and the rule's own words say which rule it builds on")
 
 workflow_index: dict[str, dict] = {}
 for doc in workflows:

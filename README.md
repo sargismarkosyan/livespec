@@ -19,8 +19,15 @@ cannot quietly stop being true.
 /plugin install livespec@livespec
 ```
 
+That is Claude Code. Under [Pi](https://pi.dev) it is a package instead:
+
+```
+pi install git:github.com/sargismarkosyan/livespec
+```
+
 Wiring it into a repository rather than a machine, updating it, and developing
-against a local checkout are all in [method/README.md](method/README.md).
+against a local checkout are all in [method/README.md](method/README.md), for
+either host.
 
 ## What you get
 
@@ -35,7 +42,7 @@ Eight skills, and the discipline they enforce.
 | `refine-journeys` | Keeps the arc over time honest, and holds the seams that belong to no single workflow. |
 | `record-clip` | Records the animated GIF a version ships with: the app being *used*, in a real browser. |
 | `doctor` | Re-audits the gate wiring in a repository that already has the process — every claim the bindings make, checked against what owns the answer, with branch protection read back from the platform rather than from CI config. Corrects the record; wires nothing. |
-| `setup` | **Start here** — `/livespec:setup`, or ask for the process and let Claude reach it. Installs all of the above into a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, writes its bindings file and CLAUDE.md, and then runs the persona, workflow and journey interviews rather than leaving you a list of them. Whichever way it starts, it says what it will write and waits before writing any of it. |
+| `setup` | **Start here** — `/livespec:setup` in Claude Code, `/skill:setup` in Pi, or ask for the process and let the agent reach it. Installs all of the above into a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, writes its bindings file and CLAUDE.md, and then runs the persona, workflow and journey interviews rather than leaving you a list of them. Whichever way it starts, it says what it will write and waits before writing any of it. |
 
 Plus [the method](method/) — the loop, the repository conventions, what the gates
 have to mean, how to write a test that earns its keep, and what a repository's

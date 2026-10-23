@@ -309,6 +309,44 @@ bindings name — the same check the Gherkin block gets, for the same reason.
 Whether the output is real is a reading, and the report is what makes the
 reading cheap.
 
+### And the point, before the evidence
+
+**Everything above is what a body carries. This is how it is read.** A
+reviewer opens a pull request to decide on a change, and every item above is
+there to back that decision, not to replace it. An agent writes down
+everything it checked, and every item looks owed, so a body written that way
+grows until the change cannot be found in it. The reviewer then spends an hour
+on it, or approves it unread, and either way the evidence has stopped doing its
+job.
+
+So the body is written for the person reading it:
+
+- **The point comes first.** What changed and why, in two or three plain
+  lines, then what the reviewer should look at in the diff: the file, the
+  decision they are being asked to make. Somebody who stops reading there
+  knows what they are approving.
+- **The evidence comes after, and backs the point.** All of it is still owed:
+  the picture, the Gherkin, the run. None of it is dropped to make the body
+  short. The picture sits inline under the point. Run logs, case matrices and
+  caveats are folded where the platform can fold a block, and linked where it
+  cannot.
+- **Each fact once.** A caveat is stated where it applies and nowhere else.
+  Two pull requests that belong together link each other instead of carrying
+  the same block, so the two copies cannot start to disagree.
+- **In words the reviewer already has.** A name the session made up for
+  something it built or noticed is the one word in the body the reviewer has
+  never seen. Write what it names instead.
+
+**The message asking for review follows the same rule.** It is shorter still:
+the point, the link, and what the reviewer is asked to decide.
+
+**No gate can hold this.** Whether the first lines are the point is a reading,
+which is what review is for. A gate on length would be met by cutting words,
+not by putting the point first. What a report that already reads the body can
+do is count the words before its first heading, code block or folded block,
+and print that count where the reviewer is looking. It gates on nothing there,
+for the same reason it does not gate on the run.
+
 ## Commits
 
 One change spec, one commit. Message format:
@@ -411,19 +449,35 @@ Both mechanisms close the issue when the work reaches `main`. The difference is
 what they depend on. A keyword in a commit message relies on that commit's text
 surviving the merge, which under squash merging depends on a repository setting
 somebody can change later with no sign that it broke issue closing. A keyword in
-the description fires on merge whatever the strategy, and GitHub shows the link
-before the merge, so you can see it is wired up rather than hope.
+the description fires on merge whatever the strategy, and the platform can say
+before the merge which issues it will close, so you can see it is wired up
+rather than hope.
 
-**The keyword has to sit immediately before the reference.** `Closes #12` links;
-`Closes the structural half of #12` does not — GitHub reads it as a plain
-mention, nothing fires, and the line still *reads* like a link, which is how it
-goes unnoticed. Check before merging:
+**The keyword sits straight before a bare reference.** `Closes #12` closes, and
+so does the keyword followed by the issue's full URL, which links as well — the
+form for a repository whose convention is to link every reference. Two lines
+that read like a closing line close nothing:
 
-```sh
-gh pr view <n> --json closingIssuesReferences
-```
+- **words between** — `Closes the structural half of #12` is read as a plain
+  mention;
+- **a Markdown link** — the keyword, then `#12` linked to the issue. It is what
+  a convention of linking every reference produces, and GitLab registers
+  nothing from it, whichever URL the link points at. On GitHub it is untested.
 
-An empty list means no issue will close, whatever the description says.
+Both still *read* like a closing line, which is how they go unnoticed. The opposite
+holds too: a keyword in front of a real reference can register even inside a
+code span, so a description that discusses closing lines writes them without
+the keyword in front of a real reference.
+
+**So the step that opens the pull request reads back what it will close,
+before handing it back.** The platform says which issues the merge will close;
+what the description says is not that answer. An empty list means no issue will
+close. A list naming an issue the change does not finish means one will close
+that should not. Either is fixed in the description and read again. The command
+is a binding, read from the platform the repository is on, and it belongs in
+`specs/setup/README.md` beside the tracker — for the reason the protection
+table's read-back is one: a check written as one platform's command is a check
+nobody runs on another.
 
 ### Closing an issue by hand
 

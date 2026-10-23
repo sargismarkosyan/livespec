@@ -13,15 +13,15 @@ It is a **marketplace and a plugin at the same root** — `marketplace.json` lis
 one plugin whose `source` is `./`, so the plugin *is* the whole repo. Everything
 at the root is copied into every user's `~/.claude/plugins/cache`.
 
-Claude Code loads a fixed, short list of directories. Here, exactly one of them
-exists:
+Claude Code loads a fixed, short list of directories, and Pi, loading the same
+checkout as a package, finds the same one. Here, exactly one of them exists:
 
 | | | |
 |---|---|---|
-| `skills/` | **component** | The only thing Claude Code loads. Eight skills. |
+| `skills/` | **component** | The only thing either host loads. Eight skills. |
 | `method/` | payload | Inert. Reachable only because a `SKILL.md` links it. |
 | `templates/` | payload | Same. |
-| `tools/` | payload | Reached via `$CLAUDE_PLUGIN_ROOT/tools/…` from a skill body. |
+| `tools/` | payload | Reached at `<plugin root>/tools/…` from a skill body — two directories up from the skill file. |
 | `evals/` | neither | Test suite. Ships, never loads. |
 | `.github/` | neither | Repository maintenance. Ships, never loads. |
 

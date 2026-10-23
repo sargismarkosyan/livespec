@@ -53,6 +53,7 @@ The layers that say what the product *is* and who it is *for* close the same way
 
 ```
 feature   →  workflow              every feature says what it serves
+feature   →  feature               every feature it says it uses exists
 workflow  →  feature                no workflow nothing implements
 workflow  →  test                   no walkthrough nothing walks
 workflow  →  persona                no workflow for nobody
@@ -65,6 +66,8 @@ workflow  →  phase                  no dangling reference
 |---|---|
 | a feature naming no `@workflow:` | It serves nothing anybody wrote down. Tag it, or the thing it serves is missing from the workflows. |
 | a feature naming a workflow that does not exist | A typo, or an id that was renamed. |
+| a feature using a feature that does not exist | The shared feature it builds on was renamed or split, and this one still points at the old id. Name the id it carries now, or drop the tag if nothing is built on it any more. |
+| a `@uses` on a rule rather than the feature | The reference is to a feature, and it has one place to live. The rule's own words say which rule it builds on. |
 | a workflow claimed by no feature | Specced and never built. Tag a feature, or tag the workflow `@planned`. |
 | a workflow walked by no test | Its `Example:` blocks are a costume. Write the walkthrough. |
 | a workflow naming no live `@persona:` | A workflow for nobody, or one pointing only at a `@retired` persona. |
@@ -145,6 +148,14 @@ Feature: <what this component does>
   and refine-spec asks for the boundary misbehaving when it writes the rule.
 - `@workflow:<id>` on every feature, saying what it serves. It may repeat: one
   feature can serve two workflows.
+- **`@uses:<feature-id>` on a feature that builds on a rule another feature
+  owns** — a component specced once and reused, a primitive several features
+  share. It goes on the Feature: line beside `@workflow:`, and may repeat. It
+  is opt-in and one-way: a feature that builds on nothing carries none, and the
+  shared feature never lists who uses it. The tag makes the dependency
+  something the gate can check; the rule's own words still say which rule it
+  builds on and what it adds, citing that rule by id rather than restating it.
+  A `@uses` naming no feature fails, and so does one on a rule.
 - `@persona:<id>` and `@journey:<id>` on every workflow. **Not on features** —
   every feature reaches a persona through its workflow, and a second path to the
   same fact is a second thing to keep true.
@@ -522,6 +533,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:skipped-test-claims-nothing` | gate | 1.12.0 | wiring | — | | a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails |
 | `gate:fewer-ran-than-exist` | gate | 1.12.0 | wiring | — | | the runner reporting fewer rule-bound tests than the tree holds fails |
 | `gate:change-number-unique` | gate | 1.23.0 | wiring | — | | two change specs sharing a number fail, whatever their slugs; a gap does not |
+| `gate:feature-to-feature` | gate | next | wiring | — | | a feature using a feature that does not exist, or carrying @uses on a rule, fails |
 | `gate:crossing-names-a-boundary` | gate | 1.14.0 | boundary | — | | a rule tagged as crossing a boundary the bindings declare no row for fails |
 | `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire |
 
@@ -582,6 +594,7 @@ does not name — held to the same states, required by nothing.
 | `check:claim-row` | mechanical | 1.19.0 | record | — | | the bindings name the marker that says an issue is taken, and the commands that put it on and list it |
 | `check:claims-in-flight` | judgment | 1.19.0 | record | — | | every open issue carrying the marker has a branch, a tree or a pull request behind it, and none is released by the audit |
 | `check:skill-names` | mechanical | 1.0.0 | record | — | | every skill the record instructs by exists in this plugin |
+| `check:one-context-file` | mechanical | next | wiring | — | | one instructions file at the root, so the one the gates hold is the one every host reads |
 | `check:word-not-a-skill` | judgment | 1.0.0 | record | — | | the same word used as ordinary prose is left alone |
 | `check:loop-per-claude-md` | judgment | 1.1.0 | record | — | | the loop's own account says what the method now asks of each step |
 | `check:deferred-clock` | mechanical | 0.21.0 | wiring | — | | no row is deferred across two changes |
@@ -633,6 +646,8 @@ each one in turn and read the message it produces:
 | the runner ran fewer rule-bound tests than the tree holds | fails |
 | a rule crossing a boundary the bindings have no row for | fails |
 | two change specs sharing a number | fails |
+| a feature using a feature that does not exist | fails |
+| a feature's @uses on a rule rather than the feature | fails |
 | a crossing rule with a single example | warns, does not fail |
 
 If you change either gate, re-check it the same way, and keep the results in the

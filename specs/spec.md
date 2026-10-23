@@ -4,7 +4,8 @@
 
 A Claude Code plugin: eight skills and the method they run, installed into
 somebody else's repository so that the specification there cannot quietly stop
-being true. The code stays the source of truth; the spec carries the context the
+being true. Pi is the second named host: it loads the same skills as a package,
+and where the two differ, the skills name both. The code stays the source of truth; the spec carries the context the
 code cannot — who it is for, what they were trying to do, what was dropped and
 why — and the connection between them is a thing that can fail a build.
 
@@ -21,11 +22,12 @@ how two documents start meaning slightly different things.
 
 | Word | What it means here |
 |---|---|
-| **skill** | One `skills/<name>/SKILL.md`. The only thing Claude Code loads from this repository. |
+| **skill** | One `skills/<name>/SKILL.md`. The only thing a host loads from this repository. |
+| **host** | The agent harness a session runs in, which loads the skills: **Claude Code**, as a plugin from the marketplace, or **Pi**, as a package from git. Two are named and no other is promised. Where they differ — the command a person types, where the plugin's files are, the file that enables it, the instructions file read first — a skill names both, and works out which one it is in rather than assuming. |
 | **method** | The portable part, in `method/`. Names no command, filename or language, and no threshold that is a repository's own — the one number it carries is the reader's, and a reader is what every repository shares. |
 | **binding** | The part that is one repository's own — its commands, thresholds and paths. Lives in that repository's `specs/setup/README.md`, never here. |
 | **payload** | `method/`, `templates/`, `tools/`. Ships to every user, loads only when a skill body sends the agent to it. |
-| **component** | What Claude Code loads on its own. Here that is `skills/` and nothing else. |
+| **component** | What a host loads on its own. Here that is `skills/` and nothing else, under either host. |
 | **always-on cost** | The characters every session pays for a skill's name and description, whether or not it fires. Measured by `checks.py`, budgeted, and the reason a description is the expensive field. |
 | **fire** | A skill triggering on a request. **should-not-fire** is the case that holds a description from grabbing too much. |
 | **case** | One directory under `evals/` — a prompt, its graders, and the tags saying what it holds. This repository's unit of test. |

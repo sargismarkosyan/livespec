@@ -139,8 +139,8 @@ The questions worth the judgment, and what decides them:
   and is not right now announces nothing — present, accurate, and stale —
   and having been correct when written is not a reason to leave it.
 - **The names** (`word-not-a-skill`, `loop-per-claude-md`). The tool has
-  already flagged an instruction — `/livespec:<name>` — by a name this plugin
-  no longer has, with the name it now has. What it hands you is the rest: an
+  already flagged an instruction — `/livespec:<name>`, or `/skill:<name>` as
+  Pi takes it — by a name this plugin no longer has, with the name it now has. What it hands you is the rest: an
   old name in prose, which is an instruction to correct or a dated account to
   leave as written; the same word as ordinary prose, to be left alone —
   reporting one is how this check becomes noise on its second run — and the
@@ -194,6 +194,9 @@ not that sitting.
 - Wiring the method now asks for and this repository lacks becomes a row
   reading *deferred* — since which change, naming the version of the method
   that moved it — so it is on the two-change clock rather than in a report.
+- Two instructions files at the root (`check:one-context-file`) stay as they
+  are: bringing them to one replaces a file somebody wrote, which is the
+  sitting's kind of change. The line stays open, and the sitting is named.
 - A row deferred across two changes is either wired or written off — written
   off is *not applicable* with the reason in it. A *mocked* boundary row past
   the clock is the same: real, given a suite, or *unreachable* with the reason.
@@ -213,7 +216,7 @@ not that sitting.
 ## 3. Let the tool decide whether the audit is finished
 
 ```sh
-python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --validate <the scratch file>
+python3 <plugin root>/tools/doctor.py --validate <the scratch file>
 ```
 
 It refuses the record — exit 1, naming the line — if any id is missing, any
@@ -237,8 +240,9 @@ hand-back, verbatim, with nothing after it:
   was assumed never come out looking the same;
 - then the decisions, once — the rows marked `decided:` — with the tree's
   contradiction, where there is one, offered as evidence and not argued;
-- then, only where an open line names wiring, `/livespec:setup` and the rows
-  the sitting will be asked to wire, one per line. Where nothing is left for
+- then, only where an open line names wiring, the command that starts setup
+  as this host takes it — `/livespec:setup` in Claude Code, `/skill:setup` in
+  Pi — and the rows the sitting will be asked to wire, one per line. Where nothing is left for
   the sitting, no such line, and nobody is sent to a sitting nobody needs.
 
 Commit the record with the corrections. The same last line closes the
