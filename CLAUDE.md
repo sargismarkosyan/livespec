@@ -48,9 +48,9 @@ Getting this wrong is how two copies of a method start disagreeing.
    `patch`/`minor`/`major` label, a `## Changelog` section in the body that
    becomes the entry verbatim, — if a `.feature` moved — the Gherkin it
    moved, quoted or pinned, and — if the audit surface moved — an `## Ids`
-   section saying what the id list did: `unchanged`, or the ids added and
-   retired. **Do not touch `version`, `CHANGELOG.md`, or a `since` in
-   `gates.md`** — a new id row reads `next`, and the release writes the rest.
+   section: `unchanged`, or the ids added and retired. Read back what it will
+   close, with the bindings' command. **Do not touch `version`, `CHANGELOG.md`
+   or a `since` in `gates.md`** — a new id row reads `next`; the release writes the rest.
 7. Both required checks must pass; `main` is protected. Several in flight merge one
    at a time: `gh pr update-branch <n>`, then `gh pr merge <n> --auto --merge`.
    Merging releases: `release.yml` writes the bump, the entry, the tag and the Release.
