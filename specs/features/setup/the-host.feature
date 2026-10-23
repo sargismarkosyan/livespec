@@ -1,7 +1,7 @@
 @feature:setup-the-host @workflow:adopt-the-process
 Feature: The sitting works under either host, and for the hosts the repository runs
 
-  @rule:the-sitting-enables-livespec-for-each-host-in-use @planned
+  @rule:the-sitting-enables-livespec-for-each-host-in-use
   Rule: The sitting declares livespec for every host the repository's people run, each in that host's own file, and says when Pi will start loading it
 
     Example: a repository whose owner also runs Pi
@@ -18,7 +18,7 @@ Feature: The sitting works under either host, and for the hosts the repository r
       Then .claude/settings.json enables the plugin
       And no .pi/ directory is created
 
-  @rule:two-instructions-files-become-one @planned
+  @rule:two-instructions-files-become-one
   Rule: Where the repository keeps both AGENTS.md and CLAUDE.md, the sitting says which file each host in use reads, proposes the one file every host reads, carrying what only the other knew, and waits before removing either
 
     Example: a repository with both files, run under Pi and Claude Code
@@ -30,7 +30,7 @@ Feature: The sitting works under either host, and for the hosts the repository r
       And neither file is removed before the owner answers
       And once they agree, the context file row names AGENTS.md
 
-  @rule:a-skill-names-both-hosts-where-they-differ @planned
+  @rule:a-skill-names-both-hosts-where-they-differ
   Rule: Where a skill or the method tells somebody what to type, or reaches a tool the plugin ships, it works under either host: the command is named as Claude Code takes it and as Pi takes it, and the tool is reached from the skill file's own place rather than from a variable only one host sets
 
     Example: the command that starts the sitting

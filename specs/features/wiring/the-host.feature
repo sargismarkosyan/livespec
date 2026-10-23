@@ -1,7 +1,7 @@
 @feature:wiring-the-host @workflow:adopt-the-process
 Feature: The audit reads a repository the same under either host
 
-  @rule:an-instruction-in-either-hosts-form-is-read @planned
+  @rule:an-instruction-in-either-hosts-form-is-read
   Rule: The audit reads /skill:<name> as an instruction exactly as it reads /livespec:<name> — a skill that exists is clear, and a name that moved is reported with the name it now has, in the form it was written in
 
     Example: a record written for Pi
@@ -16,7 +16,7 @@ Feature: The audit reads a repository the same under either host
       Then it is reported as a name this plugin no longer has
       And /skill:todo is offered in its place
 
-  @rule:the-sitting-is-named-as-the-host-types-it @planned
+  @rule:the-sitting-is-named-as-the-host-types-it
   Rule: Where the audit leaves wiring for the sitting, the command it ends on is the one the host it runs under takes — /skill:setup under Pi, and /livespec:setup under Claude Code as before
 
     Example: an audit run under Pi
@@ -29,7 +29,7 @@ Feature: The audit reads a repository the same under either host
       When it hands back from a Claude Code session
       Then its last block starts with /livespec:setup, as it always has
 
-  @rule:a-second-instructions-file-is-open @planned
+  @rule:a-second-instructions-file-is-open
   Rule: Where more than one of AGENTS.override.md, AGENTS.md and CLAUDE.md sits at the root, the audit reports it open as wiring, naming the file a host reading AGENTS.md first reads and the one it never reads
 
     Example: AGENTS.md beside the CLAUDE.md the gates hold
