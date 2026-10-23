@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.28.0 — 2026-10-23
+
+A feature that builds on a rule another feature owns can say so with `@uses:<feature-id>` on its Feature line. The new gate `gate:feature-to-feature` fails a `@uses` that names no feature, or one put on a Rule, so renaming or splitting a shared feature can no longer leave a stale citation behind. The tag is opt-in and one-way: a feature with no `@uses` is asked nothing, and the shared feature doesn't list who uses it. `refine-spec` writes the tag, and the new rule cites the shared rule by id instead of restating it. The feature template explains the tag. After you upgrade, `doctor` asks for the new gate's row in your ledger.
+
 ## 1.27.0 — 2026-10-23
 
 **A pull request body puts the point before the evidence.** `method/repository.md` gains *And the point, before the evidence*. The body opens with what changed and why in two or three plain lines, then says where to look in the diff. The evidence comes after: the picture inline, long blocks folded or linked, and nothing owed dropped to make the body short. Each fact appears once: a companion pull request is linked, not copied. A name the session made up is replaced with what it names. The message asking for review follows the same rule. `record-clip` carries the rule in one bullet. The pull-request report now prints how many words a body says before its first heading, code block or folded block, and gates on nothing.
