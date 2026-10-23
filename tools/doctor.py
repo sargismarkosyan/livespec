@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """The part of an audit a script does.
 
-    python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" [specs/setup/README.md]
-    python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --reshape   # the ledger, in the template's shape
-    python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --registry  # the checks this tool knows, as id rows
-    python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --validate <finished-record>   # pass two: refuse, or write and reply
-    python3 "$CLAUDE_PLUGIN_ROOT/tools/doctor.py" --check <record>               # the same exit, nothing written
+    python3 <plugin root>/tools/doctor.py [specs/setup/README.md]
+    python3 <plugin root>/tools/doctor.py --reshape   # the ledger, in the template's shape
+    python3 <plugin root>/tools/doctor.py --registry  # the checks this tool knows, as id rows
+    python3 <plugin root>/tools/doctor.py --validate <finished-record>   # pass two: refuse, or write and reply
+    python3 <plugin root>/tools/doctor.py --check <record>               # the same exit, nothing written
+
+The plugin root is two directories up from the skill that runs this, under
+either host; `$CLAUDE_PLUGIN_ROOT` names the same place where it is set.
 
 Reads a consuming repository's bindings, its spec tree's listing, the latest
 change number, the loop's own account of itself, and the plugin's own files;
@@ -35,6 +38,7 @@ See specs/changes/0041 and method/gates.md, "The ids".
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -53,6 +57,20 @@ PROSE_PHRASES = ("not built yet", "to do", "we should", "for now")
 # Skills this plugin used to have, and what they are now. A record instructing
 # by an old name is an instruction that fails silently; see specs/changes/0037.
 FORMER_SKILLS = {"feedback": "todo"}
+# How a person types a skill, per host: Claude Code namespaces a plugin's skills,
+# Pi takes them bare after /skill:. Both are read as instructions; the one the
+# reply prints is the host's that runs this. See specs/changes/0080.
+INSTRUCTION = re.compile(r"/(?:livespec|skill):([a-z][a-z-]*)")
+
+
+def under_pi() -> bool:
+    """Pi sets PI_CODING_AGENT=true in every shell it starts; Claude Code does not."""
+    return os.environ.get("PI_CODING_AGENT", "").lower() == "true"
+
+
+def typed(skill: str) -> str:
+    """The command that starts a skill, as the host running this takes it."""
+    return f"/skill:{skill}" if under_pi() else f"/livespec:{skill}"
 TWO_CHANGE_CLOCK = 2
 
 # --- the registry ------------------------------------------------------------
@@ -139,6 +157,7 @@ CHECKS = [
     ("check:claim-row", "mechanical", "record", "the bindings name the marker that says an issue is taken, and the commands that put it on and list it"),
     ("check:claims-in-flight", "judgment", "record", "every open issue carrying the marker has a branch, a tree or a pull request behind it, and none is released by the audit"),
     ("check:skill-names", "mechanical", "record", "every skill the record instructs by exists in this plugin"),
+    ("check:one-context-file", "mechanical", "wiring", "one instructions file at the root, so the one the gates hold is the one every host reads"),
     ("check:word-not-a-skill", "judgment", "record", "the same word used as ordinary prose is left alone"),
     ("check:loop-per-claude-md", "judgment", "record", "the loop's own account says what the method now asks of each step"),
     ("check:deferred-clock", "mechanical", "wiring", "no row is deferred across two changes"),
@@ -771,37 +790,56 @@ def skill_hits(ctx: dict) -> list[tuple[str, int, str]]:
     hits: list[tuple[str, int, str]] = []
     for name, text in ((ctx["context_name"] or "CLAUDE.md", ctx["claude_md"]), (str(ctx["bindings_path"].name), ctx["text"])):
         for number, line in enumerate(text.splitlines(), 1):
-            for match in re.finditer(r"/livespec:([a-z][a-z-]*)|`([a-z][a-z-]*)`", line):
+            for match in re.finditer(r"/(?:livespec|skill):([a-z][a-z-]*)|`([a-z][a-z-]*)`", line):
                 word = match.group(1) or match.group(2)
                 hits.append((name, number, word))
     return hits
 
 
-def instructs_by(ctx: dict) -> list[tuple[str, int, str]]:
-    """The instruction form only: /livespec:<name>, which is what a record tells a session to type."""
-    hits: list[tuple[str, int, str]] = []
+def instructs_by(ctx: dict) -> list[tuple[str, int, str, str]]:
+    """The instruction form only — /livespec:<name> or /skill:<name>, what a record tells a session to type —
+    with the prefix it was written in, so an answer comes back in the same form."""
+    hits: list[tuple[str, int, str, str]] = []
     for name, text in ((ctx["context_name"] or "CLAUDE.md", ctx["claude_md"]), (str(ctx["bindings_path"].name), ctx["text"])):
         for number, line in enumerate(text.splitlines(), 1):
-            for match in re.finditer(r"/livespec:([a-z][a-z-]*)", line):
-                hits.append((name, number, match.group(1)))
+            for match in INSTRUCTION.finditer(line):
+                hits.append((name, number, match.group(0)[: -len(match.group(1))], match.group(1)))
     return hits
 
 
 def c_skill_names(ctx: dict) -> tuple[str, str]:
     stale = [
-        f"{file}:{line} /livespec:{word} — now /livespec:{FORMER_SKILLS[word]}"
-        for file, line, word in instructs_by(ctx)
+        f"{file}:{line} {form}{word} — now {form}{FORMER_SKILLS[word]}"
+        for file, line, form, word in instructs_by(ctx)
         if word in FORMER_SKILLS and word not in ctx["skills"]
     ]
     unknown = [
-        f"{file}:{line} /livespec:{word}"
-        for file, line, word in instructs_by(ctx)
+        f"{file}:{line} {form}{word}"
+        for file, line, form, word in instructs_by(ctx)
         if word not in ctx["skills"] and word not in FORMER_SKILLS
     ]
     if stale or unknown:
         return "open", "; ".join(stale + [u + " — no such skill" for u in unknown])
-    named = sorted({word for _, _, word in instructs_by(ctx) if word in ctx["skills"]})
+    named = sorted({word for _, _, _, word in instructs_by(ctx) if word in ctx["skills"]})
     return "clear", f"{len(named)} skill(s) instructed by, all exist: {', '.join(named)}" if named else "the record instructs by no skill name"
+
+
+def c_one_context_file(ctx: dict) -> tuple[str, str]:
+    """More than one instructions file at the root is two copies, and one of them is unread by somebody.
+
+    Pi reads only the first of CONTEXT_FILE_NAMES in a directory, so the rest are never read under it,
+    whichever one the gates hold. See specs/changes/0080.
+    """
+    present = [n for n in CONTEXT_FILE_NAMES if (ctx["root"] / n).is_file()]
+    if not present:
+        return "n/a", f"no instructions file at the root — looked for {', '.join(CONTEXT_FILE_NAMES)}"
+    if len(present) == 1:
+        return "clear", f"one instructions file at the root: {present[0]}"
+    held = ctx["context_name"] or present[0]
+    return "open", (
+        f"{' and '.join(present)} are all at the root — Pi reads {present[0]} and never reads {', '.join(present[1:])}; "
+        f"the gates hold {held}. Two files are two copies: the setup sitting brings them to one, and the context file row names it"
+    )
 
 
 def c_hook_no_row(ctx: dict) -> tuple[str, str]:
@@ -846,6 +884,7 @@ MECHANICAL = {
     "check:trees-row": c_trees_row,
     "check:claim-row": c_claim_row,
     "check:skill-names": c_skill_names,
+    "check:one-context-file": c_one_context_file,
     "check:deferred-clock": c_deferred_clock,
     "check:hook-no-row": c_hook_no_row,
     "check:record-only": c_record_only,
@@ -1015,7 +1054,7 @@ def j_merge_queue(ctx: dict) -> tuple[str, str]:
 
 def j_word_not_a_skill(ctx: dict) -> tuple[str, str]:
     old_names = [f"{f}:{n} `{w}` (now `{FORMER_SKILLS[w]}`)" for f, n, w in skill_hits(ctx) if w in FORMER_SKILLS and w not in ctx["skills"]]
-    prose = [f"{f}:{n} `{w}`" for f, n, w in skill_hits(ctx) if w in ctx["skills"] and not re.search(rf"/livespec:{w}\b", (ctx["claude_md"] if f == (ctx["context_name"] or "CLAUDE.md") else ctx["text"]).splitlines()[n - 1])]
+    prose = [f"{f}:{n} `{w}`" for f, n, w in skill_hits(ctx) if w in ctx["skills"] and not re.search(rf"/(?:livespec|skill):{w}\b", (ctx["claude_md"] if f == (ctx["context_name"] or "CLAUDE.md") else ctx["text"]).splitlines()[n - 1])]
     if not old_names and not prose:
         return "n/a", "no skill name appears as ordinary prose"
     parts = []
@@ -1297,7 +1336,7 @@ def reply(ctx: dict, lines: list[dict[str, str]], previous: list[dict[str, str]]
         out.append("- none")
     wiring_open = [r for r in opened if severity_of(r["id"]) == "wiring"]
     if wiring_open:
-        out += ["", "## For the sitting", "", "/livespec:setup"]
+        out += ["", "## For the sitting", "", typed("setup")]
         out += [f"  {r['id']} — {r['evidence'][:100]}" for r in wiring_open]
     return "\n".join(out) + "\n"
 
@@ -1351,7 +1390,7 @@ def main(argv: list[str]) -> int:
     root = Path.cwd()
     bindings_path = Path(args[0]).resolve() if args else root / "specs" / "setup" / "README.md"
     if not bindings_path.exists():
-        print(f"no bindings at {bindings_path} — this repository has never had the process set up. Run: /livespec:setup")
+        print(f"no bindings at {bindings_path} — this repository has never had the process set up. Run: {typed('setup')}")
         return 3
     ctx = context(root, bindings_path)
     if "--reshape" in flags:

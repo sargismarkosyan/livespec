@@ -581,6 +581,7 @@ does not name — held to the same states, required by nothing.
 | `check:claim-row` | mechanical | 1.19.0 | record | — | | the bindings name the marker that says an issue is taken, and the commands that put it on and list it |
 | `check:claims-in-flight` | judgment | 1.19.0 | record | — | | every open issue carrying the marker has a branch, a tree or a pull request behind it, and none is released by the audit |
 | `check:skill-names` | mechanical | 1.0.0 | record | — | | every skill the record instructs by exists in this plugin |
+| `check:one-context-file` | mechanical | next | wiring | — | | one instructions file at the root, so the one the gates hold is the one every host reads |
 | `check:word-not-a-skill` | judgment | 1.0.0 | record | — | | the same word used as ordinary prose is left alone |
 | `check:loop-per-claude-md` | judgment | 1.1.0 | record | — | | the loop's own account says what the method now asks of each step |
 | `check:deferred-clock` | mechanical | 0.21.0 | wiring | — | | no row is deferred across two changes |
