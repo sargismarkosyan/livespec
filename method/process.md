@@ -40,7 +40,8 @@ thing that fixes it.
    those rules, gets the repository's verification green, commits.
 6. **AI records the version** using the [`record-clip`](../skills/record-clip/SKILL.md) skill — one
    picture of the change, on the branch — and opens the pull request with it in
-   the body.
+   the body, reading back what the pull request will close
+   ([repository.md](repository.md#closing-an-issue)).
 7. **Human merges**, and uses the new version.
 8. **AI closes the issue**, with a comment saying what was asked, what shipped,
    and why they differ. Back to 1.
