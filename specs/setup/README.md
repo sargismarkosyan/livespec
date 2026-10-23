@@ -292,6 +292,7 @@ that gap is the thing a later `setup` run offers to close.
 | `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped or expected to fail claims no rule | automated | `trace.py`, since [`0051`](../changes/0051-a-test-that-did-not-run-claims-nothing.md) — reads the tests by their syntax and empties a claim under `unittest`'s `skip`, `skipIf`, `skipUnless` or `expectedFailure`, on the method or on its class, naming the test, the marker and the rule; broken by *a skipped rule-bound test claiming a rule* |
 | `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | automated | `tests.py`, since [`0051`](../changes/0051-a-test-that-did-not-run-claims-nothing.md) — counts the `test_*` methods under `tests/` against the *Ran N* `unittest` prints and fails on fewer with both numbers; more is inheritance and passes; broken by *the runner ran fewer rule-bound tests than the tree holds*. The cases have the same reconciliation from the board's own faults, *a case with no row in the table* and *a row for a case nobody has* |
 | `gate:change-number-unique` | two change specs sharing a number | automated | `trace.py`, since [`0078`](../changes/0078-a-number-nobody-else-holds.md) — reads `specs/changes/` and fails two files whose four-digit numbers match, naming both; a gap passes. Broken by *two change specs sharing a number*, held by `tests/test_change_numbers.py` |
+| `gate:feature-to-feature` | a feature using a feature that does not exist | automated | `trace.py`, since [`0083`](../changes/0083-a-feature-names-what-it-uses.md) — reads every `@uses:<id>` on the tag lines above a `Feature:` against the `@feature:` ids in the tree and fails one naming none, naming the file and the id; fails a `@uses` on a `Rule:`. A feature with no `@uses` is asked nothing. Broken by *a feature using a feature that does not exist* and *a feature's `@uses` on a rule rather than the feature*, held by `tests/test_uses.py` |
 
 **No row is deferred**, so nothing in this table is on the two-change clock; the
 two rows in *The boundaries* below that read *mocked* from 0039 passed it at
@@ -470,6 +471,8 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a rule crossing a boundary the bindings have no row for | fails | ✔ |
 | a crossing rule with a single example | **warns, does not fail** | ✔ |
 | two change specs sharing a number | fails | ✔ |
+| a feature using a feature that does not exist | fails | ✔ |
+| a feature's @uses on a rule rather than the feature | fails | ✔ |
 | case graded only by what fired | fails | ✔ |
 | case run fewer times than the floor | fails | ✔ |
 | a claimed rule no grader tests | fails | ✔ |

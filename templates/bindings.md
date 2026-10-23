@@ -77,6 +77,7 @@ tree carries how it was read back: the command, and when.
 | `gate:boundaries-table` | rule-bound tests present and no boundaries table | | |
 | `gate:crossing-names-a-boundary` | a rule tagged `@crosses:` a boundary the bindings have no row for | | |
 | `gate:change-number-unique` | two change specs sharing a number | | |
+| `gate:feature-to-feature` | a feature using a feature that does not exist | | |
 | `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | |
 | `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | |
 | `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | | |
