@@ -120,7 +120,9 @@ The reviewer is never handed a word they have to ask about.
    It gates on nothing, like the rest of the report. `inject.py`'s report
    control hands it degenerate bodies (empty, only a folded block, an unclosed
    fence, bytes that are not text, a very long one) and checks that each
-   still exits zero with something printed.
+   still exits zero and prints the section. Its fault is a count that raises:
+   the report must still exit zero and print everything else, with the
+   section left out.
 
 4. **This repository's bindings**: the *Pull-request report* row names the new
    section, and the *Fault injection* row says the report's control now
@@ -189,7 +191,8 @@ The reviewer is never handed a word they have to ask about.
 No storage. Files that move: `method/repository.md`,
 `skills/record-clip/SKILL.md`, `.github/scripts/report.py`,
 `.github/scripts/inject.py`, `specs/setup/README.md`, one new `.feature`, one
-new test file, `evals/89-a-body-that-buries-its-point/`, and this spec.
+new test file, `evals/89-a-body-that-buries-its-point/`, its row in
+`evals/README.md`, and this spec.
 
 **This spec commit stales nothing new.** The three rules are `@planned` and no
 case or test claims them. `verify.py` exits 2 only for the rows that are already

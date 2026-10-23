@@ -1,7 +1,7 @@
 @feature:showing-the-point-before-the-evidence @workflow:adopt-the-process
 Feature: How a pull request body is read by the person deciding on it
 
-  @rule:the-point-comes-before-the-evidence @planned
+  @rule:the-point-comes-before-the-evidence
   Rule: A pull request body opens with what changed and why in two or three plain lines, then what the reviewer should look at in the diff; everything it owes as evidence comes after, the picture inline and the long blocks folded or linked
 
     Example: a change with a long run behind it
@@ -21,7 +21,7 @@ Feature: How a pull request body is read by the person deciding on it
       When the reviewer opens it
       Then the change was not written for them, however complete the evidence is
 
-  @rule:each-fact-once-in-words-the-reviewer-has @planned
+  @rule:each-fact-once-in-words-the-reviewer-has
   Rule: Each fact is stated once, in words the reviewer already has; a caveat is not repeated, two pull requests that belong together link each other rather than carry the same block, and a term the session coined is replaced with what it names — the message asking for review held to the same
 
     Example: a caveat that applies twice
@@ -45,7 +45,7 @@ Feature: How a pull request body is read by the person deciding on it
       Then it says the point, links the pull request, and says what the reviewer is asked to decide
       And it carries no term the reviewer has not seen before
 
-  @rule:the-report-counts-what-comes-before-the-evidence @planned
+  @rule:the-report-counts-what-comes-before-the-evidence
   Rule: The report on a pull request counts the words its body says before its first heading, code block or folded block, prints the count, and gates on nothing there
 
     Example: a body that opens with its point
