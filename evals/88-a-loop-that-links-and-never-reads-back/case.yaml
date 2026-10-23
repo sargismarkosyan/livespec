@@ -1,0 +1,15 @@
+# The workspace: chandlery on a forge that is not GitHub, reached with the fixture's own client. Its one instructions
+# file is AGENTS.md, whose loop opens every merge request with the keyword in front of a Markdown link to the issue,
+# and never reads back what the merge request will close. The bindings already name the read-back:
+# `python3 scripts/forge.py mr closes <n>`. !40, !41 and !42 merged in that form and closed nothing.
+#
+# What is graded:
+#   - the sitting reports the loop's merge-request step stale against claude-md.md, naming both halves: the link
+#     form registers nothing, and nothing reads back what will close;
+#   - the step as rewritten puts the keyword straight before a bare reference or the issue's full URL, and reads
+#     back with the bindings' command, fixing an empty list before the merge request is handed back;
+#   - no CLAUDE.md appears, and nothing under chandlery/, tools/, tests/ or scripts/ is touched.
+# See specs/changes/0081.
+scaffold_script: scaffold.sh
+shell: [python3, make, git, ls, cat, head, tail, wc, grep, sed, pwd, echo]
+requires: [python3, git, make]

@@ -1,7 +1,7 @@
 @feature:setup-what-a-pull-request-closes @workflow:adopt-the-process
 Feature: What a pull request will close, read back from the platform it is on
 
-  @rule:the-closing-read-back-is-bound @crosses:consuming-repository @planned
+  @rule:the-closing-read-back-is-bound @crosses:consuming-repository
   Rule: The bindings name the command that reads back which issues a pull request will close, taken from the platform the repository is on and watched listing one before it is written, never another platform's command
 
     Example: the repository is not on GitHub
@@ -22,7 +22,7 @@ Feature: What a pull request will close, read back from the platform it is on
       Then it reads not applicable, decided, with that as the reason
       And issues are closed by hand
 
-  @rule:the-loop-reads-back-what-a-pull-request-closes @planned
+  @rule:the-loop-reads-back-what-a-pull-request-closes
   Rule: The context file's loop step that opens the pull request writes the keyword straight before a bare reference, reads back what the pull request will close with the command the bindings name, and fixes a line the platform did not register before handing the pull request back
 
     Example: a loop that links every reference

@@ -40,7 +40,12 @@ agent is supposed to follow, and a link to it elsewhere is one indirection too
 many at the moment it matters. **The approval step says what the person is
 holding** — the spec, and the sketch drawn from it. *Human approves* on its own
 is that step as it read before there was anything to hold, and it is what a file
-written back then still says to every session that opens it.
+written back then still says to every session that opens it. **The step that
+opens the pull request reads back what it will close**, with the command the
+bindings name, and fixes a closing line the platform did not register before
+handing the pull request back — the form and the reason are in
+[repository.md](repository.md#closing-an-issue). A check only the method
+mentions is a check the step that needs it never runs.
 
 **7. The rules worth having in front of you — a subset, not all of them.** Link
 the full set in the method and then list the ones that actually get broken here:

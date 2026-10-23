@@ -411,19 +411,35 @@ Both mechanisms close the issue when the work reaches `main`. The difference is
 what they depend on. A keyword in a commit message relies on that commit's text
 surviving the merge, which under squash merging depends on a repository setting
 somebody can change later with no sign that it broke issue closing. A keyword in
-the description fires on merge whatever the strategy, and GitHub shows the link
-before the merge, so you can see it is wired up rather than hope.
+the description fires on merge whatever the strategy, and the platform can say
+before the merge which issues it will close, so you can see it is wired up
+rather than hope.
 
-**The keyword has to sit immediately before the reference.** `Closes #12` links;
-`Closes the structural half of #12` does not — GitHub reads it as a plain
-mention, nothing fires, and the line still *reads* like a link, which is how it
-goes unnoticed. Check before merging:
+**The keyword sits straight before a bare reference.** `Closes #12` closes, and
+so does the keyword followed by the issue's full URL, which links as well — the
+form for a repository whose convention is to link every reference. Two lines
+that read like a closing line close nothing:
 
-```sh
-gh pr view <n> --json closingIssuesReferences
-```
+- **words between** — `Closes the structural half of #12` is read as a plain
+  mention;
+- **a Markdown link** — the keyword, then `#12` linked to the issue. It is what
+  a convention of linking every reference produces, and GitLab registers
+  nothing from it, whichever URL the link points at. On GitHub it is untested.
 
-An empty list means no issue will close, whatever the description says.
+Both still *read* like a closing line, which is how they go unnoticed. The opposite
+holds too: a keyword in front of a real reference can register even inside a
+code span, so a description that discusses closing lines writes them without
+the keyword in front of a real reference.
+
+**So the step that opens the pull request reads back what it will close,
+before handing it back.** The platform says which issues the merge will close;
+what the description says is not that answer. An empty list means no issue will
+close. A list naming an issue the change does not finish means one will close
+that should not. Either is fixed in the description and read again. The command
+is a binding, read from the platform the repository is on, and it belongs in
+`specs/setup/README.md` beside the tracker — for the reason the protection
+table's read-back is one: a check written as one platform's command is a check
+nobody runs on another.
 
 ### Closing an issue by hand
 

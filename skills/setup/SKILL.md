@@ -470,6 +470,20 @@ takes it off, and the command that lists the issues carrying it. A tracker
 that refuses the label goes into the row as *unmade*, with the refusal and
 who can make it; no tracker reads *not applicable, decided*.
 
+**Then what a pull request will close — *What a pull request will close*.**
+The step that opens a pull request reads back which issues it will close
+([`repository.md`](../../method/repository.md#closing-an-issue)), with the
+command this row names. **Read it from the platform this repository is on**:
+on GitHub `gh pr view <n> --json closingIssuesReferences`, on GitLab
+`glab api projects/<id>/merge_requests/<n>/closes_issues`, elsewhere what
+that forge's own client answers. Never another platform's command because it
+is the familiar one: written there, it is a check nobody can run here.
+Run it against a merged pull request that named an issue before writing the
+row, so the row carries the date it was watched listing one, or *unobserved*
+with why; where it comes back empty, say which line closed nothing. Issues on
+another host than the pull requests close nothing on merge: *not applicable,
+decided*, and issues close by hand.
+
 **Write the two tree rows from section 4** — **Trees**, with the directory, the
 command and the date its proof went green, and **What trees share**, one line
 per resource in its kind and the env file's one source. The audit reads the
