@@ -6,7 +6,8 @@
 
 One file per journey, `@journey:<id>` on the first line, prose and tables and
 never Gherkin, and the structure is in [the template](../../templates/journey.md).
-A journey points at nothing: the workflow files say which arc they sit in.
+A journey points at nothing: the workflow files say which arc they sit in, and
+which of its phases — by the headings of the map, so renaming one moves them too.
 
 ## What the arc is here
 

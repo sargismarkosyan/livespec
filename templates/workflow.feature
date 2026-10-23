@@ -1,5 +1,10 @@
-@workflow:<id> @persona:<id> @journey:<id>
+@workflow:<id> @persona:<id> @journey:<id> @phase:<name>
 Feature: <Verb the thing — what they are attempting>
+
+  # @phase: is optional, and may repeat: the phase of the journey this attempt
+  # is made in, as its heading reads in the journey's map, in lower case with
+  # hyphens — "Putting it in" is putting-it-in. Leave it off where no phase
+  # fits; never add a phase to the journey to make one.
 
   # ── The job story ───────────────────────────────────────────────────────────
   # Situation first, never role first. "As a user, I want…" starts from who

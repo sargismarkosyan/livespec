@@ -1,4 +1,4 @@
-@workflow:adopt-the-process @persona:agent-accelerated-owner @journey:trusting-the-spec-again
+@workflow:adopt-the-process @persona:agent-accelerated-owner @journey:trusting-the-spec-again @phase:putting-it-in @phase:the-changes-after
 Feature: Adopt the process
 
   When a repository has grown to where regressions arrive out of changes whose

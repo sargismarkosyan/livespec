@@ -6,7 +6,7 @@
                                 should-not-fire case claims only @refusal rules
     feature   ->  workflow      every feature says what it serves
     feature   ->  feature       every @uses names a feature that exists
-    workflow  ->  feature/case/persona/journey
+    workflow  ->  feature/case/persona/journey/phase
 
 The tests in this repository are eval cases: the product is judgment, and the
 only way to hold judgment is to run it against a prompt and grade what comes
@@ -42,7 +42,7 @@ arguments = [a for a in sys.argv[1:] if a != "--json"]
 AS_JSON = "--json" in sys.argv
 ROOT = Path(arguments[0]).resolve() if arguments else Path(__file__).resolve().parents[2]
 
-NS_TAG = re.compile(r"@(feature|rule|workflow|persona|journey|crosses):([A-Za-z0-9][A-Za-z0-9._-]*)")
+NS_TAG = re.compile(r"@(feature|rule|workflow|persona|journey|phase|crosses):([A-Za-z0-9][A-Za-z0-9._-]*)")
 FLAG = re.compile(r"@(planned|retired|refusal)\b")
 
 # A feature names another feature it builds on with @uses:<feature-id>, on its
@@ -206,6 +206,34 @@ for path in persona_files:
     unique("persona", value, rel(path))
     personas[value] = {"path": path, "retired": "retired" in flags}
 
+# A journey's phases are the column headings of its map, in order — the first
+# table under "## The map". The heading is the name: a workflow's @phase: is it
+# in lower case, every run of other characters one hyphen, so the journey's
+# prose carries no tag. See specs/changes/0084.
+MAP_HEADING = re.compile(r"^##\s+The map\s*$", re.IGNORECASE)
+
+
+def phase_name(heading: str) -> str:
+    text = re.sub(r"[*_`]", "", heading).lower()
+    text = re.sub(r"['\u2019]", "", text)
+    return re.sub(r"[^a-z0-9]+", "-", text).strip("-")
+
+
+def phases_of(path: Path) -> list[str]:
+    """The phase names of a journey's map, left to right; empty where it has none."""
+    in_map = False
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if MAP_HEADING.match(line.strip()):
+            in_map = True
+            continue
+        if in_map and line.startswith("## "):
+            return []
+        if in_map and line.strip().startswith("|"):
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            return [name for name in (phase_name(c) for c in cells[1:]) if name]
+    return []
+
+
 journeys: dict[str, dict] = {}
 for path in journey_files:
     ids, _ = parse_markdown_tags(path)
@@ -214,7 +242,7 @@ for path in journey_files:
         fail(rel(path), "declares no @journey: on its first line")
         continue
     unique("journey", value, rel(path))
-    journeys[value] = {"path": path}
+    journeys[value] = {"path": path, "phases": phases_of(path)}
 
 crossable = boundary_names()
 live_rules: dict[str, dict] = {}
@@ -271,6 +299,7 @@ for doc in workflows:
         "doc": doc,
         "personas": doc["ids"].get("persona", []),
         "journeys": doc["ids"].get("journey", []),
+        "phases": doc["ids"].get("phase", []),
         "planned": "planned" in doc["flags"],
         "features": [],
         "walked_by": [],
@@ -426,6 +455,15 @@ for value, entry in sorted(workflow_index.items()):
     for named in entry["journeys"]:
         if named not in journeys:
             fail(where, f"names @journey:{named}, which does not exist")
+    # A phase is optional, so naming none says nothing; naming one the
+    # journeys it names do not have is a dangling reference. See 0084.
+    known = [j for j in entry["journeys"] if j in journeys]
+    for phase in entry["phases"]:
+        if not entry["journeys"]:
+            fail(where, f"names @phase:{phase} and no @journey: to find it in")
+        elif known and not any(phase in journeys[j]["phases"] for j in known):
+            have = "; ".join(f"{j} has {', '.join(journeys[j]['phases']) or 'no map'}" for j in known)
+            fail(where, f"names @phase:{phase}, which no journey it names has — {have}")
     if not entry["journeys"]:
         # Where an attempt sits in the arc is a judgment, so this warns. A warning
         # surviving two versions either becomes an error or gets deleted.
@@ -590,6 +628,20 @@ if workflow_index and not AS_JSON:
         print(f"    @workflow:{value}  for {who}")
         for served in entry["features"] or ["(nothing yet)"]:
             print(f"      {served}")
+
+# The second half: every journey's phases in order, and the workflows naming
+# each. Generated, never typed. See specs/changes/0084.
+if journeys and not AS_JSON:
+    print("\n  the journeys — every phase in order, and the workflows made in it")
+    for value, journey in sorted(journeys.items()):
+        print(f"    @journey:{value}")
+        on_it = {w: e for w, e in sorted(workflow_index.items()) if value in e["journeys"]}
+        for phase in journey["phases"]:
+            named = [f"@workflow:{w}" for w, e in on_it.items() if phase in e["phases"]]
+            print(f"      {phase}: {', '.join(named) or '(nothing names it)'}")
+        unplaced = [f"@workflow:{w}" for w, e in on_it.items() if not any(p in journey["phases"] for p in e["phases"])]
+        if unplaced:
+            print(f"      not yet placed in a phase: {', '.join(unplaced)}")
 
 cases_claiming = sum(1 for c in suite if c["claims"]["rules"] or c["claims"]["workflows"])
 notes.append(f"{len(suite)} eval case(s), {cases_claiming} claiming a rule or a workflow")

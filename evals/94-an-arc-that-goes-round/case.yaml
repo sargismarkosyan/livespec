@@ -1,0 +1,6 @@
+# The fixture for 94: fieldnote whose journey reads as one pass, from before the log to the quiet months, when the person who walks it says every spring starts it over. The case grades the loop written as one line under the map naming both phases, and no column added for it.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See specs/changes/0084.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat]
+# The sitting (0058): the maintainer answers from person.md, about the last
+# time rather than the usual time, and never names the phases or draws the map.

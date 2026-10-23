@@ -158,8 +158,9 @@ The template in the workflows folder carries this shape with the rules inline.
 | every workflow is walked by an end-to-end test | error |
 | a journey naming a workflow that does not exist | error |
 | a workflow naming no journey | warning |
+| a workflow naming a phase its journey does not have | error |
 
-**Six rows, and in a repository where the workflow layer arrived months after
+**Seven rows, and in a repository where the workflow layer arrived months after
 `setup` did, possibly none of them wired.** The gate wiring ledger in
 `specs/setup/README.md` is what says which — read it before repeating the table
 above as fact, move the rows this change makes applicable, and treat a row that
@@ -200,6 +201,13 @@ flight, per
 numbers stepped past and where each was held, and say so when the open pull
 requests could not be read. Feature *retagging* needed to keep the gate green
 belongs in the same commit; nothing else in the feature specs moves.
+
+**Name the phase it is made in.** Beside `@journey:`, a workflow names the
+phase or phases of that journey the attempt happens in — `@phase:`, the
+heading from the journey's map, in lower case with hyphens. Name one where it
+plainly fits. Where none does, leave the tag off and say so in the hand-back;
+never add or rename a phase to make one fit, because the journey is the
+sibling skill's file and its own change.
 
 Run the gate. Green, warnings read rather than skimmed. Commit the spec on its
 own.
