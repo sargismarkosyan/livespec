@@ -9,6 +9,7 @@ at a fixture standing in for one.
 from __future__ import annotations
 
 import json
+import os
 import re
 from datetime import date
 import shutil
@@ -17,6 +18,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -28,6 +30,20 @@ import inject  # noqa: E402
 from rulelib import rule  # noqa: E402
 
 INSTALLED = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())["version"]
+
+# Every test reads as Claude Code unless it says otherwise: the reply's last line
+# follows the host running the tool, and verify.py is run from either. See
+# specs/changes/0080.
+CLAUDE_CODE = mock.patch.dict(os.environ)
+
+
+def setUpModule() -> None:
+    CLAUDE_CODE.start()
+    os.environ.pop("PI_CODING_AGENT", None)
+
+
+def tearDownModule() -> None:
+    CLAUDE_CODE.stop()
 
 
 def repo(bindings: str | None = None, files: dict[str, str] | None = None) -> Path:
@@ -555,6 +571,80 @@ class BindingsSomebodyElseTyped(unittest.TestCase):
         line = audit(instruction)["check:skill-names"]
         self.assertEqual(line["state"], "open")
         self.assertIn("now /livespec:todo", line["evidence"])
+
+
+class TheHost(unittest.TestCase):
+    """Pi beside Claude Code: the instruction in either form, the last line in the host's, one instructions file."""
+
+    @rule("an-instruction-in-either-hosts-form-is-read")
+    def test_a_skill_named_in_pis_form_is_read_and_found(self):
+        lines = audit(repo(files={"CLAUDE.md": "# loop\n\nType `/skill:refine-spec` to write the spec.\n"}))
+        self.assertEqual(lines["check:skill-names"]["state"], "clear", lines["check:skill-names"]["evidence"])
+        self.assertIn("refine-spec", lines["check:skill-names"]["evidence"])
+        self.assertNotIn("refine-spec", lines["check:word-not-a-skill"]["evidence"], "an instruction read as prose")
+
+    @rule("an-instruction-in-either-hosts-form-is-read")
+    def test_an_old_name_in_pis_form_is_answered_in_pis_form(self):
+        line = audit(repo(files={"CLAUDE.md": "# loop\n\nReport what you found with `/skill:feedback`.\n"}))["check:skill-names"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("/skill:feedback — now /skill:todo", line["evidence"])
+        unknown = audit(repo(files={"CLAUDE.md": "# loop\n\nRun `/skill:nonesuch`.\n"}))["check:skill-names"]
+        self.assertEqual(unknown["state"], "open")
+        self.assertIn("/skill:nonesuch — no such skill", unknown["evidence"])
+
+    def _wiring_left(self) -> str:
+        text = inject.green_bindings(INSTALLED)
+        text = "\n".join(line for line in text.splitlines() if "gate:structure" not in line) + "\n"
+        root = repo(text)
+        problems, _, answer = validate(root, finished(root))
+        self.assertEqual(problems, [])
+        return answer
+
+    @rule("the-sitting-is-named-as-the-host-types-it")
+    def test_under_pi_the_sitting_is_skill_setup(self):
+        with mock.patch.dict(os.environ, {"PI_CODING_AGENT": "true"}):
+            answer = self._wiring_left()
+        tail = answer.rstrip().splitlines()
+        self.assertIn("/skill:setup", tail)
+        self.assertNotIn("/livespec:setup", answer)
+        command_at = tail.index("/skill:setup")
+        self.assertIn("check:row-per-gate", "\n".join(tail[command_at + 1:]))
+
+    @rule("the-sitting-is-named-as-the-host-types-it")
+    def test_under_claude_code_the_sitting_is_livespec_setup_as_before(self):
+        answer = self._wiring_left()
+        self.assertIn("/livespec:setup", answer.splitlines())
+        self.assertNotIn("/skill:setup", answer)
+
+    @rule("the-sitting-is-named-as-the-host-types-it")
+    def test_no_bindings_offers_the_sitting_in_the_hosts_form(self):
+        empty = Path(tempfile.mkdtemp(prefix="none-"))
+        env = dict(os.environ, PI_CODING_AGENT="true")
+        result = subprocess.run([sys.executable, str(ROOT / "tools" / "doctor.py")], cwd=empty, capture_output=True, text=True, env=env)
+        self.assertEqual(result.returncode, 3)
+        self.assertIn("Run: /skill:setup", result.stdout)
+
+    @rule("a-second-instructions-file-is-open")
+    def test_agents_md_beside_the_claude_md_the_gates_hold_is_open_wiring(self):
+        text = inject.green_bindings(INSTALLED)
+        root = repo(text, files={"AGENTS.md": "# The loop\n\nThe owner's notes.\n"})
+        line = audit(root)["check:one-context-file"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("Pi reads AGENTS.md and never reads CLAUDE.md", line["evidence"])
+        self.assertIn("setup sitting", line["evidence"])
+        self.assertEqual(doctor.severity_of("check:one-context-file"), "wiring", "the sitting closes it, so the reply sends it there")
+
+    @rule("a-second-instructions-file-is-open")
+    def test_one_file_is_clear_and_none_is_not_applicable(self):
+        only_agents = repo()
+        (only_agents / "CLAUDE.md").rename(only_agents / "AGENTS.md")
+        line = audit(only_agents)["check:one-context-file"]
+        self.assertEqual(line["state"], "clear", line["evidence"])
+        self.assertIn("AGENTS.md", line["evidence"])
+        self.assertEqual(audit(repo())["check:one-context-file"]["state"], "clear")
+        none = repo()
+        (none / "CLAUDE.md").unlink()
+        self.assertEqual(audit(none)["check:one-context-file"]["state"], "n/a")
 
 
 class CheckOnly(unittest.TestCase):
