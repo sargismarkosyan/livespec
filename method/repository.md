@@ -311,41 +311,106 @@ reading cheap.
 
 ### And the point, before the evidence
 
-**Everything above is what a body carries. This is how it is read.** A
-reviewer opens a pull request to decide on a change, and every item above is
-there to back that decision, not to replace it. An agent writes down
+**Everything above is what a body carries. This is how it is written and
+read.** A reviewer opens a pull request to decide on a change, and every item
+above is there to back that decision, not to replace it. An agent writes down
 everything it checked, and every item looks owed, so a body written that way
-grows until the change cannot be found in it. The reviewer then spends an hour
-on it, or approves it unread, and either way the evidence has stopped doing its
-job.
+grows until the change cannot be found in it. Two readers are now owed the
+same body: the person deciding, who did not ask for the change, and any
+reviewing or testing agent that reads the body as the author's intent.
 
-So the body is written for the person reading it:
+**The repository's template wins.** Where the repository has a pull request
+template, the body fills it: every heading and checkbox, in its order. Nothing
+is renamed, replaced or added beside it; what follows goes into the field that
+matches it, and folded evidence with no field of its own closes the testing
+section. With no template, the order is the point, with no heading; the links
+line; the sections the repository's own rules require; then decisions, testing
+and risk, each only when it has something to say; then the folded evidence.
 
-- **The point comes first.** What changed and why, in two or three plain
-  lines, then what the reviewer should look at in the diff: the file, the
-  decision they are being asked to make. Somebody who stops reading there
-  knows what they are approving.
-- **The evidence comes after, and backs the point.** All of it is still owed:
-  the picture, the Gherkin, the run. None of it is dropped to make the body
-  short. The picture sits inline under the point. Run logs, case matrices and
-  caveats are folded where the platform can fold a block, and linked where it
-  cannot.
-- **Each fact once.** A caveat is stated where it applies and nowhere else.
+**A checkbox is a claim.** It is ticked only when it is true now. A box whose
+claim waits on an open question, or on an approval the platform does not
+enforce, stays unticked and says what it waits on. A box that does not apply
+reads `N/A`, with the fact that makes it so.
+
+**The point states the problem before the change**: who is affected, what goes
+wrong, and how it is known, by a number, a report, an incident or the
+request itself. Then one sentence on what changes. The test is to hide that
+last sentence: the reader should still know why the change exists. A body
+that opens with what changed hides the reason in a clause, and the reviewer
+is left to guess it. Where the template has a field for why, the problem goes
+there.
+
+**What goes in**, one line each:
+
+- **The issue.** It is closed only when the facts say it is finished;
+  otherwise the body relates to it. A part split into its own issue is named
+  in the links line.
+- **Every reference is a link with its title.** An issue, pull request,
+  incident or spec is never a bare number: a reader who has seen none of them
+  learns from the title what each one is. A later mention may be the short
+  link alone. An item with no address is its id with its title in words.
+- **A release note only where the repository publishes one.** There it is
+  written for users: every change they will notice, no reasons and nothing
+  internal, or that there is nothing. It reads true on its own in the
+  changelog, flag and all. Where nothing is published, there is no release
+  note.
+- **Before and after**, inline and pinned, when an existing screen changed;
+  the after alone when the screen is new.
+- **Decisions.** The choice, the alternative rejected, and its cost when one
+  is known. One that is not settled is an open question.
+- **Testing.** What was checked; the tests added, by name, apart from what
+  ran; the exact names a tester needs, such as flags, keys and error codes;
+  and every gap that bears on this change. A run that is owed is given its
+  real price, with this change's own share apart from what was already owed.
+- **Risk and rollout.** Flag states, approvals the platform does not enforce,
+  steps before or after deploy, and rollback.
+- **The evidence, folded**: the picture inline, the Gherkin and the run word
+  for word, and how it works where the mechanics matter to the decision.
+
+**Before it is published**, three steps:
+
+1. **Ask, don't guess.** What the author can supply — a reason, a cost, a
+   rollout, a rollback, an address, a title, a picture — is asked for. It is
+   never invented and never left as a placeholder. What nobody can answer yet
+   is an open question that names who can.
+2. **Check it against the diff.** What the body says the change does is held
+   against the final diff: a claim the diff does not bear out is cut, and a
+   behaviour change the diff shows and the text misses is added. Reasons,
+   numbers and approvals need a fact to point to. Tests added are kept apart
+   from tests run.
+3. **Cut.** About a hundred words of the author's own, unfolded. A risky
+   change adds one line for each decision, open question or rollout step it
+   carries. The template's headings, its checklist and the titles inside links
+   are not counted. Words are cut, never a name or fact a reviewer or tester
+   needs; only the evidence and the mechanics are folded.
+
+And throughout:
+
+- **Each fact once**, in the whole body, folded parts included. Only the
+  verbatim evidence, and a release note that must read on its own, repeat.
   Two pull requests that belong together link each other instead of carrying
-  the same block, so the two copies cannot start to disagree.
-- **In words the reviewer already has.** A name the session made up for
-  something it built or noticed is the one word in the body the reviewer has
-  never seen. Write what it names instead.
+  the same block.
+- **Nothing about what the change does not do.** Under a template heading
+  that mentions scope, the heading stays and only decisions go under it.
+- **No standing noise.** What is true of the repository on every pull
+  request — a flaky job, a known warning, a backlog total, an approval the
+  platform already enforces — is left out.
+- **In words the reviewer already has.** A name the session made up is the
+  one word in the body the reviewer has never seen. Write what it names
+  instead.
+- **The author owns it.** Generated text is a draft: read, cut, and
+  explainable line by line. It carries no line about which tool wrote it.
 
 **The message asking for review follows the same rule.** It is shorter still:
-the point, the link, and what the reviewer is asked to decide.
+the problem, the link, and what the reviewer is asked to decide.
 
-**No gate can hold this.** Whether the first lines are the point is a reading,
-which is what review is for. A gate on length would be met by cutting words,
-not by putting the point first. What a report that already reads the body can
-do is count the words before its first heading, code block or folded block,
-and print that count where the reviewer is looking. It gates on nothing there,
-for the same reason it does not gate on the run.
+**No gate can hold this.** Whether the opening states the problem is a
+reading, which is what review is for. A gate on length would be met by cutting
+words, not by stating the problem. What a report that already reads the body
+can do is count the words before its first heading, code block or folded
+block, and print that count where the reviewer is looking. It gates on nothing
+there, for the same reason it does not gate on the run; under a template whose
+first line is a heading, it reads zero and means nothing.
 
 ## Commits
 

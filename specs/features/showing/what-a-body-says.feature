@@ -1,7 +1,6 @@
 @feature:showing-what-a-body-says @workflow:adopt-the-process
 Feature: What a pull request body says, in the repository's own shape and no longer than it needs
 
-  @planned
   @rule:the-repository-template-is-filled-not-replaced
   Rule: Where the repository has a pull request template, the body fills it — every heading and checkbox, in its order, none renamed and none added beside it — and a checkbox is ticked only when its claim is true now
 
@@ -20,7 +19,6 @@ Feature: What a pull request body says, in the repository's own shape and no lon
       When the body is written
       Then it reads "N/A: no migration", and N/A is never written without a fact behind it
 
-  @planned
   @rule:a-reference-carries-its-title
   Rule: An issue, pull request, incident or spec named in a body is a link carrying its title in plain words, never a bare number; a later mention of the same item may be the short link, and an item with no address is its id with its title in words
 
@@ -34,7 +32,6 @@ Feature: What a pull request body says, in the repository's own shape and no lon
       When the body names it
       Then it reads "INC-2291 (SEV-2: duplicate invoices on webhook retries)", and no address is made up
 
-  @planned
   @rule:a-release-note-only-where-one-is-published
   Rule: A body carries a release note only where the repository publishes one from it; there it is written for users — what is different for them, no reasons and nothing internal, or NONE — and it reads true on its own in the changelog
 
@@ -49,7 +46,6 @@ Feature: What a pull request body says, in the repository's own shape and no lon
       When the body is written
       Then that section reads NONE
 
-  @planned
   @rule:what-the-author-knows-is-asked-not-guessed
   Rule: A reason, cost, rollout, rollback, address, title or picture the reviewer needs and the writer does not have is asked of the author before the body is published; it is never invented and never left as a placeholder, and what nobody can answer yet is an open question naming who can
 
@@ -63,7 +59,6 @@ Feature: What a pull request body says, in the repository's own shape and no lon
       When the body is written
       Then it carries "Open: does the index build fit the 20 min deploy window? @dba.oncall"
 
-  @planned
   @rule:the-body-is-checked-against-the-diff
   Rule: Before a body is published, what it says the change does is checked against the final diff — a claim the diff does not bear out is cut, and a behaviour change the diff shows and the text misses is added — and the tests added are told apart from the tests run
 
@@ -78,7 +73,6 @@ Feature: What a pull request body says, in the repository's own shape and no lon
       When the body is checked
       Then the rounding change is in the point, not only in the diff
 
-  @planned
   @rule:about-a-hundred-words-of-the-authors-own
   Rule: The unfolded body holds about a hundred words of the author's own; a risky change adds one line for each decision, open question or rollout step it carries, and the template's headings, its checklist and the titles inside links are not counted; words are cut, never a name or fact a reviewer or tester needs
 

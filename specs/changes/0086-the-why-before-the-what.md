@@ -1,6 +1,6 @@
 # Spec 0086: the why before the what
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-11-21, after reading the spec and the sketch
 - **Issue:** none — direct request, from a session that researched pull
   request descriptions with the maintainer and settled each rule with him
 - **Number:** one past the highest in flight. `0085` is held by the tree
@@ -181,7 +181,7 @@ None. No stored shape changes.
 
 ## Risks
 
-- **The method grows.** The subsection goes from about 400 words to about 800.
+- **The method grows.** The subsection goes from about 400 words to about 1,100.
   It is read when a pull request is opened, not in every session, so it adds
   no always-on cost. The rewrite is held to the guideline's own length, not
   padded around it.

@@ -98,12 +98,13 @@ it is in.
   is deleted on merge.
 - **The body around it is written for whoever reviews it**, per
   [`repository.md`](../../method/repository.md#and-the-point-before-the-evidence).
-  The point first: what changed and why in two or three plain lines, then what
-  to look at in the diff. The picture inline under that; the run, case
-  matrices and caveats after it, the long ones folded or linked, and nothing
-  owed left out. Each fact once: a companion pull request is linked, not
-  copied. No name the session made up. The message asking for review follows
-  the same rule.
+  The repository's template filled, never replaced. The problem first — who
+  is affected, what goes wrong, how it is known — then what changes, then what
+  to look at; about a hundred words of your own. The picture inline under
+  that; the run, case matrices and caveats after it, folded, and nothing owed
+  left out. Every reference a link with its title. What only the author knows
+  is asked, never guessed. Each fact once. The message asking for review
+  follows the same rule.
 - **Never touch `src/` or `specs/`.** If the recording shows something broken,
   that is a finding: file it with the `todo` skill. Do not fix it here, and
   do not re-record around it.
