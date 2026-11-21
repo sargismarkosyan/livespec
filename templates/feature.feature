@@ -95,6 +95,9 @@ Feature: <What this component does — the thing, not the change that added it>
       Then <outcome>
 
   # ── Changing this file later ────────────────────────────────────────────────
+  # New behaviour? First see whether a rule here, reworded, already promises
+  # it. One rule is less to keep than two.
+  #
   # Behaviour changed? Edit the Rule in place and **keep its id**. A reworded rule
   # is the same rule.
   #

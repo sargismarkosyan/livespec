@@ -600,6 +600,48 @@ else:
     if bindings_path.resolve() not in resolved:
         fail(CONTEXT_FILE, f"does not link to {BINDINGS}, the bindings; every command a session runs is read from there")
 
+# --- the parts that only grow ----------------------------------------------
+#
+# The context file's ceiling, generalised: every part the bindings' Ceilings
+# row names, counted in lines across the text files under it. A part past its
+# number fails, and so do bindings with no row: a number nobody wrote is not a
+# pass. See specs/changes/0085.
+CEILINGS_ROW = re.compile(r"^\|\s*\*\*Ceilings\*\*\s*\|(.*)\|\s*$", re.IGNORECASE)
+CEILING_ENTRY = re.compile(r"`([^`\n]+)`\s*(\d[\d,]*)\s*lines")
+
+
+def ceilings_in(bindings_text: str) -> list[tuple[str, int]]:
+    """Each part the Ceilings row names with its number, or [] where there is no row."""
+    for line in bindings_text.splitlines():
+        match = CEILINGS_ROW.match(line)
+        if match:
+            return [(part, int(n.replace(",", ""))) for part, n in CEILING_ENTRY.findall(match.group(1))]
+    return []
+
+
+def lines_under(part: str) -> int:
+    """Lines in the text files under a part, skipping caches and hidden directories below it."""
+    base = ROOT / part
+    if base.is_file():
+        files = [base]
+    else:
+        files = [p for p in base.rglob("*") if p.is_file()
+                 and not any(s.startswith(".") or s == "__pycache__" for s in p.relative_to(base).parts[:-1])]
+    total = 0
+    for path in files:
+        data = path.read_bytes()
+        total += 0 if b"\0" in data else data.count(b"\n")
+    return total
+
+
+ceilings = ceilings_in(_bindings_text)
+if not ceilings:
+    fail(str(BINDINGS), "carries no Ceilings row naming a part and its size in lines; a number nobody wrote is not a pass — write each part's size once the change has finished")
+for part, ceiling in ceilings:
+    size = lines_under(part)
+    if size > ceiling:
+        fail(part, f"is {size:,} lines against a ceiling of {ceiling:,} in {BINDINGS}; cut it back, or raise the number in this change with the reason beside it")
+
 # --- the map, generated, never typed ----------------------------------------
 
 if AS_JSON:

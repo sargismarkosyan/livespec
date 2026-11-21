@@ -161,6 +161,11 @@ it as a multiple choice of its own. See the hand-back.
 The step must be small enough to be one screenshot's worth of change.
 
 - What is the smallest version that delivers the end value? Spec that.
+- Does a live rule, reworded, already promise this? Edit that rule in place and
+  keep its id — one rule is less to keep than two.
+- What does this change make dead — a rule, the tests that claim it, the code
+  only that rule needed, a stored field? Name each under *What this removes*.
+  A change that removes nothing says so, and why.
 - What did you consider and drop? That goes in *What we are not doing* — the
   dropped alternatives are what stop this being relitigated next month.
 - Does it split cleanly into two changes? Then it is two change specs, and only

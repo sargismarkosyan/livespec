@@ -42,8 +42,8 @@ Getting this wrong is how two copies of a method start disagreeing.
 2. `todo` files researched GitHub issues. It does not fix.
 3. `refine-spec` writes the Gherkin rules and a numbered change spec.
 4. The human approves the spec, holding the sketch drawn from it, or asks for changes.
-5. Implement: drop `@planned`, write the eval case — or, for the code under
-   `tools/`, the test — that claims the rule, get `verify.py` green, commit.
+5. Implement the smallest change: drop `@planned`, claim the rule with an eval
+   case or a test, delete what it made dead, get `verify.py` green, commit.
 6. Open the pull request, carrying what the pipeline cannot work out: one
    `patch`/`minor`/`major` label, a `## Changelog` section in the body that
    becomes the entry verbatim, — if a `.feature` moved — the Gherkin it

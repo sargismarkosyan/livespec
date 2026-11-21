@@ -208,6 +208,9 @@ configured:
   to the bindings that resolves. **Nothing about its prose**: a stale pointer
   or a copied paragraph is section 6's to catch and the audit's to re-read —
   [`gates.md`](../../method/gates.md#the-file-every-session-reads-first).
+- then the parts that only grow: each against its size in the bindings'
+  **Ceilings** row, failing a part past it and bindings with no such row —
+  [`gates.md`](../../method/gates.md#and-every-part-that-only-grows).
 
 **Write the smallest thing that does that.** One script, no dependencies, in the
 language already in the repo. It is a few hundred lines at most and it belongs in
@@ -706,6 +709,12 @@ two hundred lines, the reader's own limit, per
 in the change that needs the room, with the reason beside it. From this sitting on,
 the gate wired in section 4 reads that number, so the file you leave behind has
 to pass it — and the rest of what that gate reads — before the hand-back.
+
+**And the Ceilings row, at the same moment and the same way:** the code, the
+rules under `specs/features/`, and whatever else here only grows, each at its
+size once the sitting has finished —
+[`process.md`](../../method/process.md#the-rules), *Whatever only grows has a
+ceiling*.
 
 ## 7. An existing codebase does not get retroactive specs
 

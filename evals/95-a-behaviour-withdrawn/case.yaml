@@ -1,0 +1,7 @@
+# The fixture for 95: case 69's fieldnote, laid down by 69's own scaffold rather than a copy of it — a rule that fills the place from the last sighting, a test claiming it, and a where field the code writes and renders. The request withdraws the place. The case grades the change spec naming what goes: the rule, its test, and the code only that rule needed.
+# Read by caselib.py, run by `run.py --scaffold` in both arms alike. See specs/changes/0085.
+scaffold_script: ../69-the-rule-keeps-its-id/scaffold.sh
+shell: [python3, git, ls, cat, pytest]
+# The sitting (0058): the maintainer answers from person.md and says nothing
+# about rules, tests or code — what the withdrawal makes dead is the session's
+# to find.

@@ -36,8 +36,9 @@ thing that fixes it.
    spec. It does not implement.
 4. **Human approves** the spec, or asks for changes — holding the spec and
    the sketch drawn from it.
-5. **AI implements.** Removes the `@planned` tags, writes the tests referencing
-   those rules, gets the repository's verification green, commits.
+5. **AI implements.** The smallest change that makes the rules true: removes
+   the `@planned` tags, writes the tests referencing those rules, deletes what
+   the change made dead, gets the repository's verification green, commits.
 6. **AI records the version** using the [`record-clip`](../skills/record-clip/SKILL.md) skill — one
    picture of the change, on the branch — and opens the pull request with it in
    the body, reading back what the pull request will close
@@ -106,8 +107,18 @@ comes from; what they never do is produce the deliverable by hand.
 - **Feedback is never fixed on the spot.** It becomes an issue, then a spec, then
   a commit. Fixing something the moment it is mentioned is the fastest way to
   lose the record of why it changed.
-- **No silent scope growth.** Found something else broken while working? File it
-  as its own issue. Do not fix it inline.
+- **Less is the default.** Reuse what is there before writing anything, and add
+  nothing no rule asks for — no option, no layer, no second copy. What this
+  change made dead — code, tests, rules, files — goes in this change, and the
+  spec names it under *What this removes*. Anything else found on the way,
+  broken or dead, is filed as its own issue and never fixed inline. A change
+  whose whole value is less is a change like any other.
+- **Whatever only grows has a ceiling.** The code, the rules, what every session
+  loads: the bindings name a size for each, written from what it is when the
+  ceiling is set. It is lowered when the part shrinks and raised only in the
+  change that needs the room, with the reason beside the number — so growth is
+  a line in a diff rather than a drift nobody sees. The context file's ceiling,
+  in [claude-md.md](claude-md.md#length), is the first of them.
 - **Every version must run and be green.** Each commit is a screenshot candidate
   and must pass whatever `specs/setup/README.md` names as verification.
 - **Specs commit separately from implementations.** `spec 0004: <title>` lands
