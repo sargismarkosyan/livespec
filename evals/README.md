@@ -14,8 +14,8 @@ real session in the case's world, a person answering, a shell, three runs, both
 arms, the judge — is the most faithful measurement here, and at $9 for one skill
 edit and $200 for a harness edit it was also a bill nobody could keep paying.
 
-**The tiers** are what every edit is measured by, one call at a time, and what
-the board gate holds fresh. Each is staled only by what it can see:
+**The tiers** are what an edit is measured by, one call at a time, when the
+maintainer chooses to measure it. Each is staled only by what it can see:
 
 | tier | one row is | staled by | roughly |
 |---|---|---|---|
@@ -104,8 +104,9 @@ python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model
 > What CI enforces is the structure: `python3 .github/scripts/verify.py`
 > fails if a skill is held by no case, if a case is graded only by what fired, if
 > `runs` drops below three, if the last should-not-fire case is deleted, if the
-> invocation below loses its baseline — and, since the board, if a measurement's
-> inputs changed without a re-run. That proves a case exists and **can** fail.
+> invocation below loses its baseline. That proves a case exists and **can**
+> fail. Whether a measurement still describes its files is reported, never
+> gated (0087).
 > It never proves one passes, and no green run should be read as saying so.
 
 ## The number that matters is Δ, not the score
@@ -198,8 +199,7 @@ came out.
 | `23-what-a-change-here-must-show` | **`setup` writes a deliverable row that answers what a change here must show**, in a repository whose gate is already wired and whose bindings were never written, and its row on what a contributor owes a release names the run under the verification command | the bindings come back a restatement of the method, with nothing in them only this repository knows |
 | `24-a-ledger-nobody-read-back` | **`doctor` does not settle a claim it cannot reach** — the required-check row comes back unread rather than confirmed from a workflow file, the coverage row is reported as covering the Python half only, and two pieces of never-gating wiring move out of prose into rows | a CI file is read as evidence about branch protection, or a note saying *not built yet* is repeated back instead of being put on a clock |
 | `25-neg-a-red-job-is-not-an-audit` | **`doctor` does not fire** on a failing check somebody wants debugged | the new description grabs on "check", "gate" and a job name rather than on intent |
-| `26-two-seconds-before-the-push` | **`setup` offers the free half of verification before a push**, keeps the graded suite and the check nobody can clear here out of it, and gives it no ledger row | the hook runs `make verify` whole — billing per push and blocking on a stale board — or turns up in the tree unannounced, or is recorded as a gate |
-| `27-a-red-nobody-here-can-clear` | **`setup` leaves a repository able to say which of its two reds happened**, keeps the report *and* the gate under it running on the red one, and commits work whose only failure is a measurement waiting on a run | the freshness check is downgraded or dropped to get green, the suite is run to clear it, the work is stranded because verification is red, or the gate is made to run by being given `continue-on-error` |
+| `26-two-seconds-before-the-push` | **`setup` offers the free half of verification before a push**, keeps the graded suite out of it, and gives it no ledger row | the hook runs `make verify` whole — billing per push — or turns up in the tree unannounced, or is recorded as a gate |
 | `28-a-hook-is-not-a-row` | **`doctor` tells a courtesy from a refusal** — the rule-bound measure comes out of a prose note and becomes a tracked row, while the pre-push hook described beside it in the same voice gets none | the hook is given a row, most temptingly *unobserved* on the strength of nobody having checked whether it is switched on, or is counted toward what the repository enforces |
 | `29-nowhere-to-draw-it` | **`refine-spec` draws nothing and says so** — three spellings of one setting become one, with no before, no ledger and no count that moves | a page is produced anyway to fill the space, or the absence goes unmentioned, or it is blamed on the session rather than on there being nothing to show |
 | `30-a-threshold-nobody-chose` | **`setup` recommends the whole of what is in scope, not the number the tree already scores** — and answers "it has to be green on the first run" by naming the untested importer as an exclusion rather than by giving away points | a threshold is taken off the current coverage report, or the day-one gap is cleared by a smaller demand instead of a named exclusion |
@@ -237,9 +237,8 @@ is a session somebody has to repeat.
 
 **`26` is the case with a fixture built to make the wrong answer attractive.**
 `beacon`'s one command runs the free gates, a graded suite that bills about
-$4.10, and a freshness check whose only cure is one of those runs — so the
-obvious hook, the one that runs the whole command, charges its owner per push
-and blocks every push the moment a case goes stale. What separates a pass from a
+$4.10, and a freshness check — so the obvious hook, the one that runs the whole
+command, charges its owner per push. What separates a pass from a
 fail here is whether cost was used as the criterion or whether the split
 happened to come out right.
 
@@ -446,8 +445,8 @@ number below the floor; against a case already measured at three runs it keeps
 the measurement, prints `✋ <case>: 1 run(s) is below the floor…`, and leaves the
 pilot's numbers where a pilot's numbers belong — in the summary above and in the
 run directory. This is not fastidiousness about an old number: the row is also
-what clears the freshness gate, so a pilot written into it loses the measurement
-*and* turns the red that was asking for a real run green. Both happened to `26`
+what says whether a number is current, so a pilot written into it loses the
+measurement *and* makes the row read fresh. Both happened to `26`
 on 2026-08-29 — a $1.21 single run replaced a $4.67 three-run entry and flipped
 its sign, and nothing recorded that it had ([#75](https://github.com/sargismarkosyan/livespec/issues/75)).
 
@@ -588,9 +587,9 @@ fingerprint of `tiers.py`.
 Change any of a tier row's inputs and the hash stops matching: the row is
 **stale**. So is a row made on a model other than the one the bindings name, or
 by a `tiers.py` that has since changed. `caselib.tier_why_stale()` decides it for
-the gate and for `tiers.py --changed` alike. The board gate —
-`.github/scripts/board.py`, run by `verify.py` — fails the build naming the rows
-and the one command that heals them:
+the board and for `tiers.py --changed` alike. `.github/scripts/board.py` names
+the rows and the one command that re-measures them, and exits 0 — since 0087 a
+stale row is reported, never owed:
 
 ```
 python3 evals/runner/tiers.py --changed --scaffold

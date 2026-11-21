@@ -93,7 +93,7 @@ reported on the change, and never asked for.
 
 ## What this removes
 
-- **Five rules,** the whole of [`features/verification/which-red.feature`](../features/verification/which-red.feature):
+- **Five rules,** the whole of [`features/verification/which-red.feature`](https://github.com/sargismarkosyan/livespec/blob/5f12d6dd5452670b75c47f7738a9d6b450165fa5/specs/features/verification/which-red.feature):
   - `the-one-red-a-commit-may-carry`
   - `a-red-says-which-red-it-is`
   - `what-explains-a-red-survives-it`

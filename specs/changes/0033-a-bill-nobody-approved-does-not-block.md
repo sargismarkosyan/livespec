@@ -41,7 +41,7 @@ says three runs in one sitting have exhausted the account limit outright.
 
 The maintainer, holding that number, chose not to spend it — and the change
 could not merge, because
-[`the-one-red-a-commit-may-carry`](../features/verification/which-red.feature)
+[`the-one-red-a-commit-may-carry`](https://github.com/sargismarkosyan/livespec/blob/5f12d6dd5452670b75c47f7738a9d6b450165fa5/specs/features/verification/which-red.feature)
 says in as many words that the exception has bought *"a commit and a push, never
 a merge"*, and `repository checks` is a required check that exits 2 on a stale
 board.
@@ -108,7 +108,7 @@ worth being able to read at a glance.
 
 ### The thing this looks exactly like, said out loud
 
-[`27-a-red-nobody-here-can-clear`](../../evals/27-a-red-nobody-here-can-clear/prompt.md)
+[`27-a-red-nobody-here-can-clear`](https://github.com/sargismarkosyan/livespec/blob/5f12d6dd5452670b75c47f7738a9d6b450165fa5/evals/27-a-red-nobody-here-can-clear/prompt.md)
 fails a session for, among other things, *"the freshness check is downgraded or
 dropped to get green"*. **This change is that shape**, it arrived on a pull
 request that could not otherwise merge, and pretending otherwise would be worse
@@ -189,7 +189,7 @@ No storage contract moves and `specs/spec.md` needs no new vocabulary.
 **This change stales nothing that was not already stale.** It edits one live
 rule's example and adds one `@planned` rule, both in
 `features/verification/which-red.feature`, whose only claimant is
-[`27-a-red-nobody-here-can-clear`](../../evals/27-a-red-nobody-here-can-clear/) —
+[`27-a-red-nobody-here-can-clear`](https://github.com/sargismarkosyan/livespec/tree/5f12d6dd5452670b75c47f7738a9d6b450165fa5/evals/27-a-red-nobody-here-can-clear/) —
 already stale on this branch because `setup` moved, and already in the bill
 0032 costed. `method/gates.md`, the bindings and the workflow file are held by
 no case.
@@ -206,7 +206,7 @@ the two `@planned` rules [`0029`](0029-drawn-before-it-is-built.md) left behind.
 - **Nobody ever runs the suite again.** The likeliest outcome and the one this
   change cannot prevent. What makes it *visible* is that the count is on every
   pull request already — the report carries it, and
-  [`what-explains-a-red-survives-it`](../features/verification/which-red.feature)
+  [`what-explains-a-red-survives-it`](https://github.com/sargismarkosyan/livespec/blob/5f12d6dd5452670b75c47f7738a9d6b450165fa5/specs/features/verification/which-red.feature)
   keeps that true on exactly the red this creates. Seventeen owed is a number
   somebody can watch grow. A hundred owed is a different repository, and it will
   say so.

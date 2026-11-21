@@ -117,45 +117,40 @@ decision is made, and read the verdicts against that assumption: a judge found
 favouring one arm's voice is a finding the calibration read exists to make,
 and the day to pay for a different judge.
 
-## Freshness is gated; the score never is
+## Neither freshness nor the score is gated
 
 A measurement describes the files it measured. Edit any of them — the case, the
 rule it claims, the instructions it holds — and the number goes on being
 displayed while no longer describing anything that exists.
 
-So each measurement carries a **fingerprint of what it measured**, and a stale
-fingerprint is a failure. What must **never** be gated is the score itself.
+So each measurement carries a **fingerprint of what it measured**, and a number
+whose fingerprint no longer matches is **shown as stale** and left out of every
+count and mean: it is never presented as current. That is the whole of what is
+enforced. Neither half is gated:
 
-That asymmetry is deliberate and it is the whole design:
+- **not the number** — a threshold on a model-scored value turns every rubric
+  into something to be argued down on a bad afternoon, and the first time a
+  release is blocked by a judge's opinion is the last time the rubric is written
+  honestly;
+- **not its freshness** — a run costs money, so a gate on freshness turns every
+  edit into a bill, and a change nobody can merge without paying is one that gets
+  walked past. A run happens when the person paying chooses, and a stale number
+  ages in plain view until then.
 
-- **gate the bookkeeping** — a number that no longer describes the tree is a lie,
-  and lies are cheap to detect;
-- **never gate the number** — a threshold on a model-scored value turns every
-  rubric into something to be argued down on a bad afternoon, and the first time
-  a release is blocked by a judge's opinion is the last time the rubric is
-  written honestly.
+**Re-run exactly what changed.** When a run does happen, the fingerprint already
+says which cases moved; measure those, not the whole suite.
 
-**Re-run exactly what changed.** These runs cost money in a way tests do not, so
-re-measuring the whole suite because one file moved is a bill nobody agreed to.
-The fingerprint already says which cases moved; measure those.
-
-### Gate the freshness of what you can afford to keep fresh
+### Measure at two speeds
 
 The most faithful measurement — the whole session, in its world, with the person
-answering and the tools lent — is also the most expensive, and a freshness gate
-on it turns every edit into a bill. A gate nobody can afford to clear is one that
-gets bypassed, and then it is not a gate.
-
-So measure at **two speeds**. A **cheap tier** is what every edit owes: a single
-turn to see whether the right instructions load at all, a single reply to a
-snapshot of what the session would have read before answering, a reading of the
-instructions beside the rules they owe. Each is fingerprinted by **only what it
-can see** — a routing turn never sees a skill's body, so a body edit cannot stale
-it — and its freshness is what the gate holds. A **faithful tier** — the whole
-sitting — is kept, shown and run on purpose: when the model moves, before a cheap
-tier is trusted, when somebody chooses to. A stale faithful number is marked
-stale and left out of every average, because it must never be presented as
-current; it is not owed, because nothing that cannot be afforded can be owed.
+answering and the tools lent — is also the most expensive. So measure at **two
+speeds**. A **cheap tier**: a single turn to see whether the right instructions
+load at all, a single reply to a snapshot of what the session would have read
+before answering, a reading of the instructions beside the rules they owe. Each
+is fingerprinted by **only what it can see** — a routing turn never sees a
+skill's body, so a body edit cannot stale it. A **faithful tier** — the whole
+sitting — is run when the model moves, before a cheap tier is trusted, or when
+somebody chooses to.
 
 **A cheap tier earns its trust against the faithful one.** Run the same cases
 both ways and believe the cheap number where the verdicts agree. Where it cannot
@@ -174,36 +169,8 @@ files as they stood the day it happened.
 **And the run itself is never automatic.** A suite that costs money every time it
 executes must refuse to start without an explicit approval from the person paying
 — not a setting, not a default, an approval given per run. A stale measurement is
-a reason to stop and ask, never a licence to spend. Say which cases went stale
-and what it will cost, and wait; the work can be finished with a gap where the
-numbers go.
-
-**So a stale measurement is the one red a commit may carry**, and the page about
-committing is where that is written down rather than left to be inferred from
-here: [repository.md](repository.md#commits) states the exception, the three
-conditions on it, and the fact that it ends at the push. What belongs on this page
-is the consequence of the design above. Gating the bookkeeping deliberately
-creates a **failure that is not a defect**, and it is the only one this method
-has.
-
-**A failure that is not a defect has to say so.** Verification that can be red for
-a reason this page sanctions must make the two distinguishable **in its result** —
-in what a machine reads, and in the last line a person reads — not only in prose
-addressed to whoever remembers this page. How is the repository's own business: a
-separate exit status, a distinct final line, the check reported apart from the
-rest. That there is one is not.
-
-**Skipping it costs the gate, not the afternoon.** A red meaning *a number is
-waiting on an approval* that looks exactly like a red meaning *something is
-broken* gets investigated the first two or three times, found innocent every time,
-and then stops being investigated at all. The gate is still running and nobody is
-reading it — which is worse than never having wired it, because it still counts as
-coverage to everybody looking at the list.
-
-**The same rule reaches whatever else describes the build.** A report skipped when
-verification fails cannot describe the one failure the method sanctions;
-[gates.md](gates.md#the-report-is-not-a-gate) says why that is a defect in the
-report rather than a property of reports.
+never a licence to spend: say which cases went stale and what a run would cost,
+and leave the choice to whoever pays.
 
 ## The evidence is local, the summary is durable
 
@@ -231,11 +198,10 @@ Pilots are worth running: a short run exists so the verdicts can be read before
 anybody pays for a full one, and reading them is the point of it. But a pilot of
 a case that has already been measured produces a second number for the same row,
 and **the measurement keeps the row.** Not out of deference to the older number.
-The row is also what clears the freshness gate, so a pilot written into it does
-two things in one write: the measurement is gone, and the red that was asking for
-a real run has turned green — at the exact moment the run it was asking for
-became most necessary. Both halves are silent, and the sign can flip on the way
-through.
+The row is also what says whether a number is current, so a pilot written into
+it does two things in one write: the measurement is gone, and the row reads
+fresh — at the exact moment a real run became most necessary. Both halves are
+silent, and the sign can flip on the way through.
 
 So **the summary says how many runs produced it, and everything reading the
 summary reads that field too.** A number below the floor is kept and shown — it

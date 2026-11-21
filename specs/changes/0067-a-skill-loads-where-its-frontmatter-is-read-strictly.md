@@ -158,7 +158,7 @@ all 40 measured cases. `verify.py` exits **2** before this change and after it,
 and it is the same forty. The re-measurement those forty are owed covers these
 two as well, and approving it is the maintainer's call. The change is committed
 on that 2, per
-[`the-one-red-a-commit-may-carry`](../features/verification/which-red.feature).
+[`the-one-red-a-commit-may-carry`](https://github.com/sargismarkosyan/livespec/blob/5f12d6dd5452670b75c47f7738a9d6b450165fa5/specs/features/verification/which-red.feature).
 
 ## Risks
 

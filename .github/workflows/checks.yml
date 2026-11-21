@@ -34,58 +34,31 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # The same command a person runs locally, minus the one gate nobody in a
-      # session can clear. `--local` filters on COSTS_MONEY in verify.py, which
-      # holds exactly one name; every other gate still runs here and still
-      # blocks. The freshness check it leaves out has its own job below.
-      # See specs/changes/0033-a-bill-nobody-approved-does-not-block.md.
-      # The output is kept: the report prints its last lines beside the run
-      # block the pull request's body carries. `shell: bash` runs with pipefail,
-      # so the tee does not hide verify.py's exit. See specs/changes/0052.
+      # The same command a person runs locally. The output is kept: the report
+      # prints its last lines beside the run block the pull request's body
+      # carries. `shell: bash` runs with pipefail, so the tee does not hide
+      # verify.py's exit. See specs/changes/0052.
       - name: Verify
         shell: bash
-        run: python3 .github/scripts/verify.py --local 2>&1 | tee "$RUNNER_TEMP/run.txt"
+        run: python3 .github/scripts/verify.py 2>&1 | tee "$RUNNER_TEMP/run.txt"
       # A property of a pull request, not of a tree — which is why it is not part
       # of verify.py, and why it only runs here. It checks the two things the
       # release job cannot work out for itself: how big the change is, and what
       # to say about it. See .github/workflows/release.yml.
       #
       # `!cancelled()` because it does not depend on Verify: this reads the pull
-      # request, Verify reads the tree, and neither can fail because the other
-      # did. Without it this gate was skipped on twelve of the last twelve
-      # failing runs, so nothing said whether the label was fine or was never
-      # looked at — and since a red board is a failure the method sanctions
-      # pushing on, that could stand for days. See method/gates.md, "A gate that
-      # does not depend on a failing one", and specs/changes/0026-what-else-is-wrong.md.
-      #
-      # It is still a gate. No `continue-on-error` here: running late changes
-      # when it speaks and never whether it blocks, and copying the guard down
-      # from the reporting steps *with* their continue-on-error is the way to
-      # break that.
+      # request, Verify reads the tree, and one failing says nothing about the
+      # other. It is still a gate — no `continue-on-error` here.
       - name: Release inputs
         if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         run: python3 .github/scripts/version_gate.py origin/${{ github.base_ref }}
 
-      # Everything below is reporting. The gate above is guarded for a different
-      # reason and keeps its teeth; these three have none by design.
-      #
-      # A job stops at its first failing step unless a step says otherwise, and
-      # that default made the report unreachable on the one run it exists for:
-      # a red board is a failure the method sanctions committing and pushing, so
-      # it is exactly when somebody needs to be told *which* red this is — and
-      # the Stale row could only ever read zero. See method/gates.md, "The report
-      # is not a gate", and specs/changes/0025-which-red-it-is.md.
-      #
-      # `!cancelled()` rather than `always()`: a cancelled run has nothing to
-      # report and nobody waiting to read it.
-      #
-      # `continue-on-error` on every step is not laziness: `gates.md` declares
-      # the report **not a gate**, and `always-green` in specs/spec.md is the
-      # promise it would break. A missing token, a rate limit or a base ref that
-      # will not check out must leave the build exactly as it was — which now
-      # includes leaving a red build red. The report cannot turn one green: it
-      # runs after the gating steps and changes no step's outcome.
-      # The cost is that the report going missing is itself silent.
+      # Everything below is reporting, and runs on a red build too: what explains
+      # a failure is worth having when there is one. `continue-on-error` on every
+      # step because `gates.md` declares the report **not a gate**, and
+      # `always-green` in specs/spec.md is the promise it would break. The report
+      # cannot turn a red build green: it changes no step's outcome. The cost is
+      # that the report going missing is itself silent.
       - name: The spec layer, here and on the base
         if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         continue-on-error: true
@@ -95,9 +68,7 @@ jobs:
           # what the spec layer did, not what a change to the gate did.
           git worktree add --detach "$RUNNER_TEMP/base" "origin/${{ github.base_ref }}"
           python3 .github/scripts/trace.py "$RUNNER_TEMP/base" --json > "$RUNNER_TEMP/base.json"
-          # Same shape for the eval board: `--json` is a hand-over that always
-          # exits 0 — a stale board still gets *reported*, which is when the
-          # row matters most. The gating already happened in verify.py above.
+          # Same shape for the eval board, which reports and never gates.
           python3 .github/scripts/board.py --json > "$RUNNER_TEMP/head-board.json"
           python3 .github/scripts/board.py "$RUNNER_TEMP/base" --json > "$RUNNER_TEMP/base-board.json"
           # The body as the event carries it, so the report can print the run
@@ -124,28 +95,6 @@ jobs:
         run: |
           gh pr comment "$PR" --body-file "$RUNNER_TEMP/report.md" --edit-last --create-if-none \
             || gh pr comment "$PR" --body-file "$RUNNER_TEMP/report.md"
-
-  # The other half of verify.py, on its own line, because its only cure is a
-  # purchase — an eval run billed to the maintainer's account, which nobody in a
-  # session may approve. Requiring it made a ~$58 run the price of merging any
-  # change that touches a skill body, and a rule that can only be followed by
-  # spending is one that eventually gets walked past instead.
-  #
-  # So it fails, visibly, and blocks nothing: it is not among the required
-  # contexts on `main` (`repository checks` and `plugin validate`, read back from
-  # the platform on 2026-09-02). Deliberately no `continue-on-error` — that would
-  # mark this green and bury the finding in an annotation, and a silent absence
-  # is the expensive kind. See specs/changes/0033-a-bill-nobody-approved-does-not-block.md.
-  board:
-    name: measurement board
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: What has no fresh measurement
-        run: python3 .github/scripts/board.py
 
   manifests:
     name: plugin validate
