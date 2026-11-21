@@ -71,13 +71,9 @@ def run_section(run_text: str | None, body_text: str | None, command: str | None
             ]
     if run_text and run_text.strip():
         tail = run_text.strip().splitlines()[-TAIL_LINES:]
-        lines += ["**What the pipeline saw** — the last lines of the `Verify` step, `verify.py --local`:", "", "```text", *tail, "```", ""]
+        lines += ["**What the pipeline saw** — the last lines of the `Verify` step, `verify.py`:", "", "```text", *tail, "```", ""]
     else:
         lines += ["**What the pipeline saw** — the run was not available to the report.", ""]
-    lines += [
-        "<sub>Two commands, when they differ by one line: a person runs the whole of verification, "
-        "which exits 2 for the board; the required check runs `--local` and leaves the board to its own job.</sub>", "",
-    ]
     return lines
 
 

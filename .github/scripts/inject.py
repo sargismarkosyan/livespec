@@ -161,7 +161,6 @@ def record_rows() -> list[tuple[str, str]]:
     return (
         [(f[0], f[3]) for f in FAULTS]
         + [(f[0], "fails") for f in RELEASE_FAULTS]
-        + [(f[0], "fails") for f in VERDICT_FAULTS]
         + [(f[0], "fails") for f in DOCTOR_FAULTS]
         + [(f[0], "fails") for f in VALIDATE_FAULTS]
     )
@@ -429,7 +428,6 @@ from caselib import (  # noqa: E402
     SESSION_MODEL, cases, first_move_holds, grader_inputs, harness_fingerprint, measurement_inputs, review_inputs,
     route_inputs, tier_harness_fingerprint,
 )
-import verify  # noqa: E402
 from verify import GATES as VERIFY_GATES  # noqa: E402
 from releaselib import (  # noqa: E402
     ReleaseInputError,
@@ -726,23 +724,6 @@ def report_control() -> None:
         assert "## The opening" not in result.stdout, "a count that raised still printed a count"
 
 
-def verdict_control() -> None:
-    """The two reds verify.py must keep apart, asserted from the correct side.
-
-    Not faults: nothing is broken here. It is the boundary the fault below sits
-    just outside of, and it is worth stating because the whole promise is that a
-    bill and a defect look different — which cannot be proved by breaking things
-    alone.
-    """
-    code, line = verify.verdict([])
-    assert code == 0 and not line, "a green run is not silent"
-
-    code, line = verify.verdict(["measurement board"])
-    assert code == verify.OWED, f"a bill exits {code}, not {verify.OWED}"
-    assert "verification failed" not in line, "a bill still reads as a failure"
-    assert "approve" in line, "a bill does not say who can clear it"
-
-
 def release_control() -> None:
     """The unbroken inputs, which must produce a release rather than a refusal."""
     stamped = stamp_ids(TABLE_ADDED, "0.9.0")
@@ -989,27 +970,27 @@ FAULTS = [
                      "and runs on whatever model the account defaults to\n"),
      "fails", "defaults --model"),
     ("a measurement whose inputs moved on", BOARD,
-     lambda r: edit(r, "evals/case-rule/prompt.md", "Do the thing.", "Do the other thing."), "fails", "changed since"),
+     lambda r: edit(r, "evals/case-rule/prompt.md", "Do the thing.", "Do the other thing."), "warns", "changed since"),
     ("a measurement whose rule was reworded", BOARD,
-     lambda r: edit(r, "specs/features/core/core.feature", "the thing is there", "the thing is elsewhere"), "fails", "changed since"),
+     lambda r: edit(r, "specs/features/core/core.feature", "the thing is there", "the thing is elsewhere"), "warns", "changed since"),
     ("a tier row the board has never measured", BOARD,
      lambda r: drop_board_entry(r, "case-walk", "route"), "warns", "never measured"),
     ("a board entry from fewer runs than the floor", BOARD,
      lambda r: board_runs(r, "case-walk", 1), "warns", "below the floor"),
     ("a tier row measured on another model", BOARD,
-     lambda r: board_field(r, "case-walk", "model", "claude-opus-5[1m]", "route"), "fails", "measured on"),
+     lambda r: board_field(r, "case-walk", "model", "claude-opus-5[1m]", "route"), "warns", "measured on"),
     ("a tier row from another harness", BOARD,
-     lambda r: board_field(r, "case-walk", "harness", "0000000000000000", "first"), "fails", "harness that has since changed"),
+     lambda r: board_field(r, "case-walk", "harness", "0000000000000000", "first"), "warns", "harness that has since changed"),
     # The tiers carry freshness; each is staled by what it can see (0072).
     ("a description edited after routing was measured", BOARD,
      lambda r: edit(r, "skills/refine-spec/SKILL.md", "description: Turns a request into a spec.",
-                    "description: Turns any request at all into a spec."), "fails", "a skill's description or the case"),
+                    "description: Turns any request at all into a spec."), "warns", "a skill's description or the case"),
     ("a skill body edited after its first moves were judged", BOARD,
      lambda r: edit(r, "skills/refine-spec/SKILL.md", "# Refine\n", "# Refine, and ask first\n"),
-     "fails", "a skill it holds has changed since"),
+     "warns", "a skill it holds has changed since"),
     ("a rubric edited after its first moves were judged", BOARD,
      lambda r: edit(r, "evals/case-walk/graders/outcome.md", "The reply does the thing.", "The reply does the thing well."),
-     "fails", "a rubric has changed since"),
+     "warns", "a rubric has changed since"),
     ("a tier row from fewer runs than the floor", BOARD,
      lambda r: board_field(r, "case-walk", "runs", 1, "first"), "warns", "first row(s) below the floor"),
     ("a stale canary sitting warns rather than fails", BOARD,
@@ -1036,7 +1017,7 @@ FAULTS = [
                     "| workflow naming no journey | fails | \u2714 |"),
      "fails", "inject.py expects it to warns"),
     ("the bindings losing a gate verify.py runs", CHECKS,
-     lambda r: edit(r, "specs/setup/README.md", "`board.py`, ", ""),
+     lambda r: edit(r, "specs/setup/README.md", "`evalsuite.py`, ", ""),
      "fails", "verify.py runs"),
     # The record an audit in a consuming repository reads by. Every version
     # reaches an entry — the release faults below hold that — but nothing held
@@ -1676,23 +1657,6 @@ def doctor_control(root: Path) -> None:
 
 
 
-# The third pure list. Like the release faults it needs no fixture — verify.py's
-# verdict() takes a list of failed gate names and returns a decision — and like
-# them it exists because the thing being broken is a judgment rather than a file.
-#
-# One fault, and it is the only direction that can hurt: a real defect sitting
-# underneath an unpaid bill. Reporting that as a bill hides a break behind a
-# state the method says may be committed and pushed, which would turn the
-# exception in repository.md into a way of shipping anything.
-#
-# (name, what to try, the exit it must return, a phrase the line must contain)
-VERDICT_FAULTS = [
-    ("a broken gate underneath a stale measurement",
-     lambda: verify.verdict(["traceability", "measurement board"]),
-     verify.BROKEN, "verification failed"),
-]
-
-
 def run(gate: Path, root: Path, extra: list[str] | None = None) -> tuple[int, str]:
     result = subprocess.run(
         [sys.executable, str(gate), str(root), *(extra or [])], capture_output=True, text=True
@@ -1773,11 +1737,6 @@ def main() -> int:
         problems.append(f"the unbroken release inputs do not release: {error}")
 
     try:
-        verdict_control()
-    except AssertionError as error:
-        problems.append(f"verification cannot tell a bill from a defect: {error}")
-
-    try:
         isolation_control()
     except (AssertionError, subprocess.CalledProcessError) as error:
         problems.append(f"a fixture is not a repository of its own: {error}")
@@ -1808,19 +1767,12 @@ def main() -> int:
         if not ok:
             problems.append(f"{name}: expected a refusal naming {phrase!r}; got {detail}")
 
-    for name, attempt, expected, phrase in VERDICT_FAULTS:
-        code, line = attempt()
-        ok = code == expected and phrase in line
-        print(f"    {'✔' if ok else '✘'} {name:<48} fails")
-        if not ok:
-            problems.append(f"{name}: expected exit {expected} naming {phrase!r}; got exit {code}\n{line}")
-
     if problems:
         print(f"\n{len(problems)} gate(s) did not fire as expected:\n", file=sys.stderr)
         for problem in problems:
             print(f"  ✘ {problem}\n", file=sys.stderr)
         return 1
-    total = len(FAULTS) + len(RELEASE_FAULTS) + len(VERDICT_FAULTS) + len(DOCTOR_FAULTS) + len(VALIDATE_FAULTS)
+    total = len(FAULTS) + len(RELEASE_FAULTS) + len(DOCTOR_FAULTS) + len(VALIDATE_FAULTS)
     print(f"✔ gate fault injection: {total}/{total} faults caught")
     return 0
 

@@ -82,11 +82,11 @@ place. The failure mode that ends is *pay, push, discover the label was missing*
 
 | Rule id | Feature file | New or changed |
 |---|---|---|
-| `a-red-does-not-hide-the-gates-after-it` | [`features/verification/which-red.feature`](../features/verification/which-red.feature) | new |
+| `a-red-does-not-hide-the-gates-after-it` | [`features/verification/which-red.feature`](https://github.com/sargismarkosyan/livespec/blob/5f12d6dd5452670b75c47f7738a9d6b450165fa5/specs/features/verification/which-red.feature) | new |
 
 ### Two rules, not one, and the reason is the safety argument
 
-[`what-explains-a-red-survives-it`](../features/verification/which-red.feature)
+[`what-explains-a-red-survives-it`](https://github.com/sargismarkosyan/livespec/blob/5f12d6dd5452670b75c47f7738a9d6b450165fa5/specs/features/verification/which-red.feature)
 already says a thing may run on a red build. It is not this rule, and stretching
 it to cover gates would break the argument that makes it safe. That rule's second
 example is the whole licence: *a report that cannot rescue a build by running*.
@@ -125,7 +125,7 @@ one may not.
 
 ### The case that holds it
 
-[`27-a-red-nobody-here-can-clear`](../../evals/27-a-red-nobody-here-can-clear/prompt.md)
+[`27-a-red-nobody-here-can-clear`](https://github.com/sargismarkosyan/livespec/blob/5f12d6dd5452670b75c47f7738a9d6b450165fa5/evals/27-a-red-nobody-here-can-clear/prompt.md)
 is extended rather than joined by a case 28. Its fixture already stages a
 sanctioned red and a workflow file; what it does not have is a **second gate
 below the failing one** — its `checks.yml` runs `./check` and then the report,
@@ -135,7 +135,7 @@ which is the report shape and not this one. It gains that step and a fourth
 **This stales its board entry**, and clearing that costs about **$2.31** for one
 case at `runs: 3`. The flag is the maintainer's signature: the implementing
 change can be committed and pushed with the entry stale, saying so, under
-[`the-one-red-a-commit-may-carry`](../features/verification/which-red.feature) —
+[`the-one-red-a-commit-may-carry`](https://github.com/sargismarkosyan/livespec/blob/5f12d6dd5452670b75c47f7738a9d6b450165fa5/specs/features/verification/which-red.feature) —
 which is this same feature file being used for the change that extends it.
 
 **The stale is already here, and part of it is not real.** Writing this spec

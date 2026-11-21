@@ -118,19 +118,10 @@ needs no credentials.
 git config core.hooksPath .githooks
 ```
 
-`.githooks/pre-push` then runs `verify.py --local` — every gate except the
-measurement board, whose only fix is an eval run somebody pays for and which is
-CI's to fail. It is a courtesy, not a gate: it is off until you type that line,
+`.githooks/pre-push` then runs `verify.py`, the same command CI runs. It is a
+courtesy, not a gate: it is off until you type that line,
 `git push --no-verify` skips it, and it has no row in the gate wiring ledger for
 exactly that reason.
-
-**`verify.py` has two reds.** Exit 1 is a gate broken and fixable here. Exit 2 is
-nothing broken and a measurement run somebody pays for owed — the state
-[`method/repository.md`](method/repository.md) permits committing and pushing, so
-long as the commit says which measurements are waiting and the pull request says
-what a run costs and who can approve one. A tree failing both is exit 1: a defect
-never reports as a bill. The split is `COSTS_MONEY`, the same constant `--local`
-filters on.
 
 `verify.py` runs the gates named in its own `GATES` list, and
 [`specs/setup/README.md`](specs/setup/README.md)'s *What it runs* row is checked
@@ -138,8 +129,7 @@ against that list rather than kept in step by hand. They are
 [`checks.py`](.github/scripts/checks.py) (what only this repository knows about
 itself), [`trace.py`](.github/scripts/trace.py) (traceability, both directions),
 [`evalsuite.py`](.github/scripts/evalsuite.py) (every skill held by a case, every
-case able to fail), [`board.py`](.github/scripts/board.py) (no measurement
-outliving what it measured), and
+case able to fail), and
 [`inject.py`](.github/scripts/inject.py), which breaks every gate one fault at a
 time — in a temporary fixture, and against the release inputs, which are pure
 functions over a label list and a pull request body — and checks each one fires.
@@ -147,15 +137,14 @@ What was tried is recorded in the bindings, and `checks.py` reads that record
 back from `inject.py` so it cannot fall behind. What each binding means is in
 [`specs/setup/README.md`](specs/setup/README.md).
 
-If you changed a skill, a rule or an eval case, the evals are no longer
-optional: its tier rows on `evals/board.json` go stale and `verify.py` exits 2
-until `evals/runner/tiers.py --changed` re-measures exactly what moved — a
-routing turn, a first reply, a review, a call each; see
-[`evals/README.md`](evals/README.md). The whole sittings `run.py` drives are
-the canary: shown stale, never owed, run when the model moves or the
-maintainer chooses. Running either stays a maintainer step (they cost money;
-CI checks the bookkeeping, never runs a case): both drive `claude -p`
-themselves, since the native `claude plugin eval` is gated behind early access.
+If you changed a skill, a rule or an eval case, its rows on `evals/board.json`
+go stale. [`board.py`](.github/scripts/board.py) and the pull-request report say
+which; nothing waits on them. `evals/runner/tiers.py --changed` re-measures
+exactly what moved — a routing turn, a first reply, a review, a call each — and
+`run.py` drives the whole sittings; see [`evals/README.md`](evals/README.md).
+Measuring is optional and the maintainer's to choose, because it costs money:
+both drive `claude -p` themselves, since the native `claude plugin eval` is
+gated behind early access, and CI never runs a case.
 
 ### Developing against a local checkout
 

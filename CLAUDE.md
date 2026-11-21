@@ -76,27 +76,16 @@ session here is most likely to miss:
 - **Rule, workflow and persona ids are permanent.** Renaming one orphans every
   case pointing at it, in every consuming repository at once.
 - **A payload file nothing links fails CI.** It would ship to every user unread.
-- **A measurement does not outlive what it measured.** Editing a skill, a rule
-  or an eval case stales its tier rows in `evals/board.json` — `route`, `first`,
-  `review`, a call each — and `verify.py` **exits 2** until `evals/runner/tiers.py
-  --changed` re-measures exactly those. The sittings `run.py` drives are the
-  canary: shown stale, never owed. The score is never gated; only its
-  bookkeeping is. Exit 2 means nothing is broken and a run is owed; exit 1 is a
-  gate, and a tree failing both is 1. Committing and pushing on a 2 is sanctioned
-  — [`method/repository.md`](method/repository.md), *Commits*, says what is owed.
-- **The suite runs when the maintainer asks for it.** Every run bills their
-  account and draws down its session limit — the refusal says what a run would
-  cost, from the board — three runs in one sitting have exhausted it. `run.py` and
-  `tiers.py` refuse without `--i-approve-the-cost`, `evalsuite.py` fails if either
-  refusal is removed, and the flag is the maintainer's to add, not the session's.
-  A stale board entry is worth naming and costing out; the decision to spend
-  comes from them. Say which cases are stale and what it will cost, then wait —
-  the commit and the pull request can be finished with a gap where the numbers
-  go.
-- **Every commit green, or exit 2 and said out loud.** Run `verify.py` before
-  committing. `git config core.hooksPath .githooks` makes `.githooks/pre-push`
-  run the free four fifths of it before a push — off until you type that,
-  bypassable with `--no-verify`, and deliberately not in the ledger.
+- **Measuring is optional, and the maintainer's to choose.** Editing a skill, a
+  rule or an eval case stales its rows in `evals/board.json`; `board.py` and the
+  pull-request report say which, and nothing waits on them. Every run bills the
+  maintainer's account and draws down its session limit, so `run.py` and
+  `tiers.py` refuse without `--i-approve-the-cost`, `evalsuite.py` fails if
+  either refusal is removed, and the flag is theirs to add, not the session's.
+- **Every commit green.** Run `verify.py` before committing.
+  `git config core.hooksPath .githooks` makes `.githooks/pre-push` run it before
+  a push — off until you type that, bypassable with `--no-verify`, and
+  deliberately not in the ledger.
 
 ## Commands
 
