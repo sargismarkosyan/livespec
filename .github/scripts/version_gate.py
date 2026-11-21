@@ -45,6 +45,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from releaselib import (  # noqa: E402
+    IDS_FILE,
+    IDS_FILE_BEFORE,
     ReleaseInputError,
     check_ids_section,
     extract_entry,
@@ -54,6 +56,7 @@ from releaselib import (  # noqa: E402
     moves_spec,
     select_increment,
     ships,
+    table_at,
     touches_the_run,
     verification_command,
 )
@@ -148,7 +151,14 @@ if surface:
     # now — another merge since then would read as rows this change removed.
     fork = git("merge-base", BASE, "HEAD").strip()
     try:
-        ids = check_ids_section(body, shown(fork, "method/gates.md"), (ROOT / "method" / "gates.md").read_text())
+        # Each side is read from requirements.md where it exists at that revision,
+        # else gates.md, where the table lived until 0088 — so the move's own pull
+        # request diffs the old table against the new one and finds them equal.
+        ids = check_ids_section(
+            body,
+            table_at(shown(fork, IDS_FILE), shown(fork, IDS_FILE_BEFORE)),
+            table_at(*((ROOT / f).read_text() if (ROOT / f).exists() else "" for f in (IDS_FILE, IDS_FILE_BEFORE))),
+        )
     except ReleaseInputError as error:
         problems.append(str(error))
 

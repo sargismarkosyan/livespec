@@ -310,21 +310,24 @@ def prepend_entry(changelog: str, version: str, date: str, entry: str) -> str:
 
 # --- the id table, and the one column the release writes ---------------------
 
-# method/gates.md carries the one list an audit is held to. Its `since` column
+# method/requirements.md carries the one list an audit is held to (it lived in
+# method/gates.md until 0088, which now keeps only pointers). Its `since` column
 # is a release number, and a release number is written by the release, never
 # by a person: a new row reads `next` until the merge that ships it, and
 # `stamp_ids` writes the version in the same step as the manifest and the
 # changelog. See specs/changes/0042.
 IDS_HEADING = "## The ids"
+IDS_FILE = "method/requirements.md"
+IDS_FILE_BEFORE = "method/gates.md"  # where the table lived until 0088
 NEXT = "next"
-AUDIT_SURFACE = ("skills/doctor/", "tools/doctor.py", "templates/bindings.md", "method/gates.md")
+AUDIT_SURFACE = ("skills/doctor/", "tools/doctor.py", "templates/bindings.md", IDS_FILE)
 ID_SHAPE = re.compile(r"^(gate|wiring|check):[a-z0-9]+(?:-[a-z0-9]+)*$")
 IDS_SECTION = re.compile(r"^##[ \t]+Ids[ \t]*$", re.IGNORECASE | re.MULTILINE)
 UNRETIRED = ("", "—", "-")
 
 
 def _ids_span(text: str) -> tuple[int, int] | None:
-    """Where the id section starts and ends in gates.md, or None."""
+    """Where the id section starts and ends in the requirements file, or None."""
     start = text.find(IDS_HEADING)
     if start == -1:
         return None
@@ -473,6 +476,24 @@ def check_ids_section(body: str | None, base_text: str, head_text: str) -> dict[
         if i not in diff["retired"]:
             raise ReleaseInputError(f"`## Ids` says {i} was retired, and the table's diff does not show it")
     return diff
+
+
+def table_at(requirements_text: str, gates_text: str) -> str:
+    """The id table's file at one revision: requirements.md where it exists there,
+    otherwise gates.md, where the table lived until 0088. A revision never has
+    both tables, and the pointer section gates.md keeps is never read."""
+    return requirements_text if requirements_text else gates_text
+
+
+def stamp_id_file(text: str | None, version: str) -> str:
+    """Stamp the requirements file, refusing rather than skipping when it or its
+    section is missing: a release that silently stopped stamping would leave
+    every later `next` unwritten with nothing red. See specs/changes/0088."""
+    if text is None:
+        raise ReleaseInputError(f"{IDS_FILE} is missing; it carries the one list an audit is held to")
+    if _ids_span(text) is None:
+        raise ReleaseInputError(f"{IDS_FILE} has no {IDS_HEADING!r} section; it carries the one list an audit is held to")
+    return stamp_ids(text, version)
 
 
 def stamp_ids(text: str, version: str) -> str:

@@ -91,14 +91,14 @@ class TheList(unittest.TestCase):
 
     @rule("the-table-and-the-tool-agree")
     def test_the_registry_and_the_table_hold_the_same_ids(self):
-        table = {row["id"] for row in doctor.id_rows((ROOT / "method" / "gates.md").read_text())}
+        table = {row["id"] for row in doctor.id_rows((ROOT / "method" / "requirements.md").read_text())}
         self.assertEqual({row["id"] for row in doctor.registry()}, table)
 
     @rule("the-table-and-the-tool-agree")
     def test_a_check_the_tool_has_and_the_table_lacks_is_red_here(self):
         root = Path(tempfile.mkdtemp(prefix="agree-"))
         inject.build(root)
-        gates = root / "method" / "gates.md"
+        gates = root / "method" / "requirements.md"
         gates.write_text(gates.read_text().replace("| `check:ledger-shape` |", "| `check:ledger-shapes` |", 1))
         result = subprocess.run([sys.executable, str(ROOT / ".github" / "scripts" / "checks.py"), str(root)], capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)

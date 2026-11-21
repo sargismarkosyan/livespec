@@ -72,7 +72,7 @@ ROW_CEILINGS = "| **Ceilings** | `specs/` 1,000 lines · `tests/` 1,000 lines, s
 
 FIXTURE: dict[str, str] = {
     "CLAUDE.md": CONTEXT_FILE,
-    "skills/refine-spec/SKILL.md": "---\nname: refine-spec\ndescription: Turns a request into a spec.\n---\n\n# Refine\n\nThe gates are in [gates.md](../../method/gates.md).\n",
+    "skills/refine-spec/SKILL.md": "---\nname: refine-spec\ndescription: Turns a request into a spec.\n---\n\n# Refine\n\nThe gates are in [requirements.md](../../method/requirements.md).\n",
     "specs/personas/reader.md": "@persona:reader\n\n# Reader — wants the thing in front of them\n",
     # A map with two phases, and the workflow naming one: the fixture holds the
     # phase gate green before a fault breaks it. See specs/changes/0084.
@@ -295,7 +295,7 @@ def id_table(root: Path) -> None:
     carry the real list rather than a stand-in for it; only the two columns the
     release writes are rewritten, to the version the fixture's changelog has.
     """
-    real = (REPO / "method" / "gates.md").read_text()
+    real = (REPO / "method" / "requirements.md").read_text()
     start = real.index("## The ids")
     end = real.find("\n## ", start + 10)
     lines: list[str] = []
@@ -308,9 +308,9 @@ def id_table(root: Path) -> None:
                     segments[5] = " 0.0.0 " + segments[5].strip().split(" ", 1)[1] + " " if " " in segments[5].strip() else " 0.0.0 "
                 line = "|".join(segments)
         lines.append(line)
-    path = root / "method" / "gates.md"
+    path = root / "method" / "requirements.md"
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("# The gates\n\n" + "\n".join(lines) + "\n")
+    path.write_text("# What a setup must hold\n\n" + "\n".join(lines) + "\n")
 
 
 def build(root: Path) -> None:
@@ -443,7 +443,9 @@ from releaselib import (  # noqa: E402
     prepend_entry,
     select_increment,
     stamp_ids,
+    stamp_id_file,
     stamp_ledger,
+    table_at,
     check_ids_section,
     moves_audit_surface,
     NEXT,
@@ -505,6 +507,12 @@ RELEASE_FAULTS = [
      lambda: check_ids_section(BODY_IDS_GHOST, TABLE_BASE, TABLE_BASE), "does not have"),
     ("a row still reading next after the release",
      lambda: stamp_ids(TABLE_ADDED, NEXT), "still read next"),
+    # The release refuses, rather than skips, when the list it stamps is gone:
+    # a silent skip would leave every later `next` unwritten. See 0088.
+    ("a release with method/requirements.md missing",
+     lambda: stamp_id_file(None, "0.9.0"), "is missing"),
+    ("a release whose method/requirements.md has no id section",
+     lambda: stamp_id_file("# What a setup must hold\n\nnothing here\n", "0.9.0"), "has no '## The ids' section"),
     ("a ledger whose stamp the release cannot find",
      lambda: stamp_ledger("# Bindings\n\nno stamp here\n", "0.9.0", "2026-01-02"), "no stamp line"),
     ("a bullet list that retires what the table added",
@@ -732,6 +740,14 @@ def release_control() -> None:
     untouched = lambda text: [line for line in text.splitlines() if "check:new-thing" not in line]  # noqa: E731
     assert untouched(stamped) == untouched(TABLE_ADDED), "stamping touched a line it does not own"
     assert stamp_ids(TABLE_BASE, "0.9.0") == TABLE_BASE, "a table with nothing to stamp was changed"
+    assert stamp_id_file(TABLE_BASE, "0.9.0") == TABLE_BASE, "the requirements file was not stamped like the table"
+    # The move's own pull request: each side is read from wherever the table is
+    # at that revision, so the old table in gates.md and the new one in
+    # requirements.md diff as unchanged, and the pointer section is never read.
+    pointers = "# The gates\n\n## The ids\n\nIn [requirements.md](requirements.md#the-ids).\n"
+    assert table_at("", TABLE_BASE) == TABLE_BASE, "the base before the move was not read from gates.md"
+    assert table_at(TABLE_BASE, pointers) == TABLE_BASE, "the head after the move read the pointer section"
+    assert check_ids_section(BODY_IDS_UNCHANGED, table_at("", TABLE_BASE), table_at(TABLE_BASE, pointers))["added"] == [], "the move did not diff as unchanged"
     assert check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"]
     assert check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_BASE)["added"] == []
     assert check_ids_section(BODY_IDS_BULLETS, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"], "a bullet list is refused"
@@ -739,8 +755,8 @@ def release_control() -> None:
     stamped = stamp_ledger(ledger, "0.9.0", "2026-01-02")
     assert "livespec **0.9.0** (`method/`) on **2026-01-02** — the sitting." in stamped, "the stamp was not moved in place"
     assert stamped.replace("0.9.0", "0.8.0").replace("2026-01-02", "2026-01-01") == ledger, "stamping the ledger touched something else"
-    assert moves_audit_surface(["skills/doctor/SKILL.md", "README.md", "method/gates.md"]) == [
-        "skills/doctor/SKILL.md", "method/gates.md",
+    assert moves_audit_surface(["skills/doctor/SKILL.md", "README.md", "method/gates.md", "method/requirements.md"]) == [
+        "skills/doctor/SKILL.md", "method/requirements.md",
     ], "the audit surface is not read from the paths"
     assert select_increment(["bug", "minor"]) == "minor", "the one release label is not read"
     assert extract_entry(GOOD_BODY) == "Body of the entry.", "the entry is not taken verbatim"
@@ -1033,19 +1049,19 @@ FAULTS = [
     # that does not exist; the same id twice is two rows for one promise. See
     # specs/changes/0041.
     ("an id whose since names a release the changelog does not have", CHECKS,
-     lambda r: edit(r, "method/gates.md", "| `check:stamp-present` | mechanical | 0.0.0 |",
+     lambda r: edit(r, "method/requirements.md", "| `check:stamp-present` | mechanical | 0.0.0 |",
                     "| `check:stamp-present` | mechanical | 0.0.9 |"),
      "fails", "has no CHANGELOG.md entry; an audit would report"),
     ("the same id twice in the id table", CHECKS,
-     lambda r: duplicate_row(r, "method/gates.md", "| `check:stamp-present` |"),
+     lambda r: duplicate_row(r, "method/requirements.md", "| `check:stamp-present` |"),
      "fails", "appears twice"),
     # The tool and the table are one list, and the tests are bound to rules.
     # See specs/changes/0041, part two.
     ("a check the tool answers that the id table does not name", CHECKS,
-     lambda r: drop_row(r, "method/gates.md", "| `check:ledger-shape` |"),
+     lambda r: drop_row(r, "method/requirements.md", "| `check:ledger-shape` |"),
      "fails", "the tool performs check:ledger-shape and the id table does not name it"),
     ("an id in the table no function answers", CHECKS,
-     lambda r: edit(r, "method/gates.md", "| `check:stamp-present` |", "| `check:ghost` | mechanical | 0.0.0 | record | — | | nobody answers this |\n| `check:stamp-present` |"),
+     lambda r: edit(r, "method/requirements.md", "| `check:stamp-present` |", "| `check:ghost` | mechanical | 0.0.0 | record | — | | nobody answers this |\n| `check:stamp-present` |"),
      "fails", "names check:ghost and no function"),
     # A skill a strict YAML reader refuses is dropped whole, and Pi says nothing
     # when it does; refine-workflows was invisible there for eleven versions

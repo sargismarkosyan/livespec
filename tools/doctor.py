@@ -32,7 +32,7 @@ are for the model, which runs them under the person's permission prompts.
 
 Standard library only; nothing here is installed. Ships with the plugin, like
 clip.py, and is located from this file rather than from an environment variable.
-See specs/changes/0041 and method/gates.md, "The ids".
+See specs/changes/0041 and method/requirements.md, "The ids".
 """
 
 from __future__ import annotations
@@ -76,10 +76,10 @@ TWO_CHANGE_CLOCK = 2
 # --- the registry ------------------------------------------------------------
 #
 # The checks this tool performs and the gates a ledger carries a row for, one
-# entry each. checks.py holds this equal to the id table in method/gates.md on
+# entry each. checks.py holds this equal to the id table in method/requirements.md on
 # every column but the two the release writes (since, retired); the aliases are
 # the labels ledgers used before ids existed, so a row can be matched and given
-# its id. Never parsed from gates.md at runtime: one list, two copies, held equal
+# its id. Never parsed from the table at runtime: one list, two copies, held equal
 # by CI, is not the drift two derivations from prose were.
 
 GATES = [
@@ -319,7 +319,7 @@ def version_key(version: str) -> tuple[int, ...]:
 
 
 def id_rows(text: str) -> list[dict[str, str]]:
-    """The id table in the plugin's gates.md — for since and retired only."""
+    """The id table in the plugin's requirements.md — for since and retired only."""
     start = text.find("## The ids")
     if start == -1:
         return []
@@ -441,7 +441,7 @@ def context(root: Path, bindings_path: Path) -> dict:
         "stamp": stamp.group(1) if stamp else "", "stamp_date": stamp.group(2) if stamp else "",
         "installed": installed,
         "entries": changelog_entries(read(PLUGIN / "CHANGELOG.md")),
-        "ids": id_rows(read(PLUGIN / "method" / "gates.md") or ""),
+        "ids": id_rows(read(PLUGIN / "method" / "requirements.md") or ""),
         "skills": skills,
         "latest_change": changes[-1] if changes else None,
         "context_name": context_name,

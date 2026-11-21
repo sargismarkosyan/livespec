@@ -30,7 +30,7 @@ from releaselib import (  # noqa: E402
     extract_entry,
     next_version,
     prepend_entry,
-    stamp_ids,
+    stamp_id_file,
     stamp_ledger,
     select_increment,
     ships,
@@ -39,7 +39,7 @@ from releaselib import (  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / ".claude-plugin" / "plugin.json"
 CHANGELOG = ROOT / "CHANGELOG.md"
-GATES = ROOT / "method" / "gates.md"
+IDS = ROOT / "method" / "requirements.md"
 BINDINGS = ROOT / "specs" / "setup" / "README.md"
 
 
@@ -123,21 +123,23 @@ def main() -> int:
     version = next_version(current, increment)
     date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-    MANIFEST.write_text(bump_manifest(MANIFEST.read_text(), version))
-    CHANGELOG.write_text(prepend_entry(CHANGELOG.read_text(), version, date, entry))
     # The third file the release writes: every id row that arrived or retired
     # in this release reads `next` until now. Nobody types a version there, for
-    # the same reason nobody types one in the two files above. See 0042.
-    if GATES.exists():
-        before = GATES.read_text()
-        try:
-            after = stamp_ids(before, version)
-        except ReleaseInputError as error:
-            print(f"\n✘ the id table cannot be stamped for {version}:\n\n  ✘ {error}\n", file=sys.stderr)
-            return 1
-        GATES.write_text(after)
-        stamped = sum(1 for a, b in zip(before.splitlines(), after.splitlines()) if a != b)
-        print(f"• id table: {stamped} row(s) stamped {version}")
+    # the same reason nobody types one in the manifest or the changelog. See 0042. It is
+    # computed before anything is written, so a missing file or section ends the
+    # release with nothing half-written. See 0088.
+    before = IDS.read_text() if IDS.exists() else None
+    try:
+        after = stamp_id_file(before, version)
+    except ReleaseInputError as error:
+        print(f"\n✘ the id table cannot be stamped for {version}:\n\n  ✘ {error}\n", file=sys.stderr)
+        return 1
+
+    MANIFEST.write_text(bump_manifest(MANIFEST.read_text(), version))
+    CHANGELOG.write_text(prepend_entry(CHANGELOG.read_text(), version, date, entry))
+    IDS.write_text(after)
+    stamped = sum(1 for x, y in zip(before.splitlines(), after.splitlines()) if x != y)
+    print(f"• id table: {stamped} row(s) stamped {version}")
     # The fourth file, and the plugin's own only: its ledger is level with every
     # release by construction, and the stamp line is the one thing that lagged.
     # See specs/changes/0044.

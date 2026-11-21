@@ -1,6 +1,6 @@
 # Spec 0088: the list in its own file
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-11-22
 - **Issue:** [#188](https://github.com/sargismarkosyan/livespec/issues/188), the first half. This change moves the id table and changes nothing else. The `revised` column is the second half, #188b, and gets its own spec.
 - **Design:** the upgrade plan both reviewers scored 10/10, [§6 #188a](https://gist.github.com/sargismarkosyan/dd1db9368600aafc359584ea9a85b6f8). This spec is its first step.
 - **Sketch:** skipped. The change is a file move plus a list of the places that read it, and both fit in the table below.
