@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.32.1 — 2026-11-21
+
+The list a setup is held to has its own file. Every gate, wiring and check id, with the release it arrived in, moves verbatim from `method/gates.md` to `method/requirements.md`. `gates.md` keeps the reasoning, and keeps its headings so every existing link still lands. The release now refuses, before writing anything, when that file or its id section is missing; it used to skip stamping in silence. No id, column or meaning changed.
+
 ## 1.32.0 — 2026-11-21
 
 Less is the default. A change is the smallest that makes its rules true: reuse before writing, add nothing no rule asks for, and delete what the change made dead in the same change. Its spec names those deletions under *What this removes*, a new section of the change template that `refine-spec` fills. Code no rule-bound test reaches is either a missing rule or dead. Whatever only grows (the code, the rules, whatever every session loads) has a ceiling in the bindings' new **Ceilings** row, and a new gate, `gate:part-past-its-ceiling`, fails a part past it. `setup` writes the row from each part's size when the sitting finishes.
