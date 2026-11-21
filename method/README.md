@@ -7,7 +7,6 @@ The part of this that does not change between repositories.
 | [process.md](process.md) | The loop, who does what, and the rules that fall out of it. Read this first. |
 | [repository.md](repository.md) | Layout, branches, pull requests, commits, issues, and the moving picture every version ships. |
 | [gates.md](gates.md) | What the two gates have to mean, the id system, and the faults to inject to prove they fire. |
-| [requirements.md](requirements.md) | The one list a setup is held to: every gate, wiring and check id, with the release it arrived in. |
 | [testing.md](testing.md) | Behaviour tests, unit tests, and why a flaky one is worse than none. |
 | [graded-cases.md](graded-cases.md) | The other branch of that fork: proving judgment by grading it, for a repository whose product is prose. |
 | [claude-md.md](claude-md.md) | What a repository's CLAUDE.md must contain, and what must stay out of it. |

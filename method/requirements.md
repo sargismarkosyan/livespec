@@ -1,6 +1,6 @@
 # What a setup must hold
 
-The one list an audit of a consuming repository is held to, and the ids that make it one list. Why each gate exists, and what it has to mean, is in [`gates.md`](gates.md); this file is only the list.
+The list only; the reasoning is in [`gates.md`](gates.md).
 
 ## The ids
 

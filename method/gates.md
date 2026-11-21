@@ -450,19 +450,13 @@ opt in. Nothing reads it to decide whether a gate exists.
 
 ## The ids
 
-The one list an audit is held to is [`requirements.md`](requirements.md#the-ids): every id, its kind, the release it arrived in, its severity, and what replaced it if it was retired. This page keeps the reasoning. The headings below stay so that links to them still land.
+Moved to [`requirements.md`](requirements.md#the-ids); these headings stay so old links land.
 
 ### The gates a ledger carries
 
-In [`requirements.md`](requirements.md#the-gates-a-ledger-carries).
-
 ### The wiring that must never gate
 
-In [`requirements.md`](requirements.md#the-wiring-that-must-never-gate).
-
 ### The checks an audit makes
-
-In [`requirements.md`](requirements.md#the-checks-an-audit-makes).
 
 ## Both gates are verified to fire
 

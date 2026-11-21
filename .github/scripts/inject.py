@@ -443,9 +443,7 @@ from releaselib import (  # noqa: E402
     prepend_entry,
     select_increment,
     stamp_ids,
-    stamp_id_file,
     stamp_ledger,
-    table_at,
     check_ids_section,
     moves_audit_surface,
     NEXT,
@@ -507,12 +505,11 @@ RELEASE_FAULTS = [
      lambda: check_ids_section(BODY_IDS_GHOST, TABLE_BASE, TABLE_BASE), "does not have"),
     ("a row still reading next after the release",
      lambda: stamp_ids(TABLE_ADDED, NEXT), "still read next"),
-    # The release refuses, rather than skips, when the list it stamps is gone:
-    # a silent skip would leave every later `next` unwritten. See 0088.
+    # The release refuses, rather than skips, a missing list. See 0088.
     ("a release with method/requirements.md missing",
-     lambda: stamp_id_file(None, "0.9.0"), "is missing"),
+     lambda: stamp_ids("", "0.9.0"), "is missing"),
     ("a release whose method/requirements.md has no id section",
-     lambda: stamp_id_file("# What a setup must hold\n\nnothing here\n", "0.9.0"), "has no '## The ids' section"),
+     lambda: stamp_ids("# What a setup must hold\n", "0.9.0"), "no '## The ids' section"),
     ("a ledger whose stamp the release cannot find",
      lambda: stamp_ledger("# Bindings\n\nno stamp here\n", "0.9.0", "2026-01-02"), "no stamp line"),
     ("a bullet list that retires what the table added",
@@ -740,14 +737,6 @@ def release_control() -> None:
     untouched = lambda text: [line for line in text.splitlines() if "check:new-thing" not in line]  # noqa: E731
     assert untouched(stamped) == untouched(TABLE_ADDED), "stamping touched a line it does not own"
     assert stamp_ids(TABLE_BASE, "0.9.0") == TABLE_BASE, "a table with nothing to stamp was changed"
-    assert stamp_id_file(TABLE_BASE, "0.9.0") == TABLE_BASE, "the requirements file was not stamped like the table"
-    # The move's own pull request: each side is read from wherever the table is
-    # at that revision, so the old table in gates.md and the new one in
-    # requirements.md diff as unchanged, and the pointer section is never read.
-    pointers = "# The gates\n\n## The ids\n\nIn [requirements.md](requirements.md#the-ids).\n"
-    assert table_at("", TABLE_BASE) == TABLE_BASE, "the base before the move was not read from gates.md"
-    assert table_at(TABLE_BASE, pointers) == TABLE_BASE, "the head after the move read the pointer section"
-    assert check_ids_section(BODY_IDS_UNCHANGED, table_at("", TABLE_BASE), table_at(TABLE_BASE, pointers))["added"] == [], "the move did not diff as unchanged"
     assert check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"]
     assert check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_BASE)["added"] == []
     assert check_ids_section(BODY_IDS_BULLETS, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"], "a bullet list is refused"

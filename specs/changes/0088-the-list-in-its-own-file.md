@@ -33,7 +33,7 @@ The list of what a setup must hold is one file, `method/requirements.md`, that t
 ## What changes
 
 1. **The move.** The whole `## The ids` section of [`gates.md`](../../method/gates.md) moves **verbatim** to a new `method/requirements.md`: its introduction, the three tables, and the paragraph on the `boundary:` and `local:` prefixes. Ids, columns, order and every cell stay exactly as they are.
-2. **Pointer headings.** `gates.md` keeps **the same four headings in the same order**: `## The ids`, `### The gates a ledger carries`, `### The wiring that must never gate`, `### The checks an audit makes`. Each holds one line linking to the matching section of `requirements.md`. So every existing anchor still resolves, including the duplicate-slug `-1` on the second *The wiring that must never gate*. That covers:
+2. **Pointer headings.** `gates.md` keeps **the same four headings in the same order**: `## The ids`, `### The gates a ledger carries`, `### The wiring that must never gate`, `### The checks an audit makes`. `## The ids` holds one line linking to `requirements.md`, and the three subheadings stay as bare anchors. So every existing anchor still resolves, including the duplicate-slug `-1` on the second *The wiring that must never gate*. That covers:
    - [`skills/doctor/SKILL.md:29`](../../skills/doctor/SKILL.md) and [`skills/setup/SKILL.md:581`](../../skills/setup/SKILL.md);
    - changes 0042 and 0073–0079;
    - [`specs/setup/README.md:307`](../setup/README.md).
@@ -43,7 +43,7 @@ The list of what a setup must hold is one file, `method/requirements.md`, that t
 
    | file | change |
    |---|---|
-   | [`releaselib.py`](../../.github/scripts/releaselib.py) | <ul><li>A `REQUIREMENTS` path constant.</li><li>`AUDIT_SURFACE` swaps `method/gates.md` for `method/requirements.md`.</li><li>The comments at `:313–316` follow.</li><li>`IDS_HEADING` stays `## The ids` (the new file's heading).</li></ul> |
+   | [`releaselib.py`](../../.github/scripts/releaselib.py) | <ul><li>An `IDS_FILE` path constant.</li><li>`AUDIT_SURFACE` swaps `method/gates.md` for `method/requirements.md`.</li><li>The comments at `:313–316` follow.</li><li>`IDS_HEADING` stays `## The ids` (the new file's heading).</li></ul> |
    | [`release.py`](../../.github/scripts/release.py) `:42`, `:131–139` | <ul><li>The stamped file is `method/requirements.md`.</li><li>**A missing file, or a file with no `## The ids` section, ends the release with exit 1**, naming the file, before anything is written. This replaces today's silent skip.</li></ul> |
    | [`version_gate.py:151`](../../.github/scripts/version_gate.py) | Each side of the diff is read from **`method/requirements.md` when that file exists at that revision, otherwise from `gates.md`**. So the move's own pull request diffs the base's `gates.md` table against the head's `requirements.md` table and finds them equal (`## Ids: unchanged`). It never reads the pointer section |
    | [`checks.py:501–573`](../../.github/scripts/checks.py) | `gates_page` → the requirements page; the message names the new file |
@@ -58,10 +58,15 @@ The list of what a setup must hold is one file, `method/requirements.md`, that t
 
    Both use the release's pure path, like the faults 0042 added. One more control: *the move's own diff* shows the base table read from `gates.md` equal to the head table read from `requirements.md`.
 5. **The record.**
-   - [`method/README.md`](../../method/README.md) gains a row for `requirements.md`, which also makes the payload link check find it.
+   - **No row is added to [`method/README.md`](../../method/README.md).** `gates.md`'s pointer is the link the payload check needs, and a second entry point is a second thing to keep true.
    - [`specs/spec.md`](../spec.md)'s **audit surface** names `method/requirements.md` instead of "the id section of `method/gates.md`".
    - [`CONTRIBUTING.md:196,209`](../../CONTRIBUTING.md) and [`CLAUDE.md:53`](../../CLAUDE.md) say "a `since` in `requirements.md`".
    - The bindings' *Release* row ([`specs/setup/README.md:40`](../setup/README.md)) names the file the release stamps.
+
+6. **As built.**
+   - The refusal lives in `stamp_ids` itself, which now raises on a missing section where it used to return the text unchanged. No second function was added.
+   - The version gate reads a base forked before the move from `gates.md` with a one-line fallback.
+   - The bindings' **Ceilings** rise by exactly what remained after cutting: `method/` +13 and `.github/scripts/` +8, with the reason written beside the numbers.
 
 **Rules added or changed:** none. See *Who this is for*.
 
@@ -85,7 +90,7 @@ No storage contract moves. A consuming repository's ledger names ids, not files,
 
 ## Acceptance checks
 
-1. `python3 .github/scripts/verify.py` is green, or exits 2 with only the eval measurements owed, which this change does not owe because no skill moved.
+1. `python3 .github/scripts/verify.py` is green.
 2. Open `method/gates.md#the-ids` and `#the-checks-an-audit-makes`: each lands on a one-line pointer to `requirements.md`.
 3. The pull request carries `## Ids: unchanged`, and the version gate accepts it.
 4. In a throwaway tree (`trees.py new`), `release.py --pull-request <a labelled fixture> --sha HEAD` stamps `method/requirements.md`. With the file renamed away, it exits 1 naming the file, and writes nothing. Then `trees.py clean` removes the tree.

@@ -30,7 +30,7 @@ from releaselib import (  # noqa: E402
     extract_entry,
     next_version,
     prepend_entry,
-    stamp_id_file,
+    stamp_ids,
     stamp_ledger,
     select_increment,
     ships,
@@ -123,14 +123,11 @@ def main() -> int:
     version = next_version(current, increment)
     date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-    # The third file the release writes: every id row that arrived or retired
-    # in this release reads `next` until now. Nobody types a version there, for
-    # the same reason nobody types one in the manifest or the changelog. See 0042. It is
-    # computed before anything is written, so a missing file or section ends the
-    # release with nothing half-written. See 0088.
-    before = IDS.read_text() if IDS.exists() else None
+    # The third file: every id row that arrived or retired reads `next` until
+    # now (0042). Computed first, so a missing file ends the release unwritten (0088).
+    before = IDS.read_text() if IDS.exists() else ""
     try:
-        after = stamp_id_file(before, version)
+        after = stamp_ids(before, version)
     except ReleaseInputError as error:
         print(f"\n✘ the id table cannot be stamped for {version}:\n\n  ✘ {error}\n", file=sys.stderr)
         return 1

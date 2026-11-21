@@ -498,8 +498,7 @@ for note in notes:
 
 # --- 8. the ids are one list, and every version in it is a real release --------
 
-# method/requirements.md carries the one list an audit is held to (it moved
-# there from method/gates.md in 0088): the gates a ledger
+# method/requirements.md carries the one list an audit is held to: the gates a ledger
 # needs a row for, the wiring that never gates, and the checks. A consuming
 # repository's ledger names these ids, so they are permanent, retired in place,
 # and every *since* or *retired* names a release the changelog actually has —
@@ -515,10 +514,8 @@ ID_SEVERITIES = {"platform", "boundary", "wiring", "record"}
 
 ids_page = ROOT / releaselib.IDS_FILE
 changelog = ROOT / "CHANGELOG.md"
-if not ids_page.exists():
-    fail(releaselib.IDS_FILE, "is missing; it is the one list an audit is held to, and the release refuses without it")
-elif changelog.exists():
-    rows = releaselib.id_rows(ids_page.read_text())
+if changelog.exists():
+    rows = releaselib.id_rows(ids_page.read_text() if ids_page.exists() else "")
     if rows is None:
         fail(rel(ids_page), f"has no {releaselib.IDS_HEADING!r} section; it is the one list an audit is held to")
     else:
