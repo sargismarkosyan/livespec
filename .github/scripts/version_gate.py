@@ -45,6 +45,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from releaselib import (  # noqa: E402
+    IDS_FILE,
     ReleaseInputError,
     check_ids_section,
     extract_entry,
@@ -148,7 +149,9 @@ if surface:
     # now — another merge since then would read as rows this change removed.
     fork = git("merge-base", BASE, "HEAD").strip()
     try:
-        ids = check_ids_section(body, shown(fork, "method/gates.md"), (ROOT / "method" / "gates.md").read_text())
+        # A base forked before 0088 has the table in gates.md.
+        base = shown(fork, IDS_FILE) or shown(fork, "method/gates.md")
+        ids = check_ids_section(body, base, (ROOT / IDS_FILE).read_text())
     except ReleaseInputError as error:
         problems.append(str(error))
 

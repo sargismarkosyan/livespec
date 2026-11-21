@@ -498,7 +498,7 @@ for note in notes:
 
 # --- 8. the ids are one list, and every version in it is a real release --------
 
-# method/gates.md carries the one list an audit is held to: the gates a ledger
+# method/requirements.md carries the one list an audit is held to: the gates a ledger
 # needs a row for, the wiring that never gates, and the checks. A consuming
 # repository's ledger names these ids, so they are permanent, retired in place,
 # and every *since* or *retired* names a release the changelog actually has —
@@ -512,12 +512,12 @@ import releaselib  # noqa: E402
 ID_KINDS = {"gate", "wiring", "mechanical", "judgment"}
 ID_SEVERITIES = {"platform", "boundary", "wiring", "record"}
 
-gates_page = ROOT / "method" / "gates.md"
+ids_page = ROOT / releaselib.IDS_FILE
 changelog = ROOT / "CHANGELOG.md"
-if gates_page.exists() and changelog.exists():
-    rows = releaselib.id_rows(gates_page.read_text())
+if changelog.exists():
+    rows = releaselib.id_rows(ids_page.read_text() if ids_page.exists() else "")
     if rows is None:
-        fail(rel(gates_page), f"has no {releaselib.IDS_HEADING!r} section; it is the one list an audit is held to")
+        fail(rel(ids_page), f"has no {releaselib.IDS_HEADING!r} section; it is the one list an audit is held to")
     else:
         try:
             released = {version for version, _ in releaselib.entries(changelog.read_text())}
@@ -525,7 +525,7 @@ if gates_page.exists() and changelog.exists():
             released = set()  # section 7 already fails the heading; do not fail it twice
         seen: set[str] = set()
         for row in rows:
-            where = f"{rel(gates_page)} ({row['id']})"
+            where = f"{rel(ids_page)} ({row['id']})"
             if not releaselib.ID_SHAPE.match(row["id"]):
                 fail(where, "is not an id: a prefix of gate:, wiring: or check: and a kebab-case name")
             if row["id"] in seen:
@@ -548,7 +548,7 @@ if gates_page.exists() and changelog.exists():
 
 # --- 9. the tool and the table are one list ----------------------------------
 
-# tools/doctor.py carries a registry of the same ids — it never parses gates.md
+# tools/doctor.py carries a registry of the same ids — it never parses the table
 # at runtime — so the two are held equal here on every column but the two the
 # release writes. A check the tool performs that the table does not name, or a
 # row in the table no function answers, is red in this repository and never in
@@ -559,17 +559,17 @@ try:
 except ImportError:
     doctor = None
 
-if doctor is not None and gates_page.exists():
-    table = {row["id"]: row for row in (releaselib.id_rows(gates_page.read_text()) or [])}
+if doctor is not None and ids_page.exists():
+    table = {row["id"]: row for row in (releaselib.id_rows(ids_page.read_text()) or [])}
     tool = {row["id"]: row for row in doctor.registry()}
     for missing in sorted(set(tool) - set(table)):
-        fail(rel(gates_page), f"the tool performs {missing} and the id table does not name it; the list is one list")
+        fail(rel(ids_page), f"the tool performs {missing} and the id table does not name it; the list is one list")
     for extra in sorted(set(table) - set(tool)):
-        fail(rel(gates_page), f"names {extra} and no function in tools/doctor.py answers it")
+        fail(rel(ids_page), f"names {extra} and no function in tools/doctor.py answers it")
     for row_id in sorted(set(tool) & set(table)):
         for column in ("kind", "severity", "aliases", "meaning"):
             if table[row_id][column] != tool[row_id][column]:
-                fail(rel(gates_page), f"{row_id} {column} reads {table[row_id][column]!r} in the table and {tool[row_id][column]!r} in the tool")
+                fail(rel(ids_page), f"{row_id} {column} reads {table[row_id][column]!r} in the table and {tool[row_id][column]!r} in the tool")
 
 if failures:
     print(f"\n{len(failures)} problem(s):\n", file=sys.stderr)
