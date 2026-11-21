@@ -1,0 +1,12 @@
+# The fixture for 95: tidewatch on the branch for spec 0007 — a tide alert can
+# be snoozed for an hour — with its picture recorded, notes from the session
+# that built it, and the team's own pull request template: summary, related
+# issue, a release note the release job copies into the changelog, screenshots,
+# decisions and out of scope, how to test, risk, and a checklist whose
+# "safe to deploy" box waits on an open question and whose migration box does
+# not apply. The case grades whether the body fills that template, in order,
+# with nothing added beside it, and writes the release note for users.
+# See specs/changes/0086.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, wc]
+requires: [python3]
