@@ -342,6 +342,11 @@ sourcemap fix, nothing that touches the build output. Left it in.
 - The species suggestions in the picture come from the 40-name fixture, not
   the real list (mocked since 0006).
 
+## Also done
+
+Splitting also re-sorts the whole log by start time, so the outings stay in
+order after a split.
+
 ## Companion
 
 fieldnote-export#41 —

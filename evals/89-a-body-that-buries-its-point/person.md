@@ -12,5 +12,9 @@ I maintain fieldnote. Answer what a session asks from this and nothing else.
   review that one too.
 - If asked what "the shadow log" is: the copy of Marek's real export the last
   session loaded into a fresh browser profile to check against.
+- If asked why a press-and-hold rather than a button: a button on every
+  sighting crowds a screen he uses one-handed, standing up.
+- If asked whether the split re-sorts the log: no, it only puts the new outing
+  on top; nothing else moves.
 - If asked to approve or go ahead: go ahead.
 - Anything not on this list: your call.

@@ -1,5 +1,5 @@
 ---
-tags: [skill:record-clip, rule:the-point-comes-before-the-evidence, rule:each-fact-once-in-words-the-reviewer-has]
+tags: [skill:record-clip, rule:the-point-comes-before-the-evidence, rule:each-fact-once-in-words-the-reviewer-has, rule:a-reference-carries-its-title, rule:a-release-note-only-where-one-is-published, rule:what-the-author-knows-is-asked-not-guessed, rule:the-body-is-checked-against-the-diff, rule:about-a-hundred-words-of-the-authors-own]
 max_turns: 40
 timeout_seconds: 1200
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit, Bash]

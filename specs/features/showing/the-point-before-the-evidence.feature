@@ -2,13 +2,19 @@
 Feature: How a pull request body is read by the person deciding on it
 
   @rule:the-point-comes-before-the-evidence
-  Rule: A pull request body opens with what changed and why in two or three plain lines, then what the reviewer should look at in the diff; everything it owes as evidence comes after, the picture inline and the long blocks folded or linked
+  Rule: A pull request body opens with the problem — who is affected, what goes wrong, and how it is known — then says in one sentence what changes, then what the reviewer should look at in the diff; everything it owes as evidence comes after, the picture inline and the long blocks folded or linked
 
     Example: a change with a long run behind it
       Given a change whose session checked sixteen cases, read a lockfile and noted three caveats
       When the pull request body is written
-      Then its first lines say what changed and why, and which file in the diff to read
+      Then its first lines say what goes wrong and for whom, then what changes, and which file in the diff to read
       And the run, the case matrix and the caveats come after those lines, the long ones folded or linked
+
+    Example: an opening that leads with the change
+      Given a body whose first sentence says "Board cards can now be moved without a mouse, as the users in the issue asked"
+      When its last sentence, the one saying what changes, is hidden
+      Then nothing is left that says what was going wrong
+      And the opening is rewritten to start from the problem: a person who uses a screen reader cannot rearrange the board
 
     Example: short is not bought by dropping what is owed
       Given a change that moved a feature file and the tests
@@ -22,7 +28,7 @@ Feature: How a pull request body is read by the person deciding on it
       Then the change was not written for them, however complete the evidence is
 
   @rule:each-fact-once-in-words-the-reviewer-has
-  Rule: Each fact is stated once, in words the reviewer already has; a caveat is not repeated, two pull requests that belong together link each other rather than carry the same block, and a term the session coined is replaced with what it names — the message asking for review held to the same
+  Rule: Each fact is stated once, in words the reviewer already has; a caveat is not repeated, two pull requests that belong together link each other rather than carry the same block, a term the session coined is replaced with what it names, and nothing is said about what the change does not do — the message asking for review held to the same
 
     Example: a caveat that applies twice
       Given a caveat about the test harness that bears on both the run and the picture
@@ -38,6 +44,12 @@ Feature: How a pull request body is read by the person deciding on it
       Given a session that has been calling its fixture "the shadow log" for an hour
       When the pull request body is written
       Then the reviewer reads what the fixture is, in plain words, and never the name
+
+    Example: a section about what is left out
+      Given a template whose heading reads "Intentional decisions & out of scope"
+      When the pull request body is written
+      Then the heading stays and only decisions are under it
+      And nothing says what the change does not do, not even "Out of scope: None"
 
     Example: the message asking for review
       Given a pull request ready for review
