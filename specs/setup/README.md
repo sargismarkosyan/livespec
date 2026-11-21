@@ -780,9 +780,14 @@ submission to Anthropic's plugin catalog, which this plugin is not.
 `--strict` turns every warning into an error, so the two manifest calls run
 without it, through
 [`validate-manifest.sh`](../../.github/scripts/validate-manifest.sh), which does
-what `--strict` would minus exactly those two: it drops the plugin directory
-section by its own opening and closing lines, and fails on any `❯` line left
-that is not the CLAUDE.md warning, or on the CLI failing. **`./skills` keeps
+what `--strict` would minus exactly those two: it reads only the `❯` lines
+under the CLI's own *Found N warning(s)* heading, and fails on any that is not
+the CLAUDE.md warning, or on the CLI failing. The plugin directory section has
+a heading of its own (*Found N plugin directory warning*), and since 2026-11 the
+CLI also lists what the plugin **provides** — one `❯` line a skill — neither of
+which is a warning. The script once dropped the plugin directory section by its
+opening and closing lines and failed on any other `❯`; the *Provides* list then
+failed `plugin validate` on every pull request and on `main`. **`./skills` keeps
 `--strict`.** The script names what it lets through rather than trusting that
 nothing else will ever warn, so the next new warning fails the job and gets
 read.
