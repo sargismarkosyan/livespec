@@ -1,5 +1,5 @@
 #!/bin/sh
-# The free half of verification, before the work leaves this machine.
+# Verification, before the work leaves this machine.
 #
 # Not a gate. It is local, it is opt-in, and `git push --no-verify` walks past
 # it — which is fine, and is why it has no row in the gate wiring ledger. See
@@ -8,9 +8,8 @@
 # Turn it on:      git config core.hooksPath .githooks
 # Turn it off:     git config --unset core.hooksPath
 #
-# What it runs is `verify.py --local`: every gate except the measurement board,
-# whose only cure is an eval run the maintainer pays for. That one is CI's to
-# fail. The list lives in verify.py so there is never a second copy of it here.
+# What it runs is `verify.py`, the same command CI runs. Nothing in it costs
+# money: the eval cases are run by hand, when the maintainer chooses.
 set -e
 
 # Git exports GIT_DIR into hooks run from a linked worktree, and a child git
@@ -19,4 +18,4 @@ set -e
 # these itself now; the hook does too, so nothing it grows later relearns it.
 unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE
 
-exec python3 "$(git rev-parse --show-toplevel)/.github/scripts/verify.py" --local
+exec python3 "$(git rev-parse --show-toplevel)/.github/scripts/verify.py"

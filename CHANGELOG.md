@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.30.0 — 2026-11-21
+
+Measurements are optional. A stale measurement is reported, never gated: verification has two outcomes again, green or broken, and no change waits on a paid run before it merges. `method/graded-cases.md` now says neither freshness nor the score is gated, and a run still needs the per-run approval of whoever pays. What existed only to live with a standing red is gone: the second exit status, the hook's free/paid split, the method's sections on gates that run after a standing red and on committing past one, and the five rules in `which-red.feature`. `what-costs-money-stays-out-of-the-hook` now reads: only checks that cost nothing per run run before a push.
+
 ## 1.29.0 — 2026-10-23
 
 A workflow can name the phases of its journey it is made in, with `@phase:<name>` on its first line, where the name is the phase's heading in the journey's map, lower-cased and hyphenated. It is optional. A new gate, `gate:workflow-to-phase`, fails a phase that no journey the workflow names has. The gate's map lists every journey's phases in order with the workflows in each. The journey template says where an arc goes round, in one line under the map. `refine-workflows` names the phase from the map, and `refine-journeys` writes the loop line and retags a workflow when it renames a phase.
