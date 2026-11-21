@@ -461,6 +461,18 @@ gates* in every ledger, every injector and every bindings file already
 written. Two rows in the ledger, one for the ceiling and one for the shape,
 because a repository can have the file in shape and no number yet.
 
+### And every part that only grows
+
+The context file's ceiling, generalised: the code, the rules, whatever every
+session loads — [process.md](process.md#the-rules), *Whatever only grows has a
+ceiling*. The bindings' **Ceilings** row names each part and its size, and the
+traceability gate reads it, for the same reason it reads the context file.
+
+| Failure | What it means |
+|---|---|
+| a part larger than its ceiling | The change grew it past what was agreed. Cut it back — or raise the number in this change, with the reason beside it, so the growth is argued where it is reviewed. |
+| no Ceilings row | A number nobody wrote is not a pass. The sitting writes the row from each part's size once it has finished. |
+
 ### And what is not wiring at all
 
 A check that runs on somebody's own machine before they push — the
@@ -529,6 +541,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:boundary-recorded-age` | gate | 1.2.0 | boundary | — | | a recorded row past the age the bindings set fails |
 | `gate:boundaries-table` | gate | 1.2.0 | boundary | — | | rule-bound tests present and no boundaries table fails |
 | `gate:context-file-ceiling` | gate | 1.9.0 | wiring | — | | the context file larger than the ceiling the bindings name, a context file with no ceiling row, or a ceiling above the limit the method names, fails |
+| `gate:part-past-its-ceiling` | gate | next | wiring | — | | a part larger than the ceiling the bindings' Ceilings row names, or no Ceilings row, fails |
 | `gate:context-file-shape` | gate | 1.9.0 | wiring | — | | the context file missing, or without its loop, its commands, or its pointer to the bindings, fails |
 | `gate:skipped-test-claims-nothing` | gate | 1.12.0 | wiring | — | | a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails |
 | `gate:fewer-ran-than-exist` | gate | 1.12.0 | wiring | — | | the runner reporting fewer rule-bound tests than the tree holds fails |
@@ -642,6 +655,8 @@ each one in turn and read the message it produces:
 | a loop of nine steps | fails |
 | a context file with no fenced block | fails |
 | a context file that does not link to the bindings | fails |
+| a part past its ceiling | fails |
+| no Ceilings row | fails |
 | a skipped rule-bound test claiming a rule | fails |
 | the runner ran fewer rule-bound tests than the tree holds | fails |
 | a rule crossing a boundary the bindings have no row for | fails |

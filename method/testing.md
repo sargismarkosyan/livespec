@@ -178,8 +178,11 @@ The thresholds are the repository's. The judgment is not:
 - Error-handling paths in storage reads are real behaviour with real rules behind
   them, not coverage chores. Corrupt the stored value and assert the app still
   opens on something usable.
-- If a branch is genuinely unreachable, it should not be there. Deleting it is a
-  better fix than a test that pretends to reach it.
+- Code no rule-bound test reaches is a question the change answers: a
+  behaviour nobody specced — write its rule — or dead — delete it. A unit test
+  reaching it keeps it covered and does not answer the question, and a test
+  that pretends to reach an unreachable branch is worse than deleting the
+  branch.
 
 ### Measure the rule-bound tests on their own, and never gate it
 

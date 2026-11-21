@@ -1,7 +1,7 @@
 @feature:wiring-a-ceiling-on-what-grows @workflow:adopt-the-process
 Feature: What the build holds a part that only grows to
 
-  @rule:a-part-past-its-ceiling-fails @planned
+  @rule:a-part-past-its-ceiling-fails
   Rule: Verification fails when a part the bindings' Ceilings row names is larger than its ceiling, or when the bindings carry no Ceilings row, naming the part, its size and the ceiling
 
     Example: every part within its ceiling

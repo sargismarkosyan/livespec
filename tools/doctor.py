@@ -101,6 +101,7 @@ GATES = [
     ("gate:boundary-recorded-age", "boundary", "", "a recorded row past the age the bindings set fails"),
     ("gate:boundaries-table", "boundary", "", "rule-bound tests present and no boundaries table fails"),
     ("gate:context-file-ceiling", "wiring", "", "the context file larger than the ceiling the bindings name, a context file with no ceiling row, or a ceiling above the limit the method names, fails"),
+    ("gate:part-past-its-ceiling", "wiring", "", "a part larger than the ceiling the bindings' Ceilings row names, or no Ceilings row, fails"),
     ("gate:context-file-shape", "wiring", "", "the context file missing, or without its loop, its commands, or its pointer to the bindings, fails"),
     ("gate:crossing-names-a-boundary", "boundary", "", "a rule tagged as crossing a boundary the bindings declare no row for fails"),
     ("gate:skipped-test-claims-nothing", "wiring", "", "a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails"),

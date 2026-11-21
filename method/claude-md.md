@@ -51,7 +51,8 @@ mentions is a check the step that needs it never runs.
 the full set in the method and then list the ones that actually get broken here:
 spec before code, one change per version, feedback is never fixed on the spot,
 never touch `src/` from a skill, rule ids are permanent, every commit green, a
-rule-bound test runs in the world its boundary row names.
+rule-bound test runs in the world its boundary row names, and less is the
+default — the smallest change, with what it made dead deleted in it.
 **A rules list nobody finishes reading enforces nothing.**
 
 **8. The commands.** Verification first, then whatever a session needs to run the

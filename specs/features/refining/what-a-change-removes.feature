@@ -1,7 +1,7 @@
 @feature:refining-what-a-change-removes @workflow:adopt-the-process
 Feature: A change spec says what it removes
 
-  @rule:a-spec-names-what-it-removes @planned
+  @rule:a-spec-names-what-it-removes
   Rule: When a request withdraws a behaviour, the change spec's What this removes names the rule, the tests that claim it and the code only that rule needed, and the spec edits no source
 
     Example: the place goes

@@ -35,6 +35,7 @@ headers and the stamp line below, so keep those as they are.
 | **A sketch is owed** | <which changes owe one before approval — a repository with no app still has change specs> |
 | **Context file** | <the one instructions file the harnesses here read first — `AGENTS.md`, `CLAUDE.md`, or another — named so the gates and the audit read it rather than guess> |
 | **Context file ceiling** | <the size the file may not exceed, in a unit the gate reads — written from what the file is when the sitting has finished with it, with the command that reads it and the change that set it; raised only in the change that needs the room, and never above the limit the method names> |
+| **Ceilings** | <each part that only grows — the code, the rules, whatever every session loads — with the size it may not exceed, in a unit the gate reads, written from what it is when the sitting has finished; lowered when it shrinks, raised only in the change that needs the room, with the reason here beside the number> |
 | **What proves a rule** | <an ordinary test suite, or graded cases — and why> |
 | **How a test claims its rule** | <the helper and its import> |
 | **Rule discovery** | <where rules live and what one looks like> |
@@ -80,6 +81,7 @@ tree carries how it was read back: the command, and when.
 | `gate:change-number-unique` | two change specs sharing a number | | |
 | `gate:feature-to-feature` | a feature using a feature that does not exist | | |
 | `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | |
+| `gate:part-past-its-ceiling` | a part larger than the ceiling the bindings name, or no Ceilings row | | |
 | `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | |
 | `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | | |
 | `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | | |

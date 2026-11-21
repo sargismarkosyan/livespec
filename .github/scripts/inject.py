@@ -68,6 +68,7 @@ def context_file(steps: int = 3) -> str:
 CONTEXT_FILE = context_file()
 ROW_CONTEXT = "| **Context file** | `CLAUDE.md` |"
 ROW_CEILING = f"| **Context file ceiling** | {len(CONTEXT_FILE.splitlines())} lines, `wc -l CLAUDE.md`, set at 0001 |"
+ROW_CEILINGS = "| **Ceilings** | `specs/` 1,000 lines · `tests/` 1,000 lines, set at 0001 |"
 
 FIXTURE: dict[str, str] = {
     "CLAUDE.md": CONTEXT_FILE,
@@ -215,6 +216,7 @@ def green_bindings(version: str) -> str:
             "| `gate:boundary-recorded-age` | a recorded row past its age | not applicable | no rule-bound doubles here |",
             "| `gate:boundaries-table` | rule-bound tests present and no boundaries table | not applicable | no rule-bound doubles here |",
             "| `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | automated | `python3 gate.py` |",
+            "| `gate:part-past-its-ceiling` | a part larger than the ceiling the bindings name, or no Ceilings row | automated | `python3 gate.py` |",
             "| `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | automated | `python3 gate.py` |",
             "| `gate:crossing-names-a-boundary` | a rule crossing a boundary the bindings have no row for | automated | `python3 gate.py` |",
             "| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | automated | `python3 gate.py` |",
@@ -248,6 +250,7 @@ def green_bindings(version: str) -> str:
         f"{ROW_MERGES}\n"
         f"{ROW_CONTEXT}\n"
         f"{ROW_CEILING}\n"
+        f"{ROW_CEILINGS}\n"
         "| **Deliverable of a version** | the screenshot |\n"
         "| **What proves a rule** | an ordinary test suite |\n"
         "| **How a test claims its rule** | `rule()` from tests/rulelib.py |\n"
@@ -886,6 +889,12 @@ FAULTS = [
     ("a context file that does not link to the bindings", TRACE,
      lambda r: write(r, "CLAUDE.md", CONTEXT_FILE.replace("(specs/setup/README.md)", "(specs/README.md)")),
      "fails", "does not link to"),
+    # The same ceiling for every part that only grows. See specs/changes/0085.
+    ("a part past its ceiling", TRACE,
+     lambda r: edit(r, "specs/setup/README.md", "`specs/` 1,000 lines", "`specs/` 10 lines"),
+     "fails", "against a ceiling of 10"),
+    ("no Ceilings row", TRACE,
+     lambda r: edit(r, "specs/setup/README.md", ROW_CEILINGS + "\n", ""), "fails", "carries no Ceilings row"),
     # A rule names what it crosses. The green fixture carries no crossing; these
     # two introduce one. `boundary:store` is a row the fixture's bindings carry,
     # so the second warns rather than fails. See specs/changes/0053.

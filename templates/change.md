@@ -49,6 +49,13 @@ at the screen.
 |---|---|---|
 | `...` | `features/.../....feature` | new |
 
+## What this removes
+
+The code, tests, rules and files this change deletes — what it makes dead, by
+name. "Nothing" needs its reason.
+
+- ...
+
 ## What we are not doing
 
 The scope this deliberately leaves out, and the near-miss alternatives that were
