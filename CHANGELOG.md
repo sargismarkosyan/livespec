@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.31.0 — 2026-11-21
+
+A pull request body fills the repository's template, opens with the problem, keeps to about a hundred words, links every reference with its title, and asks instead of guessing.
+
 ## 1.30.0 — 2026-11-21
 
 Measurements are optional. A stale measurement is reported, never gated: verification has two outcomes again, green or broken, and no change waits on a paid run before it merges. `method/graded-cases.md` now says neither freshness nor the score is gated, and a run still needs the per-run approval of whoever pays. What existed only to live with a standing red is gone: the second exit status, the hook's free/paid split, the method's sections on gates that run after a standing red and on committing past one, and the five rules in `which-red.feature`. `what-costs-money-stays-out-of-the-hook` now reads: only checks that cost nothing per run run before a push.
