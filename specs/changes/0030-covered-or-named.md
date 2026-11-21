@@ -173,7 +173,7 @@ case holds, and **eight cases hold `skill:setup`**:
 | [`17-wiring-nobody-watched-run`](../../evals/17-wiring-nobody-watched-run/) | Δ +1.0, 1 run, $1.59 | ~$4.77 |
 | [`23-what-a-change-here-must-show`](../../evals/23-what-a-change-here-must-show/) | Δ −0.5, 1 run, $1.43 | ~$4.29 |
 | [`26-two-seconds-before-the-push`](../../evals/26-two-seconds-before-the-push/) | Δ +0.22, **3 runs**, $4.78 | ~$4.78 |
-| [`27-a-red-nobody-here-can-clear`](../../evals/27-a-red-nobody-here-can-clear/) | Δ +0.25, 2 runs, $6.42 | ~$9.63 |
+| [`27-a-red-nobody-here-can-clear`](https://github.com/sargismarkosyan/livespec/tree/5f12d6dd5452670b75c47f7738a9d6b450165fa5/evals/27-a-red-nobody-here-can-clear/) | Δ +0.25, 2 runs, $6.42 | ~$9.63 |
 | a new case claiming both rules | never measured | ~$2–5, softly |
 
 **Roughly $28 to clear the board properly, and there is a cheaper honest floor.**

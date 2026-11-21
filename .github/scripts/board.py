@@ -1,39 +1,25 @@
 #!/usr/bin/env python3
-"""Gate 5 — the board of latest measurements.
+"""The board of latest measurements — reported, never gated.
 
 `evals/board.json` records what the last runs measured, and beside each number
-a hash of what it was a measurement *of*. Since 0072 it holds two kinds of row,
-and they are held differently because they cost differently:
+a hash of what it was a measurement *of*. It holds two kinds of row:
 
-**The tiers** — `route`, `first`, `review` — are what every edit is measured
-by: one call each, cents, written by `evals/runner/tiers.py`. Their freshness
-is the gate:
+**The tiers** — `route`, `first`, `review` — one call each, written by
+`evals/runner/tiers.py`. **The canary pool** — `cases`, the sittings `run.py`
+drives.
 
-- a row whose inputs no longer match **fails** — a skill's description, its
-  body, a case, a rule or the tier harness moved and nobody re-measured. The
-  healing command runs exactly the stale rows, never the whole suite.
-- a row that does not exist yet **warns** — the bootstrap state.
+A row whose inputs no longer match is **stale**: shown as stale, and left out
+of every count and mean, because a number that no longer describes the files
+is never presented as though it did. A row that does not exist yet, or rests
+on fewer runs than the floor, is shown and not counted.
 
-**The canary pool** — `cases`, the sittings `run.py` drives — is the most
-faithful measurement here and the one nobody can keep fresh on every edit. It
-is shown, never gated:
-
-- a stale canary row **warns**, is shown as stale, and is **not counted** and
-  not averaged: a number that no longer describes the files is never presented
-  as though it did, and nothing else is asked of it. It is run again when the
-  model moves, or when the maintainer chooses to.
-- a canary row below the floor **warns, and is not counted** — a pilot's number
-  is what the board has, never what it knows (#75).
-
-**The score is never gated.** A delta of zero ships; a stale tier row does not.
-Gating the number would turn the suite into something to be optimised at; what
-is enforced here is only that a number still describes the files it claims to.
+**Nothing here is owed.** A run costs money and happens when the maintainer
+chooses, so this exits 0 whatever it finds — see specs/changes/0087. Neither
+freshness nor the score is gated: method/graded-cases.md.
 
 Run: python3 .github/scripts/board.py [root] [--json]
 
-`--json` prints the counts for the pull-request report and always exits 0 —
-in that mode this is a hand-over of numbers, not a gate. See gates.md on why
-the report may never recompute or fail anything.
+`--json` prints the counts for the pull-request report.
 """
 
 from __future__ import annotations
@@ -214,10 +200,7 @@ summary += (f". Canary: {canary['measured']} fresh, {canary['stale']} stale, {ca
             + (f", mean Δ {mean(canary_deltas):+.2f} over the fresh (as of {canary_as_of})" if canary_deltas else ""))
 
 if failures:
-    print(f"\n{len(failures)} stale tier row(s):\n", file=sys.stderr)
+    print(f"\n{len(failures)} stale tier row(s) — reported, not owed:\n")
     for problem in failures:
-        print(f"  ✘ {problem}", file=sys.stderr)
-    print(f"\n  The score is never gated — only its bookkeeping is. {summary}.", file=sys.stderr)
-    sys.exit(1)
-
+        print(f"  ⚠ {problem}")
 print(f"✔ board: {summary}")

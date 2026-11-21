@@ -318,32 +318,15 @@ and a check that expensive stops being kept somewhere around the fourth commit.
 Push is the last moment the work is still only yours.
 
 **Then say what will not be in it, in the same breath.** Cost is the selection
-criterion, so the hook carries the free and fast half — the gates, the type
-check, the unit tests, the linter — and two things stay out even though the one
-command runs them:
-
-- **a graded suite**, which must refuse to start without a per-run approval from
-  whoever is paying. A hook is exactly the automatic trigger that rule forbids,
-  and wiring one in bills them per push.
-- **any check whose failure cannot be cleared here for free** — stale eval
-  bookkeeping being the usual one. Red for a reason the method sanctions, fixable
-  only by a run somebody has to pay for, and indistinguishable to a hook from a
-  broken gate. Leave it to the pipeline.
-
-**Leaving it to the pipeline is only an answer if the pipeline can say which red
-it is.** So where the verification command can fail for a reason the method
-sanctions, the repository leaves this sitting able to tell that apart from a
-broken gate — in what the command returns as much as in its last line — and with
-its pull-request report **not** skipped on the failure it exists to describe.
-[`graded-cases.md`](../../method/graded-cases.md#freshness-is-gated-the-score-never-is)
-says why this is not a nicety: a red nobody can act on gets investigated a few
-times, found innocent every time, and then stops being read — and a gate nobody
-reads still counts as coverage to everybody looking at the list.
-
-Where the verification command runs both kinds, **the hook runs the free part by
-name, from the same list the command already reads.** A hook with its own copy of
-that list is a second answer to *what does verification mean here*, and it goes
-stale the first time a gate is added.
+criterion, so the hook carries the free and fast checks — the gates, the type
+check, the unit tests, the linter — and **a graded suite stays out**: it must
+refuse to start without a per-run approval from whoever is paying, a hook is
+exactly the automatic trigger that rule forbids, and wiring one in bills them
+per push. Where the verification command runs one, the hook runs the rest by
+name, from the same list the command already reads — a second copy of that list
+goes stale the first time a gate is added. A graded suite's freshness is never
+a gate here or anywhere —
+[`graded-cases.md`](../../method/graded-cases.md#neither-freshness-nor-the-score-is-gated).
 
 **It is not a gate, and it does not become one.** No row in either ledger table —
 [`gates.md`](../../method/gates.md#and-what-is-not-wiring-at-all) says why a

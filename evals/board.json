@@ -270,16 +270,6 @@
    "cost": 7.27,
    "inputs": "10100543eb34350e"
   },
-  "27-a-red-nobody-here-can-clear": {
-   "delta": 0.75,
-   "with": 0.75,
-   "without": 0.0,
-   "runs": 1,
-   "at": "2026-09-01",
-   "sha": "b3d2cbe",
-   "cost": 2.19,
-   "inputs": "461b399ca65b0c05"
-  },
   "28-a-hook-is-not-a-row": {
    "delta": 0.83,
    "with": 1.0,

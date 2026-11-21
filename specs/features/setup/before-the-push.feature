@@ -22,20 +22,13 @@ Feature: The cheap half of verification, run before the work leaves the machine
       Then it is at push, with the reason that a branch would run it once per commit to learn the same thing once
 
   @rule:what-costs-money-stays-out-of-the-hook
-  Rule: Only checks that are free and clearable here run before a push
+  Rule: Only checks that cost nothing per run run before a push
 
     Example: the one command runs a graded suite as well as the gates
       Given a repository whose verification runs a suite that costs money per run
       When the local run is offered
       Then it carries the free checks and not the graded suite
       And the reason given is what a run of it costs whoever is paying
-
-    Example: a check whose failure needs an eval run to clear
-      Given a check that is red for a reason the method sanctions
-      And whose only fix is a run somebody has to pay for
-      When the local run is offered
-      Then that check is left to the pipeline
-      And the offer says which part it left there
 
   @rule:a-local-hook-is-not-a-gate
   Rule: A local check before a push is recorded as a courtesy or not at all

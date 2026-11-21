@@ -24,7 +24,7 @@ COMMAND = "python3 gate.py"
 BODY = (
     "Intro.\n\n## Changelog\n\nThe entry.\n\n"
     "```gherkin\n  Rule: it holds\n```\n\n"
-    "```\n$ python3 gate.py\n✔ traceability: 3 live rule(s) traced\n✘ verification is waiting on a measurement run\n```\n"
+    "```\n$ python3 gate.py\n✔ traceability: 3 live rule(s) traced\n✔ verification green — 5 gates, all fired against injected faults\n```\n"
 )
 HEAD = {
     "personas": {"live": 1, "retired": 0}, "journeys": 1, "workflows": {"total": 1, "planned": 0},
@@ -39,7 +39,7 @@ class TheBlock(unittest.TestCase):
     def test_the_run_under_the_command_is_read(self):
         block = extract_run(BODY, COMMAND)
         self.assertEqual(block.splitlines()[0], "$ python3 gate.py")
-        self.assertIn("waiting on a measurement run", block)
+        self.assertIn("verification green — 5 gates", block)
 
     @rule("a-claim-of-green-carries-the-run")
     def test_a_claim_with_no_run_is_refused_naming_the_block_and_the_command(self):
@@ -87,13 +87,13 @@ class TheReport(unittest.TestCase):
         out = report.build(HEAD, None, None, None, run_text=PIPELINE, body_text=BODY, command=COMMAND)
         self.assertIn("## The run", out)
         self.assertIn("$ python3 gate.py", out)
-        self.assertIn("waiting on a measurement run", out)
+        self.assertIn("verification green — 5 gates", out)
         self.assertIn("local checks green", out)
 
     @rule("the-report-prints-its-own-run-beside-the-claim")
     def test_the_two_disagreeing_is_printed_and_never_judged(self):
         out = report.build(HEAD, None, None, None, run_text=PIPELINE, body_text=BODY, command=COMMAND)
-        self.assertIn("waiting on a measurement run", out)
+        self.assertIn("verification green — 5 gates", out)
         self.assertIn("5 of 6 gates", out)
         for verdict in ("mismatch", "FAIL", "does not match", "fabricat"):
             self.assertNotIn(verdict, out)
