@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.32.0 — 2026-11-21
+
+Less is the default. A change is the smallest that makes its rules true: reuse before writing, add nothing no rule asks for, and delete what the change made dead in the same change. Its spec names those deletions under *What this removes*, a new section of the change template that `refine-spec` fills. Code no rule-bound test reaches is either a missing rule or dead. Whatever only grows (the code, the rules, whatever every session loads) has a ceiling in the bindings' new **Ceilings** row, and a new gate, `gate:part-past-its-ceiling`, fails a part past it. `setup` writes the row from each part's size when the sitting finishes.
+
 ## 1.31.0 — 2026-11-21
 
 A pull request body fills the repository's template, opens with the problem, keeps to about a hundred words, links every reference with its title, and asks instead of guessing.

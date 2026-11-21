@@ -496,7 +496,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:boundary-recorded-age` | gate | 1.2.0 | boundary | — | | a recorded row past the age the bindings set fails |
 | `gate:boundaries-table` | gate | 1.2.0 | boundary | — | | rule-bound tests present and no boundaries table fails |
 | `gate:context-file-ceiling` | gate | 1.9.0 | wiring | — | | the context file larger than the ceiling the bindings name, a context file with no ceiling row, or a ceiling above the limit the method names, fails |
-| `gate:part-past-its-ceiling` | gate | next | wiring | — | | a part larger than the ceiling the bindings' Ceilings row names, or no Ceilings row, fails |
+| `gate:part-past-its-ceiling` | gate | 1.32.0 | wiring | — | | a part larger than the ceiling the bindings' Ceilings row names, or no Ceilings row, fails |
 | `gate:context-file-shape` | gate | 1.9.0 | wiring | — | | the context file missing, or without its loop, its commands, or its pointer to the bindings, fails |
 | `gate:skipped-test-claims-nothing` | gate | 1.12.0 | wiring | — | | a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails |
 | `gate:fewer-ran-than-exist` | gate | 1.12.0 | wiring | — | | the runner reporting fewer rule-bound tests than the tree holds fails |
