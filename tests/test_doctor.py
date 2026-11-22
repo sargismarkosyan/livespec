@@ -846,6 +846,29 @@ class TheWholeContextFile(unittest.TestCase):
         self.assertIn("carry spec before code", audit(root)["check:loop-per-claude-md"]["evidence"])
 
 
+class ReadBackAge(unittest.TestCase):
+    """A read-back dated before the last audit was not read again by it. See specs/changes/0103."""
+
+    def aged(self, audited):
+        root = repo(inject.green_bindings(INSTALLED) + "\nBranch protection: **last read back on 2026-01-01**.\n")
+        (root / "specs" / "setup" / "audit.md").write_text(f"**Audited {audited} · livespec 1.0.0 · stamp 1.0.0 · HEAD abc1234 · audit 2**\n")
+        return audit(root)["check:read-back-age"]
+
+    @rule("a-read-back-ages-from-the-last-audit")
+    def test_older_than_the_last_audit_is_open(self):
+        line = self.aged("2026-04-01")
+        self.assertEqual(line["state"], "open")
+        self.assertIn("L", line["evidence"]); self.assertIn("2026-01-01", line["evidence"])
+
+    @rule("a-read-back-ages-from-the-last-audit")
+    def test_moved_by_the_last_audit_is_clear(self):
+        self.assertEqual(self.aged("2026-01-01")["state"], "clear")
+
+    @rule("a-read-back-ages-from-the-last-audit")
+    def test_no_audit_yet_is_not_applicable(self):
+        self.assertEqual(audit(repo())["check:read-back-age"]["state"], "n/a")
+
+
 class MainGreen(unittest.TestCase):
     """Whether the main branch's pipeline is green, asked of the platform. See specs/changes/0099."""
 

@@ -132,7 +132,8 @@ this repository's checks read it back>
 
 <read back from the platform, never inferred from the tree: whether a merge is
 blocked, the check's name as the platform has it, who can bypass — with the
-command that reads it again and the date>
+command that reads it again and the date, as *read back on YYYY-MM-DD*, which
+every audit moves once it has read it again>
 
 ## What has no gate, and what that misses
 
