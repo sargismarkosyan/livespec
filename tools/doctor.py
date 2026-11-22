@@ -173,6 +173,7 @@ CHECKS = [
     ("check:claim-row", "mechanical", "record", "the bindings name the marker that says an issue is taken, and the commands that put it on and list it"),
     ("check:claims-in-flight", "judgment", "record", "every open issue carrying the marker has a branch, a tree or a pull request behind it, and none is released by the audit"),
     ("check:skill-names", "mechanical", "record", "every skill the record instructs by exists in this plugin"),
+    ("check:host-pin-current", "mechanical", "wiring", "where the repository pins livespec for Pi, the ref is a release tag not below the ledger's ceiling, or a non-release ref the bindings say was kept on purpose"),
     ("check:host-enabled", "mechanical", "wiring", "every host in use here — the one running the audit, and each the tree shows — loads the plugin from a committed declaration"),
     ("check:one-context-file", "mechanical", "wiring", "one instructions file at the root, so the one the gates hold is the one every host reads"),
     ("check:word-not-a-skill", "judgment", "record", "the same word used as ordinary prose is left alone"),
@@ -969,6 +970,45 @@ def c_host_enabled(ctx: dict) -> tuple[str, str]:
     return "clear", "; ".join(f"{host}: {where}" for host, where in found.items())
 
 
+def project_pin(root: Path) -> str | None:
+    """The ref the repository's own Pi settings pin livespec to, `@` and all; None where none is pinned. See 0106."""
+    try:
+        packages = json.loads(read(root / ".pi" / "settings.json") or "{}").get("packages") or []
+    except (json.JSONDecodeError, AttributeError):
+        return None
+    for entry in packages:
+        source = entry.get("source", "") if isinstance(entry, dict) else str(entry)
+        if "livespec" in source and source.startswith("git:") and "@" in source.split("/")[-1]:
+            return source.rsplit("@", 1)[1]
+    return None
+
+
+def pin_version(ctx: dict) -> str | None:
+    """The release the project tag names, the cap on every raise; None with no release tag."""
+    ref = project_pin(ctx["root"])
+    match = re.fullmatch(r"livespec--v(\d+\.\d+\.\d+)", ref or "")
+    return match.group(1) if match else None
+
+
+def ceiling(ctx: dict) -> str:
+    cells = [(row["reconciled"] or "").strip("`* ") for row in ctx["gates"] + ctx["wiring"] if row["id"] and not row["id"].startswith("local:")]
+    return max((c for c in cells if re.fullmatch(r"\d+\.\d+\.\d+", c)), key=version_key, default=ctx["stamp"] or "")
+
+
+def c_host_pin_current(ctx: dict) -> tuple[str, str]:
+    ref = project_pin(ctx["root"])
+    if ref is None:
+        return "n/a", "the repository pins no livespec ref for Pi"
+    version, top = pin_version(ctx), ceiling(ctx)
+    if version is None:
+        if f"decided: non-release pin kept {ref}" in ctx["text"]:
+            return "n/a", f"the Pi pin {ref} is a non-release ref, kept on purpose by the bindings"
+        return "open", f"the Pi pin {ref} is not a release tag: edit it by hand to a livespec--v tag, or keep it on purpose in the bindings"
+    if top and later(top, version):
+        return "open", f"the Pi pin is {version}, below the ledger's ceiling {top}: a Pi collaborator loads an older plugin than the ledger was reconciled with; the next sitting moves the tag"
+    return "clear", f"the Pi pin is {version}, not below the ledger's ceiling {top or '—'}"
+
+
 def c_one_context_file(ctx: dict) -> tuple[str, str]:
     """More than one instructions file at the root is two copies, and one of them is unread by somebody.
 
@@ -1090,6 +1130,7 @@ MECHANICAL = {
     "check:claim-row": c_claim_row,
     "check:skill-names": c_skill_names,
     "check:host-enabled": c_host_enabled,
+    "check:host-pin-current": c_host_pin_current,
     "check:one-context-file": c_one_context_file,
     "check:deferred-clock": c_deferred_clock,
     "check:hook-no-row": c_hook_no_row,
@@ -1540,6 +1581,11 @@ def open_transaction(ctx: dict) -> tuple[int, str]:
     known = {item["key"] for item in ledger["items"]}
     added = [item for item in planned(ctx) if item["key"] not in known]
     ledger["items"] += [{"key": i["key"], "kind": "requirement", "outcome": "pending", "finalized": "no", "evidence": ""} for i in added]
+    tag = pin_version(ctx)
+    if tag and later(ctx["installed"], tag):
+        sitting = len(ledger["sittings"]) + 1
+        ledger["items"].append({"key": f"host:tag@{ctx['installed']}@sitting#{sitting}", "kind": "host", "outcome": "pending", "finalized": "no",
+                                "evidence": f"the Pi tag is {tag}: move it to livespec--v{ctx['installed']} once ls-remote shows the tag"})
     ledger["to"] = ctx["installed"]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(render_ledger(ledger), encoding="utf-8")
@@ -1567,10 +1613,13 @@ def finalize(ctx: dict) -> tuple[int, str]:
     lines = {line["id"]: line for line in parse_record(record)[1]}
     finding = lambda line: line and line["state"] in ("open", "not-read")
     raise_ids: set[str] = set()
+    cap = pin_version(ctx)
+    to = min(ledger["to"], cap, key=version_key) if cap else ledger["to"]
     for item in ledger["items"]:
-        if item["finalized"] == "yes":
+        if item["finalized"] == "yes" or item["kind"] == "host":
             continue
         item_id = item["key"].split("@", 1)[0]
+        event = item["key"].rsplit(":", 1)[-1]
         if item_id.startswith("check:"):
             line = lines.get(item_id)
             if line and line["state"] in ("clear", "n/a"):
@@ -1579,22 +1628,26 @@ def finalize(ctx: dict) -> tuple[int, str]:
                 item["outcome"] = "pending"
         elif item["outcome"] in ANSWERED and any(finding(lines.get(c)) and item_id in lines[c]["evidence"] for c in ROW_LEVEL):
             item["outcome"] = "pending"
+        if item["outcome"] in ANSWERED and not item_id.startswith("check:") and later(event, to):
+            item["finalized"] = "held"
+            continue
         if item["outcome"] in ANSWERED:
             item["finalized"] = "yes"
             if item_id.startswith("check:"):
                 ledger["answers"][item_id] = ledger["to"]
             elif item["outcome"] != "retired":
                 raise_ids.add(item_id)
-    level = {row["id"] for row in ctx["gates"] + ctx["wiring"] if row["id"] and not later(ledger["to"], (row["reconciled"] or "0.0.0").strip("`* "))}
+    level = {row["id"] for row in ctx["gates"] + ctx["wiring"] if row["id"] and not later(to, (row["reconciled"] or "0.0.0").strip("`* "))}
     if raise_ids:
-        text, _ = adopt(ctx["text"], ledger["to"], date.today().isoformat(), raise_ids - level)
+        text, _ = adopt(ctx["text"], to, date.today().isoformat(), raise_ids - level)
         ctx["bindings_path"].write_text(text, encoding="utf-8")
-    pending = [i["key"] for i in ledger["items"] if i["outcome"] not in ANSWERED]
+    pending = [i["key"] for i in ledger["items"] if i["kind"] != "host" and (i["outcome"] not in ANSWERED or i["finalized"] == "held")]
     ledger["sittings"].append([str(len(ledger["sittings"]) + 1), date.today().isoformat(), f"{ledger['from']} → {ledger['to']}", ", ".join(pending) or "—"])
     if not pending:
         ledger["state"] = "closed"
     path.write_text(render_ledger(ledger), encoding="utf-8")
-    return 0, (f"sitting #{len(ledger['sittings'])}: {len(raise_ids)} row(s) raised to {ledger['to']}, {len(pending)} pending"
+    return 0, (f"sitting #{len(ledger['sittings'])}: {len(raise_ids)} row(s) raised to {to}"
+               + (f" (held at the Pi tag {cap})" if to != ledger["to"] else "") + f", {len(pending)} pending"
                + ("; the transaction is closed" if not pending else "; it stays open for the next sitting")
                + " — report again, so the record reads the raised rows")
 
@@ -1850,12 +1903,14 @@ def main(argv: list[str]) -> int:
         if any(row["reconciled"] is None for row in ctx["gates"] + ctx["wiring"]):
             print("the ledger has no reconciled column; add it first (--reshape prints the tables)", file=sys.stderr)
             return 1
-        text, done = adopt(ctx["text"], ctx["installed"], date.today().isoformat(), set(args[1:]))
+        cap = pin_version(ctx)
+        version = min(ctx["installed"], cap, key=version_key) if cap else ctx["installed"]
+        text, done = adopt(ctx["text"], version, date.today().isoformat(), set(args[1:]))
         bindings_path.write_text(text)
         if not ledger_path(ctx).exists():
             ledger_path(ctx).parent.mkdir(parents=True, exist_ok=True)
             ledger_path(ctx).write_text(render_ledger({**parse_ledger(""), "baseline": ctx["installed"]}), encoding="utf-8")
-        print(f"reconciled {len(done)} row(s) at {ctx['installed']}; the stamp line reads the oldest")
+        print(f"reconciled {len(done)} row(s) at {version}" + (f", held at the Pi tag {cap}" if version != ctx["installed"] else "") + "; the stamp line reads the oldest")
         return 0
     if finished is not None:
         if not finished.exists():

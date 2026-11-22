@@ -425,6 +425,46 @@ class TheTransaction(unittest.TestCase):
         self.assertEqual([i["key"] for i in doctor.planned(self.ctx(root, self.IDS))], ["gate:structure@since:1.1.0"])
 
 
+class ThePiTag(TheTransaction):
+    """The repository's Pi pin bounds the ledger. See specs/changes/0106."""
+
+    def pinned(self, ref, ids=None):
+        root, _ = self.sitting(ids or self.IDS)
+        (root / ".pi").mkdir()
+        (root / ".pi" / "settings.json").write_text(f'{{"packages": ["git:github.com/sargismarkosyan/livespec@{ref}"]}}\n')
+        return root, self.ctx(root, ids or self.IDS)
+
+    @rule("the-pi-tag-bounds-the-ledger")
+    def test_a_pin_below_the_ceiling_is_open_and_level_is_clear(self):
+        root, ctx = self.pinned("livespec--v0.9.0")
+        self.assertEqual(doctor.c_host_pin_current(ctx)[0], "open")
+        root, ctx = self.pinned("livespec--v1.0.0")
+        self.assertEqual(doctor.c_host_pin_current(ctx)[0], "clear")
+
+    @rule("the-pi-tag-bounds-the-ledger")
+    def test_a_branch_is_open_unless_kept_on_purpose(self):
+        root, ctx = self.pinned("main")
+        self.assertIn("not a release tag", doctor.c_host_pin_current(ctx)[1])
+        ctx["text"] += "\n| **Where the plugin is enabled** | Pi: decided: non-release pin kept main |\n"
+        self.assertEqual(doctor.c_host_pin_current(ctx)[0], "n/a")
+
+    @rule("the-pi-tag-bounds-the-ledger")
+    def test_an_answer_above_the_pin_is_held_and_the_move_never_holds_it_open(self):
+        root, ctx = self.pinned("livespec--v1.0.0")
+        doctor.open_transaction(ctx)
+        ledger = doctor.parse_ledger((root / "specs" / "setup" / "upgrade.md").read_text())
+        self.assertIn("host:tag@1.1.0@sitting#1", [i["key"] for i in ledger["items"]])
+        self.answer(root, "gate:structure@since:1.1.0", "wired", "fault fired")
+        self.record(root, ctx, [("check:new-one", "clear", "read")])
+        code, said = doctor.finalize(self.ctx(root, self.IDS))
+        self.assertEqual(code, 0, said)
+        self.assertIn("held at the Pi tag 1.0.0", said)
+        self.assertRegex((root / "specs" / "setup" / "README.md").read_text(), r"\| `gate:structure` \|[^\n]*\| 1\.0\.0 \|")
+        ledger = doctor.parse_ledger((root / "specs" / "setup" / "upgrade.md").read_text())
+        self.assertEqual(ledger["state"], "open")
+        self.assertEqual(ledger["sittings"][0][3], "gate:structure@since:1.1.0")
+
+
 class TheRecord(unittest.TestCase):
     @rule("one-line-per-check-or-it-does-not-end")
     def test_one_line_short_is_refused_naming_the_id(self):

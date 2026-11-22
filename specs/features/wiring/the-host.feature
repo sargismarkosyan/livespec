@@ -66,3 +66,27 @@ Feature: The audit reads a repository the same under either host
       Given a repository whose committed settings load livespec for each host in use
       When the wiring is audited
       Then each is named with where it is declared
+
+  @rule:the-pi-tag-bounds-the-ledger
+  Rule: Where the repository pins livespec for Pi, the pin is a release tag not below the ledger's ceiling, no row is raised above it, and a sitting whose plugin is ahead of it plans the tag's move
+
+    Example: the pin is below the ceiling
+      Given a Pi pin on a release below the version a row was reconciled at
+      When the wiring is audited
+      Then the pin is reported open, below the ceiling
+
+    Example: the pin is a branch
+      Given a Pi pin on a branch, and bindings that do not say it was kept on purpose
+      When the wiring is audited
+      Then the pin is reported open, to be edited to a release tag
+      And the same pin kept on purpose in the bindings is not applicable
+
+    Example: an answer above the pin is held
+      Given a transaction to a release above the Pi pin, with a gate wired
+      When it is finalized
+      Then the gate's row is raised only as far as the pin, the gate is held, and the transaction stays open
+
+    Example: the plugin is ahead of the pin
+      Given a Pi pin below the plugin installed
+      When the plan is written
+      Then the transaction carries an item moving the pin, and that item never keeps it open

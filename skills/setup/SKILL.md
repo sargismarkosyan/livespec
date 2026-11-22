@@ -1165,6 +1165,19 @@ never started again; the tool refuses a second.
    answered, appends the sitting, and closes the transaction when nothing is
    pending. Report once more, so the record reads the raised rows, and commit
    it all: *livespec audit after A → B*.
+**Where the repository pins livespec for Pi** (`.pi/settings.json`, a
+`livespec--v` tag), the pin bounds the ledger: no row is raised above it, and
+an answer above it is *held* until the pin moves. A plugin ahead of the pin
+gives the transaction a `host:tag@…` item: with a yes, confirm the tag exists —
+`git ls-remote --tags <the plugin's repository> refs/tags/livespec--v<version>`,
+run outside the repository, an exact match and not just exit 0 — then move the
+pin in its own commit. Declined, or unverified, the rows stay held and the
+item is offered again next sitting; it never keeps the transaction open. The
+pin is never lowered, and a personal Pi setting is never edited. **Moving
+ahead without upgrading** — the person wants a newer release in Pi first — is
+the same verified edit to the pin alone, no row touched; after it merges,
+`pi update <source>` in their checkout, and a restart.
+
 5. **Open one pull request**, *livespec A → B*, naming both audit commits and
    each item with its outcome — and what is still pending, which the next
    sitting resumes. The rows the pipeline is watched running become
