@@ -1013,8 +1013,9 @@ The questions worth the judgment, and what decides them:
   leave as written; the same word as ordinary prose, to be left alone —
   reporting one is how this check becomes noise on its second run — and the
   loop's own account, read against what `claude-md.md` now asks of each step.
-- **The prose** (`prose-phrases`). The tool lists every *not built yet*,
-  *to do*, *we should*, *for now* with its line. Each is a row on the clock or
+- **The prose** (`prose-phrases`). The tool lists every *not built yet*, *not
+  written yet*, *uninterviewed*, *to do*, *we should*, *for now* with its line,
+  in the bindings and in each layer's README. Each is a row on the clock or
   it is nothing — *nothing to do at release time* is nothing — and that is
   yours to say, not the script's.
 - **What ran** (`gate:skipped-test-claims-nothing`, `gate:fewer-ran-than-exist`).
@@ -1067,7 +1068,7 @@ hint for the sitting the reply names, and this report is not that sitting.
 - A row deferred across two changes is either wired or written off — written
   off is *not applicable* with the reason in it. A *mocked* boundary row past
   the clock is the same: real, given a suite, or *unreachable* with the reason.
-- A gap the prose names — *not built yet*, *to do*, *we should*, *for now* —
+- A gap the prose names — *not built yet*, *not written yet*, *to do*, … —
   is a row or it is nothing; the tool listed every hit.
 - A context file out of line beyond its lines — a requirement missing, the
   plugin's own rules copied into it — is **not rewritten here**. Correct the

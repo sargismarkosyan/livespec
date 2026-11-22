@@ -96,7 +96,7 @@ does not name — held to the same states, required by nothing.
 | `check:number-from-config` | judgment | 0.31.0 | wiring | — | | a number a gate enforces is read from the config the gate reads | — |
 | `check:demand-is-a-ratchet` | judgment | 0.31.0 | wiring | — | | a demand equal to today's score is reported as measured rather than chosen, unless it is the whole of what is in scope | — |
 | `check:exclusions-in-config` | judgment | 0.31.0 | wiring | — | | what the demand does not reach lives in the tool's config, not only in the bindings | — |
-| `check:na-vs-tree` | mechanical | 0.21.0 | record | — | | a not-applicable row's reason is not contradicted by the tree | — |
+| `check:na-vs-tree` | mechanical | 0.21.0 | record | — | | a not-applicable row's reason is not contradicted by the tree — no layer, or no code, where the tree has them — and a reason it cannot read is named | next |
 | `check:row-per-gate` | mechanical | 0.21.0 | wiring | — | | every gate in the table above has a row | — |
 | `check:real-starts-here` | judgment | 1.2.0 | boundary | — | | what a real row names can be started from here | — |
 | `check:real-not-doubled` | judgment | 1.2.0 | boundary | — | | no rule-bound test stands a double in for a boundary reading real | — |
@@ -112,7 +112,7 @@ does not name — held to the same states, required by nothing.
 | `check:main-green` | judgment | 3.3.0 | platform | — | | the main branch's pipeline is green now, and was green on every run since the last audit | — |
 | `check:merge-queue` | judgment | 1.21.0 | platform | — | | how several pull requests merge — the platform's queue and the event its checks run on, or the fallback's settings — is what the platform has | — |
 | `check:read-back-or-not` | mechanical | 0.21.0 | record | — | | every judgment line is read back with its command, or not read with why | — |
-| `check:prose-phrases` | judgment | 0.21.0 | record | — | | the prose is read for *not built yet*, *to do*, *we should*, *for now* | — |
+| `check:prose-phrases` | judgment | 0.21.0 | record | — | | the bindings and the layers' READMEs are read for a gap in words — *not built yet*, *not written yet*, *uninterviewed*, *to do*, *we should*, *for now* | next |
 | `check:second-table` | mechanical | 0.21.0 | wiring | — | | the table for wiring that must never gate exists | — |
 | `check:pr-report-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the pull-request report | — |
 | `check:rule-bound-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the rule-bound measure | — |

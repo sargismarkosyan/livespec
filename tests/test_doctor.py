@@ -483,6 +483,19 @@ class TheReply(unittest.TestCase):
         lines = audit(repo(text, files={"specs/personas/reader.md": "@persona:reader\n"}))
         self.assertEqual(lines["check:na-vs-tree"]["state"], "open")
 
+    @rule("a-decided-exception-is-reported-once-and-never-relitigated")
+    def test_no_code_beside_code_in_the_tree_is_open(self):
+        text = inject.green_bindings(INSTALLED).replace("| not applicable | no coverage here |", "| not applicable | there is no application code to measure |", 1)
+        line = audit(repo(text, files={"tools/doctor.py": "print(1)\n", "tests/test_x.py": "", "evals/a/run.py": ""}))["check:na-vs-tree"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("2 source file(s), in evals, tools", line["evidence"])
+
+    @rule("a-decided-exception-is-reported-once-and-never-relitigated")
+    def test_a_reason_it_cannot_read_is_named(self):
+        line = audit(repo())["check:na-vs-tree"]
+        self.assertEqual(line["state"], "clear")
+        self.assertIn("naming nothing it holds: gate:coverage", line["evidence"])
+
 
 class TheExit(unittest.TestCase):
     @rule("the-outcome-is-readable-from-the-exit-alone")
@@ -586,6 +599,12 @@ class BindingsSomebodyElseTyped(unittest.TestCase):
         line = audit(repo(text))["check:prose-phrases"]
         self.assertEqual(line["state"], "unanswered")
         self.assertIn("'to do'", line["evidence"])
+
+    @rule("a-gap-is-a-row-not-a-sentence")
+    def test_a_layer_readme_saying_not_written_yet_is_asked_about(self):
+        line = audit(repo(files={"specs/workflows/README.md": "# Workflows\n\n## Three more attempts, not written yet\n"}))["check:prose-phrases"]
+        self.assertEqual(line["state"], "unanswered")
+        self.assertIn("specs/workflows/README.md:L3 'not written yet'", line["evidence"])
 
     @rule("a-skill-the-record-names-is-one-that-exists")
     def test_only_the_instruction_form_of_an_old_name_is_the_scripts_to_report(self):

@@ -55,7 +55,9 @@ BOUNDARY_STATES = ("real", "fake", "recorded", "mocked", "unreachable")
 STAMP = re.compile(r"Reconciled against livespec\W{0,4}(\d+\.\d+\.\d+)\**[^\n]{0,60}?\bon\W{0,4}(\d{4}-\d{2}-\d{2})")
 ENTRY = re.compile(r"^## (\d+\.\d+\.\d+) — (\d{4}-\d{2}-\d{2})$")
 CHANGE = re.compile(r"^(\d{4})-")
-PROSE_PHRASES = ("not built yet", "to do", "we should", "for now")
+PROSE_PHRASES = ("not built yet", "not written yet", "not wired yet", "uninterviewed", "to do", "we should", "for now")
+NO_CODE = re.compile(r"\bno (?:application |app |source )?code\b|\bno app\b|\bnothing to (?:measure|cover)\b")
+SOURCE = (".py", ".js", ".mjs", ".ts", ".tsx", ".jsx", ".go", ".rs", ".rb", ".java", ".kt", ".swift", ".php", ".ex", ".cs", ".c", ".cpp", ".vue", ".svelte")
 # Skills this plugin used to have, and what they are now. A record instructing
 # by an old name is an instruction that fails silently; see specs/changes/0037.
 FORMER_SKILLS = {"feedback": "todo", "doctor": "setup", "refine-personas": "refine", "refine-workflows": "refine", "refine-journeys": "refine"}
@@ -138,7 +140,7 @@ CHECKS = [
     ("check:number-from-config", "judgment", "wiring", "a number a gate enforces is read from the config the gate reads"),
     ("check:demand-is-a-ratchet", "judgment", "wiring", "a demand equal to today's score is reported as measured rather than chosen, unless it is the whole of what is in scope"),
     ("check:exclusions-in-config", "judgment", "wiring", "what the demand does not reach lives in the tool's config, not only in the bindings"),
-    ("check:na-vs-tree", "mechanical", "record", "a not-applicable row's reason is not contradicted by the tree"),
+    ("check:na-vs-tree", "mechanical", "record", "a not-applicable row's reason is not contradicted by the tree — no layer, or no code, where the tree has them — and a reason it cannot read is named"),
     ("check:row-per-gate", "mechanical", "wiring", "every gate in the table above has a row"),
     ("check:real-starts-here", "judgment", "boundary", "what a real row names can be started from here"),
     ("check:real-not-doubled", "judgment", "boundary", "no rule-bound test stands a double in for a boundary reading real"),
@@ -154,7 +156,7 @@ CHECKS = [
     ("check:main-green", "judgment", "platform", "the main branch's pipeline is green now, and was green on every run since the last audit"),
     ("check:merge-queue", "judgment", "platform", "how several pull requests merge — the platform's queue and the event its checks run on, or the fallback's settings — is what the platform has"),
     ("check:read-back-or-not", "mechanical", "record", "every judgment line is read back with its command, or not read with why"),
-    ("check:prose-phrases", "judgment", "record", "the prose is read for *not built yet*, *to do*, *we should*, *for now*"),
+    ("check:prose-phrases", "judgment", "record", "the bindings and the layers' READMEs are read for a gap in words — *not built yet*, *not written yet*, *uninterviewed*, *to do*, *we should*, *for now*"),
     ("check:second-table", "mechanical", "wiring", "the table for wiring that must never gate exists"),
     ("check:pr-report-row", "mechanical", "wiring", "it holds the row for the pull-request report"),
     ("check:rule-bound-row", "mechanical", "wiring", "it holds the row for the rule-bound measure"),
@@ -615,17 +617,36 @@ def c_na_vs_tree(ctx: dict) -> tuple[str, str]:
     if (off := not_in_shape(ctx)):
         return off
     contradicted: list[str] = []
+    unread: list[str] = []
     checked = 0
     for row in ctx["gates"] + ctx["wiring"]:
         if row["state"] != "not applicable" or row["decided"]:
             continue
         checked += 1
+        text, name, read_it = row["text"].lower(), row["id"] or row["label"], False
         for layer, word in LAYER_WORDS.items():
-            if re.search(rf"\bno {word}s?\b", row["text"].lower()) and ctx["layers"][layer]:
-                contradicted.append(f"{row['id'] or row['label']} says no {word}s; specs/{layer}/ has {len(ctx['layers'][layer])}")
+            if re.search(rf"\bno {word}s?\b", text):
+                read_it = True
+                if ctx["layers"][layer]:
+                    contradicted.append(f"{name} says no {word}s; specs/{layer}/ has {len(ctx['layers'][layer])}")
+        if NO_CODE.search(text):
+            read_it = True
+            code = source_files(ctx["root"])
+            if code:
+                contradicted.append(f"{name} says there is no code; the tree has {len(code)} source file(s), in {', '.join(sorted({f.split('/')[0] for f in code})[:4])}")
+        if not read_it:
+            unread.append(name)
     if contradicted:
         return "open", "; ".join(contradicted)
-    return "clear", f"{checked} not-applicable row(s) read against the tree, none contradicted; decided rows left alone"
+    said = f"; not read against the tree, the reason naming nothing it holds: {', '.join(unread)}" if unread else ""
+    return "clear", f"{checked} not-applicable row(s) read against the tree, none contradicted; decided rows left alone{said}"
+
+
+def source_files(root: Path) -> list[str]:
+    """Source the tree tracks, outside its specs, tests, docs and dot directories. See 0100."""
+    listed = git(root, "ls-files").splitlines() or [str(p.relative_to(root)) for p in root.rglob("*") if p.is_file()]
+    return [f for f in listed if f.endswith(SOURCE) and "/" in f.replace("\\", "/")
+            and f.split("/")[0] not in ("specs", "tests", "test", "docs", "node_modules") and not f.startswith(".")]
 
 
 def c_row_per_gate(ctx: dict) -> tuple[str, str]:
@@ -720,18 +741,20 @@ def c_deferred_clock(ctx: dict) -> tuple[str, str]:
 
 
 def j_prose_phrases(ctx: dict) -> tuple[str, str]:
-    """The four phrases, grepped; whether a hit is a gap is a mind's to say."""
+    """The phrases, grepped in the bindings and the layers' READMEs; whether a hit is a gap is a mind's to say."""
     hits: list[str] = []
-    for number, line in enumerate(ctx["text"].splitlines(), 1):
-        if line.startswith("|"):
-            continue
-        lowered = line.lower()
-        for phrase in PROSE_PHRASES:
-            if phrase in lowered:
-                hits.append(f"L{number} '{phrase}'")
+    sources = [("", ctx["text"])] + [(f"specs/{layer}/README.md:", read(ctx["root"] / "specs" / layer / "README.md") or "") for layer in LAYER_WORDS]
+    for where, text in sources:
+        for number, line in enumerate(text.splitlines(), 1):
+            if line.startswith("|"):
+                continue
+            lowered = line.lower()
+            for phrase in PROSE_PHRASES:
+                if phrase in lowered:
+                    hits.append(f"{where}L{number} '{phrase}'")
     if hits:
         return "unanswered", f"read: {len(hits)} hit(s) in the prose — " + ", ".join(hits[:8]) + (" …" if len(hits) > 8 else "") + " — each is a row on the clock, or nothing: which?"
-    return "clear", "read: none of the four phrases in the prose"
+    return "clear", "read: none of the phrases in the bindings or the layers' READMEs"
 
 
 def c_second_table(ctx: dict) -> tuple[str, str]:
