@@ -784,7 +784,7 @@ Merge into a file that is already there; never drop what it declared.
 
 - **Claude Code** — declare the marketplace and enable the plugin in
   `.claude/settings.json`, as
-  [`method/README.md`](../../method/README.md#wire-it-into-the-repository-instead-of-the-machine)
+  [`README.md`](../../README.md#wire-it-into-the-repository-instead-of-the-machine)
   shows.
 - **Pi** — add livespec to `packages` in `.pi/settings.json` with no ref:
   `git:github.com/sargismarkosyan/livespec`. Merging is releasing, so that is
@@ -802,7 +802,7 @@ Claude Code opens is a second thing to maintain.
 **A repository that is the plugin** loads its own checkout. Pi takes a local
 path, resolved from the settings file: `"packages": [".."]`. Claude Code's
 copy is registered per machine and never committed
-([`method/README.md`](../../method/README.md#working-on-the-method-itself)). The
+([`README.md`](../../README.md#working-on-the-method-itself)). The
 report reads each host in use for its declaration (`host-enabled`).
 
 Then report, short:
