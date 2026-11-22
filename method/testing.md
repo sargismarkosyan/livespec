@@ -1,45 +1,36 @@
 # Writing tests
 
+*From: every promise is checked by something that can fail.* Each rule here
+is how a test earns the claim that a rule is true.
+
 ## First: what proves a rule is true here
 
-Everything below assumes there is code to call. **Ask before assuming that**, and
-record the answer in `specs/setup/README.md` — it is the binding both gates rest
-on, and it is the one nothing else in this method can derive for you.
+Everything below assumes there is code to call. **Ask before assuming it**, and
+record the answer in `specs/setup/README.md`: both gates rest on it, and nothing
+in the method can derive it for you. There are two honest answers.
 
-There are two honest answers.
+- **An ordinary test suite** — the common one, and the rest of this page.
+  Behaviour is proved by calling the thing and asserting what came back, and a
+  test names its rule through the repository's binding helper.
+- **Graded cases**, where the product is *judgment* — instructions an agent
+  reads, a prompt, a policy — and there is no function to call. Behaviour is
+  proved by running it against a situation and grading what came out.
+  **[graded-cases.md](graded-cases.md) is the rest of it**, read before the first
+  run.
 
-**An ordinary test suite.** The common one, and the rest of this page. Behaviour
-is proved by calling the thing and asserting what came back, and a test names the
-rule it exists for through the repository's own binding helper.
+**They are not equals.** A graded case is slow, costs money per run and is
+scored by a model, so a green gate over a suite of them usually means *the cases
+exist and can fail*, not *they passed* — and it proves only that judgment held on
+one prompt. Where there is code to call, call it; a repository with both does
+not test the same behaviour twice. The second answer exists because the first
+is impossible somewhere, not as an alternative to it.
 
-**Graded cases**, for a repository whose product is *judgment* rather than code —
-a set of instructions an agent reads, a prompt, a policy. There is no function to
-call. Behaviour is proved by running the thing against a situation and grading
-what came out, and a case names the rule it answers to the way its runner
-supports. **If that is the answer here, [graded-cases.md](graded-cases.md) is the
-rest of it** — what it takes to run such a suite without measuring the wrong
-thing, read before the first run rather than after the first confusing one.
-
-**These are not equals, and a repository choosing the second should know why.** A
-graded case is slow, costs money every time it runs, and is scored by a model
-rather than asserted — so a suite of them is rarely run on every commit, and a
-green gate over them usually means *the cases exist and can fail*, not *the cases
-passed*. Above all it proves a weaker thing: that judgment held on one prompt,
-not that a function is correct. Where there is code to call, calling it is the
-better answer, and a repository that has both should not run two ways of testing
-the same behaviour.
-
-The second answer exists because the first is impossible in some repositories,
-not because it is a modern alternative to it.
-
-**Do not invent a third.** Whatever the answer, use the tooling that already
-builds that kind of suite. A bespoke format invented during a setup sitting is a
-format with one user, no documentation and nobody to ask. And when that tooling
-cannot run where the suite has to — gated, unreleased, wrong platform — the
-fallback is another platform that already runs such suites, never a format of
-one's own. Keep the cases in the format the repository's gates read, so the
-tool that could not run stays a runner the suite might gain rather than a
-migration it owes.
+**Do not invent a third.** Use the tooling that already builds that kind of
+suite; a format invented in a setup sitting has one user and nobody to ask.
+Where that tooling cannot run where the suite has to, the fallback is another
+platform that already runs such suites — and the cases stay in the format the
+gates read, so the tool that could not run remains a runner to gain, not a
+migration owed.
 
 ## The two kinds
 
@@ -54,7 +45,8 @@ The discovery pattern is the repository's — `specs/setup/README.md`.
 
 ## Behaviour tests
 
-Every behaviour test declares the rule it exists for:
+Every behaviour test declares the rule it exists for, through the repository's
+`rule()` helper (where it lives and its imports are bindings):
 
 ```js
 rule('add-goes-to-top', () => {
@@ -65,200 +57,134 @@ rule('add-goes-to-top', () => {
 });
 ```
 
-The `rule()` helper is the repository's — `specs/setup/README.md` says where it
-lives and what the imports are.
+- `rule()` throws at once if the id does not exist or is still `@planned`, and
+  lists the ids that do. It wraps the runner's grouping call, so the id and the
+  rule's text appear in the output:
 
-`rule()` looks the id up in `specs/features/` and throws immediately if it does
-not exist, or if it is still tagged `@planned`. The error lists the ids that do
-exist, which is usually enough to spot the typo.
+  ```
+  ▶ [add-goes-to-top] A new one goes to the top
+    ✔ a new one appears above the older ones
+  ```
 
-It wraps the runner's grouping call, so the rule id and its text appear in the
-test output:
-
-```
-▶ [add-goes-to-top] A new one goes to the top
-  ✔ a new one appears above the older ones
-```
-
-Every `test()` in a behaviour file must sit **inside** a `rule()` block. One at
-the top level is an untraced behaviour test and the gate rejects it.
-
-One rule may have several tests, and one file may cover several rules — but a
-file should stay recognisably about one component, like the feature file it
-mirrors.
-
-**A test that did not run claims nothing.** A skip, an only, an expected
-failure — whatever the runner calls it — leaves the rule it names untested,
-and the gate reads it that way: the claim is empty, and the failure names the
-marker. And the runner says what it ran, per test, in a form the gate can
-count: fewer tests run than the tree holds is a failure, whatever the summary
-line says, and more is not. Both exist because the summary line is what gets
-quoted, and every fabricated result on record was a summary. What counts as a
-marker, and the form of the report, are bindings.
-
-**A test given no world tests nothing.** A behaviour test that presupposes
-state it was not given — a row, a file, a branch, a service — measures whether
-the assumption held, not whether the rule does, and it measures that in both
-directions: a quiet pass over a missing fixture is as empty as a failure over
-one. Say what world a test runs in, and make its absence a failure rather than
-a number. The suite that holds this method learned it twice, a month apart,
-from cases whose prompts promised a repository and whose sessions found none.
+  `ruleText(id)` from the same helper returns the parsed rule.
+- **Every `test()` in a behaviour file sits inside a `rule()` block**; one at the
+  top level is untraced, and the gate rejects it. A rule may have several tests
+  and a file several rules, but a file stays about one component, like the
+  feature file it mirrors.
+- **A test that did not run claims nothing.** A skip, an only, an expected
+  failure leaves its rule untested; the gate empties the claim and names the
+  marker. The runner reports what it ran, per test, in a form the gate can count:
+  fewer run than the tree holds fails, whatever the summary says. Every
+  fabricated result on record was a summary. The markers and the report's form
+  are bindings.
+- **A test given no world tests nothing.** A test presupposing state it was not
+  given — a row, a file, a branch, a service — measures whether the assumption
+  held, in both directions. Say what world a test runs in, and make its absence a
+  failure.
 
 ### Write them against the rule, not the implementation
 
-The Gherkin `Example:` blocks are the specification of what to assert. If the
-rule says one line reads above another, assert the rendered order — not that a
-sort function was called. A behaviour test that
-passes while the screen is wrong is worse than no test, because it costs the
-gate its meaning.
-
-`ruleText(id)` from the same helper returns the parsed rule if a test wants to
-read its text.
+The `Example:` blocks say what to assert. If the rule says one line reads above
+another, assert the rendered order, not that a sort function was called. A
+behaviour test that passes while the screen is wrong is worse than none: it
+costs the gate its meaning.
 
 ## Unit tests
 
-For internals no Gherkin rule describes: a parser, a serialiser, an id
+For internals no Gherkin rule describes — a parser, a serialiser, an id
 generator, the gate tooling itself. No `rule()` call, no reference.
 
-**This exemption is the reason the rest works.** Without an honest place to put
-an internals test, coverage pressure turns behaviour tests into filler that names
-a rule and asserts nothing. The rule of thumb: if you cannot name the Gherkin
-rule it answers to, it is a unit test — and if you can, it does not belong here.
-
-The gate warns when a unit test claims a rule, which usually means the file is in
-the wrong folder.
+**This exemption is what makes the rest honest.** Without a place for internals
+tests, coverage pressure turns behaviour tests into filler that names a rule and
+asserts nothing. If you can name the rule a test answers to, it is a behaviour
+test; if you cannot, it is a unit test. The gate warns when a unit test claims a
+rule — usually a file in the wrong folder.
 
 ## The world the tests run in
 
-Whatever it is — a real browser, a headless DOM, no DOM at all — it is a binding,
-and `specs/setup/README.md` describes it. **So is everything else the app talks
-to** — the store, the clock, the network and each service on it, whoever it
-signs people in with. Each is a boundary, and the bindings carry a row per
-boundary saying how a test here reaches it:
-[gates.md](gates.md#the-boundaries). Five things about it are method:
+The world — a real browser, a headless DOM, no DOM — is a binding, and so is
+everything the app talks to: the store, the clock, the network and each service
+on it, whoever it signs people in with. Each is a boundary, with a row in the
+bindings saying how a test reaches it ([gates.md](gates.md#the-boundaries)).
 
-- **A test proves a rule in the world its row names, or it proves it nowhere.**
-  A behaviour test that stands a double in for a boundary whose row reads *real*
-  has not tested the rule; it has tested the double, and the gate fails it. Not
-  because doubles are wrong — because the row is the promise, and a test that
-  quietly breaks it costs the row its meaning.
-- **A fake is honest only while something checks it against the real thing.**
-  One suite runs against both, and the row says when the real half was last
-  green. A fake nothing checks is a mock whatever it is called, and its row says
-  *mocked* — which puts it on the same clock as a deferral.
-- **What no test here can reach is said, never simulated.** Such a boundary has
-  a row reading *unreachable*, and every change that touches it says so where
-  the change is decided. A stub written to get past it is the failure this page
-  exists to name.
-
-- **Build the world fresh per test.** Shared state between tests is the commonest
-  cause of a suite that passes in order and fails one file at a time, and a
-  leaked key from an earlier test is a genuinely nasty failure to diagnose.
-- **Everything that can be tested without that environment should be.** A test
-  that needs a DOM to check a decision is testing two things and reporting one.
+- **A test proves a rule in the world its row names, or nowhere.** A double
+  standing in for a boundary whose row reads *real* tests the double, and the
+  gate fails it.
+- **A fake is honest only while something checks it against the real thing**:
+  one suite runs against both, and the row says when the real half was last
+  green. A fake nothing checks is *mocked*, on the same clock as a deferral.
+- **What no test can reach is said, never simulated**: its row reads
+  *unreachable*, and every change touching it says so where it is decided.
+- **Build the world fresh per test.** Shared state is the commonest cause of a
+  suite that passes in order and fails one file at a time.
+- **Test without the environment whatever can be.** A test that needs a DOM to
+  check a decision is testing two things and reporting one.
 
 ## Coverage
 
 The thresholds are the repository's. The judgment is not:
 
-- **Why it is worth a gate at all**, where an agent wrote the code and the tests
-  that check it: coverage is the only mechanical evidence that the tests reach
-  the code, and nobody has read either. Reach is all it proves — a test can
-  execute a line and assert nothing about it — which is why it is taken beside
-  traceability rather than instead of it. A rule with a test that names it, and
-  a number saying the tests get there: neither is worth much alone, and together
-  they are hard to satisfy dishonestly.
-- What is not covered is named, or it is a gap. A demand set below the whole of
-  what is in scope hands out an exemption without saying what it is for, and
-  nobody can then tell code that was never covered from code that stopped being.
-  Name the exclusions where the runner reads them and the remainder has an
-  address.
-- Aim at branches first. Lines follow; branches are where the untested paths
-  hide, and V8's line counting is generous about function declarations.
-- Error-handling paths in storage reads are real behaviour with real rules behind
-  them, not coverage chores. Corrupt the stored value and assert the app still
-  opens on something usable.
-- Code no rule-bound test reaches is a question the change answers: a
+- **It is worth a gate** where an agent wrote both the code and its tests:
+  coverage is the only mechanical evidence the tests reach the code. Reach is all
+  it proves, so it is taken beside traceability, not instead of it; together they
+  are hard to satisfy dishonestly.
+- **What is not covered is named**, in the runner's own exclusions, or it is a
+  gap. A demand below the whole of what is in scope is an exemption nobody named.
+- **Branches first.** Untested paths hide there, and line counting is generous
+  about declarations.
+- **Error paths in storage reads are behaviour**, not chores: corrupt the stored
+  value and assert the app still opens on something usable.
+- **Code no rule-bound test reaches is a question the change answers**: a
   behaviour nobody specced — write its rule — or dead — delete it. A unit test
-  reaching it keeps it covered and does not answer the question, and a test
-  that pretends to reach an unreachable branch is worse than deleting the
-  branch.
+  reaching it keeps it covered without answering, and a test pretending to reach
+  an unreachable branch is worse than deleting the branch.
 
 ### Measure the rule-bound tests on their own, and never gate it
 
-Take coverage twice: once over the whole suite — that is the gated number — and
-once over the **behaviour and workflow tests alone**. The second says how much of
-the product the *specification* actually reaches, which is a different question
-from how much of it is covered, and it is invisible unless the split exists. A
-repository where the gated number is high and the spec-bound number is low has
-specs describing a corner of what it does.
-
-It belongs in the report and **never in a threshold**. Gated, it would push people
-to write rules in order to move a number, which is the failure this method
-already names about coverage on its own — and the whole point of the second
-figure is that it is diagnostic rather than a bar to clear.
-
-It is also the number that makes the unit-test exemption legible: unit tests
-raise the gated figure and not this one, which is exactly right and only visible
-once both are printed.
+Take coverage twice: over the whole suite — the gated number — and over the
+**behaviour and workflow tests alone**, which says how much of the product the
+*specification* reaches. High gated and low spec-bound means the specs describe
+a corner of the product. The second number goes in the report and **never in a
+threshold**: gated, it would push people to write rules to move a number. It is
+also what makes the unit-test exemption visible: unit tests raise the first and
+not the second.
 
 ## A test that fails sometimes is worse than no test
 
-Both gates are only worth what their reliability is worth. A test that fails two
-runs in five teaches everyone to press re-run, and from then on a real failure
-looks like the usual noise.
+A test that fails two runs in five teaches everyone to press re-run, and then a
+real failure looks like noise. **No test may depend on chance, timing or
+ordering**:
 
-**No test may depend on chance, timing, or ordering to pass.** The usual
-sources, in the order they tend to appear:
+- an assertion resting on a probability — that generated values will not
+  collide, that a sample falls in a range;
+- a timeout, or one operation assumed to finish before another;
+- state left by an earlier test.
 
-- an assertion resting on a probability rather than a guarantee — that generated
-  values will not collide, that a sample falls within a range;
-- a timeout, or anything assuming one operation completes before another;
-- state left behind by an earlier test, so the suite passes in order and the
-  file fails on its own.
-
-When an assertion is probabilistic, the fix is almost never a looser threshold
-or a retry. Either the code should offer a guarantee strong enough that the
-probability stops mattering, or the test is asking a question that cannot be
-answered reliably and needs to ask a different one.
-
-The tell is a test that passes locally and fails on CI, or that passes on a
-re-run with nothing changed. Treat it as a defect in the test, at the same
-priority as a defect in the code, because a gate nobody trusts is not a gate.
+The fix is almost never a looser threshold or a retry: either the code offers a
+guarantee that makes the probability irrelevant, or the test asks a different
+question. A test that passes locally and fails on CI, or passes on a re-run with
+nothing changed, is a defect in the test, at the priority of a defect in the
+code.
 
 ## Before committing
 
-Run the repository's verification — both gates, the same thing CI runs. The
-command is in `specs/setup/README.md`; what each failure *means* is in
-[gates.md](gates.md).
+Run the repository's verification — the same command CI runs, named in
+`specs/setup/README.md`. What each failure means is in [gates.md](gates.md).
 
 ## And again before it leaves this machine
 
-Committing is not the moment the work stops being yours; pushing is. A branch
-that runs verification ten times to learn the same thing once has taught
-everybody on it that the rule is too expensive to keep, and the rule stops being
-kept somewhere around the fourth commit. **So the run that has to happen is the
-one before the push**, and a repository is entitled to make that automatic:
-whatever the version control offers that fires before work leaves the machine —
-a `pre-push` hook is the usual shape — running the one command the bindings
-already name.
+The run that has to happen is **the one before the push**, not one per commit: a
+branch that runs verification ten times to learn one thing teaches everybody the
+rule is too expensive to keep. A repository may make it automatic — a `pre-push`
+hook is the usual shape — running the one command the bindings name.
 
-**Offered, never installed unannounced.** A check that appears in somebody's
-clone without being agreed to is the same defect as a gate nobody agreed to, and
-the first thing they will do is find out how to turn it off. It is proposed, in
-words, and somebody says yes or no.
-
-**Cost is what decides what goes in it, and it is stated as the reason.** Only
-checks that are free, fast, and fixable here — the gates, the type check, the
-unit tests, the linter. Seconds, not dollars, and not a round trip through
-anything. **Anything that costs money per run stays out**: a
-[graded suite](graded-cases.md#neither-freshness-nor-the-score-is-gated) must
-refuse to start without a per-run approval from the person paying, and an
-automatic trigger is precisely what that rule exists to forbid. A hook that can
-reach one is a bill nobody signed, charged per push.
-
-**It takes nothing away.** Nothing is removed from the pipeline because a hook
-exists; every check that blocked a merge yesterday still blocks it. What this
-adds is a fast local signal, and
-[gates.md](gates.md#and-what-is-not-wiring-at-all) says why that is not the same
-thing as a gate.
+- **Offered, never installed unannounced.** It is proposed, in words, and
+  somebody says yes or no.
+- **Cost decides what goes in, and is stated as the reason.** Only checks that
+  are free, fast and fixable here. **Anything that costs money per run stays
+  out**: a [graded suite](graded-cases.md#neither-freshness-nor-the-score-is-gated)
+  refuses to start without a per-run approval from the person paying, and a hook
+  that can reach one bills them per push.
+- **It takes nothing away.** Every check that blocked a merge still blocks it;
+  the hook adds a fast local signal, which
+  [gates.md](gates.md#and-what-is-not-wiring-at-all) says is not a gate.
