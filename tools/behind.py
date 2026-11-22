@@ -62,14 +62,15 @@ def hint(root: Path, host: str) -> str:
     here, top = loaded(), doctor.ceiling(ctx)
     command = "/skill:setup" if host == "pi" else "/livespec:setup"
     if top and doctor.later(top, here):
-        step = "move the Pi pin, then pi update and restart" if host == "pi" else "update the plugin"
+        pinned = doctor.project_pin(root)
+        step = ("move the Pi pin, then pi update and restart" if pinned else "pi update, then restart") if host == "pi" else "update the plugin"
         return f"livespec: this session loads {here}; this repository is at {top} — {step}"
     pending = len(doctor.planned(ctx))
     if pending:
         return f"livespec {ctx['stamp'] or '?'} → {here} · {pending} pending · {command} brings it up to date"
     newest = latest()
     if newest and doctor.later(newest, here):
-        step = "move the Pi pin, or pi update" if host == "pi" else "/plugin update livespec"
+        step = ("move the Pi pin, then pi update" if doctor.project_pin(root) else "pi update") if host == "pi" else "/plugin update livespec"
         return f"livespec {newest} released (loaded {here}) · {step}"
     return ""
 

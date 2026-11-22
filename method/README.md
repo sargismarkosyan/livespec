@@ -153,20 +153,21 @@ pi install git:github.com/sargismarkosyan/livespec
 `/livespec:setup`. Where two packages ship a skill of the same name, Pi keeps
 the first it found and warns at startup; the warning names which one won.
 
-**To wire it into the repository**, declare the package in `.pi/settings.json`,
-pinned to a release tag:
+**To wire it into the repository**, declare the package in `.pi/settings.json`:
 
 ```json
-{ "packages": ["git:github.com/sargismarkosyan/livespec@livespec--v<version>"] }
+{ "packages": ["git:github.com/sargismarkosyan/livespec"] }
 ```
 
-`pi install git:github.com/sargismarkosyan/livespec@livespec--v<version> -l`
-writes the same line. That is what [`setup`](../skills/setup/SKILL.md) writes
+`pi install git:github.com/sargismarkosyan/livespec -l` writes the same line. That is what [`setup`](../skills/setup/SKILL.md) writes
 beside `.claude/settings.json` when the repository is run from Pi too.
 **Pi reads it only once the folder is trusted** — until then the declaration
 is inert, as Claude Code's is before the folder is trusted there.
 
-**Updating** is moving the tag: Pi does not move a pinned ref on its own. A
+**Updating** is `pi update`: with no ref, Pi checks the package and says when
+a release is out, as for any package. A team that wants everyone on one version
+pins a release tag, `…@livespec--v<version>`; Pi never checks a pinned ref, so
+updating is then moving the tag by hand. A
 skill reaches the tools it ships from its own place — two directories up from
 the skill file — so nothing depends on a variable only Claude Code sets.
 

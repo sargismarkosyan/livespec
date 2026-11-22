@@ -54,7 +54,17 @@ class TheHint(unittest.TestCase):
         self.cache.write_text(json.dumps({"latest": "999.0.0", "at": time.time()}))
         with mock.patch.object(behind.doctor if hasattr(behind, "doctor") else __import__("doctor"), "planned", return_value=[]):
             line = behind.hint(repo(LOADED), "pi")
-        self.assertEqual(line, f"livespec 999.0.0 released (loaded {LOADED}) · move the Pi pin, or pi update")
+        self.assertEqual(line, f"livespec 999.0.0 released (loaded {LOADED}) · pi update")
+
+    @rule("the-hint-is-the-persons-alone")
+    def test_a_pinned_repository_is_told_to_move_its_pin(self):
+        self.cache.write_text(json.dumps({"latest": "999.0.0", "at": time.time()}))
+        root = repo(LOADED)
+        (root / ".pi").mkdir()
+        (root / ".pi" / "settings.json").write_text('{"packages": ["git:github.com/sargismarkosyan/livespec@livespec--v1.0.0"]}')
+        with mock.patch.object(__import__("doctor"), "planned", return_value=[]):
+            line = behind.hint(root, "pi")
+        self.assertTrue(line.endswith("move the Pi pin, then pi update"), line)
 
     @rule("the-hint-is-the-persons-alone")
     def test_nothing_without_bindings_or_with_the_hint_off(self):
