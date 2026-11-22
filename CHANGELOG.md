@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.9.0 — 2026-11-22
+
+An upgrade is a transaction kept in a committed file, the upgrade ledger (`specs/setup/upgrade.md` unless the bindings name another). `doctor.py --plan --write` opens it from the plan, each item's commit writes its outcome and evidence, and `--finalize` raises only the rows the after-report does not contradict, records each check that reads clear as answered, and closes the transaction once nothing is pending. A sitting that stopped is resumed from the file; a second is refused. `--plan` now asks a check again only when it changed after its last answer.
+
 ## 3.8.1 — 2026-11-22
 
 The audit takes the commit an earlier audit record names only as a hex commit id, so nothing written in the record can reach git as an option. This fixes `check:loop-followed`, released in 3.2.0.
