@@ -224,6 +224,7 @@ def green_bindings(version: str) -> str:
             "| `gate:change-number-unique` | two change specs sharing a number | automated | `python3 gate.py` |",
             "| `gate:feature-to-feature` | a feature using a feature that does not exist | automated | `python3 gate.py` |",
             "| `gate:workflow-budget` | a count a workflow walk makes past its budget | not applicable | its walks cannot be repeated on every change |",
+            "| `gate:workflow-regression-answered` | a walk past its allowance the pull request does not answer | not applicable | its walks cannot be repeated on every change |",
             "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
         ]
     )

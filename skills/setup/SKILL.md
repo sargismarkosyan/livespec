@@ -333,9 +333,12 @@ base. The walks are the repository's; the comparison ships with this plugin.
    runner — base, branch, branch, base — with what the walkthroughs already run,
    each writing a sample a line as the script's docstring shows. Then run the
    copy with `--samples`, `--policy`, the base's policy as `--base-policy` where
-   it has one, and `--gate`; post its report the way the report above is
-   posted. Say what the job costs in minutes before wiring it.
-5. **Write both ledger rows**, `wiring:workflow-cost` and `gate:workflow-budget`.
+   it has one, the pull request's body as `--body`, and `--gate`; post its
+   report the way the report above is posted. The job also runs when the body
+   is edited, and the context file says in a line that a walk past its
+   allowance is answered under `## Performance`, naming the walk. Say what the job costs in minutes before wiring it.
+5. **Write the ledger rows**, `wiring:workflow-cost`, `gate:workflow-budget`
+   and `gate:workflow-regression-answered`.
    A repository whose walks cannot be repeated on every change — they bill, or
    take an hour — reads *not applicable* with that reason; one with no
    walkthrough yet reads *deferred* until the first lands.

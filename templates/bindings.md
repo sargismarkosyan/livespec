@@ -81,6 +81,7 @@ tree carries how it was read back: the command, and when.
 | `gate:change-number-unique` | two change specs sharing a number | | |
 | `gate:feature-to-feature` | a feature using a feature that does not exist | | |
 | `gate:workflow-budget` | a count a workflow walk makes past its budget | | |
+| `gate:workflow-regression-answered` | a walk past its allowance the pull request does not answer | | |
 | `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | |
 | `gate:part-past-its-ceiling` | a part larger than the ceiling the bindings name, or no Ceilings row | | |
 | `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | |

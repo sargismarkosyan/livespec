@@ -259,6 +259,9 @@ each workflow walk, against its own base.**
 - **A time never fails the build.** It is the chance [testing.md](testing.md#a-test-that-fails-sometimes-is-worse-than-no-test)
   keeps out of a verdict. **A count may carry a budget that does** — bytes,
   requests, queries — because the same tree gives the same count every run.
+- **Past the allowance, a slowdown is answered, not refused.** The pull request
+  names the walk and says why, and the gate waits for that line rather than
+  for the number to move. A slowdown may be worth it; one nobody chose is not.
 - **The numbers live in one versioned file, and moving them is shown beside
   the change they allow.** Raising the bar is the cheapest way to clear it.
 - **One run counts.** Rounds repeat inside the job; the job is never re-run

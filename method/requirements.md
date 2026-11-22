@@ -57,6 +57,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:change-number-unique` | gate | 1.23.0 | wiring | — | | two change specs sharing a number fail, whatever their slugs; a gap does not |
 | `gate:feature-to-feature` | gate | 1.28.0 | wiring | — | | a feature using a feature that does not exist, or carrying @uses on a rule, fails |
 | `gate:workflow-budget` | gate | next | wiring | — | | a count a workflow walk makes past the budget the policy file sets fails; a time carries no budget |
+| `gate:workflow-regression-answered` | gate | next | wiring | — | | a walk past its allowance whose workflow the pull request's Performance section does not name fails |
 | `gate:crossing-names-a-boundary` | gate | 1.14.0 | boundary | — | | a rule tagged as crossing a boundary the bindings declare no row for fails |
 | `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire |
 
