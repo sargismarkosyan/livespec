@@ -63,16 +63,16 @@ session here is most likely to miss:
 
 - **The `description` is the expensive field.** It loads in every session, so
   widening one is paid for in `evals/` with a should-not-fire case.
+- **Spec before code.** No change merges without an approved change spec; a fix
+  found on the way is filed, not made.
 - **Skills never implement.** `todo` files, `refine-*` specs, `record-clip`
   records. None of them touch application code.
-- **The gates take no dependencies.** Python 3 standard library only — CI
-  installs nothing to run them.
+- **The gates take no dependencies.** Python 3 standard library; CI installs nothing.
 - **Merging is releasing.** `main` is production: the marketplace takes no ref,
   so `/plugin update` reads `version` off this branch. The pipeline moves it,
   and what a pull request owes is the label, the `## Changelog` section, and the
   Gherkin block when a `.feature` moved. CI fails a pull request that ships or
-  re-promises without them. Editing `version` or `CHANGELOG.md` by hand works
-  against the release job rather than with it.
+  re-promises without them.
 - **Rule, workflow and persona ids are permanent.** Renaming one orphans every
   case pointing at it, in every consuming repository at once.
 - **A payload file nothing links fails CI.** It would ship to every user unread.
