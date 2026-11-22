@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.0.0 — 2026-11-22
+
+`refine-personas`, `refine-workflows` and `refine-journeys` are one skill, `refine`. It asks which layer a request is about, runs the same interview, and keeps every rule each layer had. `/livespec:refine` (`/skill:refine` in Pi) replaces all three, and an audit names the new command wherever a record still uses an old one. The plugin now has five skills, and about 1,000 fewer characters load in every session.
+
 ## 2.0.0 — 2026-11-22
 
 `doctor` is folded into `setup`, which now sets the process up, reports on it, and brings it up to date. **Report** is the audit that was `doctor`, unchanged in what it does: it corrects the record and never the wiring. **Bring it up to date** follows a plugin update: it reports, then plans with the new `doctor.py --plan`, which reads what the plugin installed asks of the ledger from the list of ids rather than from this changelog, and wires each item with your yes, a fault that fires and a green commit, records what was answered with `--adopt`, and reports again. `/livespec:doctor` (`/skill:doctor` in Pi) is gone: use `/livespec:setup`, and an audit names the new command wherever a record still uses the old one.
