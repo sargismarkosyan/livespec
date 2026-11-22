@@ -1000,11 +1000,16 @@ PR_REF = re.compile(r"^Merge pull request #\d+.*$|\(#\d+\)\s*$|^Merged? (?:PR|br
 
 
 def changes_since_audit(ctx: dict) -> tuple[str, list[str]] | None:
-    """The commit the last audit read, and each change merged onto the main line after it."""
+    """The commit the last audit read, and each change merged onto the main line after it.
+
+    The record is a file, so its HEAD is taken only as a hex commit id, after --end-of-options:
+    nothing it says reaches git as an option. See #232."""
     head = RECORD_HEAD.search(read(record_path_of(ctx)) or "")
-    if not head or not git(ctx["root"], "rev-parse", "--verify", "-q", head.group(4) + "^{commit}").strip():
+    if not head or not re.fullmatch(r"[0-9a-f]{7,40}", head.group(4)):
         return None
-    return head.group(4), git(ctx["root"], "rev-list", "--first-parent", "--reverse", f"{head.group(4)}..HEAD").split()
+    if not git(ctx["root"], "rev-parse", "--verify", "-q", "--end-of-options", head.group(4) + "^{commit}").strip():
+        return None
+    return head.group(4), git(ctx["root"], "rev-list", "--first-parent", "--reverse", "--end-of-options", f"{head.group(4)}..HEAD").split()
 
 
 def c_loop_followed(ctx: dict) -> tuple[str, str]:
