@@ -1,7 +1,7 @@
 @feature:setup-the-gate-says-why @workflow:adopt-the-process
 Feature: A gate the sitting wires says why it failed
 
-  @rule:a-failure-prints-what-it-means @planned
+  @rule:a-failure-prints-what-it-means
   Rule: Each failure the traceability gate the sitting writes reports names where it is and what it means — the reason and the fix — in the words of that failure's row in the method, not only what failed
 
     Example: a live rule with no test

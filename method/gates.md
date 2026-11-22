@@ -1,114 +1,106 @@
 # The gates
 
-Two gates: **traceability** and **coverage**. Coverage alone rewards tests that
-touch code without asserting anything anyone asked for. Traceability alone
-rewards tests that name a rule and check it shallowly. Together they are hard to
-satisfy dishonestly, and that is the only reason either is worth running.
+*From: every promise is checked by something that can fail.*
 
-**The commands, the thresholds and the tool names are bindings.** They live in
-the repository's `specs/setup/README.md`. What follows is what those commands
-have to *mean*.
+Two gates: **traceability** and **coverage**. Coverage alone rewards tests that
+touch code without asserting anything anyone asked for; traceability alone
+rewards tests that name a rule and check it shallowly. Together they are hard to
+satisfy dishonestly. **The commands, thresholds and tool names are bindings**,
+in the repository's `specs/setup/README.md`; this page is what they must mean.
+
+## A failure says why
+
+**Each rule a gate enforces is written once: as a row in a table on this page —
+the failure, and what it means.** No prose elsewhere restates it. **When a gate
+fails, it prints that row**: where the failure is, and what it means — the reason
+and the fix — in words taken from the row. The agent that broke the rule learns
+it at that moment, from the gate, instead of from a page it was meant to have
+read. A failure that prints only *what* failed is half a gate.
+
+Warnings follow the same shape, in their own tables. Keep them scarce: **a
+warning surviving two versions either becomes an error or is deleted** — four new
+kinds at once turn the output into wallpaper, and wallpaper reads as green.
 
 ## Gate 1 — traceability
 
-Enforced in **both directions**:
+Enforced in **both directions**, because each alone is worthless:
 
 ```
 rule  →  test     every live rule must be claimed by a test
 test  →  rule     every behaviour test must name the rule it exists for
 ```
 
-One direction alone is worthless. Rule→test catches behaviour that was specced
-and never verified; test→rule catches tests that verify something nobody asked
-for. It fails on any of:
-
 | Failure | What it means |
 |---|---|
 | a live rule with no test referencing it | Behaviour was specced and never verified. Write the test, or tag the rule `@planned` if it is not built yet. |
-| a test claiming a rule id that does not exist | Usually a typo, or an id that was renamed. Rule ids are permanent — see below. |
+| a test claiming a rule id that does not exist | Usually a typo, or an id that was renamed. Rule ids are permanent. |
 | a feature file with no test against any of its rules | A whole component is unverified. |
 | a test outside a `rule()` block in a behaviour file | An untraced behaviour test. Move it inside a block, or into the unit folder. |
-| a behaviour file with no `rule()` at all | Same. This is the check that stops coverage filler. |
+| a behaviour file with no `rule()` at all | The same; this is the check that stops coverage filler. |
 | a `@planned` rule that *does* have a test | The tag should have come off in the change that made it true. |
-| a rule-bound test marked skipped, focused, or expected to fail | It claims nothing. The rule it names is untested, and the gate says so rather than counting the marker as a test. What counts as a marker is the runner's word, and a binding. |
-| fewer rule-bound tests ran than the tree holds | The runner did not see what the gate sees: a harness that stopped early, a file the discovery pattern missed, a class the runner does not collect, or a count somebody edited. Whatever the summary line says, the build fails. More than the tree holds is not a failure. |
-| a rule crossing a boundary the bindings have no row for | A `@crosses:<id>` names a boundary nobody declared — a dangling reference, like a workflow that does not exist. Add the boundary row, or name one that exists. |
-| two change specs sharing a number | Two trees cut from one main each took *the next* number, and git saw no conflict because the slugs differ. Renumber the one that has not merged: its file, its heading, its links. A gap — a closed pull request's number — is not a fault. |
+| a rule-bound test marked skipped, focused or expected to fail | It claims nothing; the rule it names is untested. What counts as a marker is the runner's, and a binding. |
+| fewer rule-bound tests ran than the tree holds | The runner did not see what the gate sees — a harness that stopped early, a file the discovery pattern missed, a class it does not collect. Whatever the summary line says, the build fails. More is not a failure. |
+| a rule crossing a boundary the bindings have no row for | A `@crosses:` names a boundary nobody declared. Add the row, or name one that exists. |
+| two change specs sharing a number | Two trees each took *the next* number. Renumber the one that has not merged — its file, heading and links. A gap is not a fault. |
 
-It should **warn without failing** when a unit test claims a rule — it probably
-belongs with the behaviour tests — when a test that asserts nothing happened
-claims a rule not tagged `@refusal`, when a feature file grows past the
-repo's soft size limits, and when a rule that says it crosses a boundary
-carries a single example — one example cannot be both the ordinary case and
-the boundary misbehaving, and a crossing that shows only the happy path has
-specced the demo. Whether the second example is *really* the boundary going
-wrong is a reading, not the gate's; that stays with the spec step and review.
+| Warning | What it means |
+|---|---|
+| a unit test claiming a rule | It probably belongs with the behaviour tests. |
+| a test asserting nothing happened, claiming a rule not tagged `@refusal` | Either the rule promises absence and needs the tag, or the test asserts the wrong thing. |
+| a feature file past the repository's soft size limits | Small per-component files are the point; split it. A hard cap is not. |
+| a rule crossing a boundary, with a single example | One example cannot be both the ordinary case and the boundary misbehaving. Whether the second really is the boundary going wrong is a reading, for the spec step and review. |
 
 The output worth having is a per-feature matrix — traced, untraced, planned —
-followed by a count. It is worth reading even when green.
+then a count, read even when green.
 
 ### The same loop, one layer up
-
-The layers that say what the product *is* and who it is *for* close the same way:
 
 ```
 feature   →  workflow              every feature says what it serves
 feature   →  feature               every feature it says it uses exists
-workflow  →  feature                no workflow nothing implements
-workflow  →  test                   no walkthrough nothing walks
-workflow  →  persona                no workflow for nobody
-persona   →  workflow               no persona nobody does anything as
-journey   →  workflow               no dangling reference
-workflow  →  phase                  no dangling reference
+workflow  →  feature               no workflow nothing implements
+workflow  →  test                  no walkthrough nothing walks
+workflow  →  persona               no workflow for nobody
+persona   →  workflow              no persona nobody does anything as
+journey   →  workflow              no dangling reference
+workflow  →  phase                 no dangling reference
 ```
 
 | Failure | What it means |
 |---|---|
 | a feature naming no `@workflow:` | It serves nothing anybody wrote down. Tag it, or the thing it serves is missing from the workflows. |
-| a feature naming a workflow that does not exist | A typo, or an id that was renamed. |
-| a feature using a feature that does not exist | The shared feature it builds on was renamed or split, and this one still points at the old id. Name the id it carries now, or drop the tag if nothing is built on it any more. |
-| a `@uses` on a rule rather than the feature | The reference is to a feature, and it has one place to live. The rule's own words say which rule it builds on. |
+| a feature naming a workflow that does not exist | A typo, or a renamed id. |
+| a feature using a feature that does not exist | The shared feature was renamed or split. Name the id it carries now, or drop the tag. |
+| a `@uses` on a rule rather than the feature | It belongs on the Feature line; the rule's words say which rule it builds on. |
 | a workflow claimed by no feature | Specced and never built. Tag a feature, or tag the workflow `@planned`. |
 | a workflow walked by no test | Its `Example:` blocks are a costume. Write the walkthrough. |
-| a workflow naming no live `@persona:` | A workflow for nobody, or one pointing only at a `@retired` persona. |
-| a persona named by no workflow | Nobody does anything as them. Give them a workflow, or tag the file `@retired` — which is for a persona no workflow names *yet*, not a shelf. |
-| a `@planned` workflow that *is* claimed | Same as a `@planned` rule with a test: the tag should have come off. |
-| a journey naming a workflow that does not exist | A dangling reference is factually wrong, not a judgment call. |
-| a workflow naming a phase that no journey it names has | The same, one level down: a typo, or a phase whose heading was renamed in the journey and whose workflows were not retagged. Naming no phase is not a failure and not a warning — the phase is optional. |
+| a workflow naming no live `@persona:` | A workflow for nobody, or for a `@retired` persona only. |
+| a persona named by no workflow | Nobody does anything as them. Give them a workflow, or tag the file `@retired` — for a persona no workflow names *yet*, not a shelf. |
+| a `@planned` workflow that *is* claimed | The tag should have come off. |
+| a journey naming a workflow that does not exist | A dangling reference is wrong, not a judgment call. |
+| a workflow naming a phase no journey it names has | A typo, or a phase heading renamed without retagging its workflows. Naming no phase is fine. |
 
-**One warning, not four.** Where an attempt sits in the arc is a judgment, so a
-workflow naming no `@journey:` warns rather than fails. Keep such warnings
-scarce, and adopt the norm that **a warning surviving two versions either becomes
-an error or gets deleted** — four new warning kinds at once turn the output into
-wallpaper in one version, and wallpaper is indistinguishable from green.
+| Warning | What it means |
+|---|---|
+| a workflow naming no `@journey:` | Where an attempt sits in the arc is a judgment, so this warns rather than fails. |
 
-**A repository's own pipeline is not an attempt anybody makes with the
-product.** The gates on this page, the step that releases, the checks that
-prove them — none of it is something the persona does, so no feature file
-describes it and no rule id is reserved for it. It is held by the fault table
-this page ends with, and read back from the record of that table in the
-bindings. A feature naming no workflow is refused, and the answer to that
-refusal is never a second kind of tag: it is either an attempt missing from
-the workflows, or a contract of the repository's own, which belongs in the
-faults.
-
-**Two checks worth wanting and worth leaving out:** whether a journey has been
-looked at since the workflows under it changed, and whether features have piled
-up under a workflow since its file was last edited. Both are git questions rather
-than file questions, and CI that checks out a single commit answers them with
-silence — so both would pass forever while looking enforced. A gate that cannot
-fail is worse than an absent one.
+- **A repository's own pipeline is not an attempt anybody makes with the
+  product.** No feature describes the gates, the release or the checks that prove
+  them; they are held by the faults below and their record in the bindings. A
+  feature naming no workflow is answered by a missing workflow or by a fault —
+  never by a second kind of tag.
+- **Two checks are left out on purpose**: whether a journey was looked at since
+  its workflows changed, and whether features piled up under a workflow since it
+  was edited. Both are git questions a single-commit checkout answers with
+  silence, so they would pass forever while looking enforced.
 
 ### The second half of the output is the map
 
-Every workflow, who it is for, and the feature files serving it — **generated,
-never typed**. A hand-maintained list of what implements what is a list that has
-already drifted; the only question is whether anybody has noticed yet.
-
-And every journey, its phases in the order of its map, and under each the
-workflows that name it. A phase nothing names says so — that is a moment in
-their life no attempt is made in — and a workflow naming the journey and no
-phase is listed apart, as not yet placed.
+Every workflow, who it is for and the features serving it — **generated, never
+typed**, because a hand-kept list of what implements what has already drifted.
+Then every journey, its phases in order, and under each the workflows naming it:
+a phase nothing names says so, and a workflow naming the journey and no phase is
+listed apart, as not yet placed.
 
 ## The id system
 
@@ -124,364 +116,197 @@ Feature: <what this component does>
       Then ...
 ```
 
-- `@feature:<id>` on every feature, `@rule:<id>` on every rule, both unique
-  across the whole repository.
-- Every rule needs at least one `Example:`. A rule with no example is an opinion.
-- **Rule ids are permanent.** Reword a `Rule:` line as much as you like — it is
-  the same rule. Changing its id orphans every test pointing at it, and the gate
-  reports the test as claiming something that does not exist.
-- `@planned` marks a rule that is specced but not built. Specs land before code,
-  so this is the normal state of a new rule, and dropping the tag is part of the
+- `@feature:<id>` and `@rule:<id>`, unique across the repository. Every rule
+  has at least one `Example:` — a rule with no example is an opinion.
+- **Rule, workflow and persona ids are permanent.** Reword freely; a changed id
+  orphans every test pointing at it.
+- `@planned`: specced, not built — the normal state of a new rule, dropped in the
   change that makes it true.
-- **`@refusal` marks a rule whose promise is that nothing happens** — the product
-  staying out of something it was not asked for. Such a rule is verified by a
-  test asserting absence and by nothing else, so the tag is what stops the gate
-  reporting its only honest test as the wrong kind. Without it the choice is a
-  permanent warning or a `@planned` tag on built behaviour, and both teach the
-  reader to stop believing a tag.
-- **`@crosses:<name>` on a rule names a boundary it cannot be true without** —
-  the store, the network, the clock, a service — by the name after `boundary:`
-  in its row in the bindings' [boundaries table](#the-boundaries), so
-  `@crosses:store` names the `boundary:store` row. A crossing naming a
-  boundary no row declares fails; a crossing rule with a single example warns.
-  It goes on a Rule, never a Feature: a crossing is a property of one promise,
-  and refine-spec asks for the boundary misbehaving when it writes the rule.
-- `@workflow:<id>` on every feature, saying what it serves. It may repeat: one
-  feature can serve two workflows.
-- **`@uses:<feature-id>` on a feature that builds on a rule another feature
-  owns** — a component specced once and reused, a primitive several features
-  share. It goes on the Feature: line beside `@workflow:`, and may repeat. It
-  is opt-in and one-way: a feature that builds on nothing carries none, and the
-  shared feature never lists who uses it. The tag makes the dependency
-  something the gate can check; the rule's own words still say which rule it
-  builds on and what it adds, citing that rule by id rather than restating it.
-  A `@uses` naming no feature fails, and so does one on a rule.
-- `@persona:<id>` and `@journey:<id>` on every workflow. **Not on features** —
-  every feature reaches a persona through its workflow, and a second path to the
-  same fact is a second thing to keep true.
-- `@phase:<name>` on a workflow, optional and repeatable: the phase of its
-  journey the attempt is made in. **The name is the phase's heading in the
-  journey's map**, in lower case with every run of other characters one hyphen
-  — *Putting it in* is `putting-it-in` — so the journey itself carries no tag.
-  It is looked up in the journeys the workflow names.
-- **Workflow and persona ids are permanent for the same reason rule ids are.**
+- `@refusal`: the promise is that nothing happens, verified only by a test
+  asserting absence. Without the tag that honest test reads as the wrong kind.
+- `@crosses:<name>` on a Rule: a boundary it cannot be true without, by the name
+  after `boundary:` in its [row](#the-boundaries). Never on a Feature.
+- `@workflow:<id>` on every feature, repeatable. `@uses:<feature-id>` on a
+  feature building on a rule another feature owns — opt-in, one-way, on the
+  Feature line, the rule citing the shared rule by id rather than restating it.
+- `@persona:<id>` and `@journey:<id>` on every workflow, **not on features**:
+  a feature reaches its persona through its workflow, and a second path is a
+  second thing to keep true.
+- `@phase:<name>` on a workflow, optional and repeatable: a phase heading of its
+  journey's map, lower case, each run of other characters one hyphen —
+  *Putting it in* is `putting-it-in`.
 
-The reader should also enforce structure: one feature per file, no scenario
-outside a rule, no duplicate ids, nothing unnamed. **A workflow file is the one
-exception** — it has no `Rule:` at all, because it is one bounded attempt rather
-than a set of them, and its scenarios hang off the `Feature:` line as
-walkthroughs of the whole thing.
-
-Soft limits on file length and rules per file produce warnings rather than
-failures, because small per-component files are the point and a hard cap on them
-is not.
+**Structure**: one feature per file, no scenario outside a rule, no duplicate
+ids, nothing unnamed. A workflow file is the one exception — one bounded attempt,
+no `Rule:`, its scenarios hanging off the `Feature:` line.
 
 ## Gate 2 — coverage
 
-**Lines, branches and functions — all three, and the number is the repo's.**
+**Lines, branches and functions — all three; the numbers are the repository's.**
+Aim at branches: line counting can mark an uncalled function's declaration
+covered.
 
-All three matter. Line coverage is the weakest of them: V8 counts a function's
-declaration line as covered even when the body never runs, so an uncalled
-function can show 100% lines while function coverage correctly reports 50%. Aim
-at branches; lines follow.
+| Failure | What it means |
+|---|---|
+| a module under the thresholds | The tests do not reach it. Test it, or name it in the runner's exclusions with why. |
 
-**The runner must refuse to pass on a measurement of nothing.** While there is no
-source to measure it says so and skips the thresholds, and it arms itself the
-moment the first module lands. A coverage gate that reports 100% of zero files is
-the most convincing false green there is.
+**The runner refuses to pass on a measurement of nothing**: with no source yet it
+says so and skips the thresholds, and arms itself when the first module lands.
+100% of zero files is the most convincing false green there is.
 
 ## The report is not a gate
 
-A report on a pull request — spec health, coverage, what is specced but not built
-— earns its place only if it **cannot fail the build**.
+A report on each pull request — spec health, coverage, what is specced and not
+built — is wired in every repository, and **it cannot fail the build**, including
+on its own failures: a missing token or a base that will not check out leaves the
+build unaffected and the report silent.
 
-And it recomputes nothing. If the traceability gate passed, that *is* the proof
-every live rule has a test; a report that re-derives it is a second copy of the
-gate's logic waiting to drift out of sync. **So the gate has to be able to hand
-its numbers over** — whatever else it prints, there is a way to ask it for what
-it worked out. A gate that only speaks to humans forces the report to parse the
-tree again, and that is the drift arriving through the door marked *it is only a
-report*.
-
-**It reports what moved, not what exists.** A total is trivia to somebody
-deciding whether to merge: *12 live rules* tells them nothing about the change in
-front of them, and *+1* is the entire point. That means reading the base as well
-as the branch, and a repository that cannot do that has a report worth half of
-one.
-
-**It goes where the decision is made.** The numbers already exist — in a log,
-behind a command somebody could run. Being available is not the same as being
-read, and a report that requires anybody to go and look has not solved the
-problem it was built for.
-
-**A repository is expected to end up with one.** This is the paragraph that used
-to describe an artefact in the third person, as though it were something a
-repository might acquire. It is part of what gets wired, and its absence is a gap
-like any other — one that is easy to miss precisely because nothing fails when it
-is missing.
-
-**It never gates, including on its own failures.** A report step that goes red
-because it could not build a report is a gate nobody declared. If the token is
-missing, the base will not check out, or the tooling breaks, it says nothing and
-the build is unaffected. The honest cost of that: a report going missing is
-itself silent, and nobody is told.
-
-**And it carries its own run beside the claim.** A pull request that changes
-the tests, or what runs them, carries the run in its body — the verification
-command as the bindings name it, the runner's output beneath; see
-[repository.md](repository.md#and-the-run-it-rests-on). The report prints the
-last lines of the pipeline's own run next to that block, so a body that says
-one thing and a pipeline that says another disagree where the reviewer is
-looking. It gates on nothing there, the difference included: a report that
-failed a build for a log line would be a gate nobody declared, and a
-fabricated run is caught by being read, not by being refused.
+- **It recomputes nothing.** The gate hands its numbers over; a report that
+  re-derives them is a second copy of the gate's logic.
+- **It reports what moved** — *+1*, not *12 live rules* — so it reads the base
+  as well as the branch.
+- **It goes where the decision is made**, on the pull request.
+- **It carries the pipeline's own run beside the body's run block**
+  ([repository.md](repository.md#and-the-run-it-rests-on)), so the two disagree
+  where the reviewer looks — and gates on nothing there.
 
 ## What a change costs a workflow
 
-A change can leave every rule true and every workflow slower, and nothing above
-would say so. **So the report also says what the change did to the cost of
-each workflow walk, against its own base.**
+A change can leave every rule true and every workflow slower. **So the report
+also says what the change did to the cost of each workflow walk, against its own
+base.**
 
-- **Both sides on one runner, in one job, in turns.** Whatever slows the runner
-  slows both, and whatever changed outside the pull request is on both sides.
-  Compared with stored history, a shared runner cries wolf.
-- **Each walk is measured where the change can move it.** The front end with
-  the service's answers replayed at a fixed delay, the back end without the
-  interface, and the whole walk once, end to end — each its own line. A front
-  end is weighed in what it ships, how long its pages take, and when each
-  workflow's feature is ready.
-- **Three verdicts, not two.** No change, worse, or inconclusive — said with
-  its reason, and never read as *no change*. A coin toss that blocks a merge
-  teaches people to ignore the gate.
-- **Two numbers per measure, written down before the change runs.** The noise,
-  below which a difference is not read and no number is shown; and the
-  allowance, how much a real slowdown may use before the report calls it past.
-- **A time never fails the build.** It is the chance [testing.md](testing.md#a-test-that-fails-sometimes-is-worse-than-no-test)
-  keeps out of a verdict. **A count may carry a budget that does** — bytes,
-  requests, queries — because the same tree gives the same count every run.
-- **Past the allowance, a slowdown is answered, not refused.** The pull request
-  names the walk and says why, and the gate waits for that line rather than
-  for the number to move. A slowdown may be worth it; one nobody chose is not.
-- **The numbers live in one versioned file, and moving them is shown beside
-  the change they allow.** Raising the bar is the cheapest way to clear it.
-- **One run counts.** Rounds repeat inside the job; the job is never re-run
-  until it is green.
+- **Both sides on one runner, in one job, in turns** — so what slows the runner
+  slows both.
+- **Each walk is measured where the change can move it**: the front end with the
+  service's answers replayed at a fixed delay, the back end without the interface,
+  and the whole walk once end to end, each its own line. A front end is weighed
+  in what it ships, how long its pages take, and when each workflow's feature is
+  ready.
+- **Three verdicts**: no change, worse, or inconclusive with its reason — never
+  read as *no change*.
+- **Two numbers per measure, written before the change runs**: the noise, below
+  which nothing is read, and the allowance a real slowdown may use.
+- **A time never fails the build**
+  ([testing.md](testing.md#a-test-that-fails-sometimes-is-worse-than-no-test));
+  **a count may carry a budget that does** — bytes, requests, queries.
+- **Past the allowance, a slowdown is answered, not refused**: the pull request
+  names the walk and says why.
+- **The numbers live in one versioned file**, and moving them is shown beside
+  the change they allow.
+- **One run counts**: rounds repeat inside the job, never a re-run until green.
 
-The comparison is the same in every repository, so it ships with the method and
-the sitting copies it in. The walks are the repository's own. A walk too costly
-to repeat on every change is a reason, written down, not a gap.
+The comparison ships with the method and the sitting copies it in; the walks are
+the repository's. A walk too costly to repeat is a reason written down, not a gap.
 
 ## What is wired, and what is not
 
-A repository rarely gets every gate on this page on the day the process arrives.
-The layers land one at a time, and a gate over a layer that does not exist yet is
-correctly left unbuilt. What is not correct is nobody being able to say, a year
-later, which of them were ever built — an answer split across each layer's own
-README is four honest quarters of a fact and no way to add them up.
-
-So the bindings carry a **ledger**: one row per gate named on this page — by
-the id [the list below](#the-ids) gives it — and a row for anything else only
-under the `local:` prefix, which says the repository added it and the method
-does not require it.
+The bindings carry a **ledger**: one row per gate named here, by its id in
+[requirements.md](#the-ids), and anything else only under the `local:` prefix.
 
 | A row reads | And means |
 |---|---|
-| **automated** | it runs, and the row names the command that runs it |
-| **not applicable** | it cannot apply here, and the row says why. A decision, not a gap |
+| **automated** | it runs, and the row names the command |
+| **not applicable** | it cannot apply here, and the row says why — a decision, not a gap |
 | **deferred** | it applies and is unbuilt — since which change, and why |
-| **unobserved** | it is wired, and nothing has yet watched it run. The row names the command anyway |
+| **unobserved** | it is wired, and nothing has yet watched it run; the row names the command anyway |
 
-**Wired is not run, and the ledger is the only place that can tell them apart.**
-A gate configured in a sitting and a gate that has refused something read
-identically from the tree — both are a command in a file. So a row earns
-*automated* the first time somebody watches it do its job, and reads
-*unobserved* until then. That is not a deferral: there is nothing left to build,
-and the row is a claim waiting on evidence rather than work waiting on somebody.
-It is also the one row that closes itself — the first refusal makes it
-*automated*, and a row still reading *unobserved* long after the repository
-started merging changes is saying the gate has never once had an opinion.
-
-**A row about something that is not in the repository is read back, or it is not
-written as fact.** Branch protection, whether a named check is actually required,
-whether the credential a step needs exists — none of that is in the tree, so
-nothing about it can be inferred from the tree. A check named in a CI config is
-evidence that somebody wrote it down, and no evidence at all that the platform
-enforces it; the two look identical from inside a diff, which is the whole reason
-this record exists. **So the row carries how it was read** — the command that
-reads it again, and when it was last read — or it says plainly that it was not
-read, and why. That is a second axis, not a fifth state: a row can be read back
-from the platform and still be *unobserved*, because reading a setting is not
-watching it stop something.
-
-**And a row says what it leaves uncovered.** A gate wired over one language of
-two, one package of five, one directory of a monorepo, is not a gate over the
-repository — and a row reading *automated* with nothing after it will be read as
-one, by somebody who was not in the room. Name the part that has no gate. A gate
-that covers everything says so in the same breath and costs a clause.
-
-**The tree is the authority on what applies; the ledger only says what is
-wired.** A row reading *not applicable — no personas exist* in a repository that
-has personas contradicts the tree, and a skill reading the ledger says so instead
-of repeating it. That cross-check is what stops a typed record drifting — and
-typed is what it has to be, because a record of what is *not* automated cannot be
-generated by the automation that does not exist.
-
-**A row deferred across two changes is either wired or written off.** The same
-norm as a warning surviving two versions, for the same reason: a gap flagged in
-every change and closed in none is indistinguishable from a gap nobody noticed.
-Written off means the row becomes *not applicable*, with the reason in it — one
-decision, made in the open, instead of an apology repeated forever.
+- **Wired is not run.** A row earns *automated* the first time somebody watches
+  the gate refuse something; until then it reads *unobserved*.
+- **A row about something outside the repository is read back**, with the command
+  that reads it again and when — branch protection, a required check, a
+  credential — or it says it was not read, and why. A check named in a CI file is
+  no evidence the platform enforces it.
+- **A row says what it leaves uncovered** — one language of two, one package of
+  five.
+- **The tree is the authority on what applies.** A *not applicable* row the tree
+  contradicts is reported, not repeated.
+- **A row deferred across two changes is wired or written off** — *not
+  applicable*, with the reason.
+- **The ledger records the version of the method the wiring was last reconciled
+  against.** What changed since is read from the record the plugin ships with
+  each version, never regenerated from the method, and the stamp moves only when
+  the wiring is brought level — never for having been looked at.
 
 ### The wiring that must never gate
 
-Two things on this page have to be wired and must never be able to fail a build:
-the [report](#the-report-is-not-a-gate), and the
+The [report](#the-report-is-not-a-gate), the
 [rule-bound measure](testing.md#measure-the-rule-bound-tests-on-their-own-and-never-gate-it)
-taken beside the gated coverage number. Neither is a gate, so neither belongs in
-the table above — and the ledger's own *nothing in it that is not a gate* line is
-what has been quietly displacing them. A repository names one as *not built yet*
-in a sentence somewhere and nothing ever asks again, because a sentence is not on
-any clock.
-
-So the bindings carry **a second, shorter table**, in the same place and with the
-same four states, for wiring that is expected and cannot gate:
+and the run beside the claim are wired and cannot fail a build, so they get **a
+second, shorter table**, in the same four states and on the same two-change
+clock:
 
 | Wiring | Reads |
 |---|---|
 | the pull-request report | one of the four states, and *unobserved* until somebody has watched one arrive |
 | the rule-bound measure, reported beside the gated number | one of the four states |
-| the run beside the claim — the report printing the last lines of the pipeline's own verification run next to the run block the pull request carries | one of the four states, and *unobserved* until somebody has watched the two disagree |
+| the run beside the claim | one of the four states, and *unobserved* until somebody has watched the two disagree |
 
-The same two-change clock applies, for the same reason. **Their absence is
-harder to notice than a gate's, not easier** — a gate that is missing eventually
-lets something through, and a report that is missing is silent by design.
-
-The ledger also records **which version of the method the wiring was last
-reconciled against**, so a later `setup` run diffs what the repository has
-against what this page now names and offers the difference, rather than
-re-deriving the state from scratch. That is a record about the installed process.
-It is not provenance for a commit, and nothing else in the repository gains any.
-
-**What changed between that version and the one installed is read from the
-record the plugin ships with each version, never regenerated from the method.**
-A generated list of what each version obliges is a second copy of the method
-waiting to disagree with it; the record that shipped is where to look, and this
-page and the skills as they now stand are what is asked. **And the stamp follows
-the wiring, not the reading.** An audit that read every entry between, corrected
-the record and wrote a row for each gap leaves it where it was; it moves when the
-wiring is brought level. A stamp moved for having been looked at would read as
-current over rows that are not.
+Their absence is harder to notice than a gate's: a missing report is silent by
+design.
 
 ### The boundaries
 
-The two tables above say what refuses a change. This one says **what world the
-tests that pass those gates ran in** — because both gates are satisfied by a
-test that names its rule and reaches every line over a stand-in for the store,
-and nothing else on this page can tell.
-
-One row per boundary the app crosses: whatever it talks to that is not its own
-code — the store, the clock, the network and each service on it, the browser or
-terminal it is used through, the identity it signs people in with. **The tree
-does not know what these are; the person does**, which is why the rows are
-asked for in the sitting and never derived.
+**What world the tests ran in.** One row per boundary the app crosses — the
+store, the clock, the network and each service, the browser or terminal, the
+identity it signs people in with — asked of the person in the sitting, never
+derived.
 
 | A row reads | And means |
 |---|---|
-| **real** | tests reach the thing itself, and the row names what starts it here |
+| **real** | tests reach the thing itself; the row names what starts it here |
 | **fake** | a stand-in with a suite that also runs against the real thing; the row says when that half was last green |
 | **recorded** | replies captured from the real thing; the row says when, and how old they may be |
-| **mocked** | a stand-in nothing checks — since which change, and the larger test that covers the path, if any. On the two-change clock |
-| **unreachable** | no test here crosses it — why, whether it cannot be or was decided against — and every change touching it says so where the change is decided |
+| **mocked** | a stand-in nothing checks — since which change, and the larger test covering the path, if any; on the two-change clock |
+| **unreachable** | no test here crosses it — why — and every change touching it says so where it is decided |
 
-And every row says what it leaves uncovered, in the same breath, the way a gate
-row says which part of the repository it does not cover. A real store at test
-volume is not a real store at production volume, and the row says so.
+Each row says what it leaves uncovered, and a row reads *real* only after a test
+has reached the thing from here. The traceability gate reads the rows — over
+rule-bound tests only, with what counts as a double a binding:
 
-**A row reading *real* is written after a test has reached the thing from here,
-never before**, for the same reason a gate row reads *unobserved* until it has
-refused something: a claim about what the tests reach is evidence or it is a
-memory, and the two look identical on the page.
+| Failure | What it means |
+|---|---|
+| a rule-bound test doubling a boundary whose row reads *real* | It tests the double, not the rule. Reach the real thing, or change the row honestly. |
+| a *fake* row naming no suite against the real thing | A fake nothing checks is *mocked*. Name the suite, or say *mocked*. |
+| a *recorded* row past the age the bindings set | The replies may no longer be what the service says. Record again. |
+| rule-bound tests present and no boundaries table | Nobody said what world the tests ran in. Write the rows. |
 
-**The gate reads the rows, and it is the traceability gate rather than a third
-one** — the same script that reads a rule-bound test for the id it claims reads
-it for the stand-ins it uses. A rule-bound test that stands a double in for a
-boundary reading *real* fails; a *fake* row naming no suite against the real
-thing fails; a *recorded* row past its age fails; rule-bound tests present with
-no table at all fail. What counts as a double is a binding — the patterns are
-the language's, and a terminal application's name the framework's own test
-harness beside the mocking libraries — and it is read only over the rule-bound
-tests, because a unit test doubling everything is what unit tests are for.
-
-**A *mocked* row past the two-change clock is either made real, given the suite
-that makes it a fake, or written off** — and written off means *unreachable*
-with the reason in the row, the way a deferred gate becomes *not applicable*: a
-decision made in the open, after which every change touching that boundary says
-so.
+A *mocked* row past the two-change clock is made real, given its suite, or
+written off as *unreachable* with the reason.
 
 ### The file every session reads first
 
-CLAUDE.md is read by every session before anything under `specs/`, written by
-the sitting and corrected by the audit — and, until now, refused by nothing. A
-change that gutted it to three lines, or grew it into a copy of the method,
-reached the default branch with every check green, and the first thing to
-notice was the next session behaving strangely.
-
-**The gate reads only what a script can decide**, and says so:
+The traceability gate reads the context file for what a script can decide — never
+its prose, which [`claude-md.md`](claude-md.md) holds the sitting and the audit
+to. Two ledger rows: the ceiling, and the shape.
 
 | Failure | What it means |
 |---|---|
-| a context file larger than the ceiling the bindings name | Something in it is a pointer that turned into a copy. Move the copy to the bindings and link it — or raise the number in the same change, with the reason beside it, so the growth is a line in a diff. |
-| a context file with no ceiling row | A number nobody wrote is not a pass. The sitting writes the row from the file's size once it has finished with the file. |
-| a ceiling above the limit the method names | The number is the repository's only up to the reader's own limit — [`claude-md.md`](claude-md.md#length), *Length* — and a row above it fails before the file's size is read. |
+| a context file larger than the ceiling the bindings name | A pointer turned into a copy. Move it to the bindings and link it — or raise the number in this change, with the reason beside it. |
+| a context file with no ceiling row | A number nobody wrote is not a pass. Write it from the file's size once the sitting is done with it. |
+| a ceiling above the limit the method names | The number is the repository's only up to the reader's own limit ([`claude-md.md`](claude-md.md#length)). |
 | no context file at the root | The file every session reads first is missing. |
-| no numbered list, or one longer than eight steps | The loop is missing, or has grown past what an agent follows at the moment it matters. The loop is the longest numbered run outside fenced blocks. |
+| no numbered list, or one longer than eight steps | The loop is missing, or has grown past what an agent follows. The loop is the longest numbered run outside fenced blocks. |
 | no fenced block | The commands are missing. |
-| no link to the bindings that resolves | The one pointer every other command depends on is missing or points at nothing. |
-
-What it does not read is prose. A stale pointer, a paragraph copied from the
-plugin, a rule nobody follows — [`claude-md.md`](claude-md.md) rules all three
-out, and only a mind can see them. They stay with the sitting that writes the
-file and the audit that re-reads it, and a gate that claimed them would be
-wallpaper by its second run.
-
-**The traceability gate reads it, and it is not a third one**, for the reason
-the boundaries were folded in: the same script that reads the spec layer for
-its shape reads the file that points at it, and a third gate renames *both
-gates* in every ledger, every injector and every bindings file already
-written. Two rows in the ledger, one for the ceiling and one for the shape,
-because a repository can have the file in shape and no number yet.
+| no link to the bindings that resolves | The pointer every command depends on is missing or points at nothing. |
 
 ### And every part that only grows
 
-The context file's ceiling, generalised: the code, the rules, whatever every
-session loads — [process.md](process.md#the-rules), *Whatever only grows has a
-ceiling*. The bindings' **Ceilings** row names each part and its size, and the
-traceability gate reads it, for the same reason it reads the context file.
+The bindings' **Ceilings** row names each part that only grows and its size
+([process.md](process.md#the-rules)); the traceability gate reads it.
 
 | Failure | What it means |
 |---|---|
-| a part larger than its ceiling | The change grew it past what was agreed. Cut it back — or raise the number in this change, with the reason beside it, so the growth is argued where it is reviewed. |
-| no Ceilings row | A number nobody wrote is not a pass. The sitting writes the row from each part's size once it has finished. |
+| a part larger than its ceiling | The change grew it past what was agreed. Cut it back — or raise the number in this change, with the reason beside it. |
+| no Ceilings row | A number nobody wrote is not a pass. Write each part's size once the sitting has finished. |
 
 ### And what is not wiring at all
 
-A check that runs on somebody's own machine before they push — the
-[run before the work leaves it](testing.md#and-again-before-it-leaves-this-machine)
-— is neither of the two things above. It is not a gate, and it is not wiring
-that must never gate. It is **local, opt-in, and bypassable on purpose**: every
-version control that offers a hook offers a flag that skips it, and that flag
-will be used, correctly, by somebody in a hurry at the end of a bad day.
-
-So it gets **no row, in either table**. A row is a claim about what this
-repository refuses, and a courtesy recorded as a refusal is the false green this
-page exists to prevent — worse than no record, because a reader adding up the
-rows would now count a check that anybody can walk past. An audit of the ledger
-does not count it as coverage either, for the same reason.
-
-If it is written down at all it belongs with the other things that are true of
-one machine rather than of the repository, in the bindings' own prose: what it
-runs, what it deliberately leaves to the pipeline, and the line somebody types to
-opt in. Nothing reads it to decide whether a gate exists.
+A check run before a push ([testing.md](testing.md#and-again-before-it-leaves-this-machine))
+is **local, opt-in and bypassable on purpose**, so it gets **no row in either
+table**: a courtesy recorded as a refusal is a false green, and the audit does not
+count it as coverage. If it is written down at all, it is in the bindings' prose,
+with what it runs and how to opt in.
 
 ## The ids
 
@@ -495,62 +320,14 @@ Moved to [`requirements.md`](requirements.md#the-ids); these headings stay so ol
 
 ## Both gates are verified to fire
 
-They are tested against deliberate violations rather than assumed to work. Break
-each one in turn and read the message it produces:
+**Every row in a *Failure* or *Warning* table above is a fault to inject.** Break
+each one in turn, and read what the gate prints: it fails, or warns, and it
+prints the row's meaning. Add a module well under the coverage thresholds, and a
+fully covered one, which must pass.
 
-| Injected fault | Expected |
-|---|---|
-| live rule with no test | fails |
-| test names a nonexistent rule | fails |
-| behaviour test outside a `rule()` block | fails |
-| behaviour file with no `rule()` at all | fails |
-| `@planned` rule that has a test | fails |
-| a refusal test claiming a rule that is not `@refusal` | warns, does not fail |
-| feature naming no workflow | fails |
-| feature naming a workflow that does not exist | fails |
-| workflow claimed by no feature | fails |
-| workflow walked by no test | fails |
-| workflow naming a persona that does not exist | fails |
-| persona named by no workflow, tag removed | fails |
-| journey naming a workflow that does not exist | fails |
-| workflow naming no journey | warns, does not fail |
-| a workflow naming a phase its journey does not have | fails |
-| a feature holding more rules than the soft limit | warns, does not fail |
-| a feature longer than the soft limit | warns, does not fail |
-| a module well under the coverage thresholds | fails |
-| a fully covered module | passes |
-| a rule-bound test doubling a boundary whose row reads real | fails |
-| a fake row naming no suite against the real thing | fails |
-| a recorded row past the age the bindings set | fails |
-| rule-bound tests present and no boundaries table | fails |
-| a context file past its ceiling | fails |
-| a context file with no ceiling row | fails |
-| a ceiling above the reader's limit | fails |
-| no context file at the root | fails |
-| a context file with no numbered list | fails |
-| a loop of nine steps | fails |
-| a context file with no fenced block | fails |
-| a context file that does not link to the bindings | fails |
-| a part past its ceiling | fails |
-| no Ceilings row | fails |
-| a skipped rule-bound test claiming a rule | fails |
-| the runner ran fewer rule-bound tests than the tree holds | fails |
-| a rule crossing a boundary the bindings have no row for | fails |
-| two change specs sharing a number | fails |
-| a feature using a feature that does not exist | fails |
-| a feature's @uses on a rule rather than the feature | fails |
-| a crossing rule with a single example | warns, does not fail |
-
-If you change either gate, re-check it the same way, and keep the results in the
-repository's bindings where somebody can read what was actually tried.
-
-**That record is read back from the injector, never typed.** It is the evidence
-for the promise that no gate ships without a fault that makes it fire, and a
-hand-copied list of what was injected drifts exactly the way a hand-maintained
-map does — silently, and in the direction of looking finished. Whatever holds the
-faults is the one that owns their names; the gates check the record against it,
-so a fault added without a row fails the build rather than going unrecorded. The
-same applies to any count of them: a total nobody derives is a claim that can
-only go stale, and is better deleted than corrected.
+The record of what was tried lives in the repository's bindings and is **read back
+from the injector, never typed**: whatever holds the faults owns their names, and
+the gates check the record against it, so a fault added without a row fails the
+build. Any count of them is derived the same way, or deleted.
 
 **A gate that has never failed is not known to be a gate.**
