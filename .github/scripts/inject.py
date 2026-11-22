@@ -72,6 +72,8 @@ ROW_CEILINGS = "| **Ceilings** | `specs/` 1,000 lines · `tests/` 1,000 lines, s
 
 FIXTURE: dict[str, str] = {
     "CLAUDE.md": CONTEXT_FILE,
+    ".claude/settings.json": '{"enabledPlugins": {"livespec@livespec": true}}\n',
+    ".pi/settings.json": '{"packages": ["git:github.com/sargismarkosyan/livespec@livespec--v1.0.0"]}\n',
     "skills/refine-spec/SKILL.md": "---\nname: refine-spec\ndescription: Turns a request into a spec.\n---\n\n# Refine\n\nThe gates are in [requirements.md](../../method/requirements.md).\n",
     "specs/personas/reader.md": "@persona:reader\n\n# Reader — wants the thing in front of them\n",
     # A map with two phases, and the workflow naming one: the fixture holds the
@@ -1615,6 +1617,8 @@ DOCTOR_FAULTS = [
                 write(r, "specs/changes/0003-later.md", "# Spec 0003\n")), "open"),
     ("a local hook given a row", "check:hook-no-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE, ROW_STRUCTURE + "\n| `local:hook` | the pre-push hook | automated | `.githooks/pre-push` |"), "open"),
+    ("a host in use that loads no livespec", "check:host-enabled",
+     lambda r: write(r, ".pi/settings.json", '{"packages": []}\n'), "open"),
     ("a change merged with no spec and no issue", "check:loop-followed",
      lambda r: as_git_history(r, [("fix the thing", {"src/app.js": "// fixed\n"})]), "open"),
     ("a change outside the record in the working tree", "check:record-only",

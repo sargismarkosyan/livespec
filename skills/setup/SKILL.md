@@ -798,6 +798,12 @@ Merge into a file that is already there; never drop what it declared.
 A host nobody here runs gets no file: a `.pi/` directory in a repository only
 Claude Code opens is a second thing to maintain.
 
+**A repository that is the plugin** loads its own checkout. Pi takes a local
+path, resolved from the settings file: `"packages": [".."]`. Claude Code's
+copy is registered per machine and never committed
+([`method/README.md`](../../method/README.md#working-on-the-method-itself)). The
+report reads each host in use for its declaration (`host-enabled`).
+
 Then report, short:
 
 - the verification command, and the fact that it is green;

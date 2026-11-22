@@ -169,6 +169,7 @@ CHECKS = [
     ("check:claim-row", "mechanical", "record", "the bindings name the marker that says an issue is taken, and the commands that put it on and list it"),
     ("check:claims-in-flight", "judgment", "record", "every open issue carrying the marker has a branch, a tree or a pull request behind it, and none is released by the audit"),
     ("check:skill-names", "mechanical", "record", "every skill the record instructs by exists in this plugin"),
+    ("check:host-enabled", "mechanical", "wiring", "every host in use here — the one running the audit, and each the tree shows — loads the plugin from a committed declaration"),
     ("check:one-context-file", "mechanical", "wiring", "one instructions file at the root, so the one the gates hold is the one every host reads"),
     ("check:word-not-a-skill", "judgment", "record", "the same word used as ordinary prose is left alone"),
     ("check:loop-per-claude-md", "judgment", "record", "the loop's own account says what the method now asks of each step"),
@@ -894,6 +895,43 @@ def c_skill_names(ctx: dict) -> tuple[str, str]:
     return "clear", f"{len(named)} skill(s) instructed by, all exist: {', '.join(named)}" if named else "the record instructs by no skill name"
 
 
+def declared(root: Path, host: str) -> str | None:
+    """What the host's committed file declares for livespec, or None. Pi's entry may be a local path
+    to a livespec checkout, which is how the plugin's own repository loads itself. See 0101."""
+    if host == "Claude Code":
+        try:
+            enabled = json.loads(read(root / ".claude" / "settings.json") or "{}").get("enabledPlugins") or {}
+        except (json.JSONDecodeError, AttributeError):
+            return None
+        return next((f"`{k}` in .claude/settings.json" for k, on in enabled.items() if k.startswith("livespec@") and on), None)
+    try:
+        packages = json.loads(read(root / ".pi" / "settings.json") or "{}").get("packages") or []
+    except (json.JSONDecodeError, AttributeError):
+        return None
+    for entry in packages:
+        source = entry.get("source", "") if isinstance(entry, dict) else str(entry)
+        if "livespec" in source:
+            return f"`{source}` in .pi/settings.json"
+        local = (root / ".pi" / source) if not source.startswith(("git:", "npm:", "http")) else None
+        manifest = read(local / ".claude-plugin" / "plugin.json") if local and local.is_dir() else None
+        if manifest and '"livespec"' in manifest:
+            return f"`{source}` in .pi/settings.json, a livespec checkout"
+    return None
+
+
+def c_host_enabled(ctx: dict) -> tuple[str, str]:
+    root = ctx["root"]
+    hosts = {"Pi" if under_pi() else "Claude Code"}
+    hosts |= {"Claude Code"} if (root / ".claude").is_dir() or (root / "CLAUDE.md").is_file() else set()
+    hosts |= {"Pi"} if (root / ".pi").is_dir() or (root / "AGENTS.md").is_file() else set()
+    found = {host: declared(root, host) for host in sorted(hosts)}
+    missing = [host for host, where in found.items() if not where]
+    if missing:
+        return "open", (f"{', '.join(missing)} in use here, and no committed declaration loads livespec for it — "
+                        "a fresh clone gets no skill under it; the setup sitting declares it")
+    return "clear", "; ".join(f"{host}: {where}" for host, where in found.items())
+
+
 def c_one_context_file(ctx: dict) -> tuple[str, str]:
     """More than one instructions file at the root is two copies, and one of them is unread by somebody.
 
@@ -1007,6 +1045,7 @@ MECHANICAL = {
     "check:trees-row": c_trees_row,
     "check:claim-row": c_claim_row,
     "check:skill-names": c_skill_names,
+    "check:host-enabled": c_host_enabled,
     "check:one-context-file": c_one_context_file,
     "check:deferred-clock": c_deferred_clock,
     "check:hook-no-row": c_hook_no_row,
