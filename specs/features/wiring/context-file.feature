@@ -63,3 +63,16 @@ Feature: What the build refuses about the file every session reads first
       Then the gate the sitting writes reads CLAUDE.md for its ceiling and its shape
       And the fault record it leaves lists the faults that prove that gate fires
       And the CLAUDE.md the sitting leaves behind passes the gate it wired
+
+  @rule:the-audit-reads-the-whole-context-file
+  Rule: The audit reads the context file against every item the method asks of it, not the loop alone, and asks whether its rules list carries each rule the history shows broken here since the last audit
+
+    Example: the whole file, not the loop alone
+      Given a consuming repository with a context file
+      When the wiring is audited
+      Then the mind answering is asked after every item the method lists, by count
+
+    Example: a rule broken here is missing from the list
+      Given a change merged since the last audit with no change spec and no issue
+      When the wiring is audited
+      Then the mind answering is asked whether the rules list carries spec before code
