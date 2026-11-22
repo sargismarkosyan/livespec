@@ -609,6 +609,11 @@ unexpectedly lands is removed at once and said.
   merges it once green, one pull request at a time. Where its settings are
   off, offer them and wait.
 
+**Then the main branch's runs — *The main branch's runs* row.** The
+platform's command that lists the pipeline's runs on the main branch, newest
+first, run once here to see it answers. Nothing runs there: *not applicable,
+decided*, with why.
+
 **Every fact in it is about this repository.** If a sentence could survive being
 moved to another repo, it belongs in this plugin instead, and putting it here is
 how the two copies start to disagree.
@@ -982,6 +987,10 @@ The questions worth the judgment, and what decides them:
   is listed with its base and the commit, and the line reads `open`; a stack
   whose commits arrived another way is not. Move nothing: retargeting,
   cherry-picking or reopening is a change of its own.
+- **Whether the main branch is green** (`main-green`). Run the row's
+  command: the latest run, and every run since the last audit. A red one is
+  `open`, naming the first and the last — a version released from a red main
+  branch reached every install. No row is `open`, for the sitting.
 - **How several pull requests merge** (`merge-queue`). The row says a queue
   or the fallback. A queue: read back that it is required on the main branch
   and that the required checks run on its event in the pipeline — a queue

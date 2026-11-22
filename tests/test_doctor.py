@@ -777,6 +777,31 @@ class Stacks(unittest.TestCase):
         self.assertIn("move nothing", line["evidence"])
 
 
+class MainGreen(unittest.TestCase):
+    """Whether the main branch's pipeline is green, asked of the platform. See specs/changes/0099."""
+
+    @rule("main-is-read-green")
+    def test_no_row_is_open_for_the_sitting(self):
+        line = audit(repo(inject.green_bindings(INSTALLED).replace(inject.ROW_MAIN_RUNS + "\n", "")))["check:main-green"]
+        self.assertEqual((line["state"], line["severity"]), ("open", "platform"))
+        self.assertIn("setup sitting", line["evidence"])
+
+    @rule("main-is-read-green")
+    def test_the_row_hands_on_its_command_and_the_last_audit(self):
+        root = repo()
+        (root / "specs" / "setup" / "audit.md").write_text("**Audited 2026-01-02 · livespec 1.0.0 · stamp 1.0.0 · HEAD abc1234 · audit 1**\n")
+        line = audit(root)["check:main-green"]
+        self.assertEqual(line["state"], "unanswered")
+        self.assertIn("run: gh run list --branch main --limit 20", line["evidence"])
+        self.assertIn("since the last audit on 2026-01-02", line["evidence"])
+
+    @rule("main-is-read-green")
+    def test_nothing_running_there_is_not_applicable(self):
+        row = "| **The main branch's runs** | not applicable, decided: no pipeline runs on main |"
+        line = audit(repo(inject.green_bindings(INSTALLED).replace(inject.ROW_MAIN_RUNS, row)))["check:main-green"]
+        self.assertEqual(line["state"], "n/a")
+
+
 class ManyMerges(unittest.TestCase):
     """How several pull requests merge, read back by the audit. See specs/changes/0076."""
 
