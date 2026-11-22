@@ -245,6 +245,11 @@ each workflow walk, against its own base.**
 - **Both sides on one runner, in one job, in turns.** Whatever slows the runner
   slows both, and whatever changed outside the pull request is on both sides.
   Compared with stored history, a shared runner cries wolf.
+- **Each walk is measured where the change can move it.** The front end with
+  the service's answers replayed at a fixed delay, the back end without the
+  interface, and the whole walk once, end to end — each its own line. A front
+  end is weighed in what it ships, how long its pages take, and when each
+  workflow's feature is ready.
 - **Three verdicts, not two.** No change, worse, or inconclusive — said with
   its reason, and never read as *no change*. A coin toss that blocks a merge
   teaches people to ignore the gate.

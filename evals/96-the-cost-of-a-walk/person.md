@@ -12,6 +12,9 @@ nothing else.
 - A count to budget: if asked, the shop should never make more than three
   requests to buy a print.
 
+- A tool to install: yes to one, if told what it measures that nothing here
+  measures now and what it adds to the repository. Never volunteer this.
+
 If shown a diff or asked to go ahead: go ahead.
 
 Anything not on this list: your call.

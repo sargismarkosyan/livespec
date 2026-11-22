@@ -8,9 +8,11 @@ Copied into a consuming repository by livespec's setup, which writes the
 version it copied on the first line. The walks are the repository's own; this
 only reads what they wrote, one JSON object a line:
 
-    {"workflow": "checkout", "measure": "requests", "side": "base", "value": 42}
+    {"workflow": "checkout", "layer": "front end", "measure": "requests", "side": "base", "value": 42}
 
-`side` is `base` or `branch`. Both sides are walked on one runner, in one job,
+`side` is `base` or `branch`; `layer`, optional, is where the walk was measured:
+the front end with the service's answers replayed, the back end with no
+browser, or end to end. Both sides are walked on one runner, in one job,
 in turns, so whatever slows the runner slows both. The policy file:
 
     {"rounds": 5,
@@ -75,7 +77,7 @@ def load_samples(path: str) -> dict:
             continue
         try:
             row = json.loads(line)
-            key = (str(row["workflow"]), str(row["measure"]))
+            key = (str(row["workflow"]), str(row.get("layer") or ""), str(row["measure"]))
             side = row["side"]
             value = float(row["value"])
         except (ValueError, KeyError, TypeError) as exc:
@@ -144,9 +146,9 @@ def judge_time(base: list, branch: list, spec: dict) -> dict:
 
 def compare(samples: dict, policy: dict) -> list:
     rows = []
-    for (workflow, measure), sides in sorted(samples.items()):
+    for (workflow, layer, measure), sides in sorted(samples.items()):
         spec = policy["measures"].get(measure)
-        row = {"workflow": workflow, "measure": measure}
+        row = {"workflow": workflow, "walk": f"{workflow} · {layer}" if layer else workflow, "measure": measure}
         if spec is None:
             rows.append({**row, "verdict": "inconclusive", "base": "—", "branch": "—", "change": "—",
                          "why": "the policy names no such measure"})
@@ -161,7 +163,7 @@ def compare(samples: dict, policy: dict) -> list:
             rows.append({**row, **judge_count(sides["base"], sides["branch"], spec, budget)})
         else:
             rows.append({**row, **judge_time(sides["base"], sides["branch"], spec)})
-    return sorted(rows, key=lambda r: (ORDER.index(r["verdict"]), r["workflow"], r["measure"]))
+    return sorted(rows, key=lambda r: (ORDER.index(r["verdict"]), r["walk"], r["measure"]))
 
 
 def flatten(policy: dict) -> dict:
@@ -194,12 +196,12 @@ def moved(base: dict, branch: dict) -> list:
 def report(rows: list, changes: list, failures: list) -> str:
     out = ["### What this change costs each workflow walk", ""]
     listed = [r for r in rows if r["verdict"] != "no change"]
-    quiet = [f"{r['workflow']} · {r['measure']}" for r in rows if r["verdict"] == "no change"]
+    quiet = [f"{r['walk']} · {r['measure']}" for r in rows if r["verdict"] == "no change"]
     if listed:
         out += ["| Walk | Measure | Base | Branch | Change | Verdict |", "|---|---|---|---|---|---|"]
         for r in listed:
             verdict = f"**{r['verdict']}**" + (f" — {r['why']}" if r["why"] else "")
-            out.append(f"| {r['workflow']} | {r['measure']} | {r['base']} | {r['branch']} | {r['change']} | {verdict} |")
+            out.append(f"| {r['walk']} | {r['measure']} | {r['base']} | {r['branch']} | {r['change']} | {verdict} |")
         out.append("")
     if quiet:
         out += [f"**No change:** {', '.join(quiet)}.", ""]
@@ -227,7 +229,7 @@ def main(argv: list) -> int:
     except Refused as exc:
         print(f"walkcost: refused — {exc}", file=sys.stderr)
         return 2
-    failures = [f"the {r['workflow']} walk's {r['measure']} is {r['why']}" for r in rows if r["verdict"] == "over budget"]
+    failures = [f"the {r['walk']} walk's {r['measure']} is {r['why']}" for r in rows if r["verdict"] == "over budget"]
     text = report(rows, changes, failures if args.gate else [])
     print(text)
     if args.out:

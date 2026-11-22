@@ -142,6 +142,17 @@ class OnlyACountGates(Walk):
         self.assertNotIn("What this change costs", out)
 
 
+class TheLayerIsNamed(Walk):
+    @rule("the-report-names-the-layer")
+    def test_one_measure_in_two_layers_is_two_lines_each_naming_its_layer(self):
+        rows = [dict(r, layer="front end") for r in samples("checkout", "load-ms", STEADY, [130, 131, 129, 132, 130])]
+        rows += [dict(r, layer="end to end") for r in samples("checkout", "load-ms", STEADY, [160, 161, 159, 162, 160])]
+        code, out = self.run_it(rows)
+        self.assertEqual(code, 0, out)
+        self.assertIn("| checkout · front end | load-ms |", out)
+        self.assertIn("| checkout · end to end | load-ms |", out)
+
+
 class AChangedBudgetIsShown(Walk):
     @rule("a-changed-budget-is-shown-beside-the-change")
     def test_a_raised_budget_is_listed_and_the_walk_is_read_against_it(self):
