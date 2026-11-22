@@ -26,7 +26,7 @@ headers and the stamp line below, so keep those as they are.
 | **Tracker** | <the host, and the command that files there — or "there is no tracker"> |
 | **Where the app runs** | `<command>`, or *nowhere — there is no app* |
 | **Deliverable of a version** | <which changes owe a picture and in what form — a recording, a still — and which owe none and get *nothing to see* in the pull request instead; three answers, per kind of change, never one for the repository> |
-| **What a change here must show** | <which changes owe a picture, in what form, and where it goes> |
+| **What a change here must show** | <which changes owe a picture, in what form, and where it goes — *Deliverable of a version* is the same row> |
 | **Trees** | <the one directory every tree lives in, ignored; the command that makes, lists and cleans them; and the date a throwaway tree it made last went green — or *unproven*, with why> |
 | **What trees share** | <each resource a tree touches, as *own* (and how the command works it out), *shared* (and what starts it once) or *shared and contended, decided* (and why that is acceptable); and the env file's one source, with the lines each tree changes> |
 | **Claiming an issue** | <the marker that says an issue is taken, the command that puts it on and takes it off, and the command that lists the issues carrying it — or *not applicable, decided*, when there is no tracker> |
@@ -38,8 +38,8 @@ headers and the stamp line below, so keep those as they are.
 | **Context file ceiling** | <the size the file may not exceed, in a unit the gate reads — written from what the file is when the sitting has finished with it, with the command that reads it and the change that set it; raised only in the change that needs the room, and never above the limit the method names> |
 | **Ceilings** | <each part that only grows — the code, the rules, whatever every session loads — with the size it may not exceed, in a unit the gate reads, written from what it is when the sitting has finished; lowered when it shrinks, raised only in the change that needs the room, with the reason here beside the number> |
 | **What proves a rule** | <an ordinary test suite, or graded cases — and why> |
-| **How a test claims its rule** | <the helper and its import> |
-| **Rule discovery** | <where rules live and what one looks like> |
+| **How a test claims its rule** | <the helper and its import — where graded cases prove the rules, the row is *How a case names its rule*> |
+| **Rule discovery** | <where rules live and what one looks like — with graded cases, *Case discovery*: where cases live> |
 | **Spec-bound coverage** | <the rule-bound measure, or *not applicable* and why> |
 | **Pull-request report** | <what produces it and where it posts; never a gate> |
 | **Audit record** | `specs/setup/audit.md` — written by the audit, one line per check, replaced on every run |

@@ -126,6 +126,7 @@ WIRING = [
 
 # (id, kind, severity, meaning) — kind is mechanical or judgment.
 CHECKS = [
+    ("check:key-table-shape", "mechanical", "record", "every row of the template's key table is in the bindings, by its name or its graded-case form"),
     ("check:ledger-shape", "mechanical", "record", "the three tables and the stamp line are in the shape the template gives them, the gate and wiring rows each with the version it was reconciled at"),
     ("check:stamp-present", "mechanical", "record", "the ledger carries the version it was reconciled against"),
     ("check:stamp-derived", "mechanical", "record", "the stamp line reads the oldest version a gate or wiring row was reconciled at"),
@@ -492,6 +493,20 @@ def not_in_shape(ctx: dict) -> tuple[str, str] | None:
 
 
 # --- the mechanical checks ---------------------------------------------------
+
+
+# A repository whose rules are proved by graded cases names three rows for them; see 0104.
+KEY_ALIASES = {"how a test claims its rule": ("how a case names its rule",), "rule discovery": ("case discovery",),
+               "what a change here must show": ("deliverable of a version",)}
+
+
+def c_key_table_shape(ctx: dict) -> tuple[str, str]:
+    template = key_table(read(PLUGIN / "templates" / "bindings.md") or "")
+    missing = [k for k in template if k not in ctx["keys"] and not any(a in ctx["keys"] for a in KEY_ALIASES.get(k, ()))]
+    if missing:
+        return "open", (f"{len(missing)} of the template's {len(template)} rows missing: " + ", ".join(f"*{k}*" for k in missing)
+                        + " — the setup sitting adds each, or *not applicable, decided*, with why")
+    return "clear", f"all {len(template)} of the template's rows, by name or graded-case form"
 
 
 def c_ledger_shape(ctx: dict) -> tuple[str, str]:
@@ -1042,6 +1057,7 @@ def c_record_only(ctx: dict) -> tuple[str, str]:
 
 
 MECHANICAL = {
+    "check:key-table-shape": c_key_table_shape,
     "check:ledger-shape": c_ledger_shape,
     "check:stamp-present": c_stamp_present,
     "check:stamp-derived": c_stamp_derived,

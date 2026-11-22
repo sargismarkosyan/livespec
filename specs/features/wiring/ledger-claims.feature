@@ -37,6 +37,19 @@ Feature: What a gate wiring ledger is allowed to claim
       When the wiring is audited
       Then nothing about their age is reported
 
+  @rule:the-key-table-is-held-to-the-template
+  Rule: Every row of the template's key table is in the bindings, by its own name or, where graded cases prove the rules, by the graded-case form the template names beside it
+
+    Example: a row the template carries is missing
+      Given bindings without a row the template's key table carries
+      When the wiring is audited
+      Then the row is reported open by name, for the sitting
+
+    Example: a graded-case repository names its rows for cases
+      Given bindings naming how a case names its rule and where cases live instead of the test-shaped rows
+      When the wiring is audited
+      Then those rows are read as present
+
   @rule:a-row-says-what-it-leaves-uncovered
   Rule: A gate wired over part of a repository is not recorded as covering it
 

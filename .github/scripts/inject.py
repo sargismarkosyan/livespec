@@ -73,8 +73,10 @@ ROW_CEILINGS = "| **Ceilings** | `specs/` 1,000 lines · `tests/` 1,000 lines, s
 FIXTURE: dict[str, str] = {
     "CLAUDE.md": CONTEXT_FILE,
     ".claude/settings.json": '{"enabledPlugins": {"livespec@livespec": true}}\n',
+    # The key table the audit holds the bindings to, two rows of the real one. See specs/changes/0104.
+    "templates/bindings.md": "# Bindings\n\n| | |\n|---|---|\n| **Verification** | <command> |\n| **Before the push** | <the local hook, if any> |\n",
     ".pi/settings.json": '{"packages": ["git:github.com/sargismarkosyan/livespec@livespec--v1.0.0"]}\n',
-    "skills/refine-spec/SKILL.md": "---\nname: refine-spec\ndescription: Turns a request into a spec.\n---\n\n# Refine\n\nThe gates are in [requirements.md](../../method/requirements.md).\n",
+    "skills/refine-spec/SKILL.md": "---\nname: refine-spec\ndescription: Turns a request into a spec.\n---\n\n# Refine\n\nThe gates are in [requirements.md](../../method/requirements.md); the bindings' shape in [bindings.md](../../templates/bindings.md).\n",
     "specs/personas/reader.md": "@persona:reader\n\n# Reader — wants the thing in front of them\n",
     # A map with two phases, and the workflow naming one: the fixture holds the
     # phase gate green before a fault breaks it. See specs/changes/0084.
@@ -263,6 +265,10 @@ def _green_bindings(version: str) -> str:
         "| **Package manager** | npm |\n"
         "| **Traceability gate** | `python3 gate.py trace` |\n"
         "| **Coverage gate** | none — see *What has no gate* |\n"
+        "| **What coverage does not reach** | not applicable — no coverage gate |\n"
+        "| **Before the push** | none |\n"
+        "| **What trees share** | nothing — the fixture has no services |\n"
+        "| **What a pull request will close** | `gh pr view <n> --json closingIssuesReferences`, watched 2026-01-01 |\n"
         "| **Coverage thresholds** | none |\n"
         "| **Fault injection** | `python3 gate.py inject` — the record is below |\n"
         "| **Required checks** | `checks` |\n"
@@ -1617,6 +1623,8 @@ DOCTOR_FAULTS = [
                 write(r, "specs/changes/0003-later.md", "# Spec 0003\n")), "open"),
     ("a local hook given a row", "check:hook-no-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE, ROW_STRUCTURE + "\n| `local:hook` | the pre-push hook | automated | `.githooks/pre-push` |"), "open"),
+    ("a key row the template carries, missing", "check:key-table-shape",
+     lambda r: edit(r, "specs/setup/README.md", "| **Before the push** | none |\n", ""), "open"),
     ("a read-back older than the last audit", "check:read-back-age",
      lambda r: write(r, "specs/setup/audit.md", "**Audited 2026-02-01 · livespec 1.0.0 · stamp 1.0.0 · HEAD abc1234 · audit 1**\n"), "open"),
     ("a host in use that loads no livespec", "check:host-enabled",
