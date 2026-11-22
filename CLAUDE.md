@@ -1,6 +1,6 @@
 # livespec
 
-A Claude Code plugin, and a Pi package: seven skills and the method they run, installed
+A Claude Code plugin, and a Pi package: five skills and the method they run, installed
 into other people's repositories so a specification there cannot quietly stop being true.
 **This repository is not an application** — it ships prose that an agent reads,
 and every skill in it is context that every session of every user pays for.

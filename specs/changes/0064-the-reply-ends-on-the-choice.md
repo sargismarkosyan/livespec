@@ -18,7 +18,7 @@ workflow, which is the finding reported and the stop dropped.
 
 ## What changes
 
-1. **[`skills/refine-workflows/SKILL.md`](../../skills/refine-workflows/SKILL.md)**,
+1. **[`skills/refine-workflows/SKILL.md`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-workflows/SKILL.md)**,
    the deferral sentence: *and the reply ends on that choice*, put to the
    person as those two halves, and does not continue into the workflow until
    one is picked.

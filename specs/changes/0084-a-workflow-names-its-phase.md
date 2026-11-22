@@ -117,14 +117,14 @@ where, in one line.
    The first line gains an optional `@phase:<name>`, and a comment says
    what it names and that it may be left off.
 
-6. **[`refine-workflows`](../../skills/refine-workflows/SKILL.md).**
+6. **[`refine-workflows`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-workflows/SKILL.md).**
    - **When writing the file, it names the phase or phases of the journey
      the attempt is made in,** read from the journey's map, where one
      plainly fits. Where none fits, it leaves the tag off and says so. It
      never adds or renames a phase: that is the journey's change.
    - The gates table gains the row.
 
-7. **[`refine-journeys`](../../skills/refine-journeys/SKILL.md).**
+7. **[`refine-journeys`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-journeys/SKILL.md).**
    - **The spine says where the arc goes round,** in one line under the
      map, naming both phases. It is never a phase of its own.
    - **Renaming or removing a phase a workflow names** breaks that tag, and

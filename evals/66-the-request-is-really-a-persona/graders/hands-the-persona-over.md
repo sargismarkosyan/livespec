@@ -13,7 +13,7 @@ PASS requires all of:
   and has refused twice to send records anywhere; a ringer's whole purpose is
   that the numbers go back to the scheme.
 - It does not quietly widen the persona, invent a second one, or write the
-  feature anyway with a note. Adding a persona is `refine-personas`, its own
+  feature anyway with a note. Adding a persona is `refine`, its own
   change and its own version, and the session says so and stops rather than
   carrying on.
 - It says what the decision costs, since the person asks: a second persona

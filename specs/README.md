@@ -12,9 +12,9 @@ modern alternative to calling a function.
 | Layer | What it holds | Who fills it |
 |---|---|---|
 | [spec.md](spec.md) | What livespec is, the vocabulary, what a version leaves behind, and the promises that belong to no single workflow | this file's author, by hand |
-| [personas/](personas/README.md) | Who the plugin is for | [`refine-personas`](../skills/refine-personas/SKILL.md) |
-| [journeys/](journeys/README.md) | The arc of adopting it, and the seams | [`refine-journeys`](../skills/refine-journeys/SKILL.md) |
-| [workflows/](workflows/README.md) | The bounded attempts somebody makes with it | [`refine-workflows`](../skills/refine-workflows/SKILL.md) |
+| [personas/](personas/README.md) | Who the plugin is for | [`refine`](../skills/refine/SKILL.md) |
+| [journeys/](journeys/README.md) | The arc of adopting it, and the seams | [`refine`](../skills/refine/SKILL.md) |
+| [workflows/](workflows/README.md) | The bounded attempts somebody makes with it | [`refine`](../skills/refine/SKILL.md) |
 | [features/](features/) | Gherkin — the enforced contract. The live rules, each claimed by an eval case | [`refine-spec`](../skills/refine-spec/SKILL.md) |
 | [changes/](changes/) | One numbered change spec per version | [`refine-spec`](../skills/refine-spec/SKILL.md) |
 | [setup/README.md](setup/README.md) | The bindings — every command, threshold and path that is this repository's rather than the method's | already written |

@@ -58,7 +58,7 @@ CHANGE = re.compile(r"^(\d{4})-")
 PROSE_PHRASES = ("not built yet", "to do", "we should", "for now")
 # Skills this plugin used to have, and what they are now. A record instructing
 # by an old name is an instruction that fails silently; see specs/changes/0037.
-FORMER_SKILLS = {"feedback": "todo", "doctor": "setup"}
+FORMER_SKILLS = {"feedback": "todo", "doctor": "setup", "refine-personas": "refine", "refine-workflows": "refine", "refine-journeys": "refine"}
 # How a person types a skill, per host: Claude Code namespaces a plugin's skills,
 # Pi takes them bare after /skill:. Both are read as instructions; the one the
 # reply prints is the host's that runs this. See specs/changes/0080.

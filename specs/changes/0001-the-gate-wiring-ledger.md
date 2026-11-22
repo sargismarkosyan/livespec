@@ -11,7 +11,7 @@ does not get to invent one. The person it is for is the one in the issue: they
 ran `/livespec:setup` on a repository that already had a features↔tests trace
 gate, and then landed personas, journeys and workflows in three separate change
 specs months later. Naming them properly is
-[`refine-personas`](../../skills/refine-personas/SKILL.md)'s work and
+[`refine-personas`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-personas/SKILL.md)'s work and
 [#14](https://github.com/sargismarkosyan/livespec/issues/14)'s queue; this spec
 says so out loud rather than filing itself under a workflow to fill the box —
 see [process.md](../../method/process.md#a-technical-change-that-serves-no-workflow-is-correct-not-a-gap).

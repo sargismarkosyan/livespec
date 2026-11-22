@@ -19,7 +19,7 @@ they found* is one of the three the [workflows README](../workflows/README.md)
 names as *"real and all three have happened many times over in `todo-change` —
 but none of them has had its own occasion interviewed."* The rename serves that
 attempt, and this spec does not cut it: a workflow cut from a guess has to be cut
-twice, and that is [`refine-workflows`](../../skills/refine-workflows/SKILL.md)'
+twice, and that is [`refine-workflows`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-workflows/SKILL.md)'
 own change to make. **Said out loud rather than filed under a workflow to fill
 the box**, per [`process.md`](../../method/process.md).
 

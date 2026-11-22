@@ -28,7 +28,7 @@ checkout as a package, finds the same one. Here, exactly one of them exists:
 The distinction matters because it is the context budget:
 
 - **Every session pays** for each skill's `name` and `description`, whether or
-  not anything fires — currently ~4.3 KB across all seven skills. A skill marked
+  not anything fires — currently ~3.1 KB across all five skills. A skill marked
   `disable-model-invocation: true` would cost nothing until invoked, because its
   description is not in context at all; **none carries the flag**, and `checks.py`
   fails one that starts to.
