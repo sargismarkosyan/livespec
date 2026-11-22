@@ -786,12 +786,13 @@ Merge into a file that is already there; never drop what it declared.
   `.claude/settings.json`, as
   [`method/README.md`](../../method/README.md#wire-it-into-the-repository-instead-of-the-machine)
   shows.
-- **Pi** — add livespec to `packages` in `.pi/settings.json`, pinned to the
-  release tag of the plugin installed:
-  `git:github.com/sargismarkosyan/livespec@livespec--v<version>`, the version
-  read from `.claude-plugin/plugin.json` at the plugin root. Pi does not move
-  a pinned ref on update, so the pin is what the repository runs until
-  somebody moves it. **Say in the hand-back that Pi loads it only once the
+- **Pi** — add livespec to `packages` in `.pi/settings.json` with no ref:
+  `git:github.com/sargismarkosyan/livespec`. Merging is releasing, so that is
+  the latest release, and Pi checks it for updates and says so, as for any
+  package. **Pin it only when asked** — the whole team on one version —
+  `…@livespec--v<version>`, the version read from `.claude-plugin/plugin.json`
+  at the plugin root; Pi never checks a pinned ref for updates, so say that
+  nothing will announce a release until somebody moves it. **Say in the hand-back that Pi loads it only once the
   folder is trusted** — a first Pi session that looks ordinary is usually an
   untrusted folder, not a failed install.
 
@@ -1166,7 +1167,8 @@ never started again; the tool refuses a second.
    pending. Report once more, so the record reads the raised rows, and commit
    it all: *livespec audit after A → B*.
 **Where the repository pins livespec for Pi** (`.pi/settings.json`, a
-`livespec--v` tag), the pin bounds the ledger: no row is raised above it, and
+`livespec--v` tag), offer once to drop the pin, so Pi announces releases; kept,
+the pin bounds the ledger: no row is raised above it, and
 an answer above it is *held* until the pin moves. A plugin ahead of the pin
 gives the transaction a `host:tag@…` item: with a yes, confirm the tag exists —
 `git ls-remote --tags <the plugin's repository> refs/tags/livespec--v<version>`,

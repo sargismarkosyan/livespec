@@ -7,7 +7,7 @@ Feature: The sitting works under either host, and for the hosts the repository r
     Example: a repository whose owner also runs Pi
       Given a consuming repository whose .pi/settings.json already declares packages of its own
       When the sitting enables livespec
-      Then .pi/settings.json also declares livespec as a git package pinned to a released tag
+      Then .pi/settings.json also declares livespec as a git package with no ref, so Pi announces releases
       And the packages it already declared are still there
       And .claude/settings.json enables the plugin, as it always has
       And the hand-back says Pi loads the package only once the folder is trusted
