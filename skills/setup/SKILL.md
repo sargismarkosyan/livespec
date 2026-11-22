@@ -21,10 +21,8 @@ that order:
   or a report just ended naming wiring**: [**Bring it up to date**](#bring-it-up-to-date).
 
 **It writes no application code, ever.** And it does not invent a persona, a
-workflow or a journey — those are [`refine-personas`](../refine-personas/SKILL.md),
-[`refine-workflows`](../refine-workflows/SKILL.md) and
-[`refine-journeys`](../refine-journeys/SKILL.md), each its own interview and its
-own change spec. What this skill produces is the structure they land in and the
+workflow or a journey — those are [`refine`](../refine/SKILL.md)'s, each layer
+its own interview and its own change spec. What this skill produces is the structure they land in and the
 gate that keeps them honest — and then, in section 8, it starts them.
 
 ## First: say what this will do, and wait to be told to start
@@ -119,7 +117,7 @@ yourself and record.
   something a person can look at.
 - **Who is it for?** One sentence, and one sentence on who it is *not* for. This
   is the seed for the persona layer, not the persona — do not write the file from
-  this answer, hand it to `refine-personas` afterwards.
+  this answer, hand it to `refine` afterwards.
 - **What is the verification command, and what is the coverage gate over?** Ask
   what is in scope and what is excluded from it, rather than what percentage to
   settle on, and recommend the whole of what is left — **100% of it**, once the
@@ -814,10 +812,9 @@ Then report, short:
 A repository that ends here has a correct skeleton and a list somebody now has to
 remember, which is section 3's warning wearing a different hat.
 
-So say that three interviews follow, and run them in order:
-[`refine-personas`](../refine-personas/SKILL.md), then
-[`refine-workflows`](../refine-workflows/SKILL.md), then
-[`refine-journeys`](../refine-journeys/SKILL.md). The order is not a preference —
+So say that three interviews follow, and run them in order with
+[`refine`](../refine/SKILL.md): the personas, then the workflows, then the
+journeys. The order is not a preference —
 a workflow written for nobody has to be written twice, and a journey over
 workflows that do not exist yet is a guess.
 

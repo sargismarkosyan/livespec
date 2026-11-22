@@ -1,5 +1,5 @@
 ---
-tags: [skill:refine-journeys, rule:a-journey-says-where-it-goes-round]
+tags: [skill:refine, rule:a-journey-says-where-it-goes-round]
 max_turns: 60
 timeout_seconds: 2100
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

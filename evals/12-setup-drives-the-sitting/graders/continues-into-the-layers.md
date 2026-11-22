@@ -12,7 +12,7 @@ hand-back reports where that got to, including which layers are still empty if
 it was stopped or ran out of room.
 
 FAIL if the reply ends with the skeleton installed and the interviews described
-as the next thing to do: "run `/livespec:refine-personas` next", "the persona
+as the next thing to do: "run `/livespec:refine` next", "the persona
 layer is ready for you to fill in", a checklist of remaining commands. **Naming
 the next command is the failure this rule exists for** — a process that reads as
 installed and never run.

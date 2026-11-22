@@ -31,15 +31,13 @@ either host.
 
 ## What you get
 
-Seven skills, and the discipline they enforce.
+Five skills, and the discipline they enforce.
 
 | Skill | What it does |
 |---|---|
 | `todo` | Turns a testing session into researched GitHub issues — reproduces the bug, names the file and line, and files it. Fixes nothing. |
 | `refine-spec` | Turns a request into a spec. Finds the *job* under the proposed solution, checks it against who the product is for, writes the Gherkin rules and the numbered change spec. Implements nothing. |
-| `refine-workflows` | Re-cuts the bounded attempts the product is built out of, when the list stops matching what anybody actually tries. |
-| `refine-personas` | Adds, amends or retires who it is for — and refuses a persona invented to make a wanted feature legal. |
-| `refine-journeys` | Keeps the arc over time honest, and holds the seams that belong to no single workflow. |
+| `refine` | Keeps the layers above the features true by interview: who it is for, the bounded attempts it is built out of, and the arc over time with its seams — and refuses a persona, a workflow or a journey invented to make a wanted feature legal. |
 | `record-clip` | Records the animated GIF a version ships with: the app being *used*, in a real browser. |
 | `setup` | **Start here** — `/livespec:setup` in Claude Code, `/skill:setup` in Pi. Sets the process up in a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, writes its bindings file and CLAUDE.md, then runs the persona, workflow and journey interviews. Later it **reports** — re-audits every claim the bindings make against what owns the answer, branch protection read back from the platform, correcting only the record — and **brings the repository up to date** after a plugin update, planning what the new version asks and wiring it one approved item at a time. Whichever way it starts, it says what it will write and waits before writing any of it. |
 

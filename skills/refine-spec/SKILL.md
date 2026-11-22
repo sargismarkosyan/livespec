@@ -107,9 +107,8 @@ serves the job better is the most valuable thing this skill produces.
   own, before the spec is — see the hand-back.
 
   **If it is bigger than a line, it is not this skill's work at all.** Re-cutting
-  the workflows is `refine-workflows`; adding, amending
-  or retiring a persona is `refine-personas`; a journey that no longer matches
-  what is under it is `refine-journeys`. Each is its own change and its own
+  the workflows, adding, amending or retiring a persona, a journey that no
+  longer matches what is under it: each is [`refine`](../refine/SKILL.md)'s. Each is its own change and its own
   version — hand it over, and come back to this spec once it has landed.
 - **Does it make the attempt that carries the value shorter or longer?** Adding
   a step to the workflow somebody makes daily, to serve a once-a-year need, is

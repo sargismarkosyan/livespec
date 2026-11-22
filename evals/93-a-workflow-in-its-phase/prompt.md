@@ -1,5 +1,5 @@
 ---
-tags: [skill:refine-workflows, rule:a-workflow-names-the-phase-it-is-made-in]
+tags: [skill:refine, rule:a-workflow-names-the-phase-it-is-made-in]
 max_turns: 60
 timeout_seconds: 2100
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

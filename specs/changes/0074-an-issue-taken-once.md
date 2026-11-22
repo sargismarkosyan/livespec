@@ -112,9 +112,9 @@ quietly.
 
 3. **The four refining skills:
    [`refine-spec`](../../skills/refine-spec/SKILL.md),
-   [`refine-personas`](../../skills/refine-personas/SKILL.md),
-   [`refine-workflows`](../../skills/refine-workflows/SKILL.md),
-   [`refine-journeys`](../../skills/refine-journeys/SKILL.md).** Where each
+   [`refine-personas`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-personas/SKILL.md),
+   [`refine-workflows`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-workflows/SKILL.md),
+   [`refine-journeys`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-journeys/SKILL.md).** Where each
    reads its issue, a short step:
    - read the claim before writing anything;
    - claimed: report the branch, tree, harness, session id and age, and stop

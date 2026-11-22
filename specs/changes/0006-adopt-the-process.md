@@ -44,7 +44,7 @@ honest **mid-transition, for a version**. This is the change that finishes the
 transition: the workflow names the persona and the tag comes off in the same
 commit. A version later it would have stopped being a transition and started
 being a shelf, which is what
-[`refine-personas`](../../skills/refine-personas/SKILL.md) §5 exists to prevent.
+[`refine-personas`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-personas/SKILL.md) §5 exists to prevent.
 
 ## The end value
 
@@ -80,7 +80,7 @@ attaching them is a feature change with eval cases behind it, and it is the
 change that drops `@planned`.
 
 **Ledger:** nothing to move. All six rows in
-[`refine-workflows`](../../skills/refine-workflows/SKILL.md) §5 already read
+[`refine-workflows`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-workflows/SKILL.md) §5 already read
 *automated* in [setup/README.md](../setup/README.md#gate-wiring), each proven by
 a fault in `inject.py`. The skill warns those rows are often unwired where the
 layer arrived after `setup`; here they were wired first and the layer arrived

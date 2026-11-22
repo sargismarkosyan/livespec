@@ -1,5 +1,5 @@
 ---
-tags: [skill:refine-personas, should-not-fire]
+tags: [skill:refine, should-not-fire]
 max_turns: 10
 timeout_seconds: 300
 allowed_tools: [Skill, Read, Glob, Grep]

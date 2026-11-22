@@ -7,7 +7,7 @@
 
 **The persona layer is empty**, and that is [#14](https://github.com/sargismarkosyan/livespec/issues/14)
 rather than something this spec may fix — writing a persona is
-[`refine-personas`](../../skills/refine-personas/SKILL.md)' work and its own
+[`refine-personas`](https://github.com/sargismarkosyan/livespec/blob/c6e2b40149602db6f6357eabde991bc7d4273037/skills/refine-personas/SKILL.md)' work and its own
 version. So the person is named here in plain words and attaches to the file
 when it lands: **somebody adopting livespec into a repository that already has
 work in it** — an existing CLAUDE.md, an existing gate, an existing way of

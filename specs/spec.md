@@ -2,7 +2,7 @@
 
 ## What it is
 
-A Claude Code plugin: seven skills and the method they run, installed into
+A Claude Code plugin: five skills and the method they run, installed into
 somebody else's repository so that the specification there cannot quietly stop
 being true. Pi is the second named host: it loads the same skills as a package,
 and where the two differ, the skills name both. The code stays the source of truth; the spec carries the context the

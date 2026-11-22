@@ -1,5 +1,5 @@
 ---
-tags: [skill:refine-journeys]
+tags: [skill:refine]
 max_turns: 60
 timeout_seconds: 1500
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
