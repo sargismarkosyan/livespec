@@ -2,7 +2,7 @@
 """What a change costs each workflow walk: the base against the branch. Standard library only.
 
     python3 walkcost.py --samples walks.jsonl --policy walk-cost.json \
-        [--base-policy base-walk-cost.json] [--out report.md] [--gate]
+        [--base-policy base-walk-cost.json] [--body pr-body.md] [--out report.md] [--gate]
 
 Copied into a consuming repository by livespec's setup, which writes the
 version it copied on the first line. The walks are the repository's own; this
@@ -23,8 +23,10 @@ in turns, so whatever slows the runner slows both. The policy file:
 noise and allowance are percentages. A count compares the medians of the two
 sides; a time takes the median of the pairwise log ratios and its 95% interval
 from the Mann-Whitney rank statistic. Nothing is random: the same samples give
-the same report. Exit 0, 1 when --gate is given and a count is over its budget,
-2 when the policy is refused. See livespec's method/gates.md, What a change
+the same report. A walk past its allowance is answered by naming its workflow
+under `## Performance` in the pull request's body, passed as --body. Exit 0;
+1 when --gate is given and a count is over its budget or, with --body, a walk
+past its allowance goes unanswered; 2 when the policy is refused. See livespec's method/gates.md, What a change
 costs a workflow.
 """
 
@@ -33,6 +35,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import sys
 from pathlib import Path
 
@@ -193,6 +196,29 @@ def moved(base: dict, branch: dict) -> list:
     return lines
 
 
+def answers(body: str) -> list:
+    """The lines of the body's ## Performance section."""
+    match = re.search(r"^##\s+Performance\s*$(.*?)(?=^##\s|\Z)", body, re.M | re.S)
+    lines = match.group(1).splitlines() if match else []
+    return [line.strip().lstrip("-* ").strip() for line in lines if line.strip()]
+
+
+def answer(rows: list, lines: list) -> list:
+    """Quote the line naming each walk past its allowance; return the walks nothing answers."""
+    unanswered = []
+    for r in rows:
+        if r["verdict"] != "past its allowance":
+            continue
+        named = re.compile(rf"(?<![\w-]){re.escape(r['workflow'])}(?![\w-])")
+        line = next((l for l in lines if named.search(l)), None)
+        if line:
+            r["why"] += f"; answered: “{line}”"
+        else:
+            unanswered.append(f"the {r['walk']} walk's {r['measure']} is past its allowance, "
+                              f"and the pull request does not name {r['workflow']} under ## Performance")
+    return unanswered
+
+
 def report(rows: list, changes: list, failures: list) -> str:
     out = ["### What this change costs each workflow walk", ""]
     listed = [r for r in rows if r["verdict"] != "no change"]
@@ -219,6 +245,7 @@ def main(argv: list) -> int:
     parser.add_argument("--samples", required=True)
     parser.add_argument("--policy", required=True, help="the branch's policy file")
     parser.add_argument("--base-policy", help="the base's policy file, to show what moved")
+    parser.add_argument("--body", help="the pull request's body, whose ## Performance section answers a walk past its allowance")
     parser.add_argument("--out", help="also write the report here")
     parser.add_argument("--gate", action="store_true", help="exit 1 when a count is over its budget")
     args = parser.parse_args(argv)
@@ -230,6 +257,8 @@ def main(argv: list) -> int:
         print(f"walkcost: refused — {exc}", file=sys.stderr)
         return 2
     failures = [f"the {r['walk']} walk's {r['measure']} is {r['why']}" for r in rows if r["verdict"] == "over budget"]
+    if args.body:
+        failures += answer(rows, answers(Path(args.body).read_text(encoding="utf-8")))
     text = report(rows, changes, failures if args.gate else [])
     print(text)
     if args.out:

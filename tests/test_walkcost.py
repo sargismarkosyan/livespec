@@ -41,13 +41,17 @@ class Walk(unittest.TestCase):
         self.dir = Path(tempfile.mkdtemp(prefix="walkcost-"))
         self.addCleanup(shutil.rmtree, self.dir, ignore_errors=True)
 
-    def run_it(self, rows: list, policy: dict = POLICY, base_policy: dict | None = None, gate: bool = False):
+    def run_it(self, rows: list, policy: dict = POLICY, base_policy: dict | None = None, gate: bool = False,
+               body: str | None = None):
         (self.dir / "s.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")
         (self.dir / "p.json").write_text(json.dumps(policy))
         args = [sys.executable, str(WALKCOST), "--samples", str(self.dir / "s.jsonl"), "--policy", str(self.dir / "p.json")]
         if base_policy is not None:
             (self.dir / "b.json").write_text(json.dumps(base_policy))
             args += ["--base-policy", str(self.dir / "b.json")]
+        if body is not None:
+            (self.dir / "body.md").write_text(body)
+            args += ["--body", str(self.dir / "body.md")]
         if gate:
             args.append("--gate")
         result = subprocess.run(args, capture_output=True, text=True)
@@ -111,7 +115,8 @@ class SaidNotRefused(Walk):
     @rule("a-slower-walk-is-said-not-refused")
     def test_a_walk_twice_as_slow_leads_the_report_and_the_gate_passes(self):
         code, out = self.run_it(samples("search", "load-ms", STEADY, [108, 109, 108, 110, 109])
-                                + samples("checkout", "load-ms", STEADY, [200, 202, 198, 201, 203]), gate=True)
+                                + samples("checkout", "load-ms", STEADY, [200, 202, 198, 201, 203]), gate=True,
+                                body="## Performance\n\n- checkout: the new card form loads its fonts, accepted\n")
         self.assertEqual(code, 0, out)
         table = [line for line in out.splitlines() if line.startswith("| ") and "Walk" not in line and "---" not in line]
         self.assertTrue(table[0].startswith("| checkout |"), out)
@@ -151,6 +156,44 @@ class TheLayerIsNamed(Walk):
         self.assertEqual(code, 0, out)
         self.assertIn("| checkout · front end | load-ms |", out)
         self.assertIn("| checkout · end to end | load-ms |", out)
+
+
+SLOWER = samples("checkout", "load-ms", STEADY, [130, 131, 129, 132, 130])
+ANSWER = "checkout: the new card form loads its fonts, accepted"
+
+
+class ARegressionIsAnswered(Walk):
+    @rule("a-regression-past-its-allowance-is-acknowledged")
+    def test_a_walk_past_its_allowance_with_no_section_fails_naming_it(self):
+        code, out = self.run_it(SLOWER, gate=True, body="Adds the card form.\n\n## Changelog\n\nCard form.\n")
+        self.assertEqual(code, 1, out)
+        self.assertIn("the checkout walk's load-ms is past its allowance, and the pull request does not name "
+                      "checkout under ## Performance", out)
+
+    @rule("a-regression-past-its-allowance-is-acknowledged")
+    def test_naming_the_walk_under_performance_passes(self):
+        code, out = self.run_it(SLOWER, gate=True, body=f"## Performance\n\n- {ANSWER}\n\n## Changelog\n\nx\n")
+        self.assertEqual(code, 0, out)
+
+    @rule("a-regression-past-its-allowance-is-acknowledged")
+    def test_a_walk_named_only_outside_the_section_or_as_part_of_a_word_is_unanswered(self):
+        body = "checkout is fine.\n\n## Performance\n\n- checkout-v2: unrelated\n\n## Notes\n\ncheckout\n"
+        code, out = self.run_it(SLOWER, gate=True, body=body)
+        self.assertEqual(code, 1, out)
+
+    @rule("a-regression-past-its-allowance-is-acknowledged")
+    def test_within_its_allowance_nothing_is_owed(self):
+        code, out = self.run_it(samples("checkout", "load-ms", STEADY, [108, 109, 108, 110, 109]), gate=True, body="")
+        self.assertEqual(code, 0, out)
+        self.assertIn("within its allowance", self.row(out, "checkout"))
+
+
+class TheAnswerIsQuoted(Walk):
+    @rule("the-acknowledgement-is-quoted-beside-the-walk")
+    def test_the_line_that_answered_sits_on_the_walks_line(self):
+        code, out = self.run_it(SLOWER, gate=True, body=f"## Performance\n\n- {ANSWER}\n")
+        self.assertEqual(code, 0, out)
+        self.assertIn(f"answered: “{ANSWER}”", self.row(out, "checkout"))
 
 
 class AChangedBudgetIsShown(Walk):

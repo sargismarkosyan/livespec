@@ -45,10 +45,11 @@ Feature: What a change costs each workflow walk
       And the gate passes
 
   @rule:a-slower-walk-is-said-not-refused
-  Rule: A walk that got worse leads the report, marked within or past the allowance the policy names, and the comparison does not fail on it, however large
+  Rule: A walk that got worse leads the report, marked within or past the allowance the policy names, and its size never fails the gate, however large; past the allowance, what the gate waits for is the answer that a-regression-past-its-allowance-is-acknowledged holds
 
     Example: the walk doubled
       Given a pull request whose checkout walk takes twice as long as its base
+      And a pull request body naming the checkout walk under Performance
       When the comparison runs as the gate
       Then the report leads with the checkout walk, past its allowance
       And the gate passes
