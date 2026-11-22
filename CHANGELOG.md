@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.4.0 — 2026-11-22
+
+The audit reads two claims against the tree rather than by a few words. A *not applicable* row saying there is no code reads open when the repository tracks source files, and a reason the audit cannot check is now named rather than passed silently (`check:na-vs-tree`). Gaps named in prose are looked for in each layer's README as well as the bindings, including *not written yet* and *uninterviewed* (`check:prose-phrases`).
+
 ## 3.3.0 — 2026-11-22
 
 The audit asks whether the main branch was green: `check:main-green` hands the platform's own command for the main branch's runs to the mind answering, and a red run since the last audit is reported open, naming the first and the last. The bindings gain a row, *The main branch's runs*. `setup` writes it, or *not applicable, decided* where nothing runs there.
