@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.6.0 — 2026-11-22
+
+The audit reads the context file against every item the method asks of it, not the loop alone (`check:loop-per-claude-md`). Where the history shows a rule broken since the last audit, such as a change merged with no spec, it asks whether the file's rules list carries that rule.
+
 ## 3.5.0 — 2026-11-22
 
 The audit reads every host in use for a committed declaration that loads livespec (`check:host-enabled`). That covers the host running the audit and each the repository shows (`.claude/` or `CLAUDE.md`, `.pi/` or `AGENTS.md`), and a missing one reads open. A Pi package given as a local path to a livespec checkout counts, and `setup` writes that shape for a repository that is the plugin itself.
