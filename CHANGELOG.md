@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.10.1 — 2026-11-22
+
+The audit reads every tracked change, staged or not, when it checks that it touched only the record; before, a staged fix passed. Validating a record also refuses a row whose reconciled version moved backwards since the last commit, naming both versions.
+
 ## 3.10.0 — 2026-11-22
 
 The repository's Pi pin bounds its ledger, because Pi never moves a pinned tag on update. `check:host-pin-current` reads a pin below the ledger's ceiling, or on a branch nobody kept on purpose, as open. No row is raised above the pin: an answer above it is held until the pin moves. A sitting whose plugin is ahead of the pin plans the pin's move, made only once `git ls-remote` shows the exact tag.
