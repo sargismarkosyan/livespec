@@ -475,6 +475,16 @@ BODY_IDS_GHOST = GOOD_BODY + "\n## Ids\n\nadded: check:ghost\n"
 BODY_IDS_BULLETS = GOOD_BODY + "\n## Ids\n\n- added: check:new-thing\n- retired: none\n"
 BODY_IDS_BULLET_RETIRES = GOOD_BODY + "\n## Ids\n\n- retired: check:new-thing\n"
 
+# A meaning that moves under the same id: revised, or only reworded. See 0093.
+_R = "| `gate:rule-to-test` | gate | 0.0.0 | wiring | — | rule → test | {m} | {r} |\n"
+_RH = "# The gates\n\n## The ids\n\n| id | kind | since | severity | retired | aliases | meaning | revised |\n|---|---|---|---|---|---|---|---|\n"
+TABLE_R_BASE = _RH + _R.format(m="a live rule no test claims fails", r="—")
+TABLE_R_REVISED = _RH + _R.format(m="a live rule no test or case claims fails", r="next")
+TABLE_R_REWORDED = _RH + _R.format(m="a live rule no test claims, fails", r="—")
+TABLE_R_TYPED = _RH + _R.format(m="a live rule no test or case claims fails", r="0.0.0")
+BODY_IDS_REVISED = GOOD_BODY + "\n## Ids\n\nrevised: gate:rule-to-test\n"
+BODY_IDS_REWORDED = GOOD_BODY + "\n## Ids\n\nreworded: gate:rule-to-test\n"
+
 # (name, what to try, a phrase the refusal must contain)
 RELEASE_FAULTS = [
     ("shipping change with no release label",
@@ -515,6 +525,14 @@ RELEASE_FAULTS = [
      lambda: stamp_ids("# What a setup must hold\n", "0.9.0"), "no '## The ids' section"),
     ("a ledger whose stamp the release cannot find",
      lambda: stamp_ledger("# Bindings\n\nno stamp here\n", "0.9.0", "2026-01-02"), "no stamp line"),
+    ("a meaning changed and ## Ids says unchanged",
+     lambda: check_ids_section(BODY_IDS_UNCHANGED, TABLE_R_BASE, TABLE_R_REWORDED), "meaning of gate:rule-to-test"),
+    ("revised: declared with the revised cell not reading next",
+     lambda: check_ids_section(BODY_IDS_REVISED, TABLE_R_BASE, TABLE_R_REWORDED), "revised cell read next"),
+    ("a revised cell set to next and declared reworded",
+     lambda: check_ids_section(BODY_IDS_REWORDED, TABLE_R_BASE, TABLE_R_REVISED), "now reads next"),
+    ("a revised cell typed as a version",
+     lambda: check_ids_section(BODY_IDS_REVISED, TABLE_R_BASE, TABLE_R_TYPED), "typed revised version"),
     ("a bullet list that retires what the table added",
      lambda: check_ids_section(BODY_IDS_BULLET_RETIRES, TABLE_BASE, TABLE_ADDED), "was added and `## Ids` does not name it"),
     # The run a claim of green rests on: the body quotes the verification
@@ -740,6 +758,9 @@ def release_control() -> None:
     untouched = lambda text: [line for line in text.splitlines() if "check:new-thing" not in line]  # noqa: E731
     assert untouched(stamped) == untouched(TABLE_ADDED), "stamping touched a line it does not own"
     assert stamp_ids(TABLE_BASE, "0.9.0") == TABLE_BASE, "a table with nothing to stamp was changed"
+    assert "| 0.9.0 |" in stamp_ids(TABLE_R_REVISED, "0.9.0"), "the release did not stamp a revised cell"
+    assert check_ids_section(BODY_IDS_REVISED, TABLE_R_BASE, TABLE_R_REVISED)["meaning"] == ["gate:rule-to-test"], "a declared revision was refused"
+    assert check_ids_section(BODY_IDS_REWORDED, TABLE_R_BASE, TABLE_R_REWORDED)["meaning"] == ["gate:rule-to-test"], "a declared rewording was refused"
     assert check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"]
     assert check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_BASE)["added"] == []
     assert check_ids_section(BODY_IDS_BULLETS, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"], "a bullet list is refused"

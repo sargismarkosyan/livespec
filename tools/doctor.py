@@ -77,7 +77,7 @@ TWO_CHANGE_CLOCK = 2
 #
 # The checks this tool performs and the gates a ledger carries a row for, one
 # entry each. checks.py holds this equal to the id table in method/requirements.md on
-# every column but the two the release writes (since, retired); the aliases are
+# every column but the three the release writes (since, retired, revised); the aliases are
 # the labels ledgers used before ids existed, so a row can be matched and given
 # its id. Never parsed from the table at runtime: one list, two copies, held equal
 # by CI, is not the drift two derivations from prose were.

@@ -542,6 +542,8 @@ if changelog.exists():
                 version = retired.split()[0]
                 if released and version != releaselib.NEXT and version not in released:
                     fail(where, f"retired {version!r} has no CHANGELOG.md entry")
+            if released and row["revised"] not in releaselib.UNRETIRED + (releaselib.NEXT,) and row["revised"] not in released:
+                fail(where, f"revised {row['revised']!r} has no CHANGELOG.md entry")
             if not row["meaning"]:
                 fail(where, "has no meaning; an id with no sentence is a name nobody can audit against")
 
@@ -549,7 +551,7 @@ if changelog.exists():
 # --- 9. the tool and the table are one list ----------------------------------
 
 # tools/doctor.py carries a registry of the same ids — it never parses the table
-# at runtime — so the two are held equal here on every column but the two the
+# at runtime — so the two are held equal here on every column but the three the
 # release writes. A check the tool performs that the table does not name, or a
 # row in the table no function answers, is red in this repository and never in
 # a consuming one. See specs/changes/0041.
