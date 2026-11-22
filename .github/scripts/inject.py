@@ -1628,6 +1628,8 @@ DOCTOR_FAULTS = [
      lambda r: edit(r, "specs/setup/README.md", "| **Before the push** | none |\n", ""), "open"),
     ("a read-back older than the last audit", "check:read-back-age",
      lambda r: write(r, "specs/setup/audit.md", "**Audited 2026-02-01 · livespec 1.0.0 · stamp 1.0.0 · HEAD abc1234 · audit 1**\n"), "open"),
+    ("a Pi pin on a branch", "check:host-pin-current",
+     lambda r: write(r, ".pi/settings.json", '{"packages": ["git:github.com/sargismarkosyan/livespec@main"]}\n'), "open"),
     ("a host in use that loads no livespec", "check:host-enabled",
      lambda r: write(r, ".pi/settings.json", '{"packages": []}\n'), "open"),
     ("a change merged with no spec and no issue", "check:loop-followed",
