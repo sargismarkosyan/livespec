@@ -94,8 +94,10 @@ comes from; what they never do is produce the deliverable by hand.
   argument — it restates none of the spec's own headings and points at the file
   for them, or it is a second version of the spec, and the copy that is not the
   file is always the one that goes stale. Where there is nothing the prose
-  cannot carry, or no way in this session to produce one in any form, that is a
-  line and nothing is put in its place. A sketch is drawn from a spec at step 4; the
+  cannot carry, or no way in this session to produce one in any form, or the
+  change was approved before its spec existed and there is no decision left for
+  a sketch to inform, that is a line and nothing is put in its place — the
+  line the spec's own header keeps. A sketch is drawn from a spec at step 4; the
   picture at step 6 is recorded from the app. Two objects, two steps.
 
   **And the repository records that it owes both.** Which of its changes owe a
@@ -106,7 +108,10 @@ comes from; what they never do is produce the deliverable by hand.
   no app still has change specs.
 - **Feedback is never fixed on the spot.** It becomes an issue, then a spec, then
   a commit. Fixing something the moment it is mentioned is the fastest way to
-  lose the record of why it changed.
+  lose the record of why it changed. A fix to the pipeline that changes no promise and
+  ships nothing takes a lighter path — the issue, and a line in its pull request
+  saying why no spec was owed — and never a shorter one: the issue still comes
+  first. Every merged change is read back for one path or the other.
 - **Less is the default.** Reuse what is there before writing anything, and add
   nothing no rule asks for — no option, no layer, no second copy. What this
   change made dead — code, tests, rules, files — goes in this change, and the

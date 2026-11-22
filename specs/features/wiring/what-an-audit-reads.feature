@@ -73,3 +73,31 @@ Feature: What an audit reads, and which version of the method it reads against
       When the wiring is audited
       Then nothing about the names is reported
       And no correction is offered that nobody needs
+
+  @rule:the-loop-is-read-from-the-history
+  Rule: The audit reads every change merged since the last one for the loop it followed — a change spec committed before the code, its header saying what became of the sketch, or the light path with an issue — and reports what it finds without ever failing a build on it
+
+    Example: a fix merged with no spec and no issue
+      Given a change merged since the last audit that adds no change spec and names no issue
+      When the wiring is audited
+      Then that change is reported as having followed neither the loop nor the light path
+
+    Example: a pipeline fix takes the light path
+      Given a change merged since the last audit that adds no change spec and names the issue it fixes
+      When the wiring is audited
+      Then nothing is reported about it
+
+    Example: the code was committed before its spec
+      Given a change merged since the last audit whose first commit touches code and whose spec commit follows it
+      When the wiring is audited
+      Then the change is reported as implemented before its spec
+
+    Example: a spec that does not say what became of its sketch
+      Given a change merged since the last audit whose spec has no Sketch line
+      When the wiring is audited
+      Then the spec is reported by name
+
+    Example: a squashed change cannot show its order
+      Given a change squashed into one commit with its spec and its Sketch line
+      When the wiring is audited
+      Then nothing is reported about the order it was committed in

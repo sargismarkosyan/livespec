@@ -801,3 +801,51 @@ class ManyMerges(unittest.TestCase):
         self.assertEqual(line["state"], "unanswered")
         self.assertIn("gh api repos/o/r/rulesets", line["evidence"])
         self.assertIn("queue's own event", line["evidence"])
+
+
+SPEC = "# Spec 0002: the thing\n\n- **Status:** approved\n- **Sketch:** not drawn — approval given in advance\n"
+
+
+class TheLoop(unittest.TestCase):
+    """Whether each change merged since the last audit followed the loop, read from git. See specs/changes/0098."""
+
+    def loop(self, steps, merge=True):
+        root = repo()
+        inject.as_git_history(root, steps, merge)
+        return audit(root)["check:loop-followed"]
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_a_fix_with_no_spec_and_no_issue_is_open(self):
+        line = self.loop([("fix the thing", {"src/app.js": "// fixed\n"})])
+        self.assertEqual((line["state"], line["severity"]), ("open", "record"))
+        self.assertIn("no change spec, and no issue", line["evidence"])
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_the_light_path_names_its_issue(self):
+        self.assertEqual(self.loop([("fix the pipeline, #12", {"ci.yml": "on: push\n"})])["state"], "clear")
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_the_spec_first_with_its_sketch_line_is_clear(self):
+        line = self.loop([("spec 0002: the thing", {"specs/changes/0002-the-thing.md": SPEC}), ("0002: the thing", {"src/app.js": "// built\n"})])
+        self.assertEqual(line["state"], "clear", line["evidence"])
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_code_before_its_spec_is_open(self):
+        line = self.loop([("the thing", {"src/app.js": "// built\n"}), ("spec 0002: the thing", {"specs/changes/0002-the-thing.md": SPEC})])
+        self.assertEqual(line["state"], "open")
+        self.assertIn("implementation committed before its spec", line["evidence"])
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_a_spec_with_no_sketch_line_is_named(self):
+        line = self.loop([("spec 0002: the thing", {"specs/changes/0002-the-thing.md": "# Spec 0002\n"}), ("0002", {"src/app.js": "//\n"})])
+        self.assertEqual(line["state"], "open")
+        self.assertIn("0002-the-thing.md has no Sketch line", line["evidence"])
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_a_squashed_change_is_not_read_for_order(self):
+        line = self.loop([("the thing", {"src/app.js": "// built\n"}), ("spec 0002", {"specs/changes/0002-the-thing.md": SPEC})], merge=False)
+        self.assertEqual(line["state"], "clear", line["evidence"])
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_no_previous_audit_is_not_applicable(self):
+        self.assertEqual(audit(repo())["check:loop-followed"]["state"], "n/a")
