@@ -4,6 +4,8 @@
     python3 <plugin root>/tools/doctor.py [specs/setup/README.md]
     python3 <plugin root>/tools/doctor.py --reshape   # the ledger, in the template's shape
     python3 <plugin root>/tools/doctor.py --plan    # what the plugin installed asks of this ledger
+    python3 <plugin root>/tools/doctor.py --plan --write   # open that as a transaction in the upgrade ledger
+    python3 <plugin root>/tools/doctor.py --finalize       # raise what the sitting answered; close it when nothing is pending
     python3 <plugin root>/tools/doctor.py --adopt [bindings] [ids…]   # setup's: rows reconciled at the plugin installed
     python3 <plugin root>/tools/doctor.py --registry  # the checks this tool knows, as id rows
     python3 <plugin root>/tools/doctor.py --validate <finished-record>   # pass two: refuse, or write and reply
@@ -1423,39 +1425,178 @@ def later(version: str, than: str) -> bool:
         return False
 
 
-def plan(ctx: dict) -> list[str]:
+def planned(ctx: dict) -> list[dict[str, str]]:
     """What the plugin installed asks of this ledger, computed from requirements.md: no changelog read.
 
-    A gate or wiring row is owed when its id arrived or was revised after the row's own
-    reconciled version (the stamp where there is no column), or when it has no row; a retired
-    id with a row is owed its removal; a check is owed a fresh answer when it arrived or was
-    revised after the last audit record. See 0095.
+    A gate or wiring row is owed when its id arrived or was revised after the row's own reconciled
+    version (the stamp where there is no column), or when it has no row; a retired id with a row is
+    owed its removal; a check is owed an answer when it arrived or was revised after the version it
+    was last answered at — its entry in the upgrade ledger, else the ledger's baseline, else the
+    stamp. Each item is keyed `<id>@<event>:<version>`. See 0095 and 0105.
     """
     rows = {row["id"]: row for row in ctx["gates"] + ctx["wiring"] if row["id"]}
-    record = read(record_path_of(ctx)) or ""
-    recorded = re.search(r"livespec (\d+\.\d+\.\d+)", record)
-    answered_at = recorded.group(1) if recorded else ctx["stamp"]
-    items = []
+    ledger = parse_ledger(read(ledger_path(ctx)) or "")
+    items: list[dict[str, str]] = []
+    add = lambda i, action, event, version, note: items.append(
+        {"key": f"{i}@{event}:{version}", "id": i, "action": action, "note": note})
     for entry in ctx["ids"]:
         i, since, revised, retired = entry["id"], entry["since"], entry["revised"], entry["retired"]
         if i.startswith("check:"):
-            if retired in ("", "—", "-") and answered_at and (later(since, answered_at) or later(revised, answered_at)):
-                items.append(f"answer  {i}  (since {since}, revised {revised}; last audit at {answered_at})")
+            answered = ledger["answers"].get(i) or ledger["baseline"] or ctx["stamp"]
+            if retired in ("", "—", "-") and answered and (later(since, answered) or later(revised, answered)):
+                event, version = ("revised", revised) if later(revised, since) else ("since", since)
+                add(i, "answer", event, version, f"answered at {answered}")
             continue
         if retired not in ("", "—", "-"):
             if i in rows:
-                items.append(f"retire  {i}  (retired {retired}): drop the row")
+                add(i, "retire", "retired", retired.split(" ")[0], "drop the row")
             continue
         row = rows.get(i)
+        at = ((row or {}).get("reconciled") or ctx["stamp"] or "").strip("`* ")
         if row is None:
-            items.append(f"wire    {i}  (since {since}): no row")
-            continue
-        at = (row["reconciled"] or ctx["stamp"] or "").strip("`* ")
-        if later(since, at):
-            items.append(f"wire    {i}  (since {since}; row at {at})")
+            add(i, "wire", "since", since, "no row")
+        elif later(since, at):
+            add(i, "wire", "since", since, f"row at {at}")
         elif later(revised, at):
-            items.append(f"reprove {i}  (revised {revised}; row at {at})")
+            add(i, "reprove", "revised", revised, f"row at {at}")
     return items
+
+
+def plan(ctx: dict) -> list[str]:
+    return [f"{item['action']:<7} {item['id']}  ({item['key'].split('@', 1)[1]}; {item['note']})" for item in planned(ctx)]
+
+
+# --- the upgrade ledger: the transaction on file, so a sitting resumes from it --
+
+LEDGER = "specs/setup/upgrade.md"
+OUTCOMES = ("pending", "wired", "reproven", "built", "deferred", "decided", "retired", "read-back", "failed")
+ANSWERED = set(OUTCOMES) - {"pending", "failed"}
+ROW_LEVEL = ("check:row-per-gate", "check:row-state-legal", "check:row-evidence", "check:deferred-clock", "check:na-vs-tree", "check:row-uncovered")
+
+
+def ledger_path(ctx: dict) -> Path:
+    """Where the bindings say the upgrade ledger lives; the template's default otherwise."""
+    named = re.search(r"([\w./-]+\.md)", ctx["keys"].get("upgrade ledger", ""))
+    return ctx["root"] / (named.group(1) if named else LEDGER)
+
+
+def parse_ledger(text: str) -> dict:
+    ledger: dict = {"baseline": "", "answers": {}, "sittings": [], "state": "", "from": "", "to": "", "items": [], "snapshot": {}}
+    baseline = re.search(r"^Answers baseline: (\S+)", text, re.M)
+    ledger["baseline"] = baseline.group(1) if baseline else ""
+    head = re.search(r"^\*\*(open|closed)\*\* · from (\S+) · to (\S+)", text, re.M)
+    if head:
+        ledger["state"], ledger["from"], ledger["to"] = head.groups()
+    part = ""
+    for line in text.splitlines():
+        if line.startswith("#"):
+            part = line.lstrip("# ").strip().lower()
+            continue
+        cells = cells_of(line) if line.startswith("| ") and not line.startswith("|---") else None
+        if not cells or cells[0] in ("check", "#", "item", "row"):
+            continue
+        if part == "answers" and len(cells) >= 2:
+            ledger["answers"][cells[0].strip("`")] = cells[1]
+        elif part == "sittings" and len(cells) >= 4:
+            ledger["sittings"].append(cells[:4])
+        elif part == "transaction" and len(cells) >= 5:
+            ledger["items"].append({"key": cells[0].strip("`"), "kind": cells[1], "outcome": cells[2], "finalized": cells[3], "evidence": cells[4]})
+        elif part == "snapshot" and len(cells) >= 2:
+            ledger["snapshot"][cells[0].strip("`")] = cells[1]
+    return ledger
+
+
+def render_ledger(ledger: dict) -> str:
+    esc = lambda text: str(text).replace("|", "\\|")
+    out = ["# Upgrade ledger", "",
+           "Written by `doctor.py`: `--plan --write` opens a transaction, each item's own commit writes its outcome and",
+           "evidence, `--finalize` raises what was answered and closes it. Answers and Sittings carry over.", "",
+           f"Answers baseline: {ledger['baseline']}", "", "## Answers", "", "| check | answered |", "|---|---|"]
+    out += [f"| `{i}` | {v} |" for i, v in sorted(ledger["answers"].items())]
+    out += ["", "## Sittings", "", "| # | date | from → to | left pending |", "|---|---|---|---|"]
+    out += ["| " + " | ".join(esc(c) for c in row) + " |" for row in ledger["sittings"]]
+    if ledger["state"]:
+        out += ["", "## Transaction", "", f"**{ledger['state']}** · from {ledger['from']} · to {ledger['to']}", "",
+                "| item | kind | outcome | finalized | evidence |", "|---|---|---|---|---|"]
+        out += [f"| `{i['key']}` | {i['kind']} | {i['outcome']} | {i['finalized']} | {esc(i['evidence'])} |" for i in ledger["items"]]
+        out += ["", "### Snapshot", "", "| row | reconciled |", "|---|---|"]
+        out += [f"| `{r}` | {v} |" for r, v in ledger["snapshot"].items()]
+    return "\n".join(out) + "\n"
+
+
+def open_transaction(ctx: dict) -> tuple[int, str]:
+    """`--plan --write`: a new transaction from the plan, or `--extend` an open one to the plugin installed."""
+    path, ledger = ledger_path(ctx), parse_ledger(read(ledger_path(ctx)) or "")
+    extend = ledger["state"] == "open"
+    if extend and ledger["to"] == ctx["installed"]:
+        return 1, f"a transaction is open, {ledger['from']} → {ledger['to']}, in {path.name}: resume it, then --finalize"
+    if extend and later(ledger["to"], ctx["installed"]):
+        return 1, f"the open transaction is to {ledger['to']}, and this session loads {ctx['installed']}: update the plugin first"
+    if not ledger["baseline"]:
+        ledger["baseline"] = ctx["stamp"] or ctx["installed"]
+    if not extend:
+        ledger.update({"state": "open", "from": ctx["stamp"] or "?", "items": [],
+                       "snapshot": {row["id"]: row["reconciled"] or "" for row in ctx["gates"] + ctx["wiring"] if row["id"]}})
+    known = {item["key"] for item in ledger["items"]}
+    added = [item for item in planned(ctx) if item["key"] not in known]
+    ledger["items"] += [{"key": i["key"], "kind": "requirement", "outcome": "pending", "finalized": "no", "evidence": ""} for i in added]
+    ledger["to"] = ctx["installed"]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(render_ledger(ledger), encoding="utf-8")
+    return 0, f"{'extended' if extend else 'opened'} {ledger['from']} → {ledger['to']} in {path.relative_to(ctx['root'])}: {len(added)} item(s) added, {len(ledger['items'])} in all"
+
+
+def finalize(ctx: dict) -> tuple[int, str]:
+    """Close what the sitting answered, against the record the report just wrote: veto an answered row
+    a row-level line still finds, raise the rows left answered, answer each check read clear or n/a,
+    append the sitting, and close the transaction when nothing is pending. Never lowers a cell. See 0105."""
+    path = ledger_path(ctx)
+    ledger = parse_ledger(read(path) or "")
+    if ledger["state"] != "open":
+        return 1, f"no open transaction in {path.name} to finalize"
+    if ledger["to"] != ctx["installed"]:
+        return 1, f"the transaction is to {ledger['to']} and this session loads {ctx['installed']}: finalize under {ledger['to']}"
+    bad = [i["key"] for i in ledger["items"] if i["outcome"] not in OUTCOMES]
+    bare = [i["key"] for i in ledger["items"] if i["outcome"] in ANSWERED - {"read-back"} and not i["evidence"].strip()]
+    if bad or bare:
+        return 1, "; ".join([f"{k}: an outcome off the vocabulary" for k in bad] + [f"{k}: answered with no evidence" for k in bare])
+    record = read(record_path_of(ctx)) or ""
+    head = RECORD_HEAD.search(record)
+    if not head or head.group(4) != ctx["head"]:
+        return 1, f"the record is not of HEAD {ctx['head'] or '?'}: report again on this commit, --validate it, then --finalize"
+    lines = {line["id"]: line for line in parse_record(record)[1]}
+    finding = lambda line: line and line["state"] in ("open", "not-read")
+    raise_ids: set[str] = set()
+    for item in ledger["items"]:
+        if item["finalized"] == "yes":
+            continue
+        item_id = item["key"].split("@", 1)[0]
+        if item_id.startswith("check:"):
+            line = lines.get(item_id)
+            if line and line["state"] in ("clear", "n/a"):
+                item.update(outcome="read-back", evidence=f"the after-record: {line['state']}")
+            elif item["outcome"] in ANSWERED:
+                item["outcome"] = "pending"
+        elif item["outcome"] in ANSWERED and any(finding(lines.get(c)) and item_id in lines[c]["evidence"] for c in ROW_LEVEL):
+            item["outcome"] = "pending"
+        if item["outcome"] in ANSWERED:
+            item["finalized"] = "yes"
+            if item_id.startswith("check:"):
+                ledger["answers"][item_id] = ledger["to"]
+            elif item["outcome"] != "retired":
+                raise_ids.add(item_id)
+    level = {row["id"] for row in ctx["gates"] + ctx["wiring"] if row["id"] and not later(ledger["to"], (row["reconciled"] or "0.0.0").strip("`* "))}
+    if raise_ids:
+        text, _ = adopt(ctx["text"], ledger["to"], date.today().isoformat(), raise_ids - level)
+        ctx["bindings_path"].write_text(text, encoding="utf-8")
+    pending = [i["key"] for i in ledger["items"] if i["outcome"] not in ANSWERED]
+    ledger["sittings"].append([str(len(ledger["sittings"]) + 1), date.today().isoformat(), f"{ledger['from']} → {ledger['to']}", ", ".join(pending) or "—"])
+    if not pending:
+        ledger["state"] = "closed"
+    path.write_text(render_ledger(ledger), encoding="utf-8")
+    return 0, (f"sitting #{len(ledger['sittings'])}: {len(raise_ids)} row(s) raised to {ledger['to']}, {len(pending)} pending"
+               + ("; the transaction is closed" if not pending else "; it stays open for the next sitting")
+               + " — report again, so the record reads the raised rows")
 
 
 def adopt(text: str, version: str, today: str, only: set[str]) -> tuple[str, list[str]]:
@@ -1692,6 +1833,14 @@ def main(argv: list[str]) -> int:
     if "--reshape" in flags:
         print(reshape(ctx), end="")
         return 0
+    if "--plan" in flags and "--write" in flags:
+        code, said = open_transaction(ctx)
+        print(said, file=sys.stderr if code else sys.stdout)
+        return code
+    if "--finalize" in flags:
+        code, said = finalize(ctx)
+        print(said, file=sys.stderr if code else sys.stdout)
+        return code
     if "--plan" in flags:
         items = plan(ctx)
         print(f"livespec {ctx['stamp'] or '?'} → {ctx['installed'] or '?'} · {len(items)} item(s) the plugin installed asks of this ledger")
@@ -1703,6 +1852,9 @@ def main(argv: list[str]) -> int:
             return 1
         text, done = adopt(ctx["text"], ctx["installed"], date.today().isoformat(), set(args[1:]))
         bindings_path.write_text(text)
+        if not ledger_path(ctx).exists():
+            ledger_path(ctx).parent.mkdir(parents=True, exist_ok=True)
+            ledger_path(ctx).write_text(render_ledger({**parse_ledger(""), "baseline": ctx["installed"]}), encoding="utf-8")
         print(f"reconciled {len(done)} row(s) at {ctx['installed']}; the stamp line reads the oldest")
         return 0
     if finished is not None:

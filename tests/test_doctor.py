@@ -325,6 +325,106 @@ class ThePlan(unittest.TestCase):
         shutil.rmtree(root)
 
 
+class TheTransaction(unittest.TestCase):
+    """The upgrade on file: opened from the plan, finalized against the record. See specs/changes/0105."""
+
+    def sitting(self, ids):
+        root = repo(inject.green_bindings("1.0.0"))
+        inject.git_in(root, "init", "-q")
+        inject.git_in(root, "add", "-A")
+        inject.git_in(root, "commit", "-q", "-m", "x")
+        return root, self.ctx(root, ids)
+
+    def ctx(self, root, ids):
+        ctx = doctor.context(root, root / "specs" / "setup" / "README.md")
+        ctx.update(installed="1.1.0", ids=ids)
+        return ctx
+
+    def record(self, root, ctx, lines):
+        body = "".join(f"| `{i}` | {state} | 2026-01-01 | {evidence} |\n" for i, state, evidence in lines)
+        (root / "specs" / "setup" / "audit.md").write_text(f"**Audited 2026-01-01 · livespec 1.1.0 · stamp 1.0.0 · HEAD {ctx['head']} · audit 2**\n\n{body}")
+
+    def answer(self, root, key, outcome, evidence):
+        path = root / "specs" / "setup" / "upgrade.md"
+        ledger = doctor.parse_ledger(path.read_text())
+        next(i for i in ledger["items"] if i["key"] == key).update(outcome=outcome, evidence=evidence)
+        path.write_text(doctor.render_ledger(ledger))
+
+    IDS = [{"id": "gate:structure", "since": "1.1.0", "revised": "—", "retired": "—"},
+           {"id": "check:new-one", "since": "1.1.0", "revised": "—", "retired": "—"}]
+
+    @rule("the-upgrade-is-a-transaction-on-file")
+    def test_the_plan_opens_a_transaction_and_a_second_is_refused(self):
+        root, ctx = self.sitting(self.IDS)
+        self.assertEqual(doctor.open_transaction(ctx)[0], 0)
+        ledger = doctor.parse_ledger((root / "specs" / "setup" / "upgrade.md").read_text())
+        self.assertEqual((ledger["state"], ledger["from"], ledger["to"], ledger["baseline"]), ("open", "1.0.0", "1.1.0", "1.0.0"))
+        self.assertEqual([i["key"] for i in ledger["items"]], ["gate:structure@since:1.1.0", "check:new-one@since:1.1.0"])
+        self.assertEqual(ledger["snapshot"]["gate:structure"], "1.0.0")
+        code, said = doctor.open_transaction(self.ctx(root, self.IDS))
+        self.assertEqual(code, 1)
+        self.assertIn("resume it", said)
+
+    @rule("the-upgrade-is-a-transaction-on-file")
+    def test_a_newer_plugin_extends_the_open_transaction(self):
+        root, ctx = self.sitting(self.IDS[:1])
+        doctor.open_transaction(ctx)
+        ctx = self.ctx(root, self.IDS + [{"id": "gate:later", "since": "1.2.0", "revised": "—", "retired": "—"}])
+        ctx["installed"] = "1.2.0"
+        self.assertEqual(doctor.open_transaction(ctx)[0], 0)
+        ledger = doctor.parse_ledger((root / "specs" / "setup" / "upgrade.md").read_text())
+        self.assertEqual(ledger["to"], "1.2.0")
+        self.assertIn("gate:later@since:1.2.0", [i["key"] for i in ledger["items"]])
+
+    @rule("finalize-raises-what-was-answered")
+    def test_finalize_raises_the_answered_row_answers_the_clear_check_and_closes(self):
+        root, ctx = self.sitting(self.IDS)
+        doctor.open_transaction(ctx)
+        self.answer(root, "gate:structure@since:1.1.0", "wired", "fault fired; verification green")
+        self.record(root, ctx, [("check:new-one", "clear", "read"), ("check:row-per-gate", "clear", "every gate has a row")])
+        code, said = doctor.finalize(self.ctx(root, self.IDS))
+        self.assertEqual(code, 0, said)
+        bindings = (root / "specs" / "setup" / "README.md").read_text()
+        self.assertIn("| `gate:structure` |", bindings)
+        self.assertRegex(bindings, r"\| `gate:structure` \|[^\n]*\| 1\.1\.0 \|")
+        ledger = doctor.parse_ledger((root / "specs" / "setup" / "upgrade.md").read_text())
+        self.assertEqual(ledger["state"], "closed")
+        self.assertEqual(ledger["answers"], {"check:new-one": "1.1.0"})
+        self.assertEqual(ledger["sittings"][0][2:], ["1.0.0 → 1.1.0", "—"])
+
+    @rule("finalize-raises-what-was-answered")
+    def test_a_row_the_record_still_finds_is_vetoed_and_keeps_its_cell(self):
+        root, ctx = self.sitting(self.IDS)
+        doctor.open_transaction(ctx)
+        self.answer(root, "gate:structure@since:1.1.0", "wired", "fault fired")
+        self.record(root, ctx, [("check:new-one", "open", "not yet"), ("check:row-evidence", "open", "gate:structure names no command")])
+        self.assertEqual(doctor.finalize(self.ctx(root, self.IDS))[0], 0)
+        self.assertRegex((root / "specs" / "setup" / "README.md").read_text(), r"\| `gate:structure` \|[^\n]*\| 1\.0\.0 \|")
+        ledger = doctor.parse_ledger((root / "specs" / "setup" / "upgrade.md").read_text())
+        self.assertEqual(ledger["state"], "open")
+        self.assertEqual([i["outcome"] for i in ledger["items"]], ["pending", "pending"])
+        self.assertIn("gate:structure@since:1.1.0", ledger["sittings"][0][3])
+
+    @rule("finalize-raises-what-was-answered")
+    def test_finalize_refuses_a_record_of_another_commit_and_an_answer_without_evidence(self):
+        root, ctx = self.sitting(self.IDS)
+        doctor.open_transaction(ctx)
+        self.answer(root, "gate:structure@since:1.1.0", "wired", "")
+        self.record(root, ctx, [])
+        code, said = doctor.finalize(self.ctx(root, self.IDS))
+        self.assertEqual((code, "answered with no evidence" in said), (1, True))
+        self.answer(root, "gate:structure@since:1.1.0", "wired", "fault fired")
+        (root / "specs" / "setup" / "audit.md").write_text("**Audited 2026-01-01 · livespec 1.1.0 · stamp 1.0.0 · HEAD abc1234 · audit 2**\n")
+        code, said = doctor.finalize(self.ctx(root, self.IDS))
+        self.assertEqual((code, "report again" in said), (1, True))
+
+    @rule("the-upgrade-is-a-transaction-on-file")
+    def test_a_check_answered_in_the_ledger_is_not_planned_again(self):
+        root, ctx = self.sitting(self.IDS)
+        (root / "specs" / "setup" / "upgrade.md").write_text(doctor.render_ledger({**doctor.parse_ledger(""), "baseline": "1.0.0", "answers": {"check:new-one": "1.1.0"}}))
+        self.assertEqual([i["key"] for i in doctor.planned(self.ctx(root, self.IDS))], ["gate:structure@since:1.1.0"])
+
+
 class TheRecord(unittest.TestCase):
     @rule("one-line-per-check-or-it-does-not-end")
     def test_one_line_short_is_refused_naming_the_id(self):

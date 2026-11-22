@@ -23,7 +23,7 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       And no finding is reported for it
 
   @rule:the-plan-is-read-from-the-list
-  Rule: What the plugin installed asks of a ledger is computed from the list of ids, never from the changelog: each gate or wiring id that arrived or was revised after its row's own version, each with no row, each retired id still carrying one, and each check that arrived or was revised after the last audit
+  Rule: What the plugin installed asks of a ledger is computed from the list of ids, never from the changelog: each gate or wiring id that arrived or was revised after its row's own version, each with no row, each retired id still carrying one, and each check that arrived or was revised after the release it was last answered at
 
     Example: a gate arrived after the row was reconciled
       Given a ledger whose rows were reconciled at a release before a gate arrived
@@ -105,3 +105,44 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       When the audit makes its corrections
       Then the lines that are record are corrected in place
       And the file is not rewritten by the audit: its line stays open, naming the rewrite as what closes it and the sitting as whose it is
+
+  @rule:the-upgrade-is-a-transaction-on-file
+  Rule: An upgrade is a transaction in a file the repository commits — opened from the plan with each item keyed by its id and the release that asked for it, the rows as they stood, and every check's last answer — so a sitting resumes from the file, a second is refused while one is open, and a newer plugin extends it
+
+    Example: the plan opens a transaction
+      Given a ledger behind the plugin installed
+      When the plan is written
+      Then the upgrade ledger holds each item pending, the rows as they stood, and the versions it runs from and to
+
+    Example: a second sitting finds the first still open
+      Given an open transaction to the plugin installed
+      When the plan is written again
+      Then it is refused, naming the transaction to resume
+
+    Example: the plugin moved on during the transaction
+      Given an open transaction to an older release than the plugin installed
+      When the plan is written
+      Then the new release's items are added and the transaction runs to the plugin installed
+
+    Example: a check already answered is not asked again
+      Given a check the upgrade ledger records as answered at the release that last changed it
+      When the plan is read
+      Then the check is not listed
+
+  @rule:finalize-raises-what-was-answered
+  Rule: Finalizing reads the record the last report wrote of that very commit, sends back to pending any answered row a row-level line still finds, raises each row left answered and never lowers one, records a check as answered only where its line reads clear or n/a, appends the sitting, and closes the transaction only when nothing is pending
+
+    Example: everything answered
+      Given a transaction whose gate was wired with its evidence and whose new check reads clear in the record
+      When it is finalized
+      Then the gate's row is raised to the release, the check is recorded as answered, and the transaction is closed
+
+    Example: the record still finds the row
+      Given a gate marked wired whose row a row-level line of the record still reports open
+      When it is finalized
+      Then the gate goes back to pending, its row keeps its version, and the sitting names it as left pending
+
+    Example: the record is of another commit, or an answer has no evidence
+      Given a transaction answered without evidence, or a record written before the last commit
+      When it is finalized
+      Then it is refused, saying which

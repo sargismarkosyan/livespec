@@ -1131,27 +1131,43 @@ A repository whose ledger is behind the plugin installed — a plugin update, or
 report that ended naming wiring — is brought level here. **Diff it, never
 overwrite it.**
 
-1. **Report first**, as above, and commit the record. It is what this sitting is
-   measured against.
+**An upgrade is a transaction on file**, in the upgrade ledger the bindings
+name (`specs/setup/upgrade.md` by default): what was asked, what each item
+came to, and every check's last answer. **One already open is resumed from
+it** — look in this checkout and in each tree the *Trees* command lists —
+never started again; the tool refuses a second.
+
+1. **Report first**, as above, and commit the record: *livespec audit before
+   A → B*. It is what this sitting is measured against.
 2. **Plan.** `python3 <plugin root>/tools/doctor.py --plan` lists what the plugin
    installed asks of this ledger, computed from
    [`requirements.md`](../../method/requirements.md#the-ids) rather than read from
    the changelog: each gate or wiring id that arrived or was revised after its
    row's own version, each id with no row, each retired id still carrying one,
-   and each check to answer again. Add the report's open wiring lines — stale
-   commands, deferrals past the clock — which are owed the same way.
+   and each check changed since it was last answered. `--plan --write` opens
+   that as the transaction — or extends an open one to a newer plugin. Commit
+   it. The report's open wiring lines — stale commands, deferrals past the
+   clock — are owed the same way, by the same steps.
 3. **Each item, one at a time.** Show the change and wait for a yes. Wire it in
    the project's own language, break it on purpose and watch it fire, run the
-   verification command, and commit it on its own — green. **A gate that refuses
-   the tree as it stands is not committed**: its row reads *deferred*, naming the
-   findings, and the hand-back offers `todo` to file them. A deferral already
-   past the clock is wired or written off, never deferred again.
-4. **Record what was answered.** `python3 <plugin root>/tools/doctor.py --adopt
-   <ids…>` writes each answered row's version — wired, decided not applicable,
-   or deferred on the clock — and the stamp line as the oldest. A row nobody
-   answered keeps its version.
-5. **Report again**, and open one pull request, *livespec A → B*, carrying the
-   two records and each item. The rows the pipeline is watched running become
+   verification command, write the item's outcome and its evidence — the fault's
+   output, the run, the read-back — on its line in the ledger, and commit both
+   together, green. Outcomes: *wired*, *reproven*, *built*, *deferred*,
+   *decided*, *retired* (the row dropped in that commit), *failed*. **A gate
+   that refuses the tree as it stands is not committed**: its row reads
+   *deferred*, naming the findings, and the hand-back offers `todo` to file
+   them. A deferral already past the clock is wired or written off, never
+   deferred again. A check item needs nothing here: the report answers it.
+4. **Report again**, `--validate` it, then `python3 <plugin
+   root>/tools/doctor.py --finalize`. Against that record it sends back to
+   *pending* any row a row-level line still finds, raises each row left
+   answered — never lowers one — records each check read *clear* or *n/a* as
+   answered, appends the sitting, and closes the transaction when nothing is
+   pending. Report once more, so the record reads the raised rows, and commit
+   it all: *livespec audit after A → B*.
+5. **Open one pull request**, *livespec A → B*, naming both audit commits and
+   each item with its outcome — and what is still pending, which the next
+   sitting resumes. The rows the pipeline is watched running become
    *automated*; merging is the person's.
 
 **A ledger written before ids existed is matched, not retyped**: each row goes
