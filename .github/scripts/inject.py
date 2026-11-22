@@ -1068,6 +1068,9 @@ FAULTS = [
     # The record of what was injected is itself something a gate holds. Until these
     # four, checks.py was the one gate here that could never be broken on purpose —
     # it took no root — and so the one never known to fire.
+    ("a Pi extension that reaches the model", CHECKS,
+     lambda r: write(r, "extensions/chatty.ts", 'import x from "fs";\nexport default (pi) => pi.sendMessage("hi");\n'),
+     "fails", "which reaches the model"),
     ("the fault injection record losing a row", CHECKS,
      lambda r: edit(r, "specs/setup/README.md", "| live rule with no case | fails | \u2714 |\n", ""),
      "fails", "has no row for"),
