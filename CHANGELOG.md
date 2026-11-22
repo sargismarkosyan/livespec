@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.2.0 — 2026-11-22
+
+The audit reads every change merged since the last one for the loop it followed (`check:loop-followed`, record severity, never gating). A change either carries a change spec, committed before its code and saying in its header what became of its sketch, or takes the light path: a pipeline fix with its issue named. The method writes the light path down, and adds approval given in advance as a reason to skip a sketch. A squashed change is not read for order.
+
 ## 3.1.0 — 2026-11-22
 
 A change spec now says in its header what became of its sketch: `Sketch: drawn — <where>`, or `not drawn — <why>`. `refine-spec` fills the line in, so whether a sketch was drawn, skipped or forgotten can be read from the spec after the session is gone.
