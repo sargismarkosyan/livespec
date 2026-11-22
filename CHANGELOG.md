@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.36.0 — 2026-11-22
+
+The id table records when a promise moved. `method/requirements.md` gains a `revised` column: the release in which a row's meaning last changed under the same id, so a repository that answered it before must answer it again. The release writes it, as it writes `since`. A pull request that changes a meaning says `revised:` (the promise moved) or `reworded:` (only the words) in its `## Ids` section, and the gate refuses a moved meaning declared `unchanged`.
+
 ## 1.35.0 — 2026-11-22
 
 A workflow walk worse than its allowance now has to be answered in the pull request. With `--body` and `--gate`, `walkcost.py` fails until the body's `## Performance` section names the walk, and the report quotes that line beside the walk's cost. A walk within its allowance owes nothing, and the size of a slowdown never fails the gate. New gate `gate:workflow-regression-answered`. `setup` passes the body, re-runs the job when the body is edited, and names the heading in the context file.
