@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.3.0 — 2026-11-22
+
+The audit asks whether the main branch was green: `check:main-green` hands the platform's own command for the main branch's runs to the mind answering, and a red run since the last audit is reported open, naming the first and the last. The bindings gain a row, *The main branch's runs*. `setup` writes it, or *not applicable, decided* where nothing runs there.
+
 ## 3.2.0 — 2026-11-22
 
 The audit reads every change merged since the last one for the loop it followed (`check:loop-followed`, record severity, never gating). A change either carries a change spec, committed before its code and saying in its header what became of its sketch, or takes the light path: a pipeline fix with its issue named. The method writes the light path down, and adds approval given in advance as a reason to skip a sketch. A squashed change is not read for order.
