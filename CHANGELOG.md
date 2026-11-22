@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.10.0 — 2026-11-22
+
+The repository's Pi pin bounds its ledger, because Pi never moves a pinned tag on update. `check:host-pin-current` reads a pin below the ledger's ceiling, or on a branch nobody kept on purpose, as open. No row is raised above the pin: an answer above it is held until the pin moves. A sitting whose plugin is ahead of the pin plans the pin's move, made only once `git ls-remote` shows the exact tag.
+
 ## 3.9.0 — 2026-11-22
 
 An upgrade is a transaction kept in a committed file, the upgrade ledger (`specs/setup/upgrade.md` unless the bindings name another). `doctor.py --plan --write` opens it from the plan, each item's commit writes its outcome and evidence, and `--finalize` raises only the rows the after-report does not contradict, records each check that reads clear as answered, and closes the transaction once nothing is pending. A sitting that stopped is resumed from the file; a second is refused. `--plan` now asks a check again only when it changed after its last answer.

@@ -128,7 +128,7 @@ does not name — held to the same states, required by nothing.
 | `check:claims-in-flight` | judgment | 1.19.0 | record | — | | every open issue carrying the marker has a branch, a tree or a pull request behind it, and none is released by the audit | — |
 | `check:skill-names` | mechanical | 1.0.0 | record | — | | every skill the record instructs by exists in this plugin | — |
 | `check:host-enabled` | mechanical | 3.5.0 | wiring | — | | every host in use here — the one running the audit, and each the tree shows — loads the plugin from a committed declaration | — |
-| `check:host-pin-current` | mechanical | next | wiring | — | | where the repository pins livespec for Pi, the ref is a release tag not below the ledger's ceiling, or a non-release ref the bindings say was kept on purpose | — |
+| `check:host-pin-current` | mechanical | 3.10.0 | wiring | — | | where the repository pins livespec for Pi, the ref is a release tag not below the ledger's ceiling, or a non-release ref the bindings say was kept on purpose | — |
 | `check:one-context-file` | mechanical | 1.25.0 | wiring | — | | one instructions file at the root, so the one the gates hold is the one every host reads | — |
 | `check:word-not-a-skill` | judgment | 1.0.0 | record | — | | the same word used as ordinary prose is left alone | — |
 | `check:loop-per-claude-md` | judgment | 1.1.0 | record | — | | the context file carries every item the method asks of it, each true, and its rules list carries each rule broken here since the last audit | 3.6.0 |
