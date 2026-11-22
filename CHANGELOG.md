@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.1.0 — 2026-11-22
+
+A change spec now says in its header what became of its sketch: `Sketch: drawn — <where>`, or `not drawn — <why>`. `refine-spec` fills the line in, so whether a sketch was drawn, skipped or forgotten can be read from the spec after the session is gone.
+
 ## 3.0.0 — 2026-11-22
 
 `refine-personas`, `refine-workflows` and `refine-journeys` are one skill, `refine`. It asks which layer a request is about, runs the same interview, and keeps every rule each layer had. `/livespec:refine` (`/skill:refine` in Pi) replaces all three, and an audit names the new command wherever a record still uses an old one. The plugin now has five skills, and about 1,000 fewer characters load in every session.
