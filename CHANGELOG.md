@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.8.0 — 2026-11-22
+
+The audit holds the bindings' key table to the template's (`check:key-table-shape`): a row the template carries and the bindings lack reads open by name, for the sitting. A repository whose rules are proved by graded cases may name three rows for them, *How a case names its rule*, *Case discovery* and *Deliverable of a version*, and the template now says so beside each row.
+
 ## 3.7.0 — 2026-11-22
 
 A read-back has an age (`check:read-back-age`). Every date the bindings say something was read back from the platform is compared with the last audit, and one older than that audit, which should have read it again and moved the date, reads open with its line.
