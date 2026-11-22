@@ -184,6 +184,26 @@ WIRING_HEADING = "### The wiring that must never gate"
 
 
 def green_bindings(version: str) -> str:
+    return with_reconciled(_green_bindings(version), version)
+
+
+def with_reconciled(text: str, version: str) -> str:
+    """Each gate and wiring row reconciled at `version`, as setup's --adopt writes it. See 0094."""
+    out, inside = [], False
+    for line in text.split("\n"):
+        if line.startswith(("| id | gate | state | evidence |", "| id | wiring | state | evidence |")):
+            line, inside = line + " reconciled |", True
+        elif inside and line == "|---|---|---|---|":
+            line += "---|"
+        elif inside and line.startswith("| `"):
+            line += f" {version} |"
+        elif not line.startswith("|"):
+            inside = False
+        out.append(line)
+    return "\n".join(out)
+
+
+def _green_bindings(version: str) -> str:
     """templates/bindings.md, filled so that every line the audit tool answers reads clear or n/a.
 
     The one bindings text three things read: the fixture the faults are injected
@@ -768,6 +788,8 @@ def release_control() -> None:
     stamped = stamp_ledger(ledger, "0.9.0", "2026-01-02")
     assert "livespec **0.9.0** (`method/`) on **2026-01-02** — the sitting." in stamped, "the stamp was not moved in place"
     assert stamped.replace("0.9.0", "0.8.0").replace("2026-01-02", "2026-01-01") == ledger, "stamping the ledger touched something else"
+    rows = ledger + "| id | gate | state | evidence | reconciled |\n|---|---|---|---|---|\n| `gate:x` | x | automated | a \\| b | 0.8.0 |\n| `local:y` | y | automated | c | — |\n"
+    assert "| a \\| b | 0.9.0 |" in stamp_ledger(rows, "0.9.0", "2026-01-02") and "| c | — |" in stamp_ledger(rows, "0.9.0", "2026-01-02"), "the release did not reconcile every row, or touched a local one"
     assert moves_audit_surface(["skills/doctor/SKILL.md", "README.md", "method/gates.md", "method/requirements.md"]) == [
         "skills/doctor/SKILL.md", "method/requirements.md",
     ], "the audit surface is not read from the paths"
@@ -1510,7 +1532,11 @@ def runner_control() -> None:
 # check. See specs/changes/0041, every-mechanical-check-is-proven-to-fire.
 DOCTOR_FAULTS = [
     ("a ledger in the shape it had before ids", "check:ledger-shape",
-     lambda r: edit(r, "specs/setup/README.md", GATE_HEADER, "| Gate | State | Wired by, or why not |\n|---|---|---|"), "open"),
+     lambda r: edit(r, "specs/setup/README.md", "| id | gate | state | evidence | reconciled |\n|---|---|---|---|---|", "| Gate | State | Wired by, or why not |\n|---|---|---|"), "open"),
+    ("a ledger with no reconciled column", "check:ledger-shape",
+     lambda r: edit(r, "specs/setup/README.md", "| id | gate | state | evidence | reconciled |", "| id | gate | state | evidence |"), "open"),
+    ("a stamp line that is not its oldest row", "check:stamp-derived",
+     lambda r: edit(r, "specs/setup/README.md", "livespec 0.0.0 on", "livespec 9.9.9 on"), "open"),
     ("a ledger with no stamp line", "check:stamp-present",
      lambda r: edit(r, "specs/setup/README.md", "**Reconciled against livespec 0.0.0 on 2026-01-01.**", ""), "open"),
     ("a stamp behind the plugin installed", "check:stamp-range",
@@ -1529,7 +1555,7 @@ DOCTOR_FAULTS = [
     ("a not-applicable reason the tree contradicts", "check:na-vs-tree",
      lambda r: edit(r, "specs/setup/README.md", ROW_COVERAGE, ROW_COVERAGE.replace("no coverage here", "no personas exist")), "open"),
     ("a gate with no row", "check:row-per-gate",
-     lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE + "\n", ""), "open"),
+     lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE + " 0.0.0 |\n", ""), "open"),
     ("a recording past its age", "check:recorded-age",
      lambda r: edit(r, "specs/setup/README.md", ROW_CLOCK, "| `boundary:clock` | the clock | recorded | 0001 | recordings from 2020-01-01, allowed 30 days |"), "open"),
     ("a mocked row two changes old", "check:mocked-clock",
@@ -1537,13 +1563,13 @@ DOCTOR_FAULTS = [
     ("no table for the wiring that must never gate", "check:second-table",
      lambda r: edit(r, "specs/setup/README.md", WIRING_HEADING, "### Two rows that used to be a table"), "open"),
     ("the second table losing the report's row", "check:pr-report-row",
-     lambda r: edit(r, "specs/setup/README.md", ROW_PR_REPORT + "\n", ""), "open"),
+     lambda r: edit(r, "specs/setup/README.md", ROW_PR_REPORT + " 0.0.0 |\n", ""), "open"),
     ("the second table losing the measure's row", "check:rule-bound-row",
-     lambda r: edit(r, "specs/setup/README.md", ROW_RULE_BOUND + "\n", ""), "open"),
+     lambda r: edit(r, "specs/setup/README.md", ROW_RULE_BOUND + " 0.0.0 |\n", ""), "open"),
     ("the second table losing the run's row", "check:run-row",
-     lambda r: edit(r, "specs/setup/README.md", ROW_RUN + "\n", ""), "open"),
+     lambda r: edit(r, "specs/setup/README.md", ROW_RUN + " 0.0.0 |\n", ""), "open"),
     ("the second table losing the walk's row", "check:walk-cost-row",
-     lambda r: edit(r, "specs/setup/README.md", ROW_WALK + "\n", ""), "open"),
+     lambda r: edit(r, "specs/setup/README.md", ROW_WALK + " 0.0.0 |\n", ""), "open"),
     ("no row saying a sketch is owed", "check:sketch-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_SKETCH + "\n", ""), "open"),
     ("the sketch row and the picture row saying one thing", "check:picture-row",

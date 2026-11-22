@@ -3,6 +3,7 @@
 
     python3 <plugin root>/tools/doctor.py [specs/setup/README.md]
     python3 <plugin root>/tools/doctor.py --reshape   # the ledger, in the template's shape
+    python3 <plugin root>/tools/doctor.py --adopt [bindings] [ids…]   # setup's: rows reconciled at the plugin installed
     python3 <plugin root>/tools/doctor.py --registry  # the checks this tool knows, as id rows
     python3 <plugin root>/tools/doctor.py --validate <finished-record>   # pass two: refuse, or write and reply
     python3 <plugin root>/tools/doctor.py --check <record>               # the same exit, nothing written
@@ -122,8 +123,9 @@ WIRING = [
 
 # (id, kind, severity, meaning) — kind is mechanical or judgment.
 CHECKS = [
-    ("check:ledger-shape", "mechanical", "record", "the three tables and the stamp line are in the shape the template gives them"),
+    ("check:ledger-shape", "mechanical", "record", "the three tables and the stamp line are in the shape the template gives them, the gate and wiring rows each with the version it was reconciled at"),
     ("check:stamp-present", "mechanical", "record", "the ledger carries the version it was reconciled against"),
+    ("check:stamp-derived", "mechanical", "record", "the stamp line reads the oldest version a gate or wiring row was reconciled at"),
     ("check:stamp-range", "mechanical", "record", "the entries between the stamp and the plugin installed are listed"),
     ("check:stamp-ahead", "mechanical", "record", "a stamp ahead of the plugin installed is said, and no range read"),
     ("check:range-empty-said", "mechanical", "record", "a stamp at the plugin installed is said in a line"),
@@ -200,7 +202,7 @@ def read(path: Path) -> str | None:
 
 
 def cells_of(line: str) -> list[str]:
-    return [cell.strip() for cell in line.strip().strip("|").split("|")]
+    return [cell.strip() for cell in re.split(r"(?<!\\)\|", line.strip().strip("|"))]
 
 
 def section(text: str, heading: str) -> str:
@@ -265,8 +267,11 @@ def ledger_rows(text: str, heading: str, states: tuple[str, ...], template_heade
         return [], "missing"
     lowered = [h.lower() for h in header]
     shape = "template" if lowered[: len(template_header)] == list(template_header) else "pre-template"
+    at = lowered.index("reconciled") if "reconciled" in lowered else None  # since 0094
     parsed: list[dict] = []
     for cells in rows:
+        reconciled = cells[at] if at is not None and at < len(cells) else None
+        cells = cells if at is None else cells[:at] + cells[at + 1:]
         if shape == "template":
             row_id = cells[0].strip("`") if cells else ""
             label = cells[1] if len(cells) > 1 else ""
@@ -280,6 +285,7 @@ def ledger_rows(text: str, heading: str, states: tuple[str, ...], template_heade
         whole = " ".join(cells)
         since_cell = cells[3] if shape == "template" and len(template_header) == 5 and len(cells) > 3 else ""
         parsed.append({
+            "reconciled": reconciled,
             "since_cell": since_cell,
             "id": row_id,
             "label": label,
@@ -482,11 +488,38 @@ def not_in_shape(ctx: dict) -> tuple[str, str] | None:
 
 def c_ledger_shape(ctx: dict) -> tuple[str, str]:
     shapes = ctx["shapes"]
+    if in_shape(ctx) and any(row["reconciled"] is None for row in ctx["gates"] + ctx["wiring"]):
+        return "open", "no reconciled column on the gate and wiring rows; each reads as the stamp until the sitting adds it (--reshape prints it)"
     if in_shape(ctx):
         return "clear", "three tables with the template's headers; stamp line " + ("present" if ctx["stamp"] else "absent")
     off = ", ".join(f"{name}: {shape}" for name, shape in shapes.items() if shape != "template")
     matched = sum(1 for row in ctx["gates"] + ctx["wiring"] if not row["id"] and len(match_alias(row["label"], GATES + WIRING)) == 1)
     return "open", f"{off} — {matched} row(s) match an id by alias; the sitting reshapes it (--reshape prints the tables)"
+
+
+def oldest_reconciled(ctx: dict) -> tuple[str | None, list[str]]:
+    """The oldest version a gate or wiring row was reconciled at, and the rows with no version (0094)."""
+    versions, bad = [], []
+    for row in ctx["gates"] + ctx["wiring"]:
+        cell = (row["reconciled"] or "").strip("`* ")
+        if row["id"].startswith("local:") and cell in ("—", "-", ""):
+            continue
+        if re.fullmatch(r"\d+\.\d+\.\d+", cell):
+            versions.append(cell)
+        else:
+            bad.append(row["id"] or row["label"])
+    return (min(versions, key=version_key) if versions else None), bad
+
+
+def c_stamp_derived(ctx: dict) -> tuple[str, str]:
+    if any(row["reconciled"] is None for row in ctx["gates"] + ctx["wiring"]):
+        return "n/a", "no reconciled column — check:ledger-shape"
+    oldest, bad = oldest_reconciled(ctx)
+    if bad:
+        return "open", f"no version in the reconciled cell of {', '.join(bad[:6])}"
+    if oldest != ctx["stamp"]:
+        return "open", f"the stamp line reads {ctx['stamp'] or 'nothing'} and the oldest row is reconciled at {oldest}"
+    return "clear", f"the stamp line reads {oldest}, the oldest row's version"
 
 
 def c_stamp_present(ctx: dict) -> tuple[str, str]:
@@ -875,6 +908,7 @@ def c_record_only(ctx: dict) -> tuple[str, str]:
 MECHANICAL = {
     "check:ledger-shape": c_ledger_shape,
     "check:stamp-present": c_stamp_present,
+    "check:stamp-derived": c_stamp_derived,
     "check:stamp-range": c_stamp_range,
     "check:stamp-ahead": c_stamp_ahead,
     "check:range-empty-said": c_range_empty_said,
@@ -1173,7 +1207,8 @@ def reshape(ctx: dict) -> str:
     """The three tables in the template's shape, rows verbatim, ids from the aliases."""
     out: list[str] = []
     out.append(f"**Reconciled against livespec {ctx['stamp'] or '<version>'} on {ctx['stamp_date'] or '<date>'}.**\n")
-    out.append("| id | gate | state | evidence |\n|---|---|---|---|")
+    cell = ctx["stamp"] or "<version>"
+    out.append("| id | gate | state | evidence | reconciled |\n|---|---|---|---|---|")
     present: set[str] = set()
     for row in ctx["gates"]:
         row_id = row["id"]
@@ -1181,21 +1216,46 @@ def reshape(ctx: dict) -> str:
             hits = match_alias(row["label"], GATES)
             row_id = hits[0] if len(hits) == 1 else (f"local:<{'|'.join(hits) if hits else 'name'}>")
         present.add(row_id)
-        out.append(f"| `{row_id}` | {row['label']} | {row['state'] or '<state>'} | {row['evidence']} |")
+        out.append(f"| `{row_id}` | {row['label']} | {row['state'] or '<state>'} | {row['evidence']} | {row['reconciled'] or cell} |")
     for gate_id, _, _, meaning in GATES:
         if gate_id not in present:
-            out.append(f"| `{gate_id}` | {meaning} | <state> | <command, or why not> |")
-    out.append("\n### The wiring that must never gate\n\n| id | wiring | state | evidence |\n|---|---|---|---|")
+            out.append(f"| `{gate_id}` | {meaning} | <state> | <command, or why not> | {cell} |")
+    out.append("\n### The wiring that must never gate\n\n| id | wiring | state | evidence | reconciled |\n|---|---|---|---|---|")
     for row in ctx["wiring"]:
         hits = match_alias(row["label"], WIRING)
         row_id = row["id"] or (hits[0] if len(hits) == 1 else "wiring:<name>")
-        out.append(f"| `{row_id}` | {row['label']} | {row['state'] or '<state>'} | {row['evidence']} |")
+        out.append(f"| `{row_id}` | {row['label']} | {row['state'] or '<state>'} | {row['evidence']} | {row['reconciled'] or cell} |")
     out.append("\n### The boundaries\n\n| id | boundary | state | since | evidence |\n|---|---|---|---|---|")
     for row in ctx["bounds"]:
         since = re.search(r"\b(\d{4})\b", row["text"])
         slug = re.sub(r"[^a-z0-9]+", "-", row["label"].lower()).strip("-") or "name"
         out.append(f"| `{row['id'] or 'boundary:' + slug}` | {row['label']} | {row['state'] or '<state>'} | {since.group(1) if since else '<change>'} | {row['evidence']} |")
     return "\n".join(out) + "\n"
+
+
+def adopt(text: str, version: str, today: str, only: set[str]) -> tuple[str, list[str]]:
+    """Setup's write, never the audit's: the rows it reconciled (all, or the ids given), then the
+    stamp line as the oldest, dated today. A `local:` row keeps its cell. See 0094."""
+    lines, at, done = text.split("\n"), None, []
+    for index, line in enumerate(lines):
+        cells = cells_of(line) if line.startswith("|") else None
+        if cells and "reconciled" in [c.lower() for c in cells]:
+            at = [c.lower() for c in cells].index("reconciled")
+        elif not cells:
+            at = None
+        elif at is not None and cells[0].startswith("`") and len(cells) > at:
+            row_id = cells[0].strip("`")
+            if not row_id.startswith("local:") and (not only or row_id in only):
+                cells[at] = version
+                lines[index] = "| " + " | ".join(cells) + " |"
+                done.append(row_id)
+    out = "\n".join(lines)
+    versions = [c for c in re.findall(r"\|\s*(\d+\.\d+\.\d+)\s*\|\s*$", out, re.M)]
+    stamp = STAMP.search(out)
+    if stamp and versions:
+        oldest = min(versions, key=version_key)
+        out = out[: stamp.start(1)] + oldest + out[stamp.end(1): stamp.start(2)] + today + out[stamp.end(2):]
+    return out, done
 
 
 # --- pass two: the refusal, the record, the reply ----------------------------
@@ -1406,6 +1466,14 @@ def main(argv: list[str]) -> int:
     ctx = context(root, bindings_path)
     if "--reshape" in flags:
         print(reshape(ctx), end="")
+        return 0
+    if "--adopt" in flags:
+        if any(row["reconciled"] is None for row in ctx["gates"] + ctx["wiring"]):
+            print("the ledger has no reconciled column; add it first (--reshape prints the tables)", file=sys.stderr)
+            return 1
+        text, done = adopt(ctx["text"], ctx["installed"], date.today().isoformat(), set(args[1:]))
+        bindings_path.write_text(text)
+        print(f"reconciled {len(done)} row(s) at {ctx['installed']}; the stamp line reads the oldest")
         return 0
     if finished is not None:
         if not finished.exists():

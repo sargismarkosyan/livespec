@@ -611,8 +611,10 @@ row for **every** gate [`gates.md`](../../method/gates.md#the-ids) names, by
 id — not only the ones you wired — and each reads *automated* (naming the
 command), *unobserved* (wired, and nothing has watched it run), *not
 applicable* (with the reason) or *deferred* (since which change, and why).
-Above it, the date and the version of livespec the wiring was reconciled
-against. A gate this repository has that the method does not name gets a row
+Each gate and wiring row also carries the version it was reconciled at, and the
+stamp line above the table reads the oldest; once the rows are written, run
+`python3 <plugin root>/tools/doctor.py --adopt`, which writes every row's version
+and the line. A gate this repository has that the method does not name gets a row
 too, with the `local:` prefix — held to the same states, required by nothing.
 Never invent a `gate:` id: the ids are the method's and permanent, and a row
 under one the table does not list is a row no audit can match.
@@ -672,8 +674,8 @@ template's tables — `python3 <plugin root>/tools/doctor.py --reshape`, the
 plugin root being two directories up from this skill file, prints them in that
 shape, ids filled from the aliases, unmatched rows marked —
 and apply what it printed with the person in the room. The reshaping is this
-sitting's; the audit alone never moves a column. Re-stamp the version only
-when the wiring actually moved; a ledger re-stamped for a run that changed
+sitting's; the audit alone never moves a column. Move a row's version only
+when its wiring actually moved, with `--adopt` and the ids it reconciled; a ledger re-stamped for a run that changed
 nothing has learned to lie. Rows you cannot date honestly say **predates the
 ledger** rather than getting an invented change number.
 

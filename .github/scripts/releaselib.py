@@ -554,7 +554,7 @@ LEDGER_STAMP = re.compile(
 
 
 def stamp_ledger(text: str, version: str, date: str) -> str:
-    """The ledger's stamp line reads the version and date given; nothing else moves.
+    """The ledger's stamp line, and every reconciled cell, read the version given.
 
     Only the two values are replaced, in place, so bold, a parenthetical or any
     other typing around them survives byte for byte. A text with no stamp line
@@ -571,4 +571,16 @@ def stamp_ledger(text: str, version: str, date: str) -> str:
             "so the release cannot say what its wiring is level with"
         )
     out = text[: match.start(1)] + version + text[match.end(1): match.start(2)] + date + text[match.end(2):]
-    return out
+    # Every gate and wiring row is reconciled at this release too, so the
+    # derived stamp and the line agree by construction. See 0094.
+    lines, at = out.split("\n"), None
+    for index, line in enumerate(lines):
+        cells = [c.strip() for c in re.split(r"(?<!\\)\|", line.strip().strip("|"))] if line.startswith("|") else None
+        if cells and "reconciled" in [c.lower() for c in cells]:
+            at = [c.lower() for c in cells].index("reconciled")
+        elif not cells:
+            at = None
+        elif at is not None and cells[0].startswith("`") and not cells[0].startswith("`local:") and len(cells) > at:
+            cells[at] = version
+            lines[index] = "| " + " | ".join(cells) + " |"
+    return "\n".join(lines)

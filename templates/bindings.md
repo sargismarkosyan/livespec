@@ -58,45 +58,49 @@ nothing has yet watched it refuse a change), *not applicable* (with the reason
 *deferred* (since which change, and why). A row about anything outside the
 tree carries how it was read back: the command, and when.
 
-| id | gate | state | evidence |
-|---|---|---|---|
-| `gate:rule-to-test` | a live rule no test claims | <state> | <command, or why not> |
-| `gate:test-to-rule` | a test claiming a rule that does not exist | | |
-| `gate:planned-unclaimed` | a `@planned` rule or workflow that is claimed | | |
-| `gate:feature-to-workflow` | a feature naming no workflow, or one that does not exist | | |
-| `gate:workflow-to-feature` | a workflow claimed by no feature | | |
-| `gate:workflow-walked` | a workflow walked by no test | | |
-| `gate:workflow-to-persona` | a workflow naming no live persona | | |
-| `gate:persona-to-workflow` | a persona named by no workflow | | |
-| `gate:journey-to-workflow` | a journey naming a workflow that does not exist | | |
-| `gate:workflow-to-journey` | a workflow naming no journey — warns, does not fail | | |
-| `gate:workflow-to-phase` | a workflow naming a phase that no journey it names has | | |
-| `gate:structure` | one feature per file, unique ids, every rule with an example, no example outside a rule | | |
-| `gate:coverage` | lines, branches, functions | | |
-| `gate:boundary-double` | a rule-bound test doubling a boundary declared real | | |
-| `gate:boundary-fake-suite` | a fake row naming no suite against the real thing | | |
-| `gate:boundary-recorded-age` | a recorded row past its age | | |
-| `gate:boundaries-table` | rule-bound tests present and no boundaries table | | |
-| `gate:crossing-names-a-boundary` | a rule tagged `@crosses:` a boundary the bindings have no row for | | |
-| `gate:change-number-unique` | two change specs sharing a number | | |
-| `gate:feature-to-feature` | a feature using a feature that does not exist | | |
-| `gate:workflow-budget` | a count a workflow walk makes past its budget | | |
-| `gate:workflow-regression-answered` | a walk past its allowance the pull request does not answer | | |
-| `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | |
-| `gate:part-past-its-ceiling` | a part larger than the ceiling the bindings name, or no Ceilings row | | |
-| `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | |
-| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | | |
-| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | | |
-| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | | |
+*reconciled* is the release a row was last brought level with, written by the
+sitting that wired it (`doctor.py --adopt`), never by the audit; a `local:` row
+reads `—`. The stamp line above reads the oldest of them.
+
+| id | gate | state | evidence | reconciled |
+|---|---|---|---|---|
+| `gate:rule-to-test` | a live rule no test claims | <state> | <command, or why not> | <version> |
+| `gate:test-to-rule` | a test claiming a rule that does not exist | | | <version> |
+| `gate:planned-unclaimed` | a `@planned` rule or workflow that is claimed | | | <version> |
+| `gate:feature-to-workflow` | a feature naming no workflow, or one that does not exist | | | <version> |
+| `gate:workflow-to-feature` | a workflow claimed by no feature | | | <version> |
+| `gate:workflow-walked` | a workflow walked by no test | | | <version> |
+| `gate:workflow-to-persona` | a workflow naming no live persona | | | <version> |
+| `gate:persona-to-workflow` | a persona named by no workflow | | | <version> |
+| `gate:journey-to-workflow` | a journey naming a workflow that does not exist | | | <version> |
+| `gate:workflow-to-journey` | a workflow naming no journey — warns, does not fail | | | <version> |
+| `gate:workflow-to-phase` | a workflow naming a phase that no journey it names has | | | <version> |
+| `gate:structure` | one feature per file, unique ids, every rule with an example, no example outside a rule | | | <version> |
+| `gate:coverage` | lines, branches, functions | | | <version> |
+| `gate:boundary-double` | a rule-bound test doubling a boundary declared real | | | <version> |
+| `gate:boundary-fake-suite` | a fake row naming no suite against the real thing | | | <version> |
+| `gate:boundary-recorded-age` | a recorded row past its age | | | <version> |
+| `gate:boundaries-table` | rule-bound tests present and no boundaries table | | | <version> |
+| `gate:crossing-names-a-boundary` | a rule tagged `@crosses:` a boundary the bindings have no row for | | | <version> |
+| `gate:change-number-unique` | two change specs sharing a number | | | <version> |
+| `gate:feature-to-feature` | a feature using a feature that does not exist | | | <version> |
+| `gate:workflow-budget` | a count a workflow walk makes past its budget | | | <version> |
+| `gate:workflow-regression-answered` | a walk past its allowance the pull request does not answer | | | <version> |
+| `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | | <version> |
+| `gate:part-past-its-ceiling` | a part larger than the ceiling the bindings name, or no Ceilings row | | | <version> |
+| `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | | <version> |
+| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | | | <version> |
+| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | | | <version> |
+| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | | | <version> |
 
 ### The wiring that must never gate
 
-| id | wiring | state | evidence |
-|---|---|---|---|
-| `wiring:pr-report` | the pull-request report | <state> | <what produces it — unobserved until one was watched arriving> |
-| `wiring:rule-bound-measure` | the rule-bound measure, reported beside the gated number | <state> | <how, or why not> |
-| `wiring:run-beside-claim` | the run beside the claim — the report printing the pipeline's own run next to the run block the pull request carries | <state> | <what prints it — unobserved until the two were watched disagreeing> |
-| `wiring:workflow-cost` | the cost of each workflow walk, base against branch, on the report | <state> | <the job and the policy file — unobserved until it was watched reporting a move> |
+| id | wiring | state | evidence | reconciled |
+|---|---|---|---|---|
+| `wiring:pr-report` | the pull-request report | <state> | <what produces it — unobserved until one was watched arriving> | <version> |
+| `wiring:rule-bound-measure` | the rule-bound measure, reported beside the gated number | <state> | <how, or why not> | <version> |
+| `wiring:run-beside-claim` | the run beside the claim — the report printing the pipeline's own run next to the run block the pull request carries | <state> | <what prints it — unobserved until the two were watched disagreeing> | <version> |
+| `wiring:workflow-cost` | the cost of each workflow walk, base against branch, on the report | <state> | <the job and the policy file — unobserved until it was watched reporting a move> | <version> |
 
 ### The boundaries
 
