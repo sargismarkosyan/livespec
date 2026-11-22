@@ -56,7 +56,7 @@ before *boundary* before *wiring* before *record*.
 | `gate:fewer-ran-than-exist` | gate | 1.12.0 | wiring | — | | the runner reporting fewer rule-bound tests than the tree holds fails |
 | `gate:change-number-unique` | gate | 1.23.0 | wiring | — | | two change specs sharing a number fail, whatever their slugs; a gap does not |
 | `gate:feature-to-feature` | gate | 1.28.0 | wiring | — | | a feature using a feature that does not exist, or carrying @uses on a rule, fails |
-| `gate:workflow-budget` | gate | next | wiring | — | | a count a workflow walk makes past the budget the policy file sets fails; a time carries no budget |
+| `gate:workflow-budget` | gate | 1.33.0 | wiring | — | | a count a workflow walk makes past the budget the policy file sets fails; a time carries no budget |
 | `gate:crossing-names-a-boundary` | gate | 1.14.0 | boundary | — | | a rule tagged as crossing a boundary the bindings declare no row for fails |
 | `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire |
 
@@ -67,7 +67,7 @@ before *boundary* before *wiring* before *record*.
 | `wiring:pr-report` | wiring | 0.21.0 | wiring | — | the pull-request report | the report on every pull request, unobserved until one was watched arriving |
 | `wiring:rule-bound-measure` | wiring | 0.21.0 | wiring | — | the rule-bound measure | the rule-bound measure reported beside the gated number |
 | `wiring:run-beside-claim` | wiring | 1.13.0 | wiring | — | the run beside the claim | the report re-running the verification command and printing what it saw beside what the body says — unobserved until the two were watched disagreeing |
-| `wiring:workflow-cost` | wiring | next | wiring | — | the cost of a walk | what the change cost each workflow walk, base against branch, on the report — unobserved until it was watched reporting a move |
+| `wiring:workflow-cost` | wiring | 1.33.0 | wiring | — | the cost of a walk | what the change cost each workflow walk, base against branch, on the report — unobserved until it was watched reporting a move |
 
 Two prefixes a repository fills itself and this table never lists:
 `boundary:<name>`, one per thing the app talks to, named in the sitting and
@@ -111,7 +111,7 @@ does not name — held to the same states, required by nothing.
 | `check:pr-report-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the pull-request report |
 | `check:rule-bound-row` | mechanical | 0.21.0 | wiring | — | | it holds the row for the rule-bound measure |
 | `check:run-row` | mechanical | 1.13.0 | wiring | — | | it holds the row for the run beside the claim |
-| `check:walk-cost-row` | mechanical | next | wiring | — | | it holds the row for the cost of each workflow walk |
+| `check:walk-cost-row` | mechanical | 1.33.0 | wiring | — | | it holds the row for the cost of each workflow walk |
 | `check:sketch-row` | mechanical | 0.27.0 | record | — | | the bindings say which changes owe a sketch |
 | `check:picture-row` | mechanical | 0.29.0 | record | — | | the bindings say what a change here must show, and it is not the sketch row |
 | `check:trees-row` | mechanical | 1.17.0 | record | — | | the bindings say where trees live and what makes, lists and cleans them, and the context file's commands carry that command |
