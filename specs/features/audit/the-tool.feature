@@ -25,6 +25,12 @@ Feature: The part of an audit a script does, and what it must never do
       Then no mark is left
       And the command appears on the judgment line as text
 
+    Example: an option planted where the audit record names its commit
+      Given an audit record whose header names, as the commit it read, an option that would leave a mark
+      When the tool reads the history since that audit
+      Then no mark is left
+      And the history is read as having no previous audit
+
   @rule:a-judgment-line-arrives-with-its-command
   Rule: For every check a script cannot answer, the tool writes the id, the question and the command the bindings name, and the line reads unanswered until a mind replaces it
 

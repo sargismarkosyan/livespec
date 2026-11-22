@@ -209,6 +209,16 @@ class TheTool(unittest.TestCase):
         self.assertFalse(mark.exists(), "the tool ran a command it read from the bindings")
         self.assertEqual(lines["check:real-not-doubled"]["state"], "unanswered", "the line is handed to a mind, not answered by running anything")
 
+    @rule("the-tool-runs-nothing-it-read")
+    def test_an_option_planted_in_the_records_head_leaves_no_mark(self):
+        root = repo()
+        inject.as_git_history(root, [("fix the thing, #1", {"src/app.js": "//\n"})])
+        mark = root / "pwned"
+        (root / "specs" / "setup" / "audit.md").write_text(f"**Audited 2026-01-01 · livespec 1.0.0 · stamp 1.0.0 · HEAD --output={mark} · audit 1**\n")
+        line = audit(root)["check:loop-followed"]
+        self.assertFalse(mark.exists(), "an option read from the record reached git")
+        self.assertEqual(line["state"], "n/a")
+
     @rule("a-judgment-line-arrives-with-its-command")
     def test_the_platform_line_carries_the_command_the_bindings_name(self):
         lines = audit(repo())
