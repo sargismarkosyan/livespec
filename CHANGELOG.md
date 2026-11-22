@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.12.0 — 2026-11-22
+
+`setup` declares livespec for Pi with no ref, `git:github.com/sargismarkosyan/livespec`, so Pi checks it for updates and announces a release as it does for any other package; a pinned ref is never checked. Pinning a release tag stays an option for a team that wants everyone on one version, and *Bring it up to date* offers a pinned repository the switch. A repository pinned before this release needs its pin dropped once, by hand.
+
 ## 3.11.5 — 2026-11-22
 
 `method/claude-md.md`, what a repository's context file must and must not contain, is rewritten from the method's six principles and is a quarter shorter. It holds the same ten requirements.
