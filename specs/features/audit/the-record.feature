@@ -63,6 +63,16 @@ Feature: The audit record — one line per check, or the audit does not end
       Then it is refused, naming the file
       And the reply says that wiring is the sitting's
 
+    Example: a staged fix that strayed
+      Given an audit whose corrections touched a source file, staged and then changed back to what is staged
+      When the record is validated
+      Then it is refused, naming the file
+
+    Example: a reconciled cell lowered
+      Given an audit whose corrections lowered the version a row was reconciled at
+      When the record is validated
+      Then it is refused, naming the row and both versions
+
   @rule:a-record-can-be-checked-without-being-rewritten
   Rule: Whether a finished record validates can be asked without the record being written or the reply generated, so a grader can ask it of what a session left
 
