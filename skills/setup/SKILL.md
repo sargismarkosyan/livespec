@@ -221,6 +221,12 @@ configured:
   **Ceilings** row, failing a part past it and bindings with no such row —
   [`gates.md`](../../method/gates.md#and-every-part-that-only-grows).
 
+**Every failure it prints says where, and what it means** — the reason and the
+fix, in the words of that failure's row in
+[`gates.md`](../../method/gates.md#a-failure-says-why). The agent that breaks a
+rule learns it from the gate, at that moment. A message that says only *what*
+failed is half a gate.
+
 **Write the smallest thing that does that.** One script, no dependencies, in the
 language already in the repo. It is a few hundred lines at most and it belongs in
 the repository rather than in this plugin, because CI has no plugins installed —

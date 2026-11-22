@@ -400,7 +400,7 @@ for doc in features:
         fail(where, "names no @workflow:; it serves nothing anybody wrote down")
     for value in named:
         if value not in workflow_index:
-            fail(where, f"names @workflow:{value}, which does not exist")
+            fail(where, f"names @workflow:{value}, which does not exist — a typo, or a renamed id; name one that exists")
         else:
             workflow_index[value]["features"].append(where)
 
@@ -434,7 +434,7 @@ for case in suite:
             fail(where, f"claims @rule:{value}, which does not exist. Rule ids are permanent; this is usually a typo or a rename.")
     for value in case["claims"]["workflows"]:
         if value not in workflow_index:
-            fail(where, f"claims @workflow:{value}, which does not exist")
+            fail(where, f"claims @workflow:{value}, which does not exist — a typo, or a renamed id; name one that exists")
         else:
             workflow_index[value]["walked_by"].append(case["name"])
 
@@ -449,12 +449,12 @@ for value, entry in sorted(workflow_index.items()):
     live_personas = [p for p in entry["personas"] if p in personas and not personas[p]["retired"]]
     for named in entry["personas"]:
         if named not in personas:
-            fail(where, f"names @persona:{named}, which does not exist")
+            fail(where, f"names @persona:{named}, which does not exist — a typo, or a renamed id; name one that exists")
     if not live_personas:
         fail(where, f"@workflow:{value} names no live @persona:; a workflow for nobody, or one pointing only at a @retired persona")
     for named in entry["journeys"]:
         if named not in journeys:
-            fail(where, f"names @journey:{named}, which does not exist")
+            fail(where, f"names @journey:{named}, which does not exist — a dangling reference; name a journey that exists")
     # A phase is optional, so naming none says nothing; naming one the
     # journeys it names do not have is a dangling reference. See 0084.
     known = [j for j in entry["journeys"] if j in journeys]
