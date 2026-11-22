@@ -112,7 +112,7 @@ does not name — held to the same states, required by nothing.
 | `check:merged-off-main` | judgment | 1.20.0 | wiring | — | | no pull request merged since the stamp into a branch other than main is missing from main | — |
 | `check:main-green` | judgment | 3.3.0 | platform | — | | the main branch's pipeline is green now, and was green on every run since the last audit | — |
 | `check:merge-queue` | judgment | 1.21.0 | platform | — | | how several pull requests merge — the platform's queue and the event its checks run on, or the fallback's settings — is what the platform has | — |
-| `check:read-back-age` | mechanical | next | record | — | | every date the bindings say something was read back from outside the tree is no older than the last audit, which should have read it again | — |
+| `check:read-back-age` | mechanical | 3.7.0 | record | — | | every date the bindings say something was read back from outside the tree is no older than the last audit, which should have read it again | — |
 | `check:read-back-or-not` | mechanical | 0.21.0 | record | — | | every judgment line is read back with its command, or not read with why | — |
 | `check:prose-phrases` | judgment | 0.21.0 | record | — | | the bindings and the layers' READMEs are read for a gap in words — *not built yet*, *not written yet*, *uninterviewed*, *to do*, *we should*, *for now* | 3.4.0 |
 | `check:second-table` | mechanical | 0.21.0 | wiring | — | | the table for wiring that must never gate exists | — |

@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.7.0 — 2026-11-22
+
+A read-back has an age (`check:read-back-age`). Every date the bindings say something was read back from the platform is compared with the last audit, and one older than that audit, which should have read it again and moved the date, reads open with its line.
+
 ## 3.6.0 — 2026-11-22
 
 The audit reads the context file against every item the method asks of it, not the loop alone (`check:loop-per-claude-md`). Where the history shows a rule broken since the last audit, such as a change merged with no spec, it asks whether the file's rules list carries that rule.
