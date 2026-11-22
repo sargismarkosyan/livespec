@@ -267,6 +267,7 @@ def _green_bindings(version: str) -> str:
         "| **Coverage gate** | none — see *What has no gate* |\n"
         "| **What coverage does not reach** | not applicable — no coverage gate |\n"
         "| **Before the push** | none |\n"
+        "| **Upgrade ledger** | `specs/setup/upgrade.md` |\n"
         "| **What trees share** | nothing — the fixture has no services |\n"
         "| **What a pull request will close** | `gh pr view <n> --json closingIssuesReferences`, watched 2026-01-01 |\n"
         "| **Coverage thresholds** | none |\n"
