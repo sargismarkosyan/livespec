@@ -170,6 +170,7 @@ ROW_STRUCTURE = "| `gate:structure` | one feature per file, unique ids, every ru
 ROW_COVERAGE = "| `gate:coverage` | lines, branches, functions | not applicable | no coverage here |"
 ROW_PR_REPORT = "| `wiring:pr-report` | the pull-request report | unobserved | `report.py`, posted by CI |"
 ROW_RULE_BOUND = "| `wiring:rule-bound-measure` | the rule-bound measure, reported beside the gated number | not applicable | no coverage here |"
+ROW_WALK = "| `wiring:workflow-cost` | the cost of each workflow walk | not applicable | its walks cannot be repeated on every change |"
 ROW_RUN = "| `wiring:run-beside-claim` | the run beside the claim | unobserved | `report.py` prints the pipeline's run beside the body's block |"
 ROW_STORE = "| `boundary:store` | the store | real | 0001 | `docker compose up db` starts it; leaves uncovered: production volume |"
 ROW_CLOCK = "| `boundary:clock` | the clock | mocked | 0001 | a fake clock nothing checks; cover: none |"
@@ -222,6 +223,7 @@ def green_bindings(version: str) -> str:
             "| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | automated | `python3 gate.py test` |",
             "| `gate:change-number-unique` | two change specs sharing a number | automated | `python3 gate.py` |",
             "| `gate:feature-to-feature` | a feature using a feature that does not exist | automated | `python3 gate.py` |",
+            "| `gate:workflow-budget` | a count a workflow walk makes past its budget | not applicable | its walks cannot be repeated on every change |",
             "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
         ]
     )
@@ -263,7 +265,7 @@ def green_bindings(version: str) -> str:
         f"{GATE_HEADER}\n{gates}\n\n"
         f"{WIRING_HEADING}\n\n"
         "| id | wiring | state | evidence |\n|---|---|---|---|\n"
-        f"{ROW_PR_REPORT}\n{ROW_RULE_BOUND}\n{ROW_RUN}\n\n"
+        f"{ROW_PR_REPORT}\n{ROW_RULE_BOUND}\n{ROW_RUN}\n{ROW_WALK}\n\n"
         "### The boundaries\n\n"
         "| id | boundary | state | since | evidence |\n|---|---|---|---|---|\n"
         f"{ROW_STORE}\n{ROW_CLOCK}\n\n"
@@ -1518,6 +1520,8 @@ DOCTOR_FAULTS = [
      lambda r: edit(r, "specs/setup/README.md", ROW_RULE_BOUND + "\n", ""), "open"),
     ("the second table losing the run's row", "check:run-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_RUN + "\n", ""), "open"),
+    ("the second table losing the walk's row", "check:walk-cost-row",
+     lambda r: edit(r, "specs/setup/README.md", ROW_WALK + "\n", ""), "open"),
     ("no row saying a sketch is owed", "check:sketch-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_SKETCH + "\n", ""), "open"),
     ("the sketch row and the picture row saying one thing", "check:picture-row",

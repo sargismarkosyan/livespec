@@ -1,0 +1,16 @@
+# The workspace: printshop, a static shop and a small Node server, with the
+# process set up. Two Playwright walkthroughs walk its two workflows, and the
+# ledger was reconciled before livespec asked for the cost of a walk, so it has
+# no row for wiring:workflow-cost or gate:workflow-budget.
+#
+# What is graded:
+#   - the comparison is copied in at the version installed, not rewritten;
+#   - a policy file names its measures, and no time carries a budget, though
+#     the person asks for one on the checkout;
+#   - CI walks the base and the branch in turns on one runner and posts the
+#     report where it cannot fail the build, the gate running beside it;
+#   - both ledger rows are written, in states the ledger allows.
+# See specs/changes/0089.
+scaffold_script: scaffold.sh
+shell: [python3, git, ls, cat, head, tail, wc, grep, find, sed, pwd, echo, cp, mkdir]
+requires: [python3, git]

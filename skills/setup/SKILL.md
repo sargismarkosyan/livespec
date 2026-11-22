@@ -300,6 +300,33 @@ Wire it here, before the hook is offered below: the hook is a question, and a
 sitting that runs out of turns runs out after a question, so whatever sits
 after the offer is the first thing lost. The report is wiring, not a question.
 
+### Then wire the cost of a walk, beside the report
+
+[`gates.md`](../../method/gates.md#what-a-change-costs-a-workflow) expects each
+change to say what it did to the cost of every workflow walk, against its own
+base. The walks are the repository's; the comparison ships with this plugin.
+
+1. **Copy it in.** `<plugin root>/tools/walkcost.py` (two directories up from
+   this skill file; `$CLAUDE_PLUGIN_ROOT` where it is set) goes into the
+   repository beside its gates, with `# livespec walkcost <version installed>`
+   written as its first line. CI runs that copy, never the plugin's.
+2. **Write the policy file**, its path in the bindings: the rounds per side
+   (recommend 5), and for each measure its kind — `time` or `count` — its noise
+   and its allowance. No budget until a count has been chosen with the person;
+   a time is never given one, and asked for one, offer it reported and a count
+   that stands in for it.
+3. **Wire a job that walks both sides.** Check out the base into a second
+   worktree, run every walkthrough on base and branch in turns on the one
+   runner — base, branch, branch, base — with what the walkthroughs already run,
+   each writing a sample a line as the script's docstring shows. Then run the
+   copy with `--samples`, `--policy`, the base's policy as `--base-policy` where
+   it has one, and `--gate`; post its report the way the report above is
+   posted. Say what the job costs in minutes before wiring it.
+4. **Write both ledger rows**, `wiring:workflow-cost` and `gate:workflow-budget`.
+   A repository whose walks cannot be repeated on every change — they bill, or
+   take an hour — reads *not applicable* with that reason; one with no
+   walkthrough yet reads *deferred* until the first lands.
+
 ### Then offer to run it before the push
 
 One command that a person can run locally is the precondition for the thing

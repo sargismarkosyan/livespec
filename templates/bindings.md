@@ -80,6 +80,7 @@ tree carries how it was read back: the command, and when.
 | `gate:crossing-names-a-boundary` | a rule tagged `@crosses:` a boundary the bindings have no row for | | |
 | `gate:change-number-unique` | two change specs sharing a number | | |
 | `gate:feature-to-feature` | a feature using a feature that does not exist | | |
+| `gate:workflow-budget` | a count a workflow walk makes past its budget | | |
 | `gate:context-file-ceiling` | the context file past the ceiling the bindings name, or with no ceiling row | | |
 | `gate:part-past-its-ceiling` | a part larger than the ceiling the bindings name, or no Ceilings row | | |
 | `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | |
@@ -94,6 +95,7 @@ tree carries how it was read back: the command, and when.
 | `wiring:pr-report` | the pull-request report | <state> | <what produces it — unobserved until one was watched arriving> |
 | `wiring:rule-bound-measure` | the rule-bound measure, reported beside the gated number | <state> | <how, or why not> |
 | `wiring:run-beside-claim` | the run beside the claim — the report printing the pipeline's own run next to the run block the pull request carries | <state> | <what prints it — unobserved until the two were watched disagreeing> |
+| `wiring:workflow-cost` | the cost of each workflow walk, base against branch, on the report | <state> | <the job and the policy file — unobserved until it was watched reporting a move> |
 
 ### The boundaries
 

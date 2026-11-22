@@ -108,12 +108,14 @@ GATES = [
     ("gate:fewer-ran-than-exist", "wiring", "", "the runner reporting fewer rule-bound tests than the tree holds fails"),
     ("gate:change-number-unique", "wiring", "", "two change specs sharing a number fail, whatever their slugs; a gap does not"),
     ("gate:feature-to-feature", "wiring", "", "a feature using a feature that does not exist, or carrying @uses on a rule, fails"),
+    ("gate:workflow-budget", "wiring", "", "a count a workflow walk makes past the budget the policy file sets fails; a time carries no budget"),
     ("gate:verified-to-fire", "wiring", "both gates verified to fire", "every gate is broken on purpose and seen to fire"),
 ]
 
 WIRING = [
     ("wiring:pr-report", "wiring", "the pull-request report", "the report on every pull request, unobserved until one was watched arriving"),
     ("wiring:rule-bound-measure", "wiring", "the rule-bound measure", "the rule-bound measure reported beside the gated number"),
+    ("wiring:workflow-cost", "wiring", "the cost of a walk", "what the change cost each workflow walk, base against branch, on the report — unobserved until it was watched reporting a move"),
     ("wiring:run-beside-claim", "wiring", "the run beside the claim", "the report re-running the verification command and printing what it saw beside what the body says — unobserved until the two were watched disagreeing"),
 ]
 
@@ -152,6 +154,7 @@ CHECKS = [
     ("check:pr-report-row", "mechanical", "wiring", "it holds the row for the pull-request report"),
     ("check:rule-bound-row", "mechanical", "wiring", "it holds the row for the rule-bound measure"),
     ("check:run-row", "mechanical", "wiring", "it holds the row for the run beside the claim"),
+    ("check:walk-cost-row", "mechanical", "wiring", "it holds the row for the cost of each workflow walk"),
     ("check:sketch-row", "mechanical", "record", "the bindings say which changes owe a sketch"),
     ("check:picture-row", "mechanical", "record", "the bindings say what a change here must show, and it is not the sketch row"),
     ("check:trees-row", "mechanical", "record", "the bindings say where trees live and what makes, lists and cleans them, and the context file's commands carry that command"),
@@ -721,6 +724,10 @@ def c_run_row(ctx: dict) -> tuple[str, str]:
     return wiring_row(ctx, "wiring:run-beside-claim", "run beside", "the run")
 
 
+def c_walk_cost_row(ctx: dict) -> tuple[str, str]:
+    return wiring_row(ctx, "wiring:workflow-cost", "cost of each workflow walk", "cost of a walk")
+
+
 def c_sketch_row(ctx: dict) -> tuple[str, str]:
     for key, value in ctx["keys"].items():
         if "sketch" in key:
@@ -881,6 +888,7 @@ MECHANICAL = {
     "check:pr-report-row": c_pr_report_row,
     "check:rule-bound-row": c_rule_bound_row,
     "check:run-row": c_run_row,
+    "check:walk-cost-row": c_walk_cost_row,
     "check:sketch-row": c_sketch_row,
     "check:picture-row": c_picture_row,
     "check:trees-row": c_trees_row,
