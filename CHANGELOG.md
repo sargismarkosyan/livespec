@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.13.0 — 2026-11-22
+
+When a gate fails, it now says why. Each rule a gate enforces is written once in `method/gates.md`, as a row with the failure and what it means, and `setup` wires gates to print that row (where, the reason, the fix) whenever it fires. `method/gates.md` is rewritten around those tables and is 40% shorter.
+
 ## 3.12.1 — 2026-11-22
 
 The guide to installing livespec, under Claude Code or Pi, into a machine or a repository, and against a local checkout, moves from `method/README.md` to the root README. The method no longer names an install command.
