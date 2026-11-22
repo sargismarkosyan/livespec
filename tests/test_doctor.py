@@ -140,7 +140,7 @@ class TheShape(unittest.TestCase):
 
     @rule("a-ledger-not-in-shape-is-a-finding-not-a-crash")
     def test_a_pre_template_ledger_is_a_finding_and_the_rest_goes_on(self):
-        text = inject.green_bindings(INSTALLED).replace("| id | gate | state | evidence |\n|---|---|---|---|", "| Gate | State | Wired by, or why not |\n|---|---|---|")
+        text = inject.green_bindings(INSTALLED).replace("| id | gate | state | evidence | reconciled |\n|---|---|---|---|---|", "| Gate | State | Wired by, or why not |\n|---|---|---|")
         lines = audit(repo(text))
         self.assertEqual(lines["check:ledger-shape"]["state"], "open")
         self.assertEqual(lines["check:row-per-gate"]["state"], "n/a")
