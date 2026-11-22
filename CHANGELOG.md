@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.34.0 — 2026-11-22
+
+Each workflow walk is measured per layer: the front end with the service's answers replayed, the back end with no browser, and the whole walk end to end. The report names the layer on each line. A front end is weighed in the bytes it ships, how long its page takes to load, and when each workflow's feature is ready, read from a `performance.mark` the app sets. `setup` measures with what the repository already runs. It proposes a tool only for a layer nothing there can measure, says what installing it adds, and installs it only on a yes. `adopt-the-process` says so in *Done well*.
+
 ## 1.33.0 — 2026-11-22
 
 Each change now reports what it did to the cost of every workflow walk, measured against its own base. `tools/walkcost.py`, which `setup` copies into a consuming repository, compares samples from the base and the branch, walked in turns on one runner. It reports each measure as no change, better, worse within or past its allowance, or inconclusive with its reason. A count over the budget in the policy file fails the gate, and a policy putting a budget on a time is refused. A policy changed in the pull request is listed beside the walks it allows. Two new ids, `wiring:workflow-cost` and `gate:workflow-budget`, and `setup` wires both.
