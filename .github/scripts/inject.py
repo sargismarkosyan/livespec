@@ -1617,6 +1617,8 @@ DOCTOR_FAULTS = [
                 write(r, "specs/changes/0003-later.md", "# Spec 0003\n")), "open"),
     ("a local hook given a row", "check:hook-no-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE, ROW_STRUCTURE + "\n| `local:hook` | the pre-push hook | automated | `.githooks/pre-push` |"), "open"),
+    ("a read-back older than the last audit", "check:read-back-age",
+     lambda r: write(r, "specs/setup/audit.md", "**Audited 2026-02-01 · livespec 1.0.0 · stamp 1.0.0 · HEAD abc1234 · audit 1**\n"), "open"),
     ("a host in use that loads no livespec", "check:host-enabled",
      lambda r: write(r, ".pi/settings.json", '{"packages": []}\n'), "open"),
     ("a change merged with no spec and no issue", "check:loop-followed",

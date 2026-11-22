@@ -24,6 +24,19 @@ Feature: What a gate wiring ledger is allowed to claim
       Then that claim is reported as false
       And what was read to find that out is named
 
+  @rule:a-read-back-ages-from-the-last-audit
+  Rule: A date the bindings say something outside the tree was read back on is no older than the last audit, which reads it again and moves the date
+
+    Example: a read-back no audit read again
+      Given bindings saying branch protection was read back months before the last audit
+      When the wiring is audited
+      Then the read-back is reported open, with its line and its date
+
+    Example: every read-back moved by the last audit
+      Given bindings whose read-back dates are the day of the last audit
+      When the wiring is audited
+      Then nothing about their age is reported
+
   @rule:a-row-says-what-it-leaves-uncovered
   Rule: A gate wired over part of a repository is not recorded as covering it
 

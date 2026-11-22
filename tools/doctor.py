@@ -155,6 +155,7 @@ CHECKS = [
     ("check:merged-off-main", "judgment", "wiring", "no pull request merged since the stamp into a branch other than main is missing from main"),
     ("check:main-green", "judgment", "platform", "the main branch's pipeline is green now, and was green on every run since the last audit"),
     ("check:merge-queue", "judgment", "platform", "how several pull requests merge — the platform's queue and the event its checks run on, or the fallback's settings — is what the platform has"),
+    ("check:read-back-age", "mechanical", "record", "every date the bindings say something was read back from outside the tree is no older than the last audit, which should have read it again"),
     ("check:read-back-or-not", "mechanical", "record", "every judgment line is read back with its command, or not read with why"),
     ("check:prose-phrases", "judgment", "record", "the bindings and the layers' READMEs are read for a gap in words — *not built yet*, *not written yet*, *uninterviewed*, *to do*, *we should*, *for now*"),
     ("check:second-table", "mechanical", "wiring", "the table for wiring that must never gate exists"),
@@ -729,6 +730,25 @@ def change_number(row: dict) -> int | None:
     return int(match.group(1)) if match else None
 
 
+READ_BACK = re.compile(r"read back[^|\n]{0,80}?(\d{4}-\d{2}-\d{2})", re.I)
+
+
+def c_read_back_age(ctx: dict) -> tuple[str, str]:
+    """A read-back is a claim about the outside on a date; one older than the last audit was not read
+    again by it. The audit's clock, not the plugin's releases: the platform moves on its own. See 0103."""
+    head = RECORD_HEAD.search(read(record_path_of(ctx)) or "")
+    if not head:
+        return "n/a", "no previous audit to date a read-back against"
+    dated = [(n, m.group(1)) for n, line in enumerate(ctx["text"].splitlines(), 1) for m in READ_BACK.finditer(line)]
+    if not dated:
+        return "n/a", "the bindings date no read-back"
+    stale = [f"L{n} {when}" for n, when in dated if when < head.group(1)]
+    if stale:
+        return "open", (f"{len(stale)} of {len(dated)} read-back(s) older than the last audit on {head.group(1)}: "
+                        + ", ".join(stale[:6]) + " — read each again with its command, and date it")
+    return "clear", f"{len(dated)} read-back(s), none older than the last audit on {head.group(1)}"
+
+
 def c_mocked_clock(ctx: dict) -> tuple[str, str]:
     if (off := not_in_shape(ctx)):
         return off
@@ -1035,6 +1055,7 @@ MECHANICAL = {
     "check:row-per-gate": c_row_per_gate,
     "check:recorded-age": c_recorded_age,
     "check:mocked-clock": c_mocked_clock,
+    "check:read-back-age": c_read_back_age,
     "check:second-table": c_second_table,
     "check:pr-report-row": c_pr_report_row,
     "check:rule-bound-row": c_rule_bound_row,
