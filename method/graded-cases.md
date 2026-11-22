@@ -1,225 +1,134 @@
 # Graded cases
 
-You are on this page because [testing.md](testing.md#first-what-proves-a-rule-is-true-here)
-forked and the repository took the second branch: the product is **judgment**
-rather than code, there is no function to call, and behaviour is proved by
-running the thing against a situation and grading what came out.
+For a repository that took the second answer in
+[testing.md](testing.md#first-what-proves-a-rule-is-true-here): the product is
+**judgment**, there is no function to call, and behaviour is proved by running
+it against a situation and grading what came out. A graded case proves less than
+a test; this page is how to keep it from proving nothing.
 
-That page says a graded case proves a weaker thing than a test. This one says how
-to keep it from proving nothing at all. Each section below is a lesson that cost
-somebody an afternoon; each is written as a decision rather than a description,
-because the reason is the part that travels.
-
-**Nothing here names a runner, a grader format or a threshold.** Those are
-bindings, and the repository writes its own down. The test for every sentence on
-this page: does it survive a repository whose runner is not the one you are
-thinking of?
+*From: every promise is checked by something that can fail.* **Nothing here names
+a runner, a grader format or a threshold** — those are bindings. Every sentence
+must survive a repository whose runner is not the one you are thinking of.
 
 ## The session is part of what you measure
 
-A graded case runs the product inside a session, and **a session inherits things
-nobody chose for it** — the operator's own configuration, whatever tools the
-machine has connected, and the context of the directory it happens to start in.
-Each of those changes the answer. None of them is the product.
+A session inherits what nobody chose for it — the operator's configuration, the
+machine's connected tools, the directory it starts in — and each changes the
+answer without being the product. A leaked environment gives a plausible bad
+score that gets diagnosed as a defect in the product. So:
 
-So the sessions a case runs in are **hermetic**, and made so deliberately: the
-operator's settings do not reach them, the machine's connected tools do not reach
-them, and the workspace is one the case laid down rather than the one you were
-standing in.
-
-**The failure mode is what makes this worth a section.** A leaked environment
-does not announce itself. It produces a plausible bad score, and a plausible bad
-score gets diagnosed as a defect in the product — so the first day is spent
-fixing something that was never broken. Every hour of that is spent before
-anybody suspects the harness, because the harness is the one part nobody thought
-was under test.
-
-**A case that needs a repository must build one.** Running against an empty
-workspace measures the hunt for missing files, not the judgment. If a case
-asserts a repository — its layout, its history, a file that is deliberately
-absent — the case lays that down itself, identically for every arm, or it is
-measuring the wrong thing in all of them.
-
-**A case of something that asks must bring the answers.** A product that
-interviews — that says what it would do and waits, or asks the six things only
-the person knows — measured over one turn, measures its first question and
-nothing after it, and does so in every arm alike, so the difference reads as
-zero on exactly the cases where the product's judgment lives. Give the case the
-person it would have had: what they know, in their voice, answering only from
-that and only when asked, for a bounded number of turns, the same in every arm.
-Keep what they said beside what the product said, because the judge has to read
-both. And the sheet answers; it never volunteers — a fact the product never
-asked for never reaches it, or the case stops grading whether it asks.
-
-**The tools the product runs are part of the room.** A product whose first move
-is a command, measured in a session that refuses commands, measures the
-refusal. A case that lends a tool says which, confines it to the fixture, and
-names what the machine must have for the fixture to run — and refuses to
-measure when it has not, rather than measure the absence.
+- **Sessions are hermetic**: the operator's settings and the machine's tools do
+  not reach them, and the workspace is one the case laid down.
+- **A case that needs a repository builds one**, identically for every arm — its
+  layout, its history, a file deliberately absent. An empty workspace measures
+  the hunt for missing files.
+- **A case of something that asks brings the answers.** Measured over one turn,
+  a product that interviews is measured on its first question only, in every arm
+  alike, so the difference reads zero exactly where its judgment lives. Give the
+  case the person: what they know, in their voice, answering only when asked and
+  only from that, for a bounded number of turns, the same in every arm. Keep what
+  they said beside what the product said for the judge. The sheet answers; it
+  never volunteers.
+- **The tools the product runs are part of the room.** A case that lends a tool
+  says which, confines it to the fixture, names what the machine must have — and
+  refuses to measure when it has not, rather than measure the absence.
 
 ## One arm cannot tell you anything
 
-The thing being graded is **context that loads whether or not it is used**. So
-the only honest question is not *did it do well* but *did it do better than the
-same model with none of this*, and answering it takes **two arms**: one with the
-context present, one without, on the same prompt and the same graders.
+The thing graded is **context that loads whether or not it is used**, so the
+question is whether it did better than the same model without it: **two arms**,
+with and without, on the same prompt and graders. A single-arm score is high
+whether the context helped, did nothing or got in the way.
 
-A single-arm score cannot separate what your instructions did from what the model
-was going to do anyway. It will be high, because models are capable, and it will
-be high whether the context helped, did nothing, or actively got in the way — a
-number that reads the same in all three cases is not a measurement.
-
-**The difference between the arms is the only number worth keeping.** It can come
-out negative, and when it does the finding is real: the context made the answer
-worse. That is the most valuable thing this arrangement produces and the main
-reason to build it.
+**The difference between the arms is the only number worth keeping.** It can be
+negative, and then the finding is real: the context made the answer worse.
 
 ### Firing is reported, never scored
 
-Whether the context fired is worth knowing and must not enter the score.
-
-A grader that rewards firing rewards it in exactly one arm — the arm where the
-thing exists — so it awards a point for existing rather than for helping. Do that
-and the difference between arms inflates on its own, without any answer having
-improved. It is the most natural mistake to make and the hardest to see
-afterwards, because the number moves in the direction you were hoping for.
-
-So firing is an **indicator**: recorded, shown next to the score, and weightless.
-Judge the answer that came out.
+Whether the context fired is shown next to the score and weighs nothing. A grader
+that rewards firing rewards it only in the arm where the thing exists, so it
+inflates the difference without any answer improving.
 
 ## The judge is not the thing being judged
 
-Grading is a separate job from answering, and it goes to a separate model, held
-to a **fixed shape of reply**.
+Grading goes to a separate model, held to a **fixed shape of reply**: free prose
+has to be parsed later, and a model grading its own kind of work grades
+generously.
 
-Two reasons, and the second is the one people skip. A model asked to grade freely
-writes prose, and prose has to be parsed by somebody later — the parser is where
-the drift gets in. And a model asked to grade its own kind of work grades
-generously; the closer the judge is to the thing under test, the more the
-measurement becomes a conversation with itself.
-
-**Every case carries at least one grader that reads the answer**, not just
-graders that check whether machinery moved. A suite where everything is
-structural will pass a product that has quietly stopped being useful, which is
-the failure the suite existed to catch.
-
-**When a rubric and a verdict disagree, read the transcript before touching
-either.** The rubric is usually right and the answer usually deserved to fail. A
-rubric edited because a run came back badly is a rubric being fitted to a result,
-and it can only be done once before the number means nothing.
-
-**When the judge is the model under test, the arms are what save the number.**
-Sometimes the only judge large enough to read the nuance is the model being
-graded, or the only one worth paying for. Then the same eyes read both arms,
-and what the judge prefers in its own kind lands on both sides of the
-difference — bounded by the comparison, not removed by it. Say so where the
-decision is made, and read the verdicts against that assumption: a judge found
-favouring one arm's voice is a finding the calibration read exists to make,
-and the day to pay for a different judge.
+- **Every case carries at least one grader that reads the answer**, not only
+  graders that check machinery moved; an all-structural suite passes a product
+  that stopped being useful.
+- **When a rubric and a verdict disagree, read the transcript before touching
+  either.** A rubric edited because a run came back badly is fitted to a result,
+  and that can be done once before the number means nothing.
+- **When the judge is the model under test, the arms bound the bias**: the same
+  eyes read both, so what it prefers in its own kind lands on both sides. Say so
+  where the decision is made, and a judge found favouring one arm's voice is the
+  day to pay for a different one.
 
 ## Neither freshness nor the score is gated
 
-A measurement describes the files it measured. Edit any of them — the case, the
-rule it claims, the instructions it holds — and the number goes on being
-displayed while no longer describing anything that exists.
-
-So each measurement carries a **fingerprint of what it measured**, and a number
-whose fingerprint no longer matches is **shown as stale** and left out of every
-count and mean: it is never presented as current. That is the whole of what is
-enforced. Neither half is gated:
+Each measurement carries a **fingerprint of what it measured** — the case, the
+rules it claims, the instructions it holds. A number whose fingerprint no longer
+matches is **shown as stale** and left out of every count and mean, never
+presented as current. That is all that is enforced:
 
 - **not the number** — a threshold on a model-scored value turns every rubric
-  into something to be argued down on a bad afternoon, and the first time a
-  release is blocked by a judge's opinion is the last time the rubric is written
-  honestly;
-- **not its freshness** — a run costs money, so a gate on freshness turns every
-  edit into a bill, and a change nobody can merge without paying is one that gets
-  walked past. A run happens when the person paying chooses, and a stale number
-  ages in plain view until then.
+  into something argued down on a bad afternoon;
+- **not its freshness** — a run costs money, and a change nobody can merge
+  without paying gets walked past. A stale number ages in plain view until the
+  person paying chooses a run.
 
-**Re-run exactly what changed.** When a run does happen, the fingerprint already
-says which cases moved; measure those, not the whole suite.
+**Re-run exactly what changed**: the fingerprint says which cases moved.
+
+**The run itself is never automatic.** A suite that costs money per run refuses
+to start without an approval from the person paying, given per run — not a
+setting, not a default. A stale number is never a licence to spend: say which
+cases went stale and what a run would cost, and leave the choice to whoever pays.
 
 ### Measure at two speeds
 
-The most faithful measurement — the whole session, in its world, with the person
-answering and the tools lent — is also the most expensive. So measure at **two
-speeds**. A **cheap tier**: a single turn to see whether the right instructions
-load at all, a single reply to a snapshot of what the session would have read
-before answering, a reading of the instructions beside the rules they owe. Each
-is fingerprinted by **only what it can see** — a routing turn never sees a
-skill's body, so a body edit cannot stale it. A **faithful tier** — the whole
-sitting — is run when the model moves, before a cheap tier is trusted, or when
-somebody chooses to.
+The faithful measurement — the whole sitting, in its world, with the person
+answering and the tools lent — is also the most expensive.
 
-**A cheap tier earns its trust against the faithful one.** Run the same cases
-both ways and believe the cheap number where the verdicts agree. Where it cannot
-see — the later turns, the files written, the commands run — say so wherever its
-numbers are read, and let a rubric that only those could decide be marked as not
-applying rather than failed: a failure the tier could never have avoided is the
-tier's blind spot scored as the product's fault.
-
-**And the sessions already had.** A product used for real leaves its own record,
-and it is the one evidence nobody has to pay to produce. Grade those sessions
-against the rules the product owes — the grading is the only spend — and keep
-them local, because they are somebody's real work. They never go on the board: a
-board row describes the files as they stand, and a real session describes the
-files as they stood the day it happened.
-
-**And the run itself is never automatic.** A suite that costs money every time it
-executes must refuse to start without an explicit approval from the person paying
-— not a setting, not a default, an approval given per run. A stale measurement is
-never a licence to spend: say which cases went stale and what a run would cost,
-and leave the choice to whoever pays.
+- **A cheap tier**: one turn to see whether the right instructions load, one
+  reply to a snapshot of what the session would have read, a reading of the
+  instructions beside the rules they owe. Each is fingerprinted by **only what it
+  can see**, so a body edit cannot stale a routing turn.
+- **A faithful tier**, run when the model moves, before a cheap tier is trusted,
+  or when somebody chooses.
+- **A cheap tier earns its trust against the faithful one**: believe it where the
+  verdicts agree. Where it cannot see — later turns, files written, commands run
+  — say so wherever its numbers are read, and mark a rubric only those could
+  decide as not applying rather than failed.
+- **Sessions already had** are evidence nobody pays to produce: grade them
+  against the rules the product owes, keep them local because they are
+  somebody's work, and never put them on the board — they describe the files as
+  they stood that day.
 
 ## The evidence is local, the summary is durable
 
-A run produces far more than a score: full transcripts, every graded verdict, the
-workspace each session built. That evidence is **large, and it is the only thing
-that can settle an argument about a number** — so keep it, and keep it out of the
-repository's history.
-
-What is committed is the **summary**: per case, the arms, the difference, when,
-against which commit, how many runs produced it, and the fingerprint. One line
-each, durable, diffable, and enough to see a product getting better or worse
-over months.
-
-**The distinction is not tidiness.** Transcripts committed become a repository
-nobody can clone; transcripts discarded leave a number with nothing behind it,
-and the first time somebody disputes it there is no way to look.
+The evidence — transcripts, verdicts, workspaces — is large and the only thing
+that settles an argument about a number: keep it, outside the repository's
+history. What is committed is the **summary**: per case, the arms, the
+difference, when, against which commit, how many runs, and the fingerprint — one
+line each. Committed transcripts make a repository nobody can clone; discarded
+ones leave a number nobody can check.
 
 ### A run below the floor does not take a measurement's row
 
-How many runs a number needs before anybody believes it is not settled here —
-see below — and the repository picks its own floor. What *is* settled is what
-happens once it has picked one.
-
-Pilots are worth running: a short run exists so the verdicts can be read before
-anybody pays for a full one, and reading them is the point of it. But a pilot of
-a case that has already been measured produces a second number for the same row,
-and **the measurement keeps the row.** Not out of deference to the older number.
-The row is also what says whether a number is current, so a pilot written into
-it does two things in one write: the measurement is gone, and the row reads
-fresh — at the exact moment a real run became most necessary. Both halves are
-silent, and the sign can flip on the way through.
-
-So **the summary says how many runs produced it, and everything reading the
-summary reads that field too.** A number below the floor is kept and shown — it
-is the best the board has, and deleting it would only put the row back to empty
-— but it is not counted as coverage, it stays out of any average, and it never
-overwrites a number above the floor. A board that cannot tell the two apart
-publishes its own variance as a result, in whichever direction the last pilot
-happened to fall.
+The repository picks how many runs a number needs. Once it has, **a measurement
+keeps its row against a pilot**: written into the row, a pilot would erase the
+measurement and make the row read fresh at the moment a real run became most
+necessary. So the summary says how many runs produced it, and everything reading
+it reads that too. A number below the floor is kept and shown, but not counted,
+not averaged, and never written over a number above the floor.
 
 ## What this page does not settle
 
-**What a difference between arms actually means.** Whether a small positive
-result is a real improvement or noise, how many runs it takes to tell, and what
-size of change is worth acting on — none of that is answered here, because it is
-not known. It depends on the judge, the rubric and how much the prompt varies.
-
-Treat an early number as a direction rather than a fact, run more times before
-believing a small one, and **read the verdicts** — a score nobody has read the
-reasoning behind is a number in search of a meaning. A repository that writes
-down what it does not yet know about its own measurements is in better shape than
-one that quietly picks a threshold.
+**What a difference between arms means** — whether a small positive is real,
+how many runs tell, what size is worth acting on — is not known here; it depends
+on the judge, the rubric and how much the prompt varies. Treat an early number as
+a direction, run more before believing a small one, and **read the verdicts**. A
+repository that writes down what it does not yet know about its measurements is
+in better shape than one that quietly picks a threshold.
