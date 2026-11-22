@@ -352,6 +352,7 @@ def id_rows(text: str) -> list[dict[str, str]] | None:
         rows.append({
             "id": cells[0].strip("`"), "kind": cells[1], "since": cells[2],
             "severity": cells[3], "retired": cells[4], "aliases": cells[5], "meaning": cells[6],
+            "revised": cells[7] if len(cells) > 7 else "—",
         })
     return rows
 
@@ -381,6 +382,8 @@ def extract_ids(body: str | None) -> dict:
     section = text[match.end():].split("\n## ", 1)[0]
     added: list[str] = []
     retired: list[str] = []
+    revised: list[str] = []
+    reworded: list[str] = []
     unchanged = False
     for raw in section.splitlines():
         line = raw.strip()
@@ -389,13 +392,17 @@ def extract_ids(body: str | None) -> dict:
         lowered = line.lower()
         # A markdown bullet in front of `added:` or `retired:` is a bullet, not a
         # retirement. Only a bare `- <id>` is read as one.
-        if re.match(r"^[-*+]\s+(added|retired)\b", lowered):
+        if re.match(r"^[-*+]\s+(added|retired|revised|reworded)\b", lowered):
             line = re.sub(r"^[-*+]\s+", "", line)
             lowered = line.lower()
         ids = [token.strip("`,;") for token in re.findall(r"`?(?:gate|wiring|check):[a-z0-9-]+`?", line)]
         ids = [token.strip("`") for token in ids]
         if re.fullmatch(r"\*{0,2}unchanged\*{0,2}\.?", lowered):
             unchanged = True
+        elif lowered.startswith("revised"):
+            revised += ids
+        elif lowered.startswith("reworded"):
+            reworded += ids
         elif lowered.startswith(("added", "+")):
             added += ids
         elif lowered.startswith(("retired", "-", "\u2212")):
@@ -404,13 +411,14 @@ def extract_ids(body: str | None) -> dict:
             raise ReleaseInputError(
                 f"`## Ids` lists {', '.join(ids)} without saying whether they were added or retired"
             )
-    if unchanged and (added or retired):
+    if unchanged and (added or retired or revised or reworded):
         raise ReleaseInputError("`## Ids` says unchanged and lists ids; it is one or the other")
-    if not unchanged and not added and not retired:
+    if not unchanged and not (added or retired or revised or reworded):
         raise ReleaseInputError(
-            "the `## Ids` section says nothing. `unchanged`, or `added:` and `retired:` lines naming ids."
+            "the `## Ids` section says nothing. `unchanged`, or `added:`, `retired:`, `revised:` "
+            "and `reworded:` lines naming ids."
         )
-    return {"unchanged": unchanged, "added": added, "retired": retired}
+    return {"unchanged": unchanged, "added": added, "retired": retired, "revised": revised, "reworded": reworded}
 
 
 def ids_diff(base_text: str, head_text: str) -> dict[str, list[str]]:
@@ -423,10 +431,15 @@ def ids_diff(base_text: str, head_text: str) -> dict[str, list[str]]:
         i for i in head if i in base
         and base[i]["retired"] in UNRETIRED and head[i]["retired"] not in UNRETIRED
     ]
+    kept = [i for i in head if i in base]
     return {
         "added": added, "removed": removed, "retired": retired,
         "typed_since": [i for i in added if head[i]["since"] != NEXT],
         "typed_retired": [i for i in retired if not head[i]["retired"].startswith(NEXT)],
+        # A changed meaning is declared revised (re-answered) or reworded. See 0093.
+        "meaning": [i for i in kept if base[i]["meaning"] != head[i]["meaning"]],
+        "now_next": [i for i in kept if head[i]["revised"] == NEXT and base[i]["revised"] != NEXT],
+        "typed_revised": [i for i in kept if head[i]["revised"] not in (base[i]["revised"], NEXT)],
     }
 
 
@@ -448,17 +461,33 @@ def check_ids_section(body: str | None, base_text: str, head_text: str) -> dict[
         raise ReleaseInputError(
             f"row {i} is retired with a typed version. A retirement reads next — the release writes it."
         )
+    for i in diff["typed_revised"]:
+        raise ReleaseInputError(f"row {i} has a typed revised version. A revision reads next — the release writes it.")
     said = extract_ids(body)
-    moved = diff["added"] + diff["retired"]
+    moved = diff["added"] + diff["retired"] + diff["meaning"] + diff["now_next"]
     if said["unchanged"]:
         if moved:
             raise ReleaseInputError(
                 "`## Ids` says unchanged, but the table moved: "
-                + ", ".join([f"+{i}" for i in diff["added"]] + [f"retired {i}" for i in diff["retired"]])
+                + ", ".join([f"+{i}" for i in diff["added"]] + [f"retired {i}" for i in diff["retired"]]
+                            + [f"meaning of {i}" for i in diff["meaning"] + diff["now_next"]])
             )
         return diff
+    head_rows = {row["id"]: row for row in id_rows(head_text) or []}
+    for i in diff["meaning"]:
+        if (i in said["revised"]) == (i in said["reworded"]):
+            raise ReleaseInputError(f"the meaning of {i} changed; `## Ids` names it once, under revised: or reworded:")
+    for i in said["revised"]:
+        if i not in diff["meaning"] or head_rows.get(i, {}).get("revised") != NEXT:
+            raise ReleaseInputError(f"`## Ids` says {i} was revised; its meaning must change and its revised cell read next")
+    for i in diff["now_next"]:
+        if i not in said["revised"]:
+            raise ReleaseInputError(f"row {i}'s revised cell now reads next and `## Ids` does not name it under revised:")
+    for i in said["reworded"]:
+        if i not in diff["meaning"]:
+            raise ReleaseInputError(f"`## Ids` says {i} was reworded, and its meaning did not change")
     head_ids = {row["id"] for row in id_rows(head_text) or []}
-    for i in said["added"] + said["retired"]:
+    for i in said["added"] + said["retired"] + said["revised"] + said["reworded"]:
         if i not in head_ids:
             raise ReleaseInputError(f"`## Ids` names {i}, which the table does not have")
     for i in diff["added"]:
@@ -501,11 +530,13 @@ def stamp_ids(text: str, version: str) -> str:
                     segments[3] = f" {version} "
                 if segments[5].strip().startswith(NEXT):
                     segments[5] = " " + segments[5].strip().replace(NEXT, version, 1) + " "
+                if len(segments) >= 10 and segments[8].strip() == NEXT:
+                    segments[8] = f" {version} "
                 line = "|".join(segments)
         out.append(line)
     stamped = head + "\n".join(out) + tail
     for row in id_rows(stamped) or []:
-        if row["since"] == NEXT or row["retired"].startswith(NEXT):
+        if row["since"] == NEXT or row["retired"].startswith(NEXT) or row["revised"] == NEXT:
             raise ReleaseInputError(f"{row['id']} would still read next after the release")
     return stamped
 

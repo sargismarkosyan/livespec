@@ -183,7 +183,7 @@ and it is the things a machine cannot work out:
    is prose about the specs and does not count.
 4. **An `## Ids` section, if you moved the audit surface** — `skills/doctor/`,
    `tools/doctor.py`, `templates/bindings.md` or `method/requirements.md`. It says
-   `unchanged`, or lists the ids added and retired, and the gate holds it to
+   `unchanged`, or lists the ids added, retired, revised or reworded, and the gate holds it to
    the id table's actual diff. A new row in that table reads `since: next`; a
    retirement reads `retired: next → superseded-by …`. The release writes the
    version into both, in the same commit as `plugin.json` and `CHANGELOG.md`
