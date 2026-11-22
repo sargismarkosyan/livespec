@@ -54,6 +54,8 @@ def repo(bindings: str | None = None, files: dict[str, str] | None = None) -> Pa
     (root / "specs" / "setup" / "README.md").write_text(text, encoding="utf-8")
     (root / "specs" / "changes").mkdir()
     (root / "specs" / "changes" / "0001-first.md").write_text("# Spec 0001\n", encoding="utf-8")
+    (root / ".claude").mkdir()
+    (root / ".claude" / "settings.json").write_text('{"enabledPlugins": {"livespec@livespec": true}}\n', encoding="utf-8")
     (root / "CLAUDE.md").write_text("# The loop\n\n`/livespec:refine-spec` writes the spec.\n\n```sh\npython3 trees.py new <name>\n```\n", encoding="utf-8")
     for relative, content in (files or {}).items():
         path = root / relative
@@ -794,6 +796,36 @@ class Stacks(unittest.TestCase):
         self.assertEqual(line["state"], "unanswered")
         self.assertIn(f"since {ctx['stamp_date']}", line["evidence"])
         self.assertIn("move nothing", line["evidence"])
+
+
+class EveryHost(unittest.TestCase):
+    """Every host in use loads the plugin from a committed file. See specs/changes/0101."""
+
+    @rule("every-host-in-use-loads-it")
+    def test_claude_code_declared_is_clear(self):
+        line = audit(repo())["check:host-enabled"]
+        self.assertEqual(line["state"], "clear", line["evidence"])
+        self.assertIn("`livespec@livespec` in .claude/settings.json", line["evidence"])
+
+    @rule("every-host-in-use-loads-it")
+    def test_a_host_the_tree_shows_with_nothing_declared_is_open(self):
+        line = audit(repo(files={".pi/settings.json": '{"packages": ["npm:other"]}\n'}))["check:host-enabled"]
+        self.assertEqual((line["state"], line["severity"]), ("open", "wiring"))
+        self.assertIn("Pi in use here", line["evidence"])
+
+    @rule("every-host-in-use-loads-it")
+    def test_the_host_running_the_audit_is_in_use(self):
+        with mock.patch.dict(os.environ, {"PI_CODING_AGENT": "true"}):
+            line = audit(repo())["check:host-enabled"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("Pi", line["evidence"])
+
+    @rule("every-host-in-use-loads-it")
+    def test_the_plugins_own_checkout_by_a_local_path(self):
+        root = repo(files={".pi/settings.json": '{"packages": [".."]}\n', ".claude-plugin/plugin.json": '{"name": "livespec"}\n'})
+        line = audit(root)["check:host-enabled"]
+        self.assertEqual(line["state"], "clear", line["evidence"])
+        self.assertIn("a livespec checkout", line["evidence"])
 
 
 class MainGreen(unittest.TestCase):

@@ -43,3 +43,26 @@ Feature: The audit reads a repository the same under either host
       Given a consuming repository whose only instructions file is AGENTS.md
       When the wiring is audited
       Then that line reads clear
+
+  @rule:every-host-in-use-loads-it
+  Rule: Every host in use — the one running the audit, and each the tree shows — loads the plugin from a declaration the repository commits, a local path to the plugin's own checkout included
+
+    Example: a host the tree shows declares nothing
+      Given a repository with a Pi settings file that loads no livespec
+      When the wiring is audited
+      Then Pi is reported open, with the sitting that declares it
+
+    Example: the audit runs under a host the repository never declared
+      Given a repository declaring livespec for Claude Code only
+      When the wiring is audited from a Pi session
+      Then Pi is reported open
+
+    Example: the plugin's own repository loads its checkout
+      Given the plugin's repository declaring its own checkout to Pi by a relative path
+      When the wiring is audited
+      Then the declaration is read as loading livespec
+
+    Example: every host in use declares it
+      Given a repository whose committed settings load livespec for each host in use
+      When the wiring is audited
+      Then each is named with where it is declared
