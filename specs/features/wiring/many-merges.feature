@@ -20,3 +20,22 @@ Feature: What an audit reads back about how several pull requests merge
       And a platform whose setting for updating a branch is off
       When the audit reads the setting back
       Then the line reads open, naming the setting
+
+  @rule:main-is-read-green @crosses:consuming-repository
+  Rule: The audit asks the platform whether the main branch's pipeline is green now and was green on every run since the last audit, through the command the bindings name, and reports a red run open
+
+    Example: no row names the command
+      Given bindings with no row saying how the main branch's runs are read
+      When the wiring is audited
+      Then the line is open and names the setup sitting
+
+    Example: the row names the command
+      Given bindings naming the command that lists the main branch's runs
+      When the wiring is audited
+      Then that command is handed to the mind answering, with the date of the last audit
+      And a red run is to be reported open, naming the first and the last
+
+    Example: nothing runs on the main branch
+      Given bindings saying the main branch's runs are not applicable, with why
+      When the wiring is audited
+      Then the line is not applicable, quoting the row

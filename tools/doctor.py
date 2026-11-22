@@ -151,6 +151,7 @@ CHECKS = [
     ("check:credentials-present", "judgment", "platform", "a credential the bindings claim is missing is read back from where the platform keeps it"),
     ("check:merged-branch-deleted", "judgment", "platform", "the platform deletes a merged pull request's branch, so a pull request stacked on it is retargeted to the main branch"),
     ("check:merged-off-main", "judgment", "wiring", "no pull request merged since the stamp into a branch other than main is missing from main"),
+    ("check:main-green", "judgment", "platform", "the main branch's pipeline is green now, and was green on every run since the last audit"),
     ("check:merge-queue", "judgment", "platform", "how several pull requests merge — the platform's queue and the event its checks run on, or the fallback's settings — is what the platform has"),
     ("check:read-back-or-not", "mechanical", "record", "every judgment line is read back with its command, or not read with why"),
     ("check:prose-phrases", "judgment", "record", "the prose is read for *not built yet*, *to do*, *we should*, *for now*"),
@@ -1152,6 +1153,20 @@ def j_merge_queue(ctx: dict) -> tuple[str, str]:
     return platform_line(ctx, question, prefer=("merge_queue", "allow_update_branch", "settings"))
 
 
+def j_main_green(ctx: dict) -> tuple[str, str]:
+    """Whether what is released was green, read from the platform's own runs; see specs/changes/0099."""
+    row = next((v for k, v in ctx["keys"].items() if k.startswith("the main branch's runs")), None)
+    if row is None:
+        return "open", "no row says how the main branch's runs are read — the setup sitting writes it"
+    if "not applicable" in row.lower():
+        return "n/a", f"the row: {row[:120]}"
+    head = RECORD_HEAD.search(read(record_path_of(ctx)) or "")
+    since = f"since the last audit on {head.group(1)}" if head else "in what the command lists"
+    commands = commands_in(row)
+    question = f"is the latest run on the main branch green, and was every run {since}? a red one is open, naming the first and the last"
+    return ("unanswered", f"run: {commands[0]} — {question}") if commands else ("open", "the row names no command that lists the runs")
+
+
 def j_word_not_a_skill(ctx: dict) -> tuple[str, str]:
     old_names = [f"{f}:{n} `{w}` (now `{FORMER_SKILLS[w]}`)" for f, n, w in skill_hits(ctx) if w in FORMER_SKILLS and w not in ctx["skills"]]
     prose = [f"{f}:{n} `{w}`" for f, n, w in skill_hits(ctx) if w in ctx["skills"] and not re.search(rf"/(?:livespec|skill):{w}\b", (ctx["claude_md"] if f == (ctx["context_name"] or "CLAUDE.md") else ctx["text"]).splitlines()[n - 1])]
@@ -1218,6 +1233,7 @@ JUDGMENT = {
     "check:credentials-present": j_credentials_present,
     "check:merged-branch-deleted": j_merged_branch_deleted,
     "check:merged-off-main": j_merged_off_main,
+    "check:main-green": j_main_green,
     "check:merge-queue": j_merge_queue,
     "check:word-not-a-skill": j_word_not_a_skill,
     "check:loop-per-claude-md": j_loop_per_claude_md,
