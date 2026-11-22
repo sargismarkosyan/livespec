@@ -1,14 +1,14 @@
 # The repository
 
-Conventions for the repository the loop runs in. What the commands are, where the
-app lives and which host serves it are **bindings** — every repository writes
-those down in its own `specs/setup/README.md`. What follows is the part that does
-not change between repositories.
+Conventions for the repository the loop runs in. The commands, where the app
+lives and which host serves it are **bindings**, written in the repository's own
+`specs/setup/README.md`. Each section names the principle in
+[README.md](README.md#six-principles) it follows from.
 
 ## Layout
 
-The method needs these to exist and to mean these things. Everything else is the
-repo's business.
+The method needs these to exist and to mean these things. Everything else is
+the repository's business.
 
 ```
 specs/
@@ -32,15 +32,15 @@ docs/screenshots/        the series — one picture per version
 docs/feedback/           images attached to open issues, deleted when they close
 ```
 
-Two rules about that tree, and they are the whole reason it is written down:
-
 - **`specs/setup/README.md` is where the method stops and the repository
-  starts.** A skill that needs a command reads it there. A skill that hardcodes
-  one has broken the plugin for the next repository.
+  starts** (one copy of anything). A skill that needs a command reads it there;
+  a skill that hardcodes one has broken the plugin for the next repository.
 - **`docs/screenshots/` is the deliverable**, not a byproduct. `docs/feedback/`
   is evidence for open questions and is expected to shrink.
 
 ## Branches and pull requests
+
+*From: every promise is checked by something that can fail.*
 
 `main` is protected. Work happens on a branch and arrives by pull request:
 
@@ -51,370 +51,257 @@ git push -u origin spec-0004-<slug>
 gh pr create --fill
 ```
 
-What the protection should enforce:
+What the protection enforces:
 
 | Setting | Effect |
 |---|---|
 | Pull request required | No direct push to `main`, ever |
 | Required status check | The verification job — traceability, tests, coverage |
-| Strict | The branch must be up to date with `main` before merging — with several changes in flight, a queue or the platform's own update keeps it, never a rebase by hand |
+| Strict | The branch is up to date with `main` before merging — kept by a queue or the platform's own update, never a rebase by hand |
 | Applies to admins | The repository owner has no bypass |
 | No force pushes, no deletion | `main`'s history cannot be rewritten or removed |
 | Merged branches deleted | A pull request stacked on one is retargeted to `main`, not merged into a branch nobody merges again |
 | Conversation resolution required | Review threads get answered, not merged past |
 
-**The required check is matched by name, and the name is the job's `name:`** —
-not the workflow's filename, and not the command it runs. Getting that wrong
-produces a check that is required and never runs, which blocks every merge while
-looking like a typo nobody made.
-
-**Approvals can honestly be zero** where there is one author: GitHub does not let
-anyone approve their own pull request, so requiring one locks the repository
-against its only contributor. Zero still forces every change through a pull
-request and through the check; it drops only a second pair of human eyes that
-does not exist.
-
-**Several merges at once keep Strict, and the updating is the platform's.**
-Each merge puts every other open pull request out of date, so five green
-changes merged by hand cost ten rebases. Where the platform offers a merge
-queue, merging goes through it: it tests each change against `main` and the
-changes ahead of it and merges them in order — and the required checks must
-run on the queue's own event, or every queued merge waits forever. Where it
-offers none, the platform updates each branch from `main` itself and merges
-it once green, one pull request at a time and in order: the reruns are still
-paid, and nobody types a rebase. Which of the two applies is read back from
-the platform, never inferred from the pipeline file, and a queue nobody has
-watched one merge through is *unobserved*. Dropping Strict to save the reruns
-is the trade this paragraph exists to refuse: two changes green alone can be
-red together.
-
-**A pull request may be based on another's branch, and it lands on `main`.**
-Parallel changes are sometimes dependent, and a stack is their natural shape.
-What the protection on `main` cannot see is a merge into anything else: when
-the base merges first and its branch stays, the pull request on top merges
-into that dead branch, reads *Merged*, and never reaches a release. So a
-stacked pull request merges only into `main`, retargeted there when its base
-merges — and the platform does the retargeting itself when it deletes a merged
-branch, which is why deletion is in the table above rather than left as a
-habit. **Merged is not the same as on `main`**: what arrived is read from
-`main`.
-
-Branch protection is the one gate that does not live in the repository, so it
-cannot be reviewed in a diff. That is why the table above is written down: it is
-the only record of a setting somebody could quietly change.
-
-**So it is read back from whatever enforces it, and never inferred from the
-repository.** A required check named in a CI config says a job runs; it says
-nothing about whether a merge is blocked when that job fails, and on more than
-one platform that is a separate setting somewhere else entirely. Filling this
-table in from what the tree implies produces a record that is confident, tidy and
-about nothing. Read the settings, write down what came back, and record the
-command that reads them again — the command is a binding, and it belongs in
-`specs/setup/README.md` beside the table.
+- **The required check is matched by the job's `name:`**, not the workflow's
+  filename or its command. A wrong name gives a check that is required and never
+  runs, and blocks every merge.
+- **Approvals can honestly be zero** where there is one author: no platform
+  lets someone approve their own pull request. Zero still forces every change
+  through a pull request and the check.
+- **Several merges keep Strict, and the platform does the updating.** Each merge
+  puts every other open pull request out of date. Where the platform has a merge
+  queue, merges go through it, and the required checks run on the queue's own
+  event or every queued merge waits forever. Where it has none, the platform
+  updates each branch from `main` and merges it once green, one at a time and in
+  order. Which of the two applies is read back from the platform; a queue nobody
+  has watched one merge through is *unobserved*. Dropping Strict to save the
+  reruns is refused: two changes green alone can be red together.
+- **A stacked pull request lands on `main`.** When its base merges first and the
+  base branch stays, the pull request on top merges into a dead branch, reads
+  *Merged*, and never reaches a release. So it is retargeted to `main` when its
+  base merges — which the platform does itself when it deletes merged branches,
+  the reason deletion is in the table. **Merged is not the same as on `main`**:
+  what arrived is read from `main`.
+- **The protection is read back from whatever enforces it, never inferred from
+  the repository.** It is the one gate that does not live in the tree, so it
+  cannot be reviewed in a diff, and a required check named in a CI file says
+  nothing about whether a merge is blocked. Read the settings, write down what
+  came back, and record the command that reads them again — a binding, beside the
+  table in `specs/setup/README.md`.
 
 ### Several changes at once
 
-**Several changes in flight at once is the ordinary case.** An agent makes a
-second change as cheap to start as the first, so a person driving several
-works one change per branch and one branch per tree — a linked worktree, a
-second clone, whatever the platform calls it. Every rule above is per change
-and holds as it is. What they assume, and what this section says out loud, is
-that every tree is as able to keep them as the first.
+**Several changes in flight is the ordinary case**: one change per branch, one
+branch per tree — a linked worktree, a second clone. Every rule above holds per
+change; this section is about every tree being able to keep them.
 
-**Every tree of a repository lives in one directory, and one command makes,
-lists and cleans them.** Both are bindings. A directory per person per week
-is how a repository ends up with trees in two folders under overlapping names
-and nobody able to say which of them holds work. The directory belongs to the
-repository, not to any agent harness: a harness's own way of making a tree
-calls the command, and the command never calls a harness. Somebody who
-changes harness, or runs two, then still has one set of trees and one way to
-make the next.
+- **Every tree lives in one directory, and one command makes, lists and cleans
+  them.** Both are bindings. The directory belongs to the repository, not to an
+  agent harness: a harness's way of making a tree calls the command, and the
+  command never calls a harness.
+- **A fresh tree is made ready by that command, never by hand.** A tree readied
+  by hand differs from the last in the way nobody sees — a hook on in one tree
+  and off in another, and a tree without checks reads like one whose checks
+  passed.
+- **Every resource a tree touches is one of three kinds, and the bindings say
+  which** — decided once, not discovered by the second agent. The agent
+  harness's own state kept in a tree is sorted the same way.
+  - **The tree's own**: a port, a database on the shared server, a data
+    directory, a queue or cache prefix, the names the runtime gives what it
+    starts. Worked out per tree by the command, each carrying the tree's name.
+  - **Shared, started once**: a database server, a network, a package store. A
+    second tree reuses what the first started.
+  - **Shared and contended, decided**: one development database, one callback
+    address, one account's limit — written down with the reason, so it reads as
+    a choice and not as a collision.
+- **One env file configures a tree.** The command copies it from one source
+  outside every tree's history, changes only the tree's own lines, keeps it
+  ignored and never commits it. A value the app reads from anywhere else is a
+  setting only the app can move into the file, and that change is filed rather
+  than worked around.
+- **A tree's own values are worked out from the tree**, not picked at start, so
+  the same tree gets the same port every time and the list of trees says what
+  runs where.
+- **Cleaning goes by the repository's record of its trees, never by deleting a
+  directory.** A tree is removed only when it has nothing to lose — nothing
+  uncommitted or untracked, every commit on the main branch, not locked, not the
+  tree the command runs from — and with what it held of its own: what it started
+  is stopped and its own database dropped; what is shared stays up. Every other
+  tree is listed with the reason it stayed.
+- **All of it is watched, not assumed.** Before the bindings say a fresh tree
+  works, a throwaway one is made by the command, verification runs green in it —
+  and the app, beside the first tree's — and the command cleans it. Verification
+  in the first tree, run while the throwaway exists, counts what it counted
+  before, so a tool walking into the directory is caught.
 
-**A fresh tree is made ready by that command, never by hand.** A tree readied
-by hand is readied differently from the last, and the difference that matters
-is the one nobody sees: a hook turned on as a side effect of an install only
-one tree had, so the checks before a push run in some trees and not in
-others, and a tree without them reads exactly like one whose checks passed.
+**An issue is taken once.** Work on an issue starts with a **claim** in the
+tracker, the one place every tree and machine reads: the marker the bindings
+name, and one comment saying where the work is — branch, tree, harness, and the
+session's id as the harness gives it, or *not exposed*, never an id made up.
 
-**Every resource a tree touches is one of three kinds, and the bindings say
-which.** What does not scale is a property of the project, not of the tree,
-so it is decided once rather than discovered by the second agent.
+- The claim is read before anything is written about the issue. A claimed issue
+  is reported, not taken; asked for *the next issue*, a session chooses among the
+  unclaimed and says which it skipped.
+- **Nothing releases a claim by age.** A slow session and a dead one look alike,
+  so a claim with no branch, no tree and no pull request behind it is shown to
+  the person with its age, and taking it over is their call — the new comment
+  naming the claim it replaced.
+- A claim ends with the pull request that closes the issue, or with the session
+  that drops the work, which takes the marker off and says why. A tracker that
+  does not answer is said: an unread claim is not an absent one.
 
-- **The tree's own** — a port, a database on the shared server, a data
-  directory, a queue or cache prefix, the names the runtime gives what it
-  starts. Each is worked out per tree by the command, and each name carries
-  the tree's name.
-- **Shared, started once** — a database server, a network, a package store
-  that is safe to share. A second tree reuses what the first started, and
-  never starts a second copy of something one copy can serve.
-- **Shared and contended, decided** — trees knowingly writing one development
-  database, one callback address, one account's limit. Sometimes that is
-  acceptable. It is written down with the reason, so it reads as a choice and
-  not as a collision nobody saw.
+**A number nobody else holds.** A change spec is numbered one past the highest
+anywhere in flight — the main branch, the change specs in open pull requests,
+and the branches the open claims name — because a tree's own checkout sees only
+the first. The claim reserves the number. **Gaps stay gaps**: a closed pull
+request's number is never reused. If two collide anyway, the one not yet merged
+is renumbered — its file, its heading, every link to it. An application's own
+numbered files, such as migrations, collide the same way, and Strict and a
+pipeline that runs them catch it.
 
-The agent harness's own state kept inside a tree is a resource like any
-other, and sorted the same way.
-
-**One env file configures a tree.** Everything a tree varies is read from it.
-The command copies it from one source outside every tree's history, changes
-only the lines the tree has of its own, keeps it ignored, and never commits
-it. A value the app reads from anywhere else — a port or a path fixed in its
-code — is a setting only the app can move into the file, and that change is
-filed rather than worked around.
-
-**A tree's own values are worked out from the tree, not picked when it
-starts.** The same tree gets the same port every time, so what is running
-where can be read off the list of trees rather than guessed.
-
-**Cleaning goes by the repository's own record of its trees, never by deleting
-a directory.** The record finds every tree, including one a harness made
-somewhere else; a deleted directory leaves the record claiming a tree that is
-gone. A tree is removed only when it has nothing to lose — nothing uncommitted
-or untracked, every commit on the main branch, not locked, not the tree the
-command runs from — and it goes with what it held of its own: what it started
-is stopped and its own database dropped, while what is shared stays up. Every
-other tree is listed with the reason it stayed. The rule is written as what
-it keeps, because it is the one step here that destroys anything.
-
-**And all of it is watched, not assumed.** Before the bindings say a fresh
-tree works, a throwaway one is made by the command, verification runs green
-in it — and the app, beside the first tree's — and the command cleans it
-again. Verification in the first tree, run while the throwaway exists, counts
-what it counted before, so a tool walking into the directory is caught
-rather than inherited. A readiness nobody watched is the same claim as a gate
-nobody broke.
-
-**An issue is taken once.** With trees cheap, the same issue can be handed
-to two of them, and nothing shows it until both specs exist. So work on an
-issue starts with a **claim**, in the tracker, because the tracker is the one
-place every tree and every machine reads; a file in one tree is invisible to
-the next until it merges. The claim is a marker the bindings name, for a list
-of issues to filter on, and one comment saying where the work is: the branch,
-the tree, the harness, and the session's id as that harness gives it — or
-*not exposed*, never an id made up — so the person can resume the session
-rather than start the work again.
-
-The claim is read before anything is written about the issue, and a claimed
-issue is reported, not taken; asked for *the next issue*, a session chooses
-among the unclaimed and says which it skipped. **Nothing releases a claim by
-age.** From outside, a slow session and a dead one look alike, so a claim
-with no branch, no tree and no pull request behind it is shown to the person
-with its age, and taking it over is their call — the new comment naming the
-claim it replaced. A claim ends with the pull request that closes the issue,
-or with the session that drops the work, which takes the marker off and says
-why. A tracker that does not answer is said: an unread claim is not an absent
-one.
-
-**A number nobody else holds.** A change spec is numbered one past the
-highest anywhere in flight — the main branch, the change specs in open pull
-requests, and the branches the open claims name — because a tree's own
-checkout sees only the first, and two trees cut from one main each take *the
-next*. The claim reserves the number: the branch it names carries it, from
-the moment the comment is written. **Gaps stay gaps** — a closed pull
-request's number is never reused, so a link that cited it never comes to mean
-something else. If two collide anyway, the one not yet merged is renumbered:
-its file, its heading, every link to it; the branch may keep its old name. An
-application's own numbered files — migrations numbered one past the highest —
-collide the same way, and what catches them is Strict and a pipeline that
-runs them, which is why the bindings name that command.
-
-Nothing caps how many trees run at once. That is a fact about one machine and
-one person's attention, and the list of trees is where the number is read.
+Nothing caps how many trees run at once; the list of trees is where the number
+is read.
 
 ### Every pull request shows what it did
 
-**A pull request that changes what the app looks like shows it, in the body.**
-The deliverable is a series of pictures — a description of a screen is not one,
-and a reviewer should not have to check the branch out to see what a version did.
+*From: every promise is checked by something that can fail.*
 
-**One picture per version**, in `docs/screenshots/`, named for the change spec
-that shipped it.
+**A pull request that changes what the app looks like shows it, in the body** —
+one picture per version, in `docs/screenshots/`, named for the change spec that
+shipped it.
 
-**The form follows what changed, never what is easier to produce.** Much of what
-an app does is a thing *happening*, and a frozen frame is exactly the part that
-does not carry — so a change that unfolds is recorded moving. A change whose
-whole result is a screen sitting there is a still, and padding it into an
-animation to satisfy a format buys nobody anything. Which one is owed is a fact
-about the change, and the moment the convenient answer and the true one come
-apart it is the recording that is owed.
+- **The form follows what changed.** A change that unfolds is recorded moving; a
+  change whose whole result is a screen sitting there is a still. When the
+  convenient answer and the true one come apart, the recording is owed.
+- **It is composed for somebody holding the request and nothing else**: can the
+  person who asked tell whether they got it, from the request and this one
+  picture, without the diff, the branch or the app?
+- **It is recorded on the branch, before the pull request is opened**, by
+  [`record-clip`](../skills/record-clip/SKILL.md), which owns the how.
+- **It is embedded with a raw URL pinned to the commit**, not the branch:
 
-**And it is composed for somebody holding the request and nothing else.** That is
-the standard, and it is harder than it sounds: not *does this show the change*
-but *can the person who asked tell whether they got it* — from the request and
-this one picture, without the diff, the branch or the app. A picture that shows
-how the change was built rather than what was asked for has failed that, however
-faithfully it records.
+  ```sh
+  sha=$(git rev-parse HEAD)
+  echo "![...](https://raw.githubusercontent.com/<owner>/<repo>/$sha/docs/screenshots/vNNN-<slug>.gif)"
+  ```
 
-It is recorded **on the branch, before the pull request is opened**, by the
-[`record-clip`](../skills/record-clip/SKILL.md) skill, which owns the how —
-viewport, frames, stitching, what to put on screen.
+  A branch URL rots when the branch is deleted on merge, a relative path does not
+  resolve in a pull request body, and a raw `.gif` animates there where a video
+  file does not.
 
-Embed it with a **permanent** raw URL pinned to the commit rather than the
-branch:
-
-```sh
-sha=$(git rev-parse HEAD)
-echo "![...](https://raw.githubusercontent.com/<owner>/<repo>/$sha/docs/screenshots/vNNN-<slug>.gif)"
-```
-
-A branch URL is the obvious thing and it rots: branches are deleted on merge and
-the image goes with them. Relative paths do not work at all — GitHub does not
-resolve them in a pull request body. A raw `.gif` animates there, which is why a
-recording is that format rather than a video file.
-
-A change with nothing to see — tooling, a doc, a refactor — says so in a line
-instead. That is the only exemption, and "it is hard to record" is not it.
+A change with nothing to see — tooling, a doc, a refactor — says so in a line.
+That is the only exemption; "it is hard to record" is not one.
 
 ### And the Gherkin it moved
 
 **A pull request that changes a promise quotes the promise.** When a change adds
-or alters a `.feature`, a workflow walk or the walkthrough test behind one, the
-body carries the Rule and its Examples — quoted inline, or linked at the commit
-SHA rather than at the branch, for the reason the raw URL above exists.
-
-The picture shows what the version does. This shows what it now *claims*, which
-is the half a reviewer is actually deciding about and the half that outlives the
-release. A diff answers neither: it shows a promise changing without showing what
-it changed into, and it is somewhere the reviewer is not.
-
-Conditional, like the picture and for the same reason: a change touching no spec
-surface says nothing. Ceremony applied to every pull request is ceremony that
-gets skipped on the one that needed it.
-
-**Both halves are gate-checkable and should be gated**, because a convention that
-depends on the author remembering it is a convention that decays in the direction
-of silence. What a gate can prove is that the block is *there*; whether it is the
-right Gherkin is a reading, and the reading is what review is for.
+or alters a `.feature`, a workflow walk or the test behind one, the body carries
+the Rule and its Examples, quoted or linked at the commit SHA. The picture shows
+what the version does; this shows what it now *claims*, which is what the
+reviewer decides about and what outlives the release. A change touching no spec
+surface says nothing.
 
 ### And the run it rests on
 
-**A pull request that claims green carries the run.** The verification command
-as the bindings name it, its output as the runner printed it — the last lines
-at least, the verdict among them — and, for a change crossing a boundary, the
-state read back afterwards: the row that exists, the file on disk, the reply
-the real service gave. Not a summary of the run. Every fabricated result on
-record was a summary; none was a transcript.
+**A pull request that claims green carries the run**: the verification command
+as the bindings name it, and its output as the runner printed it — the last
+lines at least, the verdict among them — and, for a change crossing a boundary,
+the state read back afterwards. Never a summary: every fabricated result on
+record was one. The report prints the pipeline's own run beside the block, so
+the two disagree where the reviewer is looking, and gates on nothing there.
 
-The report reads the same command's output from the pipeline's own run and
-prints it beside the block, so a body that says one thing and a pipeline that
-says another disagree where the reviewer is looking. The report never gates on
-the difference; what it does is make it visible.
-
-Conditional, like the picture and the Gherkin: a change that touches the tests,
-or what runs them, owes the block; a change to a page of prose does not,
-because a run block for a change the verification does not read is ceremony,
-and ceremony is what gets skipped on the pull request that needed it. What a
-gate can prove is that the block is there and opens with the command the
-bindings name — the same check the Gherkin block gets, for the same reason.
-Whether the output is real is a reading, and the report is what makes the
-reading cheap.
+Owed only by a change that touches the tests or what runs them. Both blocks —
+the Gherkin and the run — are gate-checked for being there and, for the run,
+for opening with the bindings' command; whether they are right is a reading,
+which is what review is for.
 
 ### And the point, before the evidence
 
-**Everything above is what a body carries. This is how it is written and
-read.** A reviewer opens a pull request to decide on a change, and every item
-above is there to back that decision, not to replace it. An agent writes down
-everything it checked, and every item looks owed, so a body written that way
-grows until the change cannot be found in it. Two readers are now owed the
-same body: the person deciding, who did not ask for the change, and any
-reviewing or testing agent that reads the body as the author's intent.
+**A body backs a decision; it does not replace it.** Two readers are owed it:
+the person deciding, who did not ask for the change, and any agent reviewing or
+testing that reads it as the author's intent.
 
-**The repository's template wins.** Where the repository has a pull request
-template, the body fills it: every heading and checkbox, in its order. Nothing
-is renamed, replaced or added beside it; what follows goes into the field that
-matches it, and folded evidence with no field of its own closes the testing
-section. With no template, the order is the point, with no heading; the links
-line; the sections the repository's own rules require; then decisions, testing
-and risk, each only when it has something to say; then the folded evidence.
+**The repository's template wins.** Where there is a pull request template, the
+body fills it — every heading and checkbox, in its order, nothing renamed,
+replaced or added beside it; folded evidence with no field of its own closes the
+testing section. With no template: the point, with no heading; the links line;
+the sections the repository's rules require; then decisions, testing and risk,
+each only when it has something to say; then the folded evidence.
 
-**A checkbox is a claim.** It is ticked only when it is true now. A box whose
-claim waits on an open question, or on an approval the platform does not
-enforce, stays unticked and says what it waits on. A box that does not apply
-reads `N/A`, with the fact that makes it so.
+**A checkbox is a claim**: ticked only when true now. One that waits on an open
+question or on an approval the platform does not enforce stays unticked and says
+what it waits on; one that does not apply reads `N/A`, with the fact that makes
+it so.
 
 **The point states the problem before the change**: who is affected, what goes
-wrong, and how it is known, by a number, a report, an incident or the
-request itself. Then one sentence on what changes. The test is to hide that
-last sentence: the reader should still know why the change exists. A body
-that opens with what changed hides the reason in a clause, and the reviewer
-is left to guess it. Where the template has a field for why, the problem goes
-there.
+wrong, and how it is known — a number, a report, an incident, or the request.
+Then one sentence on what changes. Hide that sentence, and the reader should
+still know why the change exists. Where the template has a field for why, the
+problem goes there.
 
 **What goes in**, one line each:
 
-- **The issue.** It is closed only when the facts say it is finished;
-  otherwise the body relates to it. A part split into its own issue is named
-  in the links line.
-- **Every reference is a link with its title.** An issue, pull request,
-  incident or spec is never a bare number: a reader who has seen none of them
-  learns from the title what each one is. A later mention may be the short
-  link alone. An item with no address is its id with its title in words.
-- **A release note only where the repository publishes one.** There it is
-  written for users: every change they will notice, no reasons and nothing
-  internal, or that there is nothing. It reads true on its own in the
-  changelog, flag and all. Where nothing is published, there is no release
-  note.
-- **Before and after**, inline and pinned, when an existing screen changed;
-  the after alone when the screen is new.
-- **Decisions.** The choice, the alternative rejected, and its cost when one
-  is known. One that is not settled is an open question.
-- **Testing.** What was checked; the tests added, by name, apart from what
-  ran; the exact names a tester needs, such as flags, keys and error codes;
-  and every gap that bears on this change. A run that is owed is given its
-  real price, with this change's own share apart from what was already owed.
-- **Risk and rollout.** Flag states, approvals the platform does not enforce,
+- **The issue**, closed only when the facts say it is finished; otherwise the
+  body relates to it. A part split into its own issue is named in the links line.
+- **Every reference is a link with its title** — an issue, pull request,
+  incident or spec, never a bare number. A later mention may be the short link
+  alone; an item with no address is its id with its title in words.
+- **A release note only where the repository publishes one**, written for users:
+  every change they will notice, no reasons and nothing internal, or that there
+  is nothing. It reads true on its own in the changelog.
+- **Before and after**, inline and pinned, when an existing screen changed; the
+  after alone when the screen is new.
+- **Decisions**: the choice, the alternative rejected, and its cost when known.
+  One not settled is an open question.
+- **Testing**: what was checked; the tests added, by name, apart from what ran;
+  the exact names a tester needs; every gap that bears on this change. A run
+  that is owed carries its real price, this change's share apart.
+- **Risk and rollout**: flag states, approvals the platform does not enforce,
   steps before or after deploy, and rollback.
-- **The evidence, folded**: the picture inline, the Gherkin and the run word
-  for word, and how it works where the mechanics matter to the decision.
+- **The evidence, folded**: the picture inline, the Gherkin and the run word for
+  word, and how it works where the mechanics matter to the decision.
 
-**Before it is published**, three steps:
+**Before it is published:**
 
-1. **Ask, don't guess.** What the author can supply — a reason, a cost, a
-   rollout, a rollback, an address, a title, a picture — is asked for. It is
-   never invented and never left as a placeholder. What nobody can answer yet
-   is an open question that names who can.
-2. **Check it against the diff.** What the body says the change does is held
-   against the final diff: a claim the diff does not bear out is cut, and a
+1. **Ask, don't guess.** A reason, cost, rollout, rollback, address, title or
+   picture the author can supply is asked for — never invented, never a
+   placeholder. What nobody can answer yet is an open question naming who can.
+2. **Check it against the diff.** A claim the diff does not bear out is cut; a
    behaviour change the diff shows and the text misses is added. Reasons,
-   numbers and approvals need a fact to point to. Tests added are kept apart
-   from tests run.
-3. **Cut.** About a hundred words of the author's own, unfolded. A risky
-   change adds one line for each decision, open question or rollout step it
-   carries. The template's headings, its checklist and the titles inside links
-   are not counted. Words are cut, never a name or fact a reviewer or tester
-   needs; only the evidence and the mechanics are folded.
+   numbers and approvals point to a fact. Tests added are kept apart from tests
+   run.
+3. **Cut.** About a hundred words of the author's own, unfolded; a risky change
+   adds a line per decision, open question or rollout step. Template headings,
+   its checklist and titles inside links are not counted. Words are cut, never a
+   name or fact a reviewer or tester needs.
 
 And throughout:
 
-- **Each fact once**, in the whole body, folded parts included. Only the
-  verbatim evidence, and a release note that must read on its own, repeat.
-  Two pull requests that belong together link each other instead of carrying
-  the same block.
-- **Nothing about what the change does not do.** Under a template heading
-  that mentions scope, the heading stays and only decisions go under it.
-- **No standing noise.** What is true of the repository on every pull
-  request — a flaky job, a known warning, a backlog total, an approval the
-  platform already enforces — is left out.
-- **In words the reviewer already has.** A name the session made up is the
-  one word in the body the reviewer has never seen. Write what it names
-  instead.
-- **The author owns it.** Generated text is a draft: read, cut, and
-  explainable line by line. It carries no line about which tool wrote it.
+- **Each fact once**, folded parts included; only the verbatim evidence and a
+  release note repeat. Two pull requests that belong together link each other
+  instead of carrying the same block.
+- **Nothing about what the change does not do.** Under a template heading about
+  scope, only decisions go.
+- **No standing noise**: what is true on every pull request — a flaky job, a
+  known warning, a backlog total, an approval the platform enforces — is left
+  out.
+- **In the reviewer's words.** A name the session made up is written as what it
+  names.
+- **The author owns it.** Generated text is a draft: read, cut, explainable line
+  by line, with no line about which tool wrote it.
 
-**The message asking for review follows the same rule.** It is shorter still:
-the problem, the link, and what the reviewer is asked to decide.
+**The message asking for review** is shorter still: the problem, the link, and
+what the reviewer is asked to decide.
 
-**No gate can hold this.** Whether the opening states the problem is a
-reading, which is what review is for. A gate on length would be met by cutting
-words, not by stating the problem. What a report that already reads the body
-can do is count the words before its first heading, code block or folded
-block, and print that count where the reviewer is looking. It gates on nothing
-there, for the same reason it does not gate on the run; under a template whose
-first line is a heading, it reads zero and means nothing.
+**No gate can hold this**: whether the opening states the problem is a reading.
+A report that already reads the body counts the words before its first heading,
+code block or folded block and prints the count, gating on nothing; under a
+template whose first line is a heading it reads zero and means nothing.
 
 ## Commits
 
-One change spec, one commit. Message format:
+One change spec, one commit:
 
 ```
 spec 0005: <the spec's title>
@@ -427,51 +314,33 @@ Closes #12
 
 - Spec commits use the same prefix and land **before** their implementation.
 - Setup and tooling commits have no spec number; describe them plainly.
-- **Never commit a state that fails verification.** The required check will catch
-  it on the pull request, but finding out locally is cheaper, and every commit is
-  a screenshot candidate.
+- **Never commit a state that fails verification.** Every commit is a picture
+  candidate, and finding out locally is cheaper than on the pull request.
 
 ## Issues
 
-**Wherever that repository's bindings say, through the command they name.** Not a
-tracker this method picked — GitHub through `gh` is the common answer and it is
-an example rather than the definition. A repository whose issues live on a
-self-hosted host, behind a different CLI, is not an edge case being tolerated; it
-is the ordinary case, and a skill that assumes otherwise is unusable there.
+*From: one copy of anything.*
 
-No issue directory in the repo either — two trackers in parallel is one tracker
-nobody reads.
+**Wherever the repository's bindings say, through the command they name.** GitHub
+through `gh` is an example, not the definition; a self-hosted tracker behind
+another CLI is the ordinary case. No issue directory in the repository: two
+trackers in parallel is one tracker nobody reads.
 
 ### Which repository a skill is acting on
 
-**The one the session is working in.** Every repository-scoped action — filing,
-listing, reading an issue, committing evidence — targets the repository under the
-session's working directory. **The plugin's own checkout is never a target**, and
-this needs saying because nothing has to be misconfigured for it to become one:
-however the plugin was installed, its root is a clone with a working remote, and
-a filing command run there succeeds.
+**The one the session is working in.** Filing, listing, reading an issue and
+committing evidence all target the repository under the session's working
+directory. **The plugin's own checkout is never a target** — it is a clone with a
+working remote, so a filing command run there succeeds, and an issue in the wrong
+tracker is seen by neither maintainer.
 
-The failure this prevents is the one nobody is told about. An issue in the wrong
-tracker produces no error and no second copy: the maintainer of the repository
-being reported on never sees it, and the maintainer of the plugin never sees it
-either. Every other mistake in this method announces itself; this one is silent
-on both sides at once.
-
-So **a skill that is about to file says which repository it is filing into,
-before it files.** That is not ceremony. It is the only moment the answer is
-cheap to correct, and it is the difference between being right on purpose and
-being right by coincidence — which look identical from the outside.
-
-**The one exception is a report about the plugin itself.** When the human says
-the complaint is about a skill rather than about the thing they are building, it
-goes to the plugin's own tracker, and the reply says so. Where that is genuinely
-unclear — a report that could be either, with nothing said — **ask, once. Do not
-pick.** A guess that lands wrong is invisible to both maintainers, which makes it
-the one place in this method where a question costs less than an inference.
-
-None of this requires the two repositories to be different places. Somebody
-working inside the plugin's own repository gets the same rule and the same
-answer.
+- **A skill about to file says which repository it is filing into, before it
+  files** — the one moment the answer is cheap to correct.
+- **A report about the plugin itself** goes to the plugin's own tracker, and the
+  reply says so. Where it is unclear which the report is about, **ask once; do
+  not pick.**
+- Inside the plugin's own repository the rule is the same and gives the same
+  answer.
 
 | Label | Meaning |
 |---|---|
@@ -486,82 +355,54 @@ answer.
 ### Closing an issue
 
 Put `Closes #12` in the **pull request description**, not only in a commit
-message.
+message: a commit's keyword depends on its text surviving the merge, which a
+squash setting can quietly break, while the description's fires on merge
+whatever the strategy, and the platform can list beforehand what it will close.
 
-Both mechanisms close the issue when the work reaches `main`. The difference is
-what they depend on. A keyword in a commit message relies on that commit's text
-surviving the merge, which under squash merging depends on a repository setting
-somebody can change later with no sign that it broke issue closing. A keyword in
-the description fires on merge whatever the strategy, and the platform can say
-before the merge which issues it will close, so you can see it is wired up
-rather than hope.
+**The keyword sits straight before a bare reference** — `Closes #12`, or the
+keyword followed by the issue's full URL, which also links. Two forms read like a
+closing line and close nothing:
 
-**The keyword sits straight before a bare reference.** `Closes #12` closes, and
-so does the keyword followed by the issue's full URL, which links as well — the
-form for a repository whose convention is to link every reference. Two lines
-that read like a closing line close nothing:
+- **words between** — `Closes the structural half of #12` is a plain mention;
+- **a Markdown link** — the keyword, then `#12` linked to the issue. GitLab
+  registers nothing from it; on GitHub it is untested.
 
-- **words between** — `Closes the structural half of #12` is read as a plain
-  mention;
-- **a Markdown link** — the keyword, then `#12` linked to the issue. It is what
-  a convention of linking every reference produces, and GitLab registers
-  nothing from it, whichever URL the link points at. On GitHub it is untested.
+A keyword before a real reference can register even inside a code span, so a
+description that discusses closing lines writes them without one.
 
-Both still *read* like a closing line, which is how they go unnoticed. The opposite
-holds too: a keyword in front of a real reference can register even inside a
-code span, so a description that discusses closing lines writes them without
-the keyword in front of a real reference.
-
-**So the step that opens the pull request reads back what it will close,
-before handing it back.** The platform says which issues the merge will close;
-what the description says is not that answer. An empty list means no issue will
-close. A list naming an issue the change does not finish means one will close
-that should not. Either is fixed in the description and read again. The command
-is a binding, read from the platform the repository is on, and it belongs in
-`specs/setup/README.md` beside the tracker — for the reason the protection
-table's read-back is one: a check written as one platform's command is a check
-nobody runs on another.
+**The step that opens the pull request reads back what it will close**, from the
+platform, before handing it back. An empty list closes nothing; a list naming an
+issue the change does not finish closes one that should stay open. Either is
+fixed in the description and read again. The command is a binding, beside the
+tracker in `specs/setup/README.md`.
 
 ### Closing an issue by hand
 
-Two cases, and both need a comment before the close.
+Both cases get a comment before the close.
 
-**The work shipped, but the resolution is not what was asked for.** Close it
-anyway, as completed. An issue tracks a *job*, not a feature list, and the job
-can be answered by something other than the thing requested. The comment is what
-matters: **what was asked, what shipped, and why they differ.** A dropped part of
-the request is recorded there with its reasoning — and if it is still wanted it
-gets a fresh issue rather than living on as the stale half of a finished one.
-Half-open issues rot, and nobody reads a tracker of them.
+- **The work shipped, but not what was asked for.** Close it as completed: an
+  issue tracks a *job*, and the job can be answered by something other than the
+  request. The comment says **what was asked, what shipped, and why they differ**;
+  a dropped part that is still wanted gets a fresh issue. This is why a pull
+  request answering half an issue leaves the keyword out.
+- **The issue was mistaken rather than fixed.** Close it saying which.
 
-This is the case the keyword cannot serve, and the reason to leave the keyword
-out on purpose: a pull request answering half of what an issue asked should not
-close it silently on merge, before anybody has written down what happened.
+Then:
 
-**The issue turns out to be mistaken rather than fixed.** Close it with a comment
-saying which — a tracker that cannot distinguish "fixed" from "wasn't real" stops
-being worth reading.
-
-**Take its screenshot out.** If the body embeds a `docs/feedback/` image, `git rm`
-it in the same change that closes the issue. Evidence for a settled question is
-just weight.
-
-**Sweep the siblings.** A shipped change often answers more than the issue it was
-written for. When one closes, read the others it touched; where it only
-half-answers one, say exactly what did not change and invite a reopen.
+- **Take its screenshot out** — `git rm` its `docs/feedback/` image in the change
+  that closes it.
+- **Sweep the siblings.** Read the other issues the change touched; where it
+  half-answers one, say exactly what did not change and invite a reopen.
 
 ## Screenshots
 
-`docs/screenshots/` holds one picture per version — the actual deliverable.
-`docs/feedback/` holds images attached to issues, which are evidence rather than
-product.
+*From: delete what stops being true.*
 
-Images pasted directly into chat cannot be written to disk. For a screenshot to
-reach either folder it has to be handed over as a **file path**.
+`docs/screenshots/` holds one picture per version, and nothing there is ever
+deleted. `docs/feedback/` holds images attached to issues: committed while the
+issue is open — a committed file is the only thing an issue can render — and
+removed with `git rm` when it closes. What the screenshot showed is written into
+the issue, so the closed issue still says what happened.
 
-**Feedback images live exactly as long as their issue.** A committed file is the
-only thing a GitHub issue can render, so the image goes in while the issue is
-open and comes out with `git rm` when it closes. What the screenshot *showed* is
-written into the issue body, so the closed issue still says what happened after
-the picture is gone. `docs/screenshots/` is the opposite: nothing there is ever
-deleted.
+An image pasted into chat cannot be written to disk: it reaches either folder
+only when handed over as a **file path**.
