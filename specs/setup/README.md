@@ -257,12 +257,20 @@ what moved was what the numbers were allowed to be called.
 
 ## Gate wiring
 
-**Reconciled against livespec 1.32.1 on 2026-11-21.** One row per gate named in
+**Reconciled against livespec 1.33.0 on 2026-11-22.** One row per gate named in
 [`gates.md`](../../method/gates.md#what-is-wired-and-what-is-not) — including the
 ones that are not wired, which is the half a repository otherwise forgets. This
 repository *is* the plugin, so the stamp above is the version in the same commit
 as the method it was reconciled against; anywhere else the two move apart, and
 that gap is the thing a later `setup` run offers to close.
+
+**What the rows leave uncovered, said once for all of them.** Every *automated*
+row runs over the whole of what it names: `trace.py` reads every file under
+`specs/` and `evals/` and every test under `tests/`, and `checks.py` every skill,
+manifest and markdown file. None is scoped to part of the tree. What no gate here
+covers: the Python under `tools/` and `.github/scripts/` has tests but no
+coverage measure (`gate:coverage` reads *not applicable*), and an eval case's
+score is never gated (0087). Written by the audit of 2026-11-22.
 
 | id | gate | state | evidence |
 |---|---|---|---|
@@ -415,7 +423,7 @@ did.
 | `boundary:model-session` | the model session | **real** | 0012 | `claude -p`, started by `python3 evals/runner/run.py --ablation with-without --judge-model sonnet --model claude-sonnet-5 --allow-tools Write Edit Bash --scaffold --i-approve-the-cost` — the maintainer's to run, paid per run. Since 0057 the sessions run on `claude-sonnet-5` and every row records the model its transcripts name. The account's session limit, which ended every whole sitting before 0059, is read from the event: the run stops, exits 3, and `--resume` takes it up. Since [`0072`](../changes/0072-a-cheap-tier-holds-every-edit.md) the same boundary, the same account, is crossed a call at a time by `python3 evals/runner/tiers.py --changed --scaffold --i-approve-the-cost` — routing turns, first replies, reviews — and by `tiers.py --transcripts`, which reads the maintainer's own session files and sends them to the judge |
 | `boundary:judge` | the judge | **unreachable** — decided | 0042 | a model standing in for the human who would read what came out. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16 rather than left as an apology: the calibration set that would make it a *fake* — verdicts a person has scored, re-scored by the judge on a schedule, [`evals/README.md`](../../evals/README.md#calibration) — is real work nobody has scheduled, and every change touching the judge says so where the change is decided. Since 0057 the judge is the sessions' own model, Sonnet, and its price is ledgered into the row; the same eyes read both arms, so what it prefers in its own kind lands on both sides of Δ — bounded, not removed. Leaves uncovered: everything a person would have scored differently, and a preference for one arm's voice that only the calibration read could show |
 | `boundary:consuming-repository` | the consuming repository a case runs in | **unreachable** — decided | 0042 | a scaffold script's fixture, a stand-in for a repository somebody set up. It read *mocked* from 0039 and passed the two-change clock at 0042; written off at the audit of 2026-09-16: a case against a live remote, CI and a real tracker is a repository nobody has set aside for it, the reference repository is read by hand, and every change touching the runner says so where the change is decided. Leaves uncovered: a live remote, CI, a real tracker — which is why [`the-sitting-ends-by-using-the-pipeline`](../features/setup/demonstration.feature) stays `@planned` |
-| `boundary:platform` | the platform | **real** | 0021 | `gh` against `sargismarkosyan/livespec`, read back 2026-08-29 with the commands under *Branch protection* below. Leaves uncovered: nothing named |
+| `boundary:platform` | the platform | **real** | 0021 | `gh` against `sargismarkosyan/livespec`, read back 2026-11-22 with the commands under *Branch protection* below. Leaves uncovered: nothing named |
 
 **The stamp stayed at 1.1.0 through 0039**, because a table was added and
 nothing was rewired. **Since the audits of 2026-09-16 it follows every
@@ -610,8 +618,8 @@ Migrated from classic branch protection to a **repository ruleset** on
 **2026-08-25**. This is the one gate that does not live in the repository, so
 this table is the only record of a setting somebody could quietly change — and
 the only thing keeping it honest is somebody re-running the commands at the end
-of this section. **Last read back on 2026-08-29**, with all three; every value
-below matched what was already written, and nothing here is a memory of the
+of this section. **Last read back on 2026-11-22**, by `doctor`, with the five
+commands below; every value matched what was already written, and nothing here is a memory of the
 sitting that set it up.
 
 **Everything below was read from GitHub rather than inferred from
