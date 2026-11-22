@@ -1,5 +1,5 @@
 ---
-tags: [skill:doctor, rule:a-claim-outside-the-tree-is-read-back, rule:a-row-says-what-it-leaves-uncovered, rule:a-gap-is-a-row-not-a-sentence, rule:old-rows-are-matched-by-alias]
+tags: [skill:setup, rule:a-claim-outside-the-tree-is-read-back, rule:a-row-says-what-it-leaves-uncovered, rule:a-gap-is-a-row-not-a-sentence, rule:old-rows-are-matched-by-alias]
 max_turns: 100
 timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

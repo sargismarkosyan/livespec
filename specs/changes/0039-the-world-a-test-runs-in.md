@@ -197,7 +197,7 @@ reach it, comes back naming the tests.
    that most rows on an occupied repository's first day read *mocked* or
    *unreachable*, and honestly.
 
-4. **[`doctor`](../../skills/doctor/SKILL.md) §1 reads the boundary rows**,
+4. **[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) §1 reads the boundary rows**,
    which are the rows a diff cannot check: does the thing a *real* row names
    actually start from here — run it; does any rule-bound test double that
    boundary — the gate says, and where the gate predates the row, grep with the

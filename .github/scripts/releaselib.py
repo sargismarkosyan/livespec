@@ -318,7 +318,7 @@ def prepend_entry(changelog: str, version: str, date: str, entry: str) -> str:
 IDS_HEADING = "## The ids"
 IDS_FILE = "method/requirements.md"
 NEXT = "next"
-AUDIT_SURFACE = ("skills/doctor/", "tools/doctor.py", "templates/bindings.md", IDS_FILE)
+AUDIT_SURFACE = ("skills/setup/", "tools/doctor.py", "templates/bindings.md", IDS_FILE)
 ID_SHAPE = re.compile(r"^(gate|wiring|check):[a-z0-9]+(?:-[a-z0-9]+)*$")
 IDS_SECTION = re.compile(r"^##[ \t]+Ids[ \t]*$", re.IGNORECASE | re.MULTILINE)
 UNRETIRED = ("", "—", "-")

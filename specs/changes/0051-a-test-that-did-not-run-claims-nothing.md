@@ -125,7 +125,7 @@ repository, the sitting's fault record carries both.
    it; the form is a binding beside the discovery pattern; the gate compares
    and fails on fewer; where the runner cannot say per test, the bindings say
    so and name what that leaves open, rather than reading the summary line as
-   the count. **[`doctor`](../../skills/doctor/SKILL.md) §1** gains the
+   the count. **[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) §1** gains the
    reading: the two rows read *unobserved* until somebody has skipped a
    rule-bound test and watched the gate refuse it.
 7. **This repository's bindings**: two rows *automated* — `trace.py` for the

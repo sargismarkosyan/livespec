@@ -63,7 +63,7 @@ structurally: it hardcodes `ROOT` from its own path and takes no argument, so
 enumeration going stale is the one gate this repository has never proven fires.
 
 **It is the defect class this repository shipped a skill for one version ago.**
-[`0021`](0021-asked-not-assumed.md) added [`doctor`](../../skills/doctor/SKILL.md)
+[`0021`](0021-asked-not-assumed.md) added [`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md)
 to catch a claim in a consuming repository's bindings that was written once and
 true then. Nobody has run it here. Finding this by hand, in livespec's own
 bindings, one version after shipping the cure, is the argument for a gate rather

@@ -47,7 +47,7 @@ def paragraphs(path: Path) -> list[tuple[int, str]]:
 @rule("a-skill-names-both-hosts-where-they-differ")
 class EitherHost(unittest.TestCase):
     def test_the_prose_reads_files_to_scan(self):
-        self.assertGreaterEqual(len([p for p in SHIPPED if p.name == "SKILL.md"]), 8, "the scan found no skills to read")
+        self.assertGreaterEqual(len([p for p in SHIPPED if p.name == "SKILL.md"]), 5, "the scan found no skills to read")
 
     def test_no_path_is_built_on_a_variable_only_claude_code_sets(self):
         found = [

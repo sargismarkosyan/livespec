@@ -18,7 +18,7 @@ checkout as a package, finds the same one. Here, exactly one of them exists:
 
 | | | |
 |---|---|---|
-| `skills/` | **component** | The only thing either host loads. Eight skills. |
+| `skills/` | **component** | The only thing either host loads. Seven skills. |
 | `method/` | payload | Inert. Reachable only because a `SKILL.md` links it. |
 | `templates/` | payload | Same. |
 | `tools/` | payload | Reached at `<plugin root>/tools/…` from a skill body — two directories up from the skill file. |
@@ -28,7 +28,7 @@ checkout as a package, finds the same one. Here, exactly one of them exists:
 The distinction matters because it is the context budget:
 
 - **Every session pays** for each skill's `name` and `description`, whether or
-  not anything fires — currently ~4.3 KB across all eight skills. A skill marked
+  not anything fires — currently ~4.3 KB across all seven skills. A skill marked
   `disable-model-invocation: true` would cost nothing until invoked, because its
   description is not in context at all; **none carries the flag**, and `checks.py`
   fails one that starts to.
@@ -181,7 +181,7 @@ and it is the things a machine cannot work out:
    and its Examples, or a link to the `.feature` pinned at a commit SHA rather
    than at the branch. Only when the change touches a `.feature`; a layer README
    is prose about the specs and does not count.
-4. **An `## Ids` section, if you moved the audit surface** — `skills/doctor/`,
+4. **An `## Ids` section, if you moved the audit surface** — `skills/setup/`,
    `tools/doctor.py`, `templates/bindings.md` or `method/requirements.md`. It says
    `unchanged`, or lists the ids added, retired, revised or reworded, and the gate holds it to
    the id table's actual diff. A new row in that table reads `since: next`; a

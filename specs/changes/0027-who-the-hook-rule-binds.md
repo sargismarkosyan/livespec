@@ -94,7 +94,7 @@ That is the shape of an *unobserved* row, and taking the bait is the failure.
 
 ## What we are not doing
 
-- **Editing [`skills/doctor/SKILL.md`](../../skills/doctor/SKILL.md).** `0024`
+- **Editing [`skills/doctor/SKILL.md`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md).** `0024`
   is right. A second copy of `gates.md` inside the skill that reads `gates.md`
   is the drift this plugin exists to stop, and it would stale two further
   measurements to say the same thing twice. If the case shows the behaviour does

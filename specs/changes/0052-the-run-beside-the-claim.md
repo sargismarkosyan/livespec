@@ -127,7 +127,7 @@ boundary rows before it names the frames.
    is a picture of the stand-in. **[`setup`](../../skills/setup/SKILL.md)** §5:
    the *owes a release* row names the run block, and the second table its
    row; where the repository's pull requests cannot carry a comment, the
-   report half reads as not wired, as it already does. **[`doctor`](../../skills/doctor/SKILL.md)** §1:
+   report half reads as not wired, as it already does. **[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md)** §1:
    the run row is *unobserved* until the two were watched disagreeing.
 7. **This repository's bindings**: the second table's new row, the *owes a
    release* row naming the block, the fault record regenerated.

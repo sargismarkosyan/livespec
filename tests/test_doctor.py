@@ -287,6 +287,32 @@ def validate(root: Path, path: Path) -> tuple[list[str], str, str]:
     return doctor.validate(doctor.context(root, root / "specs" / "setup" / "README.md"), path)
 
 
+class ThePlan(unittest.TestCase):
+    @rule("the-plan-is-read-from-the-list")
+    def test_the_plan_lists_what_the_list_asks_of_the_rows(self):
+        root = Path(tempfile.mkdtemp(prefix="plan-"))
+        row = lambda i, at: {"id": i, "label": i, "reconciled": at}
+        ctx = {
+            "root": root, "keys": {}, "stamp": "1.0.0",
+            "gates": [row("gate:level", "1.1.0"), row("gate:behind", "1.0.0"), row("gate:old", "1.0.0")],
+            "wiring": [row("wiring:moved", "1.0.0")],
+            "ids": [
+                {"id": "gate:level", "since": "1.1.0", "revised": "—", "retired": "—"},
+                {"id": "gate:behind", "since": "1.1.0", "revised": "—", "retired": "—"},
+                {"id": "gate:new", "since": "1.1.0", "revised": "—", "retired": "—"},
+                {"id": "gate:old", "since": "0.9.0", "revised": "—", "retired": "1.1.0 → gate:new"},
+                {"id": "wiring:moved", "since": "0.9.0", "revised": "1.1.0", "retired": "—"},
+            ],
+        }
+        items = doctor.plan(ctx)
+        self.assertTrue(any(i.startswith("wire    gate:behind") for i in items))
+        self.assertTrue(any(i.startswith("wire    gate:new") and "no row" in i for i in items))
+        self.assertTrue(any(i.startswith("retire  gate:old") for i in items))
+        self.assertTrue(any(i.startswith("reprove wiring:moved") for i in items))
+        self.assertFalse(any("gate:level" in i for i in items), "a row already level was listed")
+        shutil.rmtree(root)
+
+
 class TheRecord(unittest.TestCase):
     @rule("one-line-per-check-or-it-does-not-end")
     def test_one_line_short_is_refused_naming_the_id(self):

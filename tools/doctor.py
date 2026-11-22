@@ -3,6 +3,7 @@
 
     python3 <plugin root>/tools/doctor.py [specs/setup/README.md]
     python3 <plugin root>/tools/doctor.py --reshape   # the ledger, in the template's shape
+    python3 <plugin root>/tools/doctor.py --plan    # what the plugin installed asks of this ledger
     python3 <plugin root>/tools/doctor.py --adopt [bindings] [ids…]   # setup's: rows reconciled at the plugin installed
     python3 <plugin root>/tools/doctor.py --registry  # the checks this tool knows, as id rows
     python3 <plugin root>/tools/doctor.py --validate <finished-record>   # pass two: refuse, or write and reply
@@ -57,7 +58,7 @@ CHANGE = re.compile(r"^(\d{4})-")
 PROSE_PHRASES = ("not built yet", "to do", "we should", "for now")
 # Skills this plugin used to have, and what they are now. A record instructing
 # by an old name is an instruction that fails silently; see specs/changes/0037.
-FORMER_SKILLS = {"feedback": "todo"}
+FORMER_SKILLS = {"feedback": "todo", "doctor": "setup"}
 # How a person types a skill, per host: Claude Code namespaces a plugin's skills,
 # Pi takes them bare after /skill:. Both are read as instructions; the one the
 # reply prints is the host's that runs this. See specs/changes/0080.
@@ -329,7 +330,7 @@ def version_key(version: str) -> tuple[int, ...]:
 
 
 def id_rows(text: str) -> list[dict[str, str]]:
-    """The id table in the plugin's requirements.md — for since and retired only."""
+    """The id table in the plugin's requirements.md — the columns the release writes."""
     start = text.find("## The ids")
     if start == -1:
         return []
@@ -341,7 +342,8 @@ def id_rows(text: str) -> list[dict[str, str]]:
         cells = cells_of(line)
         if len(cells) < 7 or cells[0] == "id":
             continue
-        rows.append({"id": cells[0].strip("`"), "since": cells[2], "retired": cells[4]})
+        rows.append({"id": cells[0].strip("`"), "since": cells[2], "retired": cells[4],
+                     "revised": cells[7] if len(cells) > 7 else "—"})
     return rows
 
 
@@ -1233,6 +1235,49 @@ def reshape(ctx: dict) -> str:
     return "\n".join(out) + "\n"
 
 
+def later(version: str, than: str) -> bool:
+    """`version` is a release after `than`; `next`, a blank or an unparsable cell is not."""
+    try:
+        return version_key(version) > version_key(than)
+    except ValueError:
+        return False
+
+
+def plan(ctx: dict) -> list[str]:
+    """What the plugin installed asks of this ledger, computed from requirements.md: no changelog read.
+
+    A gate or wiring row is owed when its id arrived or was revised after the row's own
+    reconciled version (the stamp where there is no column), or when it has no row; a retired
+    id with a row is owed its removal; a check is owed a fresh answer when it arrived or was
+    revised after the last audit record. See 0095.
+    """
+    rows = {row["id"]: row for row in ctx["gates"] + ctx["wiring"] if row["id"]}
+    record = read(record_path_of(ctx)) or ""
+    recorded = re.search(r"livespec (\d+\.\d+\.\d+)", record)
+    answered_at = recorded.group(1) if recorded else ctx["stamp"]
+    items = []
+    for entry in ctx["ids"]:
+        i, since, revised, retired = entry["id"], entry["since"], entry["revised"], entry["retired"]
+        if i.startswith("check:"):
+            if retired in ("", "—", "-") and answered_at and (later(since, answered_at) or later(revised, answered_at)):
+                items.append(f"answer  {i}  (since {since}, revised {revised}; last audit at {answered_at})")
+            continue
+        if retired not in ("", "—", "-"):
+            if i in rows:
+                items.append(f"retire  {i}  (retired {retired}): drop the row")
+            continue
+        row = rows.get(i)
+        if row is None:
+            items.append(f"wire    {i}  (since {since}): no row")
+            continue
+        at = (row["reconciled"] or ctx["stamp"] or "").strip("`* ")
+        if later(since, at):
+            items.append(f"wire    {i}  (since {since}; row at {at})")
+        elif later(revised, at):
+            items.append(f"reprove {i}  (revised {revised}; row at {at})")
+    return items
+
+
 def adopt(text: str, version: str, today: str, only: set[str]) -> tuple[str, list[str]]:
     """Setup's write, never the audit's: the rows it reconciled (all, or the ids given), then the
     stamp line as the oldest, dated today. A `local:` row keeps its cell. See 0094."""
@@ -1466,6 +1511,11 @@ def main(argv: list[str]) -> int:
     ctx = context(root, bindings_path)
     if "--reshape" in flags:
         print(reshape(ctx), end="")
+        return 0
+    if "--plan" in flags:
+        items = plan(ctx)
+        print(f"livespec {ctx['stamp'] or '?'} → {ctx['installed'] or '?'} · {len(items)} item(s) the plugin installed asks of this ledger")
+        print("\n".join(f"  {item}" for item in items) or "  nothing: the ledger is level with the plugin installed")
         return 0
     if "--adopt" in flags:
         if any(row["reconciled"] is None for row in ctx["gates"] + ctx["wiring"]):

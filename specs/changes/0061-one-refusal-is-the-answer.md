@@ -85,7 +85,7 @@ in, and `a-claim-outside-the-tree-is-read-back` and
 
 ## What changes
 
-1. **[`skills/doctor/SKILL.md`](../../skills/doctor/SKILL.md) §0**: the path
+1. **[`skills/doctor/SKILL.md`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) §0**: the path
    comes first. The tool is `tools/doctor.py` two directories up from this
    skill file — the harness said where it loaded this file from —
    and `$CLAUDE_PLUGIN_ROOT`, where it is set, names the same place; the

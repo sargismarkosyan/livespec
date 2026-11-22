@@ -11,7 +11,7 @@ The part of this that does not change between repositories.
 | [graded-cases.md](graded-cases.md) | The other branch of that fork: proving judgment by grading it, for a repository whose product is prose. |
 | [claude-md.md](claude-md.md) | What a repository's CLAUDE.md must contain, and what must stay out of it. |
 
-Alongside them: [the eight skills](../skills/) that run the loop,
+Alongside them: [the seven skills](../skills/) that run the loop,
 [templates](../templates/) for a change spec, a persona, a journey, a workflow
 and a feature, and [`setup`](../skills/setup/SKILL.md) — the skill that installs all
 of it into a repository.
@@ -88,7 +88,7 @@ badly against old commits, say so in the change that makes it.
 What a repository does record is one level up and one thing only: the
 [gate wiring ledger](gates.md#what-is-wired-and-what-is-not) in its bindings
 carries the version its wiring was last reconciled against, so `setup` can offer
-the difference on a later run and `doctor` can read, from the changelog that
+the difference on a later run and its report can read, from the changelog that
 ships with the plugin, what moved between. That is the installed process, not a
 commit's history.
 

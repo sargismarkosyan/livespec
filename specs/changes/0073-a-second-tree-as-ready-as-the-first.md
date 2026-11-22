@@ -214,7 +214,7 @@ next audit says so, before the next agent stalls on it.
      a port fixed in code, the row names it and the hand-back hands it to the
      person.
 
-4. **[`doctor`](../../skills/doctor/SKILL.md) and
+4. **[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) and
    [`tools/doctor.py`](../../tools/doctor.py) — two checks.**
    - `check:trees-row`, *mechanical, record*: the bindings carry the row, and
      the context file's block of commands carries the command it names.

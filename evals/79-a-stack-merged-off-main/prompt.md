@@ -1,5 +1,5 @@
 ---
-tags: [skill:doctor, rule:the-delete-on-merge-setting-is-read-back, rule:a-merge-that-missed-main-is-listed]
+tags: [skill:setup, rule:the-delete-on-merge-setting-is-read-back, rule:a-merge-that-missed-main-is-listed]
 max_turns: 100
 timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit, Bash]

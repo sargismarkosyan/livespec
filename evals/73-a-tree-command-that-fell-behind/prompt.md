@@ -1,5 +1,5 @@
 ---
-tags: [skill:doctor, rule:a-fresh-tree-is-re-proven]
+tags: [skill:setup, rule:a-fresh-tree-is-re-proven]
 max_turns: 100
 timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

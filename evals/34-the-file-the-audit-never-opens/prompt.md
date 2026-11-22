@@ -1,5 +1,5 @@
 ---
-tags: [skill:doctor, rule:a-number-is-read-where-the-gate-reads-it, rule:the-checklist-is-the-method-as-it-now-stands]
+tags: [skill:setup, rule:a-number-is-read-where-the-gate-reads-it, rule:the-checklist-is-the-method-as-it-now-stands]
 max_turns: 100
 timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
