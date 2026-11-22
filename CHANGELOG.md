@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 1.37.0 — 2026-11-22
+
+Each row of the gate wiring ledger carries the release it was reconciled at. The gate and wiring tables gain a `reconciled` column, and the stamp line is the oldest of them, so a partial upgrade is written down honestly instead of leaving one stamp stale or wrong. The audit checks it: `check:stamp-derived` is new, and `check:ledger-shape` now asks for the column; a ledger without it is a finding, and everything else still reads. `setup` writes the column with `doctor.py --adopt`, and the audit never does. (Released with the fix to the fault fixture that stopped this release the first time.)
+
 ## 1.36.0 — 2026-11-22
 
 The id table records when a promise moved. `method/requirements.md` gains a `revised` column: the release in which a row's meaning last changed under the same id, so a repository that answered it before must answer it again. The release writes it, as it writes `since`. A pull request that changes a meaning says `revised:` (the promise moved) or `reworded:` (only the words) in its `## Ids` section, and the gate refuses a moved meaning declared `unchanged`.
