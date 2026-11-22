@@ -172,6 +172,7 @@ CHECKS = [
     ("check:deferred-clock", "mechanical", "wiring", "no row is deferred across two changes"),
     ("check:hook-no-row", "mechanical", "record", "a local hook has no row in either table"),
     ("check:sorted-by-severity", "mechanical", "record", "what is open is reported dangerous first"),
+    ("check:loop-followed", "mechanical", "record", "every change merged since the last audit has a change spec whose `spec NNNN:` commit came first and whose header says what became of its sketch, or takes the light path with an issue"),
     ("check:record-only", "mechanical", "record", "the audit's corrections touched the record and nothing else"),
     ("check:last-line-command", "mechanical", "record", "where wiring is left, the last line is the command that starts the sitting, with the rows after it"),
     ("check:no-line-when-clear", "mechanical", "record", "where nothing is left for the sitting, no such line"),
@@ -896,6 +897,57 @@ def c_hook_no_row(ctx: dict) -> tuple[str, str]:
     return "clear", "no row in any table is a hook"
 
 
+SPEC_COMMIT = re.compile(r"^spec \d{4}\b", re.I)
+ISSUE_REF = re.compile(r"#\d+|/issues/\d+|\b[A-Z][A-Z0-9]+-\d+\b")
+PR_REF = re.compile(r"^Merge pull request #\d+.*$|\(#\d+\)\s*$|^Merged? (?:PR|branch) .*$", re.M)
+
+
+def changes_since_audit(ctx: dict) -> tuple[str, list[str]] | None:
+    """The commit the last audit read, and each change merged onto the main line after it."""
+    head = RECORD_HEAD.search(read(record_path_of(ctx)) or "")
+    if not head or not git(ctx["root"], "rev-parse", "--verify", "-q", head.group(4) + "^{commit}").strip():
+        return None
+    return head.group(4), git(ctx["root"], "rev-list", "--first-parent", "--reverse", f"{head.group(4)}..HEAD").split()
+
+
+def c_loop_followed(ctx: dict) -> tuple[str, str]:
+    """The loop read from the history, never gated: a change spec, its commit first, its Sketch line;
+    or the light path, an issue named. A squash merge cannot show the order. See 0098."""
+    root, since = ctx["root"], changes_since_audit(ctx)
+    if since is None:
+        return "n/a", "no previous audit names a commit here to read the history from"
+    head, changes = since
+    findings = []
+    for change in changes:
+        parents = git(root, "rev-list", "--parents", "-n", "1", change).split()[1:]
+        if not parents:
+            continue
+        branch = git(root, "rev-list", "--reverse", f"{parents[0]}..{parents[1]}").split() if len(parents) > 1 else [change]
+        title = git(root, "log", "-1", "--format=%s", change).strip()
+        name = f"`{change[:7]}` {title[:60]}"
+        specs = [f for f in git(root, "diff", "--name-only", "--diff-filter=A", parents[0], change).splitlines()
+                 if f.startswith("specs/changes/") and CHANGE.match(f.rsplit("/", 1)[-1])]
+        if not specs:
+            said = PR_REF.sub("", "\n".join(git(root, "log", "-1", "--format=%B", c) for c in branch))
+            if not ISSUE_REF.search(said):
+                findings.append(f"{name}: no change spec, and no issue for the light path")
+            continue
+        for spec in specs:
+            if not re.search(r"^- \*\*Sketch:\*\*", git(root, "show", f"{change}:{spec}"), re.M):
+                findings.append(f"{name}: {spec.rsplit('/', 1)[-1]} has no Sketch line")
+        if len(branch) > 1:
+            first = next((i for i, c in enumerate(branch) if SPEC_COMMIT.match(git(root, "log", "-1", "--format=%s", c))), None)
+            early = [c for c in branch[: first if first is not None else len(branch)]
+                     if any(not f.startswith("specs/") for f in git(root, "show", "--name-only", "--format=", c).splitlines())]
+            if first is None:
+                findings.append(f"{name}: no `spec NNNN:` commit")
+            elif early:
+                findings.append(f"{name}: implementation committed before its spec")
+    if findings:
+        return "open", f"{len(findings)} of {len(changes)} change(s) since {head}: " + "; ".join(findings)
+    return "clear", f"{len(changes)} change(s) since {head}, each with its spec first and a Sketch line, or an issue" if changes else f"nothing merged since the last audit at {head}"
+
+
 def c_record_only(ctx: dict) -> tuple[str, str]:
     allowed = {ctx["context_name"] or "CLAUDE.md", str(ctx["bindings_path"].relative_to(ctx["root"])) if ctx["bindings_path"].is_relative_to(ctx["root"]) else ctx["bindings_path"].name}
     record = ctx["keys"].get("audit record", "")
@@ -934,6 +986,7 @@ MECHANICAL = {
     "check:one-context-file": c_one_context_file,
     "check:deferred-clock": c_deferred_clock,
     "check:hook-no-row": c_hook_no_row,
+    "check:loop-followed": c_loop_followed,
     "check:record-only": c_record_only,
 }
 

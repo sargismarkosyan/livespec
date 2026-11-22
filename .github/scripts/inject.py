@@ -1192,6 +1192,28 @@ def as_git_repo_with_a_stray_change(root: Path) -> None:
     (root / "src" / "app.js").write_text("// changed after being added\n")
 
 
+def as_git_history(root: Path, steps: list[tuple[str, dict[str, str]]], merge: bool = True) -> None:
+    """A fixture audited once, then one branch of (message, files) commits merged after the audit —
+    by a merge commit, or squashed. The record stays untracked, so the audit is not a change."""
+    git_in(root, "init", "-q", "-b", "main")
+    git_in(root, "add", "-A")
+    git_in(root, "commit", "-q", "-m", "fixture")
+    head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=root, capture_output=True, text=True, env=git_env()).stdout.strip()
+    git_in(root, "checkout", "-q", "-b", "change")
+    for message, files in steps:
+        for path, text in files.items():
+            write(root, path, text)
+        git_in(root, "add", "-A")
+        git_in(root, "commit", "-q", "-m", message)
+    git_in(root, "checkout", "-q", "main")
+    if merge:
+        git_in(root, "merge", "-q", "--no-ff", "-m", "Merge pull request #9 from o/change", "change")
+    else:
+        git_in(root, "merge", "-q", "--squash", "change")
+        git_in(root, "commit", "-q", "-m", "the change (#9)")
+    write(root, "specs/setup/audit.md", f"# Audit record\n\n**Audited 2026-01-01 · livespec 1.0.0 · stamp 1.0.0 · HEAD {head} · audit 1**\n")
+
+
 def isolation_control() -> None:
     """A fixture is a repository of its own. With GIT_DIR pointing at a decoy
     repository — the environment a linked worktree's hook hands its children —
@@ -1591,6 +1613,8 @@ DOCTOR_FAULTS = [
                 write(r, "specs/changes/0003-later.md", "# Spec 0003\n")), "open"),
     ("a local hook given a row", "check:hook-no-row",
      lambda r: edit(r, "specs/setup/README.md", ROW_STRUCTURE, ROW_STRUCTURE + "\n| `local:hook` | the pre-push hook | automated | `.githooks/pre-push` |"), "open"),
+    ("a change merged with no spec and no issue", "check:loop-followed",
+     lambda r: as_git_history(r, [("fix the thing", {"src/app.js": "// fixed\n"})]), "open"),
     ("a change outside the record in the working tree", "check:record-only",
      as_git_repo_with_a_stray_change, "open"),
 ]

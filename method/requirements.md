@@ -130,6 +130,7 @@ does not name — held to the same states, required by nothing.
 | `check:deferred-clock` | mechanical | 0.21.0 | wiring | — | | no row is deferred across two changes | — |
 | `check:hook-no-row` | mechanical | 0.26.0 | record | — | | a local hook has no row in either table | — |
 | `check:sorted-by-severity` | mechanical | 0.21.0 | record | — | | what is open is reported dangerous first | — |
+| `check:loop-followed` | mechanical | next | record | — | | every change merged since the last audit has a change spec whose `spec NNNN:` commit came first and whose header says what became of its sketch, or takes the light path with an issue | — |
 | `check:record-only` | mechanical | 0.21.0 | record | — | | the audit's corrections touched the record and nothing else | — |
 | `check:last-line-command` | mechanical | 1.3.0 | record | — | | where wiring is left, the last line is the command that starts the sitting, with the rows after it | — |
 | `check:no-line-when-clear` | mechanical | 1.3.0 | record | — | | where nothing is left for the sitting, no such line | — |
