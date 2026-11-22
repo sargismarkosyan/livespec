@@ -146,3 +146,31 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       Given a transaction answered without evidence, or a record written before the last commit
       When it is finalized
       Then it is refused, saying which
+
+  @rule:the-hint-is-the-persons-alone
+  Rule: Where an upgrade is waiting in the repository a session opens, the person is shown one line saying so — this session's plugin is older than the ledger, items are pending, or a newer release exists — the model is never shown it, and nothing is shown with no bindings, with the hint turned off, or when reading fails
+
+    Example: items are pending
+      Given a ledger behind the plugin the session loads
+      When the session starts
+      Then the line counts the items pending and names the command that brings it up to date
+
+    Example: the session's plugin is older than the ledger
+      Given a ledger reconciled at a release newer than the plugin the session loads
+      When the session starts
+      Then the line says so before anything about pending items
+
+    Example: a newer release, and nothing pending
+      Given a level ledger and a cached newer release
+      When the session starts
+      Then the line names the release
+
+    Example: nothing to say
+      Given a repository with no bindings, or the hint turned off
+      When the session starts
+      Then nothing is shown
+
+    Example: an extension that would reach the model
+      Given a Pi extension in the plugin that sends a message into the session
+      When verification runs
+      Then it fails, naming the call

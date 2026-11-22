@@ -369,6 +369,18 @@ for directory in ("method", "templates", "tools"):
             continue
         fail(rel(payload), "is referenced by no skill, method doc, or README — it ships to every user unread")
 
+# An extension runs in every Pi session of every user. It may show the person a
+# line and nothing more: imports from Pi and node: only, and no call that reaches
+# the model — a message, an entry, a tool, the context. See specs/changes/0108.
+for shim in sorted((ROOT / "extensions").glob("*")) if (ROOT / "extensions").is_dir() else []:
+    text = shim.read_text()
+    for module in re.findall(r"^import[^\"']*[\"']([^\"']+)[\"']", text, re.M):
+        if module != "@earendil-works/pi-coding-agent" and not module.startswith("node:"):
+            fail(rel(shim), f"imports {module} — an extension imports only from Pi and node:")
+    for reach in ("sendMessage", "sendUserMessage", "appendEntry", "registerTool", "registerCommand", "\"context\"", "before_agent_start"):
+        if reach in text:
+            fail(rel(shim), f"uses {reach.strip(chr(34))}, which reaches the model — the hint is the person's alone")
+
 # --- 6. the enumerations nobody should be typing ----------------------------
 
 # Two lists in the bindings restate something a script already knows. Both had

@@ -442,7 +442,7 @@ def context_file_name(root: Path, keys: dict[str, str]) -> str:
     return next((n for n in CONTEXT_FILE_NAMES if (root / n).is_file()), "")
 
 
-def context(root: Path, bindings_path: Path) -> dict:
+def context(root: Path, bindings_path: Path, git_reads: bool = True) -> dict:
     text = read(bindings_path) or ""
     keys = key_table(text)
     context_name = context_file_name(root, keys)
@@ -475,8 +475,8 @@ def context(root: Path, bindings_path: Path) -> dict:
             layer: sorted(p.name for p in (root / "specs" / layer).glob("*") if p.is_file() and p.name != "README.md")
             for layer in ("personas", "journeys", "workflows", "features", "changes")
         },
-        "diff": [line[3:].split(" -> ")[-1].strip('"') for line in git(root, "status", "--porcelain", "--untracked-files=no").splitlines() if len(line) > 3],
-        "head": git(root, "rev-parse", "--short", "HEAD").strip(),
+        "diff": [] if not git_reads else [line[3:].split(" -> ")[-1].strip('"') for line in git(root, "status", "--porcelain", "--untracked-files=no").splitlines() if len(line) > 3],
+        "head": git(root, "rev-parse", "--short", "HEAD").strip() if git_reads else "",
         "inventory": inventory(root),
     }
 

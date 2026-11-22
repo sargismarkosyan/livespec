@@ -1178,6 +1178,11 @@ ahead without upgrading** — the person wants a newer release in Pi first — i
 the same verified edit to the pin alone, no row touched; after it merges,
 `pi update <source>` in their checkout, and a restart.
 
+**What tells the person an upgrade is waiting**: under Pi, a footer line from
+`tools/behind.py` — this session's plugin older than the ledger, items
+pending, or a newer release — shown to the person and never to the model, and
+silent with `LIVESPEC_NO_HINT` set. Under Claude Code, nothing yet.
+
 5. **Open one pull request**, *livespec A → B*, naming both audit commits and
    each item with its outcome — and what is still pending, which the next
    sitting resumes. The rows the pipeline is watched running become

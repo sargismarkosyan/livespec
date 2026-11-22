@@ -27,7 +27,7 @@ how two documents start meaning slightly different things.
 | **method** | The portable part, in `method/`. Names no command, filename or language, and no threshold that is a repository's own — the one number it carries is the reader's, and a reader is what every repository shares. |
 | **binding** | The part that is one repository's own — its commands, thresholds and paths. Lives in that repository's `specs/setup/README.md`, never here. |
 | **payload** | `method/`, `templates/`, `tools/`. Ships to every user, loads only when a skill body sends the agent to it. |
-| **component** | What a host loads on its own. Here that is `skills/` and nothing else, under either host. |
+| **component** | What a host loads on its own. Here that is `skills/`, under either host, and under Pi one extension, `extensions/livespec-hint.ts`, that shows the person a footer line from `tools/behind.py` and never reaches the model. |
 | **always-on cost** | The characters every session pays for a skill's name and description, whether or not it fires. Measured by `checks.py`, budgeted, and the reason a description is the expensive field. |
 | **fire** | A skill triggering on a request. **should-not-fire** is the case that holds a description from grabbing too much. |
 | **case** | One directory under `evals/` — a prompt, its graders, and the tags saying what it holds. This repository's unit of test. |
