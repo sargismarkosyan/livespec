@@ -329,6 +329,8 @@ def id_table(root: Path) -> None:
                 segments[3] = " 0.0.0 "
                 if segments[5].strip() not in ("", "—", "-"):
                     segments[5] = " 0.0.0 " + segments[5].strip().split(" ", 1)[1] + " " if " " in segments[5].strip() else " 0.0.0 "
+                if len(segments) >= 10 and segments[8].strip() not in ("", "—", "-"):
+                    segments[8] = " 0.0.0 "  # revised, the third column the release writes (0093)
                 line = "|".join(segments)
         lines.append(line)
     path = root / "method" / "requirements.md"
