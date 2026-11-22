@@ -2,6 +2,23 @@
 
 The part of this that does not change between repositories.
 
+## Six principles
+
+Everything else in the method follows from these. A rule that follows from
+none of them does not belong in it.
+
+1. **The code is the truth; the spec carries what the code cannot say** — who
+   it is for, the job behind it, what was dropped and why.
+2. **One change, decided before it is built.** One change spec per change, and
+   the person approves it before any code is written.
+3. **Every promise is checked by something that can fail.** A rule nothing can
+   fail is an opinion.
+4. **One copy of anything.** A second copy is the one that goes stale.
+5. **Say what you cannot do; do not search for it.** Name what is missing once,
+   and finish everything else.
+6. **Delete what stops being true** — code, rules and records alike, in the
+   change that makes them dead.
+
 | | |
 |---|---|
 | [process.md](process.md) | The loop, who does what, and the rules that fall out of it. Read this first. |
