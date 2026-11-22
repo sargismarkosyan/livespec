@@ -565,6 +565,30 @@ class TheRecord(unittest.TestCase):
         self.assertTrue(any("src/app.js" in p and "doctor wires nothing" in p for p in problems), problems)
 
     @rule("corrections-touch-only-the-record")
+    def test_a_staged_fix_that_strayed_is_refused(self):
+        root = repo()
+        inject.git_in(root, "init", "-q")
+        inject.git_in(root, "add", "-A")
+        inject.git_in(root, "commit", "-q", "-m", "x")
+        (root / "src").mkdir()
+        (root / "src" / "app.js").write_text("// wiring\n")
+        inject.git_in(root, "add", "src/app.js")
+        problems, _, _ = validate(root, finished(root))
+        self.assertTrue(any("src/app.js" in p for p in problems), problems)
+
+    @rule("corrections-touch-only-the-record")
+    def test_a_lowered_cell_is_refused(self):
+        root = repo(inject.green_bindings("1.1.0"))
+        inject.git_in(root, "init", "-q")
+        inject.git_in(root, "add", "-A")
+        inject.git_in(root, "commit", "-q", "-m", "x")
+        bindings = root / "specs" / "setup" / "README.md"
+        text = bindings.read_text()
+        bindings.write_text(text.replace("| 1.1.0 |", "| 1.0.0 |", 1), encoding="utf-8")
+        problems, _, _ = validate(root, finished(root))
+        self.assertTrue(any("from 1.1.0 to 1.0.0" in p for p in problems), problems)
+
+    @rule("corrections-touch-only-the-record")
     def test_a_change_to_the_bindings_alone_validates(self):
         root = repo()
         inject.git_in(root, "init", "-q")

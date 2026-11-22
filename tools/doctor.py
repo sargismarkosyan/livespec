@@ -29,8 +29,11 @@ working tree changed anything but the record; and otherwise writes the record
 at the path the bindings name, carrying each line's `since` from the previous
 record where its state is unchanged, and prints the reply generated from it.
 
-**It runs exactly two commands of its own** — `git diff --name-only` and
-`git rev-parse --short HEAD` — **and never a string it read from a file.** A
+**It runs only git, and never a string it read from a file.** What it runs:
+`git status --porcelain --untracked-files=no` (every tracked change, staged or
+not), `git rev-parse --short HEAD`, `git show HEAD:<the bindings path on the
+command line>` (a cell lowered since the last commit), and the history reads of
+`check:loop-followed` from a commit the record names, taken only as a hex id. A
 bindings cell is text somebody typed. The commands it prints on judgment lines
 are for the model, which runs them under the person's permission prompts.
 
@@ -472,7 +475,7 @@ def context(root: Path, bindings_path: Path) -> dict:
             layer: sorted(p.name for p in (root / "specs" / layer).glob("*") if p.is_file() and p.name != "README.md")
             for layer in ("personas", "journeys", "workflows", "features", "changes")
         },
-        "diff": [line for line in git(root, "diff", "--name-only").splitlines() if line],
+        "diff": [line[3:].split(" -> ")[-1].strip('"') for line in git(root, "status", "--porcelain", "--untracked-files=no").splitlines() if len(line) > 3],
         "head": git(root, "rev-parse", "--short", "HEAD").strip(),
         "inventory": inventory(root),
     }
@@ -1097,6 +1100,7 @@ def c_record_only(ctx: dict) -> tuple[str, str]:
     record = ctx["keys"].get("audit record", "")
     for token in re.findall(r"`?([\w./-]+\.md)`?", record):
         allowed.add(token)
+    allowed.add(str(ledger_path(ctx).relative_to(ctx["root"])))
     strayed = [path for path in ctx["diff"] if path not in allowed]
     if strayed:
         return "open", "the working tree has changes outside the record: " + ", ".join(strayed[:6])
@@ -1768,10 +1772,29 @@ def refusals(ctx: dict, rows: dict[str, dict[str, str]], record_path: Path) -> l
             allowed.add(str(path.resolve().relative_to(ctx["root"].resolve())))
         except ValueError:
             allowed.add(path.name)
+    allowed.add(str(ledger_path(ctx).relative_to(ctx["root"])))
     strayed = [path for path in ctx["diff"] if path not in allowed]
     if strayed:
         problems.append("the working tree changed more than the record: " + ", ".join(strayed[:6]) + " — doctor wires nothing")
+    problems += lowered_cells(ctx)
     return problems
+
+
+def lowered_cells(ctx: dict) -> list[str]:
+    """A reconciled cell is raised, or left, never lowered: read against HEAD's copy of the bindings
+    named on the command line. See 0107."""
+    try:
+        relative = ctx["bindings_path"].resolve().relative_to(ctx["root"].resolve()).as_posix()
+    except ValueError:
+        return []
+    before = git(ctx["root"], "show", "--end-of-options", f"HEAD:{relative}")
+    if not before:
+        return []
+    was = {row["id"]: (row["reconciled"] or "").strip("`* ") for heading in ("Gate wiring", "The wiring that must never gate")
+           for row in ledger_rows(before, heading, LEDGER_STATES, ("id",))[0] if row["id"]}
+    now = {row["id"]: (row["reconciled"] or "").strip("`* ") for row in ctx["gates"] + ctx["wiring"] if row["id"]}
+    return [f"{i}'s reconciled cell went from {was[i]} to {v} — a cell is raised or left, never lowered"
+            for i, v in now.items() if was.get(i) and re.fullmatch(r"\d+\.\d+\.\d+", v) and later(was[i], v)]
 
 
 def carry_since(lines: list[dict[str, str]], previous: list[dict[str, str]], today: str) -> None:
