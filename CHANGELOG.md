@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.5.0 — 2026-11-22
+
+The audit reads every host in use for a committed declaration that loads livespec (`check:host-enabled`). That covers the host running the audit and each the repository shows (`.claude/` or `CLAUDE.md`, `.pi/` or `AGENTS.md`), and a missing one reads open. A Pi package given as a local path to a livespec checkout counts, and `setup` writes that shape for a repository that is the plugin itself.
+
 ## 3.4.0 — 2026-11-22
 
 The audit reads two claims against the tree rather than by a few words. A *not applicable* row saying there is no code reads open when the repository tracks source files, and a reason the audit cannot check is now named rather than passed silently (`check:na-vs-tree`). Gaps named in prose are looked for in each layer's README as well as the bindings, including *not written yet* and *uninterviewed* (`check:prose-phrases`).
