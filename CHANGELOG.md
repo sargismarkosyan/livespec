@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.11.0 — 2026-11-22
+
+Under Pi, livespec shows the person a footer line when work is waiting in the repository a session opens: the session's plugin is older than the ledger, items are pending (with the command that brings it up to date), or a newer release is out. The line never reaches the model, and is silent with no bindings or with `LIVESPEC_NO_HINT` set. Under Claude Code there is no hint yet.
+
 ## 3.10.1 — 2026-11-22
 
 The audit reads every tracked change, staged or not, when it checks that it touched only the record; before, a staged fix passed. Validating a record also refuses a row whose reconciled version moved backwards since the last commit, naming both versions.
