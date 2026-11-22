@@ -869,6 +869,27 @@ class ReadBackAge(unittest.TestCase):
         self.assertEqual(audit(repo())["check:read-back-age"]["state"], "n/a")
 
 
+class KeyTable(unittest.TestCase):
+    """The bindings' key table held to the template's. See specs/changes/0104."""
+
+    @rule("the-key-table-is-held-to-the-template")
+    def test_the_green_bindings_hold_every_row(self):
+        line = audit(repo())["check:key-table-shape"]
+        self.assertEqual(line["state"], "clear", line["evidence"])
+
+    @rule("the-key-table-is-held-to-the-template")
+    def test_a_missing_row_is_named(self):
+        line = audit(repo(inject.green_bindings(INSTALLED).replace("| **Before the push** | none |\n", "")))["check:key-table-shape"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("*before the push*", line["evidence"])
+
+    @rule("the-key-table-is-held-to-the-template")
+    def test_graded_case_forms_are_the_same_rows(self):
+        text = (inject.green_bindings(INSTALLED).replace("| **How a test claims its rule** |", "| **How a case names its rule** |")
+                .replace("| **Rule discovery** |", "| **Case discovery** |"))
+        self.assertEqual(audit(repo(text))["check:key-table-shape"]["state"], "clear")
+
+
 class MainGreen(unittest.TestCase):
     """Whether the main branch's pipeline is green, asked of the platform. See specs/changes/0099."""
 
