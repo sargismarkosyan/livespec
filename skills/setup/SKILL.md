@@ -1018,7 +1018,8 @@ The questions worth the judgment, and what decides them:
   old name in prose, which is an instruction to correct or a dated account to
   leave as written; the same word as ordinary prose, to be left alone —
   reporting one is how this check becomes noise on its second run — and the
-  loop's own account, read against what `claude-md.md` now asks of each step.
+  context file, read against every item `claude-md.md` asks of it, not the
+  loop alone; a rule the history shows broken here belongs in its rules list.
 - **The prose** (`prose-phrases`). The tool lists every *not built yet*, *not
   written yet*, *uninterviewed*, *to do*, *we should*, *for now* with its line,
   in the bindings and in each layer's README. Each is a row on the clock or

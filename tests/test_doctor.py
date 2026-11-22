@@ -827,6 +827,24 @@ class EveryHost(unittest.TestCase):
         self.assertEqual(line["state"], "clear", line["evidence"])
         self.assertIn("a livespec checkout", line["evidence"])
 
+class TheWholeContextFile(unittest.TestCase):
+    """The context file read against all of claude-md.md, and the rules the history broke. See specs/changes/0102."""
+
+    @rule("the-audit-reads-the-whole-context-file")
+    def test_every_item_is_asked_after(self):
+        items = len(re.findall(r"^\*\*(\d+)\. ", doctor.section(doctor.read(doctor.PLUGIN / "method" / "claude-md.md"), "What must be there"), re.M))
+        line = audit(repo())["check:loop-per-claude-md"]
+        self.assertEqual(line["state"], "unanswered")
+        self.assertIn(f"all {items} items", line["evidence"])
+        self.assertGreater(items, 6)
+        self.assertNotIn("broken here", line["evidence"])
+
+    @rule("the-audit-reads-the-whole-context-file")
+    def test_a_rule_the_history_broke_is_asked_after(self):
+        root = repo()
+        inject.as_git_history(root, [("fix the thing", {"src/app.js": "// fixed\n"})])
+        self.assertIn("carry spec before code", audit(root)["check:loop-per-claude-md"]["evidence"])
+
 
 class MainGreen(unittest.TestCase):
     """Whether the main branch's pipeline is green, asked of the platform. See specs/changes/0099."""

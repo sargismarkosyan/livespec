@@ -172,7 +172,7 @@ CHECKS = [
     ("check:host-enabled", "mechanical", "wiring", "every host in use here — the one running the audit, and each the tree shows — loads the plugin from a committed declaration"),
     ("check:one-context-file", "mechanical", "wiring", "one instructions file at the root, so the one the gates hold is the one every host reads"),
     ("check:word-not-a-skill", "judgment", "record", "the same word used as ordinary prose is left alone"),
-    ("check:loop-per-claude-md", "judgment", "record", "the loop's own account says what the method now asks of each step"),
+    ("check:loop-per-claude-md", "judgment", "record", "the context file carries every item the method asks of it, each true, and its rules list carries each rule broken here since the last audit"),
     ("check:deferred-clock", "mechanical", "wiring", "no row is deferred across two changes"),
     ("check:hook-no-row", "mechanical", "record", "a local hook has no row in either table"),
     ("check:sorted-by-severity", "mechanical", "record", "what is open is reported dangerous first"),
@@ -1246,7 +1246,14 @@ def j_loop_per_claude_md(ctx: dict) -> tuple[str, str]:
     if not ctx["claude_md"]:
         return "unanswered", (f"no context file at the root — looked for {', '.join(CONTEXT_FILE_NAMES)}, and the bindings name none; "
                               "read method/claude-md.md for what the loop's account must carry")
-    return "unanswered", f"read {ctx['context_name']} ({len(ctx['claude_md'].splitlines())} lines) against method/claude-md.md — does each step say what the method now asks of it?"
+    asked = re.findall(r"^\*\*(\d+)\. ", section(read(PLUGIN / "method" / "claude-md.md") or "", "What must be there"), re.M)
+    state, evidence = c_loop_followed(ctx)
+    broken = sorted({rule for finding, rule in (("no change spec", "spec before code"), ("before its spec", "spec before code"),
+                                                ("no Sketch line", "the sketch's line")) if state == "open" and finding in evidence})
+    rules = f" Its rules list: does it carry {', '.join(broken)}, broken here since the last audit (check:loop-followed)?" if broken else ""
+    return "unanswered", (f"read {ctx['context_name']} ({len(ctx['claude_md'].splitlines())} lines) against all {len(asked) or 'the'} items of "
+                          f"method/claude-md.md's *What must be there*, not the loop alone — each there, and true now?{rules} "
+                          "A line that is record is corrected; a rewrite is the sitting's")
 
 
 def j_fresh_tree_green(ctx: dict) -> tuple[str, str]:

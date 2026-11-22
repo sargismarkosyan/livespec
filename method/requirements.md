@@ -128,7 +128,7 @@ does not name — held to the same states, required by nothing.
 | `check:host-enabled` | mechanical | 3.5.0 | wiring | — | | every host in use here — the one running the audit, and each the tree shows — loads the plugin from a committed declaration | — |
 | `check:one-context-file` | mechanical | 1.25.0 | wiring | — | | one instructions file at the root, so the one the gates hold is the one every host reads | — |
 | `check:word-not-a-skill` | judgment | 1.0.0 | record | — | | the same word used as ordinary prose is left alone | — |
-| `check:loop-per-claude-md` | judgment | 1.1.0 | record | — | | the loop's own account says what the method now asks of each step | — |
+| `check:loop-per-claude-md` | judgment | 1.1.0 | record | — | | the context file carries every item the method asks of it, each true, and its rules list carries each rule broken here since the last audit | next |
 | `check:deferred-clock` | mechanical | 0.21.0 | wiring | — | | no row is deferred across two changes | — |
 | `check:hook-no-row` | mechanical | 0.26.0 | record | — | | a local hook has no row in either table | — |
 | `check:sorted-by-severity` | mechanical | 0.21.0 | record | — | | what is open is reported dangerous first | — |
