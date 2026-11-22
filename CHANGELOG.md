@@ -12,6 +12,26 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.11.4 — 2026-11-22
+
+`method/graded-cases.md`, how to prove judgment with a graded suite without measuring the wrong thing, is rewritten from the method's six principles and is 40% shorter. It holds the same rules.
+
+<details>
+<summary>verify.py: exit 0</summary>
+
+```
+python3 .github/scripts/verify.py
+✔ checks passed (5 skills)
+✔ traceability: 175 live rule(s) traced, 1 workflow(s) mapped
+✔ tests: 14 file(s), every test bound to a rule, 202 run of 196 held — OK
+✔ eval suite: 5 skill(s) held by 94 case(s)
+✔ gate fault injection: 156/156 faults caught
+✔ verification green — 5 gates, all fired against injected faults
+exit=0
+```
+
+</details>
+
 ## 3.11.3 — 2026-11-22
 
 `method/testing.md`, how tests earn the claim that a rule is true, is rewritten from the method's six principles and is a quarter shorter. It holds the same rules.
