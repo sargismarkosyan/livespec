@@ -12,6 +12,26 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.11.1 — 2026-11-22
+
+The method opens with six principles: the code is the truth; one change, decided before it is built; every promise is checked by something that can fail; one copy of anything; say what you cannot do; delete what stops being true. `method/process.md` is rewritten from them and is a third shorter, with the same rules.
+
+<details>
+<summary>verify.py: exit 0</summary>
+
+```
+python3 .github/scripts/verify.py
+✔ checks passed (5 skills)
+✔ traceability: 175 live rule(s) traced, 1 workflow(s) mapped
+✔ tests: 14 file(s), every test bound to a rule, 202 run of 196 held — OK
+✔ eval suite: 5 skill(s) held by 94 case(s)
+✔ gate fault injection: 156/156 faults caught
+✔ verification green — 5 gates, all fired against injected faults
+exit=0
+```
+
+</details>
+
 ## 3.11.0 — 2026-11-22
 
 Under Pi, livespec shows the person a footer line when work is waiting in the repository a session opens: the session's plugin is older than the ledger, items are pending (with the command that brings it up to date), or a newer release is out. The line never reaches the model, and is silent with no bindings or with `LIVESPEC_NO_HINT` set. Under Claude Code there is no hint yet.
