@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.8.1 — 2026-11-22
+
+The audit takes the commit an earlier audit record names only as a hex commit id, so nothing written in the record can reach git as an option. This fixes `check:loop-followed`, released in 3.2.0.
+
 ## 3.8.0 — 2026-11-22
 
 The audit holds the bindings' key table to the template's (`check:key-table-shape`): a row the template carries and the bindings lack reads open by name, for the sitting. A repository whose rules are proved by graded cases may name three rows for them, *How a case names its rule*, *Case discovery* and *Deliverable of a version*, and the template now says so beside each row.
