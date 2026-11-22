@@ -138,7 +138,7 @@ quietly.
      same as the hook offer;
    - a refusal is written into the row, along with who can make the label.
 
-5. **[`doctor`](../../skills/doctor/SKILL.md) and
+5. **[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) and
    [`tools/doctor.py`](../../tools/doctor.py) — two checks.**
    - `check:claim-row`, *mechanical, record*: the bindings carry the row.
      Missing is *open*, closed by the sitting. When present, the tool

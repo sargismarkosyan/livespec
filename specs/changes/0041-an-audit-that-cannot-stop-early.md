@@ -85,7 +85,7 @@ and the skill adds nothing over a bare session. That entry is dated 2026-08-26
 and has been stale since. Six of the nine cases that hold `doctor` have never
 been measured at all.
 
-And because the list does not exist. [`doctor`](../../skills/doctor/SKILL.md)
+And because the list does not exist. [`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md)
 refuses to hold it — *"the checklist is that page, not this one"* — and points
 at [`gates.md`](../../method/gates.md), whose closest sentence, *"one row per
 gate named on this page, and nothing in it that is not one,"* names no gates.

@@ -1,5 +1,5 @@
 ---
-tags: [skill:doctor, rule:a-range-with-nothing-in-it-is-said-not-computed]
+tags: [skill:setup, rule:a-range-with-nothing-in-it-is-said-not-computed]
 max_turns: 100
 timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

@@ -2,7 +2,7 @@
 
 The part of the process that is this repository's own: every command, threshold
 and path the method leaves to the repository. Every skill reads this file first.
-`setup` writes it from this template; `doctor` reads it back. **Nothing here is
+`setup` writes it from this template and reads it back in its report. **Nothing here is
 the method** — a sentence that would survive being moved to another repository
 belongs in the plugin, not here, and the audit tool reads only the table
 headers and the stamp line below, so keep those as they are.

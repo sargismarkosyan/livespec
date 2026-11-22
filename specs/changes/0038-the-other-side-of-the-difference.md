@@ -51,7 +51,7 @@ plugin shipping a rule for every change in order to reach it.
 
 Because the audit is asked to spot a difference while holding one side of it.
 
-[`doctor`](../../skills/doctor/SKILL.md) §1 says *start from the stamp, and read
+[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) §1 says *start from the stamp, and read
 against `gates.md` as it now stands*. `gates.md` says what the method asks now;
 nothing anywhere says what it asked at the stamp. So the instruction has no
 mechanism under it, and the audit either re-derives every row from scratch or

@@ -156,7 +156,7 @@ The `description` does not move. This is behaviour inside a sitting that has
 already started, so it is paid for in the body, where it costs nothing until
 `setup` fires.
 
-**[`doctor`](../../skills/doctor/SKILL.md) is not touched**, on
+**[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) is not touched**, on
 [`0024`](0024-before-it-leaves-this-machine.md)'s reasoning: its section 0 says the
 checklist is `gates.md` and not itself. The corrected paragraph lives on that page,
 which is where doctor reads it from, and restating it would break doctor's own

@@ -22,6 +22,25 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       Then the entry is passed over in a line saying so
       And no finding is reported for it
 
+  @rule:the-plan-is-read-from-the-list
+  Rule: What the plugin installed asks of a ledger is computed from the list of ids, never from the changelog: each gate or wiring id that arrived or was revised after its row's own version, each with no row, each retired id still carrying one, and each check that arrived or was revised after the last audit
+
+    Example: a gate arrived after the row was reconciled
+      Given a ledger whose rows were reconciled at a release before a gate arrived
+      When the plan is asked for
+      Then the gate is listed to be wired, with the release it arrived in
+      And a row already level is not listed
+
+    Example: a meaning moved under the same id
+      Given a row reconciled before the release that revised its id
+      When the plan is asked for
+      Then the row is listed to be proven again, not to be wired
+
+    Example: an id retired while its row stayed
+      Given a row for an id the list has since retired
+      When the plan is asked for
+      Then the row is listed to be dropped
+
   @rule:a-range-with-nothing-in-it-is-said-not-computed
   Rule: A stamp at the plugin installed, a stamp ahead of it, and a changelog that cannot be reached are each said in a line
 

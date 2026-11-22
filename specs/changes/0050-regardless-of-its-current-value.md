@@ -111,7 +111,7 @@ through the rewrite, comes out the other side with its date and its argument.
    hand-written file, which the skill's first section already lists as the
    thing to name before overwriting. Where the only finding is a line, the
    line. Then the ceiling row, from the file as it ends.
-3. **[`doctor`](../../skills/doctor/SKILL.md) §2** gains a sentence: a
+3. **[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) §2** gains a sentence: a
    CLAUDE.md out of line beyond its lines is not rewritten by the audit;
    correct the lines that are record, and leave `check:loop-per-claude-md`
    open with the rewrite as what closes it and the sitting as whose it is.

@@ -1,5 +1,5 @@
 ---
-tags: [skill:doctor, rule:a-claim-with-nothing-behind-it-is-listed]
+tags: [skill:setup, rule:a-claim-with-nothing-behind-it-is-listed]
 max_turns: 100
 timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit, Bash]

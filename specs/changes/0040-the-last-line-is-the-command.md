@@ -72,7 +72,7 @@ command rather than a question about the changelog.
 
 ## What changes
 
-1. **[`doctor`](../../skills/doctor/SKILL.md) §4's last line becomes a
+1. **[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) §4's last line becomes a
    command.** Where wiring is missing, the reply ends with the command that
    starts the sitting — `/livespec:setup`, in the prefixed form every
    repository's record already uses for a skill — followed by the rows it will

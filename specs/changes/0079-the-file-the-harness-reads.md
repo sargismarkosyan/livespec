@@ -98,7 +98,7 @@ read, and nothing asks for a second file.
    - It never creates a second file beside an existing one.
    - Where there is none, it asks which name the harnesses in use read, and
      recommends one.
-   - **[`doctor`](../../skills/doctor/SKILL.md)** names the context file
+   - **[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md)** names the context file
      where its text says `CLAUDE.md`.
 
 5. **This repository.**

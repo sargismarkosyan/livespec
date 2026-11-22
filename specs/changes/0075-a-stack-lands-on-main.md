@@ -89,7 +89,7 @@ says it didn't, naming the pull request and the commit `main` lacks.
    - A refusal goes into the protection section as *unobserved*, with who can
      read it.
 
-3. **[`doctor`](../../skills/doctor/SKILL.md) and
+3. **[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) and
    [`tools/doctor.py`](../../tools/doctor.py) — two checks**, both judgment,
    both pre-filled from the read-back commands the bindings' protection
    section already names:

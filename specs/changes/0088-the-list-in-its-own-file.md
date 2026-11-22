@@ -34,7 +34,7 @@ The list of what a setup must hold is one file, `method/requirements.md`, that t
 
 1. **The move.** The whole `## The ids` section of [`gates.md`](../../method/gates.md) moves **verbatim** to a new `method/requirements.md`: its introduction, the three tables, and the paragraph on the `boundary:` and `local:` prefixes. Ids, columns, order and every cell stay exactly as they are.
 2. **Pointer headings.** `gates.md` keeps **the same four headings in the same order**: `## The ids`, `### The gates a ledger carries`, `### The wiring that must never gate`, `### The checks an audit makes`. `## The ids` holds one line linking to `requirements.md`, and the three subheadings stay as bare anchors. So every existing anchor still resolves, including the duplicate-slug `-1` on the second *The wiring that must never gate*. That covers:
-   - [`skills/doctor/SKILL.md:29`](../../skills/doctor/SKILL.md) and [`skills/setup/SKILL.md:581`](../../skills/setup/SKILL.md);
+   - [`skills/doctor/SKILL.md:29`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) and [`skills/setup/SKILL.md:581`](../../skills/setup/SKILL.md);
    - changes 0042 and 0073–0079;
    - [`specs/setup/README.md:307`](../setup/README.md).
 

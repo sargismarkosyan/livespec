@@ -792,8 +792,8 @@ def release_control() -> None:
     assert stamped.replace("0.9.0", "0.8.0").replace("2026-01-02", "2026-01-01") == ledger, "stamping the ledger touched something else"
     rows = ledger + "| id | gate | state | evidence | reconciled |\n|---|---|---|---|---|\n| `gate:x` | x | automated | a \\| b | 0.8.0 |\n| `local:y` | y | automated | c | — |\n"
     assert "| a \\| b | 0.9.0 |" in stamp_ledger(rows, "0.9.0", "2026-01-02") and "| c | — |" in stamp_ledger(rows, "0.9.0", "2026-01-02"), "the release did not reconcile every row, or touched a local one"
-    assert moves_audit_surface(["skills/doctor/SKILL.md", "README.md", "method/gates.md", "method/requirements.md"]) == [
-        "skills/doctor/SKILL.md", "method/requirements.md",
+    assert moves_audit_surface(["skills/setup/SKILL.md", "README.md", "method/gates.md", "method/requirements.md"]) == [
+        "skills/setup/SKILL.md", "method/requirements.md",
     ], "the audit surface is not read from the paths"
     assert select_increment(["bug", "minor"]) == "minor", "the one release label is not read"
     assert extract_entry(GOOD_BODY) == "Body of the entry.", "the entry is not taken verbatim"

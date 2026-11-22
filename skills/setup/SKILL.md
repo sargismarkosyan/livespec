@@ -1,13 +1,24 @@
 ---
 name: setup
-description: Set this process up in a repository — read what is already there, wire the two gates in that project's own language, write specs/setup/README.md as its bindings, write or audit CLAUDE.md, and then run the persona, workflow and journey interviews rather than naming them. Use when adopting livespec in a new or existing repository, when asked to initialise the specs, wire the traceability gate, "set up the process here", or when a repo has the plugin enabled but no specs/setup/README.md for the skills to read. Interviews for what only the human knows, proves every gate fires before handing back, and never writes application code.
+description: Set this process up in a repository, report on it, or bring it up to date. Setting up reads what is there, wires the two gates in the project's own language, writes specs/setup/README.md and CLAUDE.md, then runs the persona, workflow and journey interviews. Reporting re-audits a repository that already has the process — every claim its bindings make, checked against what owns the answer, branch protection read back from the platform — and corrects only the record. Bringing it up to date plans what the plugin installed asks of its ledger and wires it one approved item at a time. Use when adopting livespec, when asked to check or audit the gates or whether the process still holds, when a ledger row has been deferred too long, or after a plugin update. Never writes application code.
 ---
 
-# Set the process up here
+# Set the process up, report on it, or bring it up to date
 
 Every other skill in this plugin reads `specs/setup/README.md` before it assumes
 a command. **This skill is what puts that file there**, along with the gates it
-describes and the CLAUDE.md that points at both.
+describes and the CLAUDE.md that points at both — and what reads it back later,
+and what brings it level when the plugin moves.
+
+**Which of the three this is** is decided by the repository and the request, in
+that order:
+
+- **No `specs/setup/README.md`**: set it up — sections 1–8 below.
+- **Bindings exist, and the request is to check, audit or ask whether the
+  process still holds**: [**Report**](#report-audit-what-the-wiring-here-actually-claims).
+  It changes the record and never the wiring.
+- **Bindings exist, and the request is to update, upgrade or bring them level —
+  or a report just ended naming wiring**: [**Bring it up to date**](#bring-it-up-to-date).
 
 **It writes no application code, ever.** And it does not invent a persona, a
 workflow or a journey — those are [`refine-personas`](../refine-personas/SKILL.md),
@@ -416,7 +427,7 @@ go in the bindings beside the discovery pattern: propose the usual list — the
 mocking, stubbing, fake-timer and interception libraries, and for a terminal
 application the framework's own test harness and the tty, environment and
 subprocess patches — and let the person strike or add. A hand-written stand-in
-the patterns miss is what `doctor` greps for. Add the four rows to the
+the patterns miss is what the report greps for. Add the four rows to the
 injection table and break each.
 
 ### Then break them, one at a time
@@ -654,30 +665,15 @@ when. Most rows on an occupied repository's first day read *mocked* or
 *unreachable*, and honestly: the point of the table is that they now say so
 with a date, and a *mocked* row is on the two-change clock from this sitting.
 
-**Re-reading this ledger later is [`doctor`](../doctor/SKILL.md)**, which audits
+**Re-reading this ledger later is [the report](#report-audit-what-the-wiring-here-actually-claims)**, which audits
 it against this page without re-running any of the interviews. Say so when you
 hand back: the ledger is the one artefact here that is typed once and trusted for
 years, and the first person to read it again should not have to reconstruct this
 sitting to do it.
 
-**Installing over a repository that already has a ledger: diff it, never
-overwrite it.** Read what it was reconciled against, compare its rows to the
-gates that page names now, and report the difference — rows the method has since
-gained, rows naming a command that no longer exists, deferrals past the
-two-change limit. Then offer to wire what is missing. **A ledger written before
-ids existed is matched, not retyped**: each row goes to its id by the labels
-the table's *aliases* column lists, and the id is written into the row; a row
-two ids could claim is shown with both and left for the person; a row no id
-matches is either one of this repository's own — give it `local:` — or a row
-for nothing, which the person decides. Then move the rows, verbatim, into the
-template's tables — `python3 <plugin root>/tools/doctor.py --reshape`, the
-plugin root being two directories up from this skill file, prints them in that
-shape, ids filled from the aliases, unmatched rows marked —
-and apply what it printed with the person in the room. The reshaping is this
-sitting's; the audit alone never moves a column. Move a row's version only
-when its wiring actually moved, with `--adopt` and the ids it reconciled; a ledger re-stamped for a run that changed
-nothing has learned to lie. Rows you cannot date honestly say **predates the
-ledger** rather than getting an invented change number.
+**Installing over a repository that already has a ledger** is not this
+section's: it is [*Bring it up to date*](#bring-it-up-to-date), which diffs it and never
+overwrites it.
 
 ## 6. Write the context file, or audit the one that is there
 
@@ -865,8 +861,296 @@ adopter finds months later with no way to tell which claims were real.
 
 **And name what closes them.** Those rows come back to *automated* the first time
 somebody watches the wiring do its job — the hand-back says that
-[`doctor`](../doctor/SKILL.md) is what re-reads them, so the next reading is a
+[The report](#report-audit-what-the-wiring-here-actually-claims) is what re-reads them, so the next reading is a
 command rather than an act of memory.
+
+## Report: audit what the wiring here actually claims
+
+A gate wiring ledger is typed by a person, once, usually at the end of a long
+sitting. Then it is trusted forever. The report is the second reading — and the
+second reading is held to a list, so that what it skipped is as visible as what
+it found.
+
+**The report changes the record and never the wiring.** A row that overstates
+gets corrected; a gap gets a row. Building what is missing is the sitting's —
+sections 1–8, or *Bring it up to date* — and the two are separate passes with
+the report committed first, because a pass that both grades and repairs has no
+way to be wrong out loud.
+
+### R0. Run the tool first. It owns the list.
+
+```sh
+python3 <plugin root>/tools/doctor.py specs/setup/README.md
+```
+
+The plugin root is two directories up from this skill file — the harness said
+where it loaded this file from — and `$CLAUDE_PLUGIN_ROOT`, where it is set,
+names the same place. **The tool is never searched for**: a session running
+`find` or reading the environment for it has not read this line. It prints
+**the record**: one line per check the method names — the
+list is [the id table in `requirements.md`](../../method/requirements.md#the-ids), and it is
+enumerated nowhere else — with a state from `clear · open · n/a · unanswered`
+and the evidence beside it. **Save what it printed to a scratch file** — not
+over the path the bindings name as the audit record, which is the previous
+run's and is what the next pass compares against — and work in that file. The lines marked *script* are answered: the stamp
+and the range between it and the plugin installed, every row's state and
+evidence, the clocks, the tables the method requires, the skill names the
+record instructs by. They are answered the same way every time, from the
+record and never from the product, and every one of them is broken on purpose
+in this plugin's own checks. **Do not re-derive them, and do not argue with
+them from memory of the ledger** — the line says what it read and where.
+
+Where it exits **3**, there are no bindings: this repository has never had the
+process set up. Say that in one line and stop; sections 1–8 are what it needs,
+and offering that sitting is the whole reply.
+
+Where `check:ledger-shape` reads *open*, the ledger predates the template.
+The tool has matched what it can by alias; the lines that needed the tables
+say so instead of guessing. Carry on with the rest, and see §2.
+
+### R1. Answer the lines marked *unanswered*. Every one.
+
+Each carries the id, the question, and **the command the bindings name** —
+read from the row's own *read back with* column, the boundary row's *what
+starts it*, the coverage row's config. For each:
+
+1. Run the command shown, or read what it points at. **The tool printed it
+   and did not run it** — a bindings cell is text somebody typed, and the
+   running is yours, under the person's permission prompts.
+2. Replace `unanswered` with one of `clear · open · not-read`, and put beside
+   it the first line of what came back, or why it could not be run.
+
+A line that could not be read is `not-read`, with why — no credentials, no
+network, no permission. That is a legitimate answer and it validates.
+**Silence does not.** A run that leaves a line `unanswered` has not finished,
+and §3 will refuse to let it end. An `open` line ends with what closes it; a
+`clear` or `open` judgment keeps the command it was answered by beside the
+result.
+
+Where a row names no command — a claim about the platform with nothing after
+it — the line already says so: the row must name one, and that is a
+correction to the record, not a reason to guess. **Handing a line to a subagent
+is taking the step, not a way around it**: a second session has the same
+tools and returns the same nothing where this one cannot reach the platform.
+Once establishes it; write `not-read` and carry on.
+
+**A command this session's own permissions refuse is the same nothing, and one
+refusal is it.** The line reads `not-read — refused here`, naming who or what
+can read it — a person with the platform's rights, the token the pipeline has
+— and the reply carries that name. The same command again — alone, in pieces,
+in a subagent, after a `git remote -v` that already showed the host is not
+there — is a retry of a no, and the record is not improved by it.
+
+The questions worth the judgment, and what decides them:
+
+- **What a row leaves uncovered** (`check:row-uncovered`). The tool lists what
+  the tree is made of — languages by manifest, top-level packages, the
+  services the dependencies reach — beside what the rows name. A gate wired
+  over one language of two, one package of five, is not a gate over this
+  repository; a service the dependencies reach that no boundary row names is
+  a boundary nobody wrote down. Say which part has no gate.
+- **The number** (`check:number-from-config`, `demand-is-a-ratchet`,
+  `exclusions-in-config`). Open the config the coverage gate reads and report
+  the demand in it, not the row's description of it. A demand equal to what
+  the code scores today was measured rather than chosen — a ratchet, with
+  zero slack by construction — **unless it is the whole of what is in scope**,
+  which equals the score by construction too and is what `setup` recommends.
+  What the demand does not reach belongs in the tool's own config; a list only
+  the bindings know is a second copy of the gate. Correct the row and leave
+  the number — a threshold is wiring.
+- **The boundaries** (`real-starts-here`, `real-not-doubled`,
+  `fake-suite-green`). A *real* row over a world the tests never enter is the
+  false green the table exists to stop, and it reads exactly like a true one.
+  Start what the row names; run the traceability gate and read it for
+  doubles. The tests are the authority on what they reach, the way the tree is
+  on what applies: a *real* row the tests contradict is corrected to *mocked*,
+  naming the tests; a *fake* row with no suite behind it is a mock whatever
+  the row called it. A thing that cannot be started from here is `not-read`,
+  and a row is not corrected on that evidence alone.
+- **The platform** (`merge-blocked`, `check-name`, `who-bypasses`,
+  `credentials-present`). A check named in a CI config is evidence that
+  somebody wrote it down and no evidence that a merge is blocked when it
+  fails; on more than one platform those are separate settings, and one is a
+  project-wide switch nobody reading the pipeline file would see. Read them
+  back with the command the row names: is the merge blocked, what is the
+  check called as the platform has it, who can bypass including the tokens a
+  pipeline uses, and is a credential the bindings call missing in fact
+  present one level up.
+- **Where a stack lands** (`merged-branch-deleted`, `merged-off-main`). Read
+  back whether the platform deletes a merged pull request's branch — off is
+  `open`, since a pull request stacked on a kept branch merges into it and
+  never reaches the main branch. Then list the pull requests merged since the
+  stamp's date whose base was not the main branch, and for each ask the
+  repository whether its head commit is on the main branch. Each that is not
+  is listed with its base and the commit, and the line reads `open`; a stack
+  whose commits arrived another way is not. Move nothing: retargeting,
+  cherry-picking or reopening is a change of its own.
+- **How several pull requests merge** (`merge-queue`). The row says a queue
+  or the fallback. A queue: read back that it is required on the main branch
+  and that the required checks run on its event in the pipeline — a queue
+  whose checks never run hangs every merge and fails nothing. The fallback:
+  read back that both its settings are on. Anything not as the row says is
+  `open`, naming it; turning a setting on is the sitting's.
+- **The range** (`entry-moved-here`). The tool lists the entries between the
+  stamp and the plugin installed, and the ids that arrived in them. Read each
+  entry for *where to look*, never as a list of tasks: what it asks of this
+  repository is read from `gates.md`, [`claude-md.md`](../../method/claude-md.md)
+  and the skill as they now stand. An entry that is mostly reasoning asks
+  nothing the method does not; one that moved nothing this repository holds
+  is passed over in a line. A row that was right under the stamp's version
+  and is not right now announces nothing — present, accurate, and stale —
+  and having been correct when written is not a reason to leave it.
+- **The names** (`word-not-a-skill`, `loop-per-claude-md`). The tool has
+  already flagged an instruction — `/livespec:<name>`, or `/skill:<name>` as
+  Pi takes it — by a name this plugin no longer has, with the name it now has. What it hands you is the rest: an
+  old name in prose, which is an instruction to correct or a dated account to
+  leave as written; the same word as ordinary prose, to be left alone —
+  reporting one is how this check becomes noise on its second run — and the
+  loop's own account, read against what `claude-md.md` now asks of each step.
+- **The prose** (`prose-phrases`). The tool lists every *not built yet*,
+  *to do*, *we should*, *for now* with its line. Each is a row on the clock or
+  it is nothing — *nothing to do at release time* is nothing — and that is
+  yours to say, not the script's.
+- **What ran** (`gate:skipped-test-claims-nothing`, `gate:fewer-ran-than-exist`).
+  A row reading *automated* names how the runner reports per test and what
+  counts as a marker here; it reads *unobserved* until somebody has skipped a
+  rule-bound test and watched the gate refuse it. A bindings sentence saying
+  the runner cannot report per test is a decision to leave as written, with
+  what it leaves open beside it.
+- **A fresh tree** (`check:trees-row`, `check:fresh-tree-green`). The tool has
+  read the row and handed you its command. Make a throwaway tree with `new`,
+  outside anything the record covers, run verification there, and `clean`
+  it — then read the tree list, which must be as it was. Red is `open` with the
+  first failing line and the command left as it is; a secret this session
+  cannot reach is `not-read`, with why. Clean nothing but the throwaway: every
+  other tree may hold somebody's work, and clearing them is the person's call.
+- **Claims in flight** (`check:claim-row`, `check:claims-in-flight`). The tool
+  has read the row and handed you the listing command and the marker. For each
+  open issue carrying it, read the claim comment's branch against the
+  repository's list of trees, the remote's branches and the open pull requests.
+  Each with all three gone is listed with its age and session, and the line
+  reads `open`; a marker the tracker does not have is `open` too, not `clear`
+  for want of issues. A tracker that does not answer is `not-read`, with why.
+  **Release none**: a slow session and a dead one look alike from here, and
+  taking a claim over is the person's call.
+- **The run beside the claim** (`wiring:run-beside-claim`, `check:run-row`).
+  The row reads *unobserved* until somebody has watched the pipeline's run and
+  a pull request's run block disagree on the page; where the repository's pull
+  requests carry no comment it reads *not applicable* with the reason, as the
+  report's own row does.
+
+### R2. Correct the record — and only the record
+
+Write the corrections in place: the bindings, the context file the bindings name (`CLAUDE.md`, `AGENTS.md` — the tool says which it read), and nothing else.
+`check:record-only` reads the working tree and says so if anything strayed.
+Show each row as it will read, then write it. Where the ledger predates the
+template, **write the id the tool matched into each row, and leave the columns
+where they were** — however far from the template's shape. The id is record;
+the shape is wiring. The `--reshape` the tool printed beside the matches is a
+hint for the sitting the reply names, and this report is not that sitting.
+
+- A row that claims more than was wired is corrected to what was. A row that
+  reads *not applicable* and is contradicted by the tree becomes what the tree
+  says; a row marked `decided:` is a choice, and is not re-litigated.
+- Wiring the method now asks for and this repository lacks becomes a row
+  reading *deferred* — since which change, naming the version of the method
+  that moved it — so it is on the two-change clock rather than in a report.
+- Two instructions files at the root (`check:one-context-file`) stay as they
+  are: bringing them to one replaces a file somebody wrote, which is the
+  sitting's kind of change. The line stays open, and the sitting is named.
+- A row deferred across two changes is either wired or written off — written
+  off is *not applicable* with the reason in it. A *mocked* boundary row past
+  the clock is the same: real, given a suite, or *unreachable* with the reason.
+- A gap the prose names — *not built yet*, *to do*, *we should*, *for now* —
+  is a row or it is nothing; the tool listed every hit.
+- A context file out of line beyond its lines — a requirement missing, the
+  plugin's own rules copied into it — is **not rewritten here**. Correct the
+  lines that are record, a loop step or a skill name, and leave
+  `check:loop-per-claude-md` open with the rewrite as what closes it and the
+  sitting as whose it is. The audit changes the record; a new file is the
+  sitting's kind of change —
+  [`claude-md.md`](../../method/claude-md.md#when-it-is-out-of-line).
+- **Re-stamp only if the wiring moved.** The stamp follows the wiring and never
+  the reading; a ledger re-stamped for an audit that changed nothing has
+  learned to lie.
+
+### R3. Let the tool decide whether the audit is finished
+
+```sh
+python3 <plugin root>/tools/doctor.py --validate <the scratch file>
+```
+
+It refuses the record — exit 1, naming the line — if any id is missing, any
+line still reads `unanswered`, any state is off the vocabulary, an `open` line
+names nothing that closes it, a `not-read` line gives no reason, a judgment
+reads `clear` with no command beside it, or the working tree changed anything
+but the record. **A refused record is an audit that has not finished**: go
+back to the line it names. Nothing else is a way through — not a paragraph
+explaining the gap, not a subagent, not a second scratch file.
+
+Where it accepts the record, it answers the four lines the reply generates,
+**writes the record at the path the bindings name** — replaced on every run,
+each line carrying the date it last changed state, so the next audit can say
+what opened and what closed — and prints **the reply**. That reply is the
+hand-back, verbatim, with nothing after it:
+
+- what is open, sorted by the severity each id carries — *platform*, then
+  *boundary*, then *wiring*, then *record*; a row asserting a protection the
+  platform does not enforce outranks a deferral one change old, every time;
+- then what was not read, with why — a row that was checked and a row that
+  was assumed never come out looking the same;
+- then the decisions, once — the rows marked `decided:` — with the tree's
+  contradiction, where there is one, offered as evidence and not argued;
+- then, only where an open line names wiring, the command that starts setup
+  as this host takes it — `/livespec:setup` in Claude Code, `/skill:setup` in
+  Pi — and the rows the sitting will be asked to wire, one per line. Where nothing is left for
+  the sitting, no such line, and nobody is sent to a sitting nobody needs.
+
+Commit the record with the corrections. The same last line closes the
+reading's record in the bindings. Anybody who only wants the answer — a
+grader, a reviewer — asks `--check <record>` instead: the same exit, and
+nothing written.
+
+## Bring it up to date
+
+A repository whose ledger is behind the plugin installed — a plugin update, or a
+report that ended naming wiring — is brought level here. **Diff it, never
+overwrite it.**
+
+1. **Report first**, as above, and commit the record. It is what this sitting is
+   measured against.
+2. **Plan.** `python3 <plugin root>/tools/doctor.py --plan` lists what the plugin
+   installed asks of this ledger, computed from
+   [`requirements.md`](../../method/requirements.md#the-ids) rather than read from
+   the changelog: each gate or wiring id that arrived or was revised after its
+   row's own version, each id with no row, each retired id still carrying one,
+   and each check to answer again. Add the report's open wiring lines — stale
+   commands, deferrals past the clock — which are owed the same way.
+3. **Each item, one at a time.** Show the change and wait for a yes. Wire it in
+   the project's own language, break it on purpose and watch it fire, run the
+   verification command, and commit it on its own — green. **A gate that refuses
+   the tree as it stands is not committed**: its row reads *deferred*, naming the
+   findings, and the hand-back offers `todo` to file them. A deferral already
+   past the clock is wired or written off, never deferred again.
+4. **Record what was answered.** `python3 <plugin root>/tools/doctor.py --adopt
+   <ids…>` writes each answered row's version — wired, decided not applicable,
+   or deferred on the clock — and the stamp line as the oldest. A row nobody
+   answered keeps its version.
+5. **Report again**, and open one pull request, *livespec A → B*, carrying the
+   two records and each item. The rows the pipeline is watched running become
+   *automated*; merging is the person's.
+
+**A ledger written before ids existed is matched, not retyped**: each row goes
+to its id by the labels the table's *aliases* column lists, and the id is
+written into the row; a row two ids could claim is shown with both and left for
+the person; a row no id matches is either one of this repository's own — give
+it `local:` — or a row for nothing, which the person decides. Then move the
+rows, verbatim, into the template's tables — `python3 <plugin
+root>/tools/doctor.py --reshape`, the plugin root being two directories up from
+this skill file, prints them in that shape, ids filled from the aliases,
+unmatched rows marked — and apply what it printed with the person in the room.
+Rows you cannot date honestly say **predates the ledger** rather than getting an
+invented change number.
 
 ## What this skill refuses
 
@@ -896,3 +1180,31 @@ command rather than an act of memory.
   decided what the points they give away stand for.
 - **Installing over an existing setup without saying what it will overwrite.**
   Show the list first; a CLAUDE.md somebody wrote by hand is context, not clutter.
+
+**In the report, also:**
+
+- **Cleaning anybody's trees** but the throwaway it made.
+- **Releasing a claim**, or writing anything to the tracker.
+- **Wiring anything.** Not a gate, not a report, not a threshold — including
+  the one it just found is wrong. It writes the record; the sitting writes the wiring.
+- **Running a command it read from the bindings itself.** The tool prints
+  them; the running is a mind's, under the person's prompts.
+- **Starting the sitting.** The last line says what to type and does not run it.
+- **Reading an entry as a task list.** The entry is where to look.
+- **Re-stamping for having read.** The stamp follows the wiring.
+- **Reshaping the ledger.** The id goes into each row as it stands and the
+  columns stay where they were; `--reshape` is the sitting's, and the reply
+  ends by naming it.
+- **Asking the platform twice.** One refusal is the answer; the reply names
+  who can get a different one.
+- **Leaving a line `unanswered`.** `not-read` with why is an answer; a blank
+  is a check nobody made, and `--validate` will not let it end.
+- **Handing back without the record.** The reply is what pass two printed;
+  a reply recalled from the session is the thing this skill exists to stop.
+- **Running the interviews.** An empty layer is section 8's.
+- **Flipping every row to *unobserved* to be safe.** A row somebody watched
+  fire stays *automated*.
+- **Reading a green pipeline as an answer about the platform.** A build that
+  passed says the job ran, nothing about what happens when it fails.
+- **Auditing a repository that has no bindings**, rather than saying so and
+  offering the sitting.

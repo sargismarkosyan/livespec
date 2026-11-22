@@ -31,7 +31,7 @@ either host.
 
 ## What you get
 
-Eight skills, and the discipline they enforce.
+Seven skills, and the discipline they enforce.
 
 | Skill | What it does |
 |---|---|
@@ -41,8 +41,7 @@ Eight skills, and the discipline they enforce.
 | `refine-personas` | Adds, amends or retires who it is for — and refuses a persona invented to make a wanted feature legal. |
 | `refine-journeys` | Keeps the arc over time honest, and holds the seams that belong to no single workflow. |
 | `record-clip` | Records the animated GIF a version ships with: the app being *used*, in a real browser. |
-| `doctor` | Re-audits the gate wiring in a repository that already has the process — every claim the bindings make, checked against what owns the answer, with branch protection read back from the platform rather than from CI config. Corrects the record; wires nothing. |
-| `setup` | **Start here** — `/livespec:setup` in Claude Code, `/skill:setup` in Pi, or ask for the process and let the agent reach it. Installs all of the above into a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, writes its bindings file and CLAUDE.md, and then runs the persona, workflow and journey interviews rather than leaving you a list of them. Whichever way it starts, it says what it will write and waits before writing any of it. |
+| `setup` | **Start here** — `/livespec:setup` in Claude Code, `/skill:setup` in Pi. Sets the process up in a repository: reads what is already there, wires both gates in that project's own language, proves each one fires, writes its bindings file and CLAUDE.md, then runs the persona, workflow and journey interviews. Later it **reports** — re-audits every claim the bindings make against what owns the answer, branch protection read back from the platform, correcting only the record — and **brings the repository up to date** after a plugin update, planning what the new version asks and wiring it one approved item at a time. Whichever way it starts, it says what it will write and waits before writing any of it. |
 
 Plus [the method](method/) — the loop, the repository conventions, what the gates
 have to mean, how to write a test that earns its keep, and what a repository's

@@ -115,7 +115,7 @@ The `description` does not move. Nothing about the trigger changes: this is
 behaviour inside a sitting that has already started, so it is paid for in the
 body, where it costs nothing until `setup` fires.
 
-**[`doctor`](../../skills/doctor/SKILL.md) is not touched, deliberately.** Its
+**[`doctor`](https://github.com/sargismarkosyan/livespec/blob/ccd82342c6d9ff3508191524c78479041fb18da0/skills/doctor/SKILL.md) is not touched, deliberately.** Its
 section 0 says the checklist is `gates.md` and not itself, and that a second copy
 of that list is the drift this plugin exists to stop. The rule that a hook is not
 coverage now lives on that page, which is where doctor reads it from. Editing

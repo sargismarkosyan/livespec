@@ -1,5 +1,5 @@
 ---
-tags: [skill:doctor, rule:a-skill-the-record-names-is-one-that-exists]
+tags: [skill:setup, rule:a-skill-the-record-names-is-one-that-exists]
 max_turns: 100
 timeout_seconds: 2400
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
