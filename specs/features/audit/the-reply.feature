@@ -37,6 +37,17 @@ Feature: What an audit says, generated from the record rather than remembered
       When the wiring is audited
       Then the row is reported as open
 
+    Example: no code, beside the code in the tree
+      Given a ledger row reading not applicable, undecided, because there is no application code
+      And the tree tracks source files outside its specs and tests
+      When the wiring is audited
+      Then the row is reported as open, with how many and where
+
+    Example: a reason the tool cannot read against the tree
+      Given a ledger row reading not applicable, undecided, for a reason naming no layer and no code
+      When the wiring is audited
+      Then the row is named as not read against the tree rather than passed in silence
+
   @rule:a-check-newer-than-the-stamp-is-reported-until-the-wiring-catches-up
   Rule: Every check that arrived after the ledger's stamp is reported as new, open where the ledger has no row for it, on every audit until the sitting brings the wiring level
 

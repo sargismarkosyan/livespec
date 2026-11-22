@@ -47,6 +47,11 @@ Feature: What a gate wiring ledger is allowed to claim
       Then it is reported as a row rather than a sentence
       And the change it has been deferred since is named
 
+    Example: a layer's README names attempts not written yet
+      Given a workflows README with a heading saying more attempts are not written yet
+      When the wiring is audited
+      Then the line is listed for a mind to say whether it is a row on the clock
+
     Example: the report was configured and nobody watched it arrive
       Given a consuming repository whose pull request report is wired and has posted nothing
       When the wiring is audited
