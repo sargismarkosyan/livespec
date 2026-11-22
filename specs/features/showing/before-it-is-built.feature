@@ -64,6 +64,11 @@ Feature: What the one decision a person holds gets to look at
       Then it says in a line that there is nothing the prose cannot carry
       And nothing is produced to fill the space
 
+    Example: the spec keeps what became of the sketch
+      Given a change spec handed back with or without a sketch
+      When somebody reads the spec after the session is gone
+      Then its header says whether a sketch was drawn, and where, or the one line why not
+
     Example: what would be drawn was never settled
       Given a change spec that does not establish the state the change starts from
       When the sketch is drawn

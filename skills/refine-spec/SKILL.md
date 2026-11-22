@@ -259,14 +259,15 @@ thing it is arguing about** — and this is the one step where that matters most
 because the change does not exist yet and there is nothing to record.
 
 **First decide whether there is anything to draw, and decide it before a page
-exists.** A sketch carries four things — what it is now beside what it would
-be, what moves and what stays with the reason against each, a count that
-changed, a link to the spec — and where every one of them fits in a line of
-prose, there is nothing the prose does not carry: a renamed constant, a
-corrected path, one name chosen out of three. Then the hand-back says so in
-that line, and no page is made. A page for a rename is padding, and padding is
-the failure this step exists to prevent. Only when the prose cannot carry the
-evidence: make one page carrying it, and hand it over with the links.
+exists.** A sketch carries four things — what it is now beside what it would be,
+what moves and what stays with the reason against each, a count that changed, a
+link to the spec — and where every one of them fits in a line of prose, there is
+nothing the prose does not carry: a renamed constant, a corrected path, one name
+chosen out of three. Then the hand-back says so in that line, and no page is
+made. A page for a rename is padding, and padding is the failure this step
+exists to prevent. Only when the prose cannot carry the evidence: make one page,
+and hand it over with the links. **The spec's `Sketch:` line keeps the answer**:
+drawn and where, or not and why.
 
 **Two ways to make it, in this order.** Publish it where the session has a tool
 that can (in Claude Code, `Artifact`). Where it has none, **write it as an

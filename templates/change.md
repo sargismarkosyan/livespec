@@ -2,6 +2,7 @@
 
 - **Status:** proposed | approved | shipped
 - **Issue:** #NN (or "none — direct request")
+- **Sketch:** drawn — <where it is> | not drawn — <the one line why: nothing the prose cannot carry, no way to render one here, or approval given in advance>
 
 ## Who this is for
 
