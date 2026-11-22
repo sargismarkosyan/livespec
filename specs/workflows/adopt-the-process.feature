@@ -15,7 +15,9 @@ Feature: Adopt the process
 
   **Done well.** One sitting, and the layers are filled in it rather than
   scheduled — a persona, the attempts, the arc. The gates are wired in the
-  language already in the repository and add no dependency to run. Nothing that
+  language already in the repository and add no dependency to run; a tool a
+  walk needs to measure its cost is proposed, and installed only once the
+  person agrees. Nothing that
   already shipped is specced retroactively: the layer starts at the next change,
   not at the history.
 

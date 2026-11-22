@@ -1,5 +1,5 @@
 ---
-tags: [skill:setup, workflow:adopt-the-process, rule:setup-wires-the-cost-of-a-walk]
+tags: [skill:setup, workflow:adopt-the-process, rule:setup-wires-the-cost-of-a-walk, rule:each-layer-holds-the-other-side-fixed, rule:a-front-end-is-weighed-in-bytes-load-and-features, rule:setup-proposes-a-kit-for-the-stack]
 max_turns: 60
 timeout_seconds: 2100
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]

@@ -315,14 +315,27 @@ base. The walks are the repository's; the comparison ships with this plugin.
    and its allowance. No budget until a count has been chosen with the person;
    a time is never given one, and asked for one, offer it reported and a count
    that stands in for it.
-3. **Wire a job that walks both sides.** Check out the base into a second
+3. **Choose the layers and what measures each**, and name them in the
+   bindings. What the repository already runs comes first; a tool is proposed
+   only for a layer nothing there can measure, with what installing it adds,
+   and installed only on a yes. A layer the package does not have is said, with
+   why.
+
+   | Layer | Held fixed | Counts | Times |
+   |---|---|---|---|
+   | front end | the service's answers, replayed (Playwright's HAR replay, or the runner's own) | bytes shipped (size-limit, or the bundler's report) | page load, and each feature's ready mark: a `performance.mark` the app sets once painted, read by the walk |
+   | back end | the interface: no browser | queries per request, bytes | requests timed by a load tool (k6) or the language's benchmark library |
+   | end to end | nothing | — | the whole walk |
+
+   Each sample names its `layer`.
+4. **Wire a job that walks both sides.** Check out the base into a second
    worktree, run every walkthrough on base and branch in turns on the one
    runner — base, branch, branch, base — with what the walkthroughs already run,
    each writing a sample a line as the script's docstring shows. Then run the
    copy with `--samples`, `--policy`, the base's policy as `--base-policy` where
    it has one, and `--gate`; post its report the way the report above is
    posted. Say what the job costs in minutes before wiring it.
-4. **Write both ledger rows**, `wiring:workflow-cost` and `gate:workflow-budget`.
+5. **Write both ledger rows**, `wiring:workflow-cost` and `gate:workflow-budget`.
    A repository whose walks cannot be repeated on every change — they bill, or
    take an hour — reads *not applicable* with that reason; one with no
    walkthrough yet reads *deferred* until the first lands.
