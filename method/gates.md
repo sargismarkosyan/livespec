@@ -236,6 +236,33 @@ looking. It gates on nothing there, the difference included: a report that
 failed a build for a log line would be a gate nobody declared, and a
 fabricated run is caught by being read, not by being refused.
 
+## What a change costs a workflow
+
+A change can leave every rule true and every workflow slower, and nothing above
+would say so. **So the report also says what the change did to the cost of
+each workflow walk, against its own base.**
+
+- **Both sides on one runner, in one job, in turns.** Whatever slows the runner
+  slows both, and whatever changed outside the pull request is on both sides.
+  Compared with stored history, a shared runner cries wolf.
+- **Three verdicts, not two.** No change, worse, or inconclusive — said with
+  its reason, and never read as *no change*. A coin toss that blocks a merge
+  teaches people to ignore the gate.
+- **Two numbers per measure, written down before the change runs.** The noise,
+  below which a difference is not read and no number is shown; and the
+  allowance, how much a real slowdown may use before the report calls it past.
+- **A time never fails the build.** It is the chance [testing.md](testing.md#a-test-that-fails-sometimes-is-worse-than-no-test)
+  keeps out of a verdict. **A count may carry a budget that does** — bytes,
+  requests, queries — because the same tree gives the same count every run.
+- **The numbers live in one versioned file, and moving them is shown beside
+  the change they allow.** Raising the bar is the cheapest way to clear it.
+- **One run counts.** Rounds repeat inside the job; the job is never re-run
+  until it is green.
+
+The comparison is the same in every repository, so it ships with the method and
+the sitting copies it in. The walks are the repository's own. A walk too costly
+to repeat on every change is a reason, written down, not a gap.
+
 ## What is wired, and what is not
 
 A repository rarely gets every gate on this page on the day the process arrives.

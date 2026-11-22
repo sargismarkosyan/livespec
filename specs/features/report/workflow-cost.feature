@@ -1,7 +1,7 @@
 @feature:workflow-cost @workflow:adopt-the-process @uses:report-wiring
 Feature: What a change costs each workflow walk
 
-  @rule:setup-wires-the-cost-of-a-walk @planned
+  @rule:setup-wires-the-cost-of-a-walk
   Rule: A repository comes out of the sitting with the comparison copied in, a policy file, and a job that walks every workflow on the base and the branch in turns and reports the cost, or with a reason it cannot
 
     Example: a web application whose walkthroughs drive a browser
@@ -16,7 +16,7 @@ Feature: What a change costs each workflow walk
       When the sitting wires the cost of a walk
       Then the bindings read not applicable, with that reason
 
-  @rule:the-cost-is-the-branch-against-its-base @planned
+  @rule:the-cost-is-the-branch-against-its-base
   Rule: Each measure of each walk is reported as what moved between the base and the branch, and a difference inside the noise the policy names reads as no change, with no number
 
     Example: a change slows the checkout and nothing else
@@ -30,7 +30,7 @@ Feature: What a change costs each workflow walk
       When the comparison runs
       Then that walk reads no change, and no percentage is shown for it
 
-  @rule:an-unclear-cost-is-inconclusive @planned
+  @rule:an-unclear-cost-is-inconclusive
   Rule: When the walks cannot say whether the branch is worse, the measure reads inconclusive with the reason, never no change and never a failure
 
     Example: the interval straddles the noise
@@ -44,7 +44,7 @@ Feature: What a change costs each workflow walk
       Then every measure reads inconclusive, saying the base has no samples
       And the gate passes
 
-  @rule:a-slower-walk-is-said-not-refused @planned
+  @rule:a-slower-walk-is-said-not-refused
   Rule: A walk that got worse leads the report, marked within or past the allowance the policy names, and the comparison does not fail on it, however large
 
     Example: the walk doubled
@@ -53,7 +53,7 @@ Feature: What a change costs each workflow walk
       Then the report leads with the checkout walk, past its allowance
       And the gate passes
 
-  @rule:a-budget-gates-only-a-count @planned
+  @rule:a-budget-gates-only-a-count
   Rule: A budget the policy sets on a count fails the gate when the branch crosses it, and a policy setting a budget on a time is refused before anything is compared
 
     Example: a walk crosses its budget
@@ -67,7 +67,7 @@ Feature: What a change costs each workflow walk
       When the comparison runs
       Then it refuses the policy, saying a time cannot carry a budget, and compares nothing
 
-  @rule:a-changed-budget-is-shown-beside-the-change @planned
+  @rule:a-changed-budget-is-shown-beside-the-change
   Rule: Where the branch's policy differs from the base's, the report lists every number that moved, beside the walks it now allows
 
     Example: the budget was raised in the same pull request
