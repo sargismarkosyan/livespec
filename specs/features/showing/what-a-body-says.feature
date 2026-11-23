@@ -2,12 +2,18 @@
 Feature: What a pull request body says, in the repository's own shape and no longer than it needs
 
   @rule:the-repository-template-is-filled-not-replaced
-  Rule: Where the repository has a pull request template, the body fills it — every heading and checkbox, in its order, none renamed and none added beside it — and a checkbox is ticked only when its claim is true now
+  Rule: Where the repository has a pull request template, the body fills it — every heading and checkbox, in its order, none renamed and none added beside it; what it has no field for goes above its first heading as plain lines, the folded evidence after its last — and a checkbox is ticked only when its claim is true now
 
     Example: an agent that writes its own shape
       Given a repository whose template asks for a summary, decisions, how to test, risk and a checklist
       When an agent writes the body
       Then those headings are there, in that order, and nothing else is added beside them
+
+    Example: a template that is only a checklist
+      Given a template holding one heading and one checkbox, "This change is safe to deploy to production"
+      When an agent writes the body
+      Then the point, the links line and a line each for a decision or risk sit above that heading, with no heading of their own
+      And the checklist is the last field, followed only by the folded evidence
 
     Example: a box that depends on an open question
       Given a checkbox "Safe to deploy directly to production" and an open question about the deploy window
