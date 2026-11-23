@@ -62,7 +62,8 @@ session here is most likely to miss:
 - **The `description` is the expensive field.** It loads in every session, so
   widening one is paid for in `evals/` with a should-not-fire case.
 - **Spec before code.** No change merges without an approved change spec; a fix
-  found on the way is filed, not made.
+  found on the way is filed, not made. Its `Sketch:` line says drawn and where,
+  or not and why — 0090 and 0091 merged without one.
 - **Skills never implement.** `todo` files, `refine-*` specs, `record-clip`
   records. None of them touch application code.
 - **The gates take no dependencies.** Python 3 standard library; CI installs nothing.
