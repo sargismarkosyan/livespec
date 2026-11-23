@@ -1058,6 +1058,15 @@ class KeyTable(unittest.TestCase):
         self.assertIn("*before the push*", line["evidence"])
 
     @rule("the-key-table-is-held-to-the-template")
+    def test_bindings_set_up_before_the_template_row_are_asked_for_it(self):
+        """Where the template is and what the release publishes, asked of an older repository. See 2026-11-23."""
+        text = inject.green_bindings(INSTALLED)
+        row = next(line for line in text.splitlines() if line.startswith("| **Pull request template** |"))
+        line = audit(repo(text.replace(row + "\n", "")))["check:key-table-shape"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("*pull request template*", line["evidence"])
+
+    @rule("the-key-table-is-held-to-the-template")
     def test_graded_case_forms_are_the_same_rows(self):
         text = (inject.green_bindings(INSTALLED).replace("| **How a test claims its rule** |", "| **How a case names its rule** |")
                 .replace("| **Rule discovery** |", "| **Case discovery** |"))

@@ -290,6 +290,7 @@ def _green_bindings(version: str) -> str:
         "| **Spec-bound coverage** | not applicable — no coverage here |\n"
         "| **Pull-request report** | `report.py`, posted by CI |\n"
         "| **Audit record** | `specs/setup/audit.md` |\n"
+        "| **Pull request template** | none, decided; the release copies `## Changelog` |\n"
         "| **What a contributor owes a release** | a label and a changelog section |\n\n"
         "## Gate wiring\n\n"
         f"**Reconciled against livespec {version} on 2026-01-01.**\n\n"
@@ -481,6 +482,8 @@ from releaselib import (  # noqa: E402
     stamp_ledger,
     check_ids_section,
     moves_audit_surface,
+    owes_ids,
+    extract_ids,
     NEXT,
 )
 
@@ -502,7 +505,9 @@ GOOD_BODY = (
 )
 
 BODY_IDS_ADDED = GOOD_BODY + "\n## Ids\n\nadded: check:new-thing\n"
-BODY_IDS_UNCHANGED = GOOD_BODY + "\n## Ids\n\nunchanged\n"
+BODY_IDS_UNCHANGED = GOOD_BODY + "\n## Ids\n\nunchanged — a reword; nothing a repository holds names it\n"
+# A folded block after the blank line is not a reason. See #247.
+BODY_IDS_BARE = GOOD_BODY + "\n## Ids\n\nunchanged\n\n<details><summary>The run</summary>ok</details>\n"
 BODY_IDS_GHOST = GOOD_BODY + "\n## Ids\n\nadded: check:ghost\n"
 BODY_IDS_BULLETS = GOOD_BODY + "\n## Ids\n\n- added: check:new-thing\n- retired: none\n"
 BODY_IDS_BULLET_RETIRES = GOOD_BODY + "\n## Ids\n\n- retired: check:new-thing\n"
@@ -544,6 +549,13 @@ RELEASE_FAULTS = [
      lambda: check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_TYPED), "reads next"),
     ("the audit surface moved with no ## Ids section",
      lambda: check_ids_section(GOOD_BODY, TABLE_BASE, TABLE_ADDED), "no `## Ids` section"),
+    # Everything that ships owes the section, and *unchanged* says what the
+    # change asks of a consuming repository: an update brings only what an id
+    # carries. See #247.
+    ("a method change with no ## Ids section",
+     lambda: extract_ids(GOOD_BODY) if owes_ids(["method/repository.md"]) else None, "no `## Ids` section"),
+    ("## Ids reading unchanged with no reason",
+     lambda: extract_ids(BODY_IDS_BARE), "and not why"),
     ("## Ids reading unchanged while a row was added",
      lambda: check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_ADDED), "says unchanged"),
     ("## Ids naming an id the table does not have",

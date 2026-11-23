@@ -157,7 +157,7 @@ WIRING = [
 
 # (id, kind, severity, meaning) — kind is mechanical or judgment.
 CHECKS = [
-    ("check:key-table-shape", "mechanical", "record", "every row of the template's key table is in the bindings, by its name or its graded-case form"),
+    ("check:key-table-shape", "mechanical", "record", "every row of the template's key table is in the bindings, by its name or its graded-case form, the pull request template and the section a release publishes among them"),
     ("check:ledger-shape", "mechanical", "record", "the three tables and the stamp line are in the shape the template gives them, the gate and wiring rows each with the version it was reconciled at"),
     ("check:stamp-present", "mechanical", "record", "the ledger carries the version it was reconciled against"),
     ("check:stamp-derived", "mechanical", "record", "the stamp line reads the oldest version a gate or wiring row was reconciled at"),
@@ -210,7 +210,7 @@ CHECKS = [
     ("check:deferred-clock", "mechanical", "wiring", "no row is deferred across two changes"),
     ("check:hook-no-row", "mechanical", "record", "a local hook has no row in either table"),
     ("check:sorted-by-severity", "mechanical", "record", "what is open is reported dangerous first"),
-    ("check:loop-followed", "mechanical", "record", "every change merged since the last audit has a change spec whose `spec NNNN:` commit came first and whose header says what became of its sketch, or takes the light path with an issue"),
+    ("check:loop-followed", "mechanical", "record", "every change merged since the last audit has a change spec whose `spec <change>:` commit came first and whose header says what became of its sketch, or takes the light path with an issue"),
     ("check:record-only", "mechanical", "record", "the audit's corrections touched the record and nothing else"),
     ("check:last-line-command", "mechanical", "record", "where wiring is left, the last line is the command that starts the sitting, with the rows after it"),
     ("check:no-line-when-clear", "mechanical", "record", "where nothing is left for the sitting, no such line"),

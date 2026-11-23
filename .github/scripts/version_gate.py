@@ -52,6 +52,7 @@ from releaselib import (  # noqa: E402
     extract_gherkin,
     extract_run,
     moves_audit_surface,
+    owes_ids,
     moves_spec,
     select_increment,
     ships,
@@ -144,7 +145,9 @@ if running:
         problems.append(str(error))
 
 ids = None
-if surface:
+# Everything that ships owes the section, not only the audit surface: an update
+# brings a repository only what an id carries. See #247.
+if owes_ids(changed):
     # The table as it was where this branch left the base, not as the base is
     # now — another merge since then would read as rows this change removed.
     fork = git("merge-base", BASE, "HEAD").strip()

@@ -44,6 +44,7 @@ headers and the stamp line below, so keep those as they are.
 | **Spec-bound coverage** | <the rule-bound measure, or *not applicable* and why> |
 | **Pull-request report** | <what produces it and where it posts; never a gate> |
 | **Audit record** | `specs/setup/audit.md` — written by the audit, one line per check, replaced on every run |
+| **Pull request template** | <the template the platform fills a new pull request with, by the path it reads it from — or *none*, decided; and the heading of the section a release copies from a body into a published changelog — or *none*, decided, where nothing is published from a body> |
 | **What a contributor owes a release** | <label, changelog, picture, Gherkin, and the run under the verification command when the change touches the tests — whatever the pipeline cannot work out for itself> |
 
 ## Gate wiring

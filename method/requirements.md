@@ -82,7 +82,7 @@ does not name — held to the same states, required by nothing.
 
 | id | kind | since | severity | retired | aliases | meaning | revised |
 |---|---|---|---|---|---|---|---|
-| `check:key-table-shape` | mechanical | 3.8.0 | record | — | | every row of the template's key table is in the bindings, by its name or its graded-case form | — |
+| `check:key-table-shape` | mechanical | 3.8.0 | record | — | | every row of the template's key table is in the bindings, by its name or its graded-case form, the pull request template and the section a release publishes among them | 3.14.0 |
 | `check:ledger-shape` | mechanical | 1.6.0 | record | — | | the three tables and the stamp line are in the shape the template gives them, the gate and wiring rows each with the version it was reconciled at | 1.37.0 |
 | `check:stamp-present` | mechanical | 0.21.0 | record | — | | the ledger carries the version it was reconciled against | — |
 | `check:stamp-derived` | mechanical | 1.37.0 | record | — | | the stamp line reads the oldest version a gate or wiring row was reconciled at | — |
@@ -135,7 +135,7 @@ does not name — held to the same states, required by nothing.
 | `check:deferred-clock` | mechanical | 0.21.0 | wiring | — | | no row is deferred across two changes | — |
 | `check:hook-no-row` | mechanical | 0.26.0 | record | — | | a local hook has no row in either table | — |
 | `check:sorted-by-severity` | mechanical | 0.21.0 | record | — | | what is open is reported dangerous first | — |
-| `check:loop-followed` | mechanical | 3.2.0 | record | — | | every change merged since the last audit has a change spec whose `spec NNNN:` commit came first and whose header says what became of its sketch, or takes the light path with an issue | — |
+| `check:loop-followed` | mechanical | 3.2.0 | record | — | | every change merged since the last audit has a change spec whose `spec <change>:` commit came first and whose header says what became of its sketch, or takes the light path with an issue | — |
 | `check:record-only` | mechanical | 0.21.0 | record | — | | the audit's corrections touched the record and nothing else | — |
 | `check:last-line-command` | mechanical | 1.3.0 | record | — | | where wiring is left, the last line is the command that starts the sitting, with the rows after it | — |
 | `check:no-line-when-clear` | mechanical | 1.3.0 | record | — | | where nothing is left for the sitting, no such line | — |

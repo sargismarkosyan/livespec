@@ -223,12 +223,13 @@ which is what review is for.
 the person deciding, who did not ask for the change, and any agent reviewing or
 testing that reads it as the author's intent.
 
-**The repository's template wins.** Where there is a pull request template, the
-body fills it — every heading and checkbox, in its order, nothing renamed,
-replaced or added beside it; folded evidence with no field of its own closes the
-testing section. With no template: the point, with no heading; the links line;
-the sections the repository's rules require; then decisions, testing and risk,
-each only when it has something to say; then the folded evidence.
+**The repository's template wins** — the one the bindings name, else the one the
+platform fills a new pull request with. The body fills it: every heading and
+checkbox, in its order, nothing renamed, replaced or added beside it; folded
+evidence with no field of its own closes the testing section. With no template:
+the point, with no heading; the links line; the sections the repository's rules
+require; then decisions, testing and risk, each only when it has something to
+say; then the folded evidence.
 
 **A checkbox is a claim**: ticked only when true now. One that waits on an open
 question or on an approval the platform does not enforce stays unticked and says
@@ -248,9 +249,10 @@ problem goes there.
 - **Every reference is a link with its title** — an issue, pull request,
   incident or spec, never a bare number. A later mention may be the short link
   alone; an item with no address is its id with its title in words.
-- **A release note only where the repository publishes one**, written for users:
-  every change they will notice, no reasons and nothing internal, or that there
-  is nothing. It reads true on its own in the changelog.
+- **A release note only where the repository publishes one** — the section the
+  bindings name — written for users: every change they will notice, no reasons
+  and nothing internal, or that there is nothing. It reads true on its own in
+  the changelog.
 - **Before and after**, inline and pinned, when an existing screen changed; the
   after alone when the screen is new.
 - **Decisions**: the choice, the alternative rejected, and its cost when known.
