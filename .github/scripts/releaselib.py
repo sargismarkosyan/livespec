@@ -20,7 +20,7 @@ like rather than two that drift.
 from __future__ import annotations
 
 import re
-from typing import Iterable
+from typing import Callable, Iterable
 
 # Ordered most significant first, which is also the order a mistake is worst in.
 INCREMENTS = ("major", "minor", "patch")
@@ -470,7 +470,36 @@ def ids_diff(base_text: str, head_text: str) -> dict[str, list[str]]:
     }
 
 
-def check_ids_section(body: str | None, base_text: str, head_text: str) -> dict[str, list[str]]:
+# What a check reads, where that is plugin text a repository writes its own file
+# from: when it moves, the check is revised so every repository is asked again,
+# though the check's own meaning has not changed. See 2026-11-23-the-rules-in-the-repository.
+READ_BY = {
+    "check:pr-body-rules": (("method/repository.md", "### And the point, before the evidence"),
+                            ("templates/pull-request.md", None)),
+}
+
+
+def _section(text: str | None, heading: str | None) -> str:
+    if text is None or heading is None:
+        return text or ""
+    start = text.find(heading + "\n")
+    if start < 0:
+        return ""
+    end = len(text)
+    for marker in ("\n### ", "\n## "):
+        found = text.find(marker, start + len(heading))
+        if found >= 0:
+            end = min(end, found)
+    return text[start:end]
+
+
+def reads_moved(base: Callable[[str], str | None], head: Callable[[str], str | None]) -> list[str]:
+    """The checks whose plugin text moved between `base` and `head`, each read through `path -> text`."""
+    return [check for check, sources in READ_BY.items()
+            if any(_section(base(path), heading) != _section(head(path), heading) for path, heading in sources)]
+
+
+def check_ids_section(body: str | None, base_text: str, head_text: str, read_moved: Iterable[str] = ()) -> dict[str, list[str]]:
     """Hold a pull request's `## Ids` section to the table's diff, or refuse."""
     diff = ids_diff(base_text, head_text)
     if diff["removed"]:
@@ -491,6 +520,13 @@ def check_ids_section(body: str | None, base_text: str, head_text: str) -> dict[
     for i in diff["typed_revised"]:
         raise ReleaseInputError(f"row {i} has a typed revised version. A revision reads next — the release writes it.")
     said = extract_ids(body)
+    read_moved = [i for i in read_moved if i not in diff["added"]]
+    for i in read_moved:
+        if i not in said["revised"]:
+            raise ReleaseInputError(
+                f"what {i} reads moved, and `## Ids` does not revise it. Every repository wrote its own file "
+                f"from that text; `revised: {i}`, with its revised cell reading next, is what asks them again."
+            )
     moved = diff["added"] + diff["retired"] + diff["meaning"] + diff["now_next"]
     if said["unchanged"]:
         if moved:
@@ -505,7 +541,7 @@ def check_ids_section(body: str | None, base_text: str, head_text: str) -> dict[
         if (i in said["revised"]) == (i in said["reworded"]):
             raise ReleaseInputError(f"the meaning of {i} changed; `## Ids` names it once, under revised: or reworded:")
     for i in said["revised"]:
-        if i not in diff["meaning"] or head_rows.get(i, {}).get("revised") != NEXT:
+        if (i not in diff["meaning"] and i not in read_moved) or head_rows.get(i, {}).get("revised") != NEXT:
             raise ReleaseInputError(f"`## Ids` says {i} was revised; its meaning must change and its revised cell read next")
     for i in diff["now_next"]:
         if i not in said["revised"]:

@@ -158,6 +158,7 @@ WIRING = [
 # (id, kind, severity, meaning) — kind is mechanical or judgment.
 CHECKS = [
     ("check:key-table-shape", "mechanical", "record", "every row of the template's key table is in the bindings, by its name or its graded-case form, the pull request template and the section a release publishes among them"),
+    ("check:pr-body-rules", "judgment", "wiring", "the file the bindings name holds how a pull request description is written in this repository, the context file links it, and it says how each part of the plugin's description guideline is met here as that guideline now stands"),
     ("check:ledger-shape", "mechanical", "record", "the three tables and the stamp line are in the shape the template gives them, the gate and wiring rows each with the version it was reconciled at"),
     ("check:stamp-present", "mechanical", "record", "the ledger carries the version it was reconciled against"),
     ("check:stamp-derived", "mechanical", "record", "the stamp line reads the oldest version a gate or wiring row was reconciled at"),
@@ -1390,6 +1391,25 @@ def j_fresh_tree_green(ctx: dict) -> tuple[str, str]:
     return "unanswered", f"run: {command} new <throwaway>, then {verify} in it, then {command} clean — green, and the tree list as it was? clean nothing but the throwaway"
 
 
+def j_pr_body_rules(ctx: dict) -> tuple[str, str]:
+    """The repository's own description rules: named, there, linked, then read. See 2026-11-23-the-rules-in-the-repository."""
+    row = ctx["keys"].get("pull request description rules", "")
+    if not row:
+        return "open", ("no *Pull request description rules* row — the sitting writes the file from the plugin's "
+                        "`templates/pull-request.md` for this repository and names it")
+    named = next(iter(re.findall(r"`?([\w./-]+\.md)`?", row)), "")
+    if not named or not (ctx["root"] / named).is_file():
+        return "open", f"the row names `{named or 'no file'}`, which is not there — the sitting writes it from `templates/pull-request.md`"
+    if named not in ctx["claude_md"] and Path(named).name not in ctx["claude_md"]:
+        return "open", (f"`{ctx['context_name'] or 'the context file'}` does not link `{named}` — an agent that never loads the plugin "
+                        "would never find it; its step that opens a pull request links it")
+    return "unanswered", (f"read: `{named}` against `method/repository.md`'s *And the point, before the evidence* and "
+                          "`templates/pull-request.md` as they now stand — does it say, in this repository's terms, each part: "
+                          "the template's fields and where the rest goes, the point, the closing line and how references are "
+                          "written, what else a body carries here, the length, what is left out, and the steps before publishing; "
+                          "and is each true now? A gap is the sitting's to write")
+
+
 def j_claims_in_flight(ctx: dict) -> tuple[str, str]:
     row = claim_row(ctx)
     if not row:
@@ -1431,6 +1451,7 @@ JUDGMENT = {
     "check:loop-per-claude-md": j_loop_per_claude_md,
     "check:fresh-tree-green": j_fresh_tree_green,
     "check:claims-in-flight": j_claims_in_flight,
+    "check:pr-body-rules": j_pr_body_rules,
 }
 
 

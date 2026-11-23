@@ -56,7 +56,9 @@ def repo(bindings: str | None = None, files: dict[str, str] | None = None) -> Pa
     (root / "specs" / "changes" / "0001-first.md").write_text("# Spec 0001\n", encoding="utf-8")
     (root / ".claude").mkdir()
     (root / ".claude" / "settings.json").write_text('{"enabledPlugins": {"livespec@livespec": true}}\n', encoding="utf-8")
-    (root / "CLAUDE.md").write_text("# The loop\n\n`/livespec:refine-spec` writes the spec.\n\n```sh\npython3 trees.py new <name>\n```\n", encoding="utf-8")
+    (root / "CLAUDE.md").write_text("# The loop\n\n`/livespec:refine-spec` writes the spec.\n\n```sh\npython3 trees.py new <name>\n```\n\n"
+                                    "A description follows [specs/setup/pull-requests.md](specs/setup/pull-requests.md).\n", encoding="utf-8")
+    (root / "specs" / "setup" / "pull-requests.md").write_text("# How a pull request description is written here\n", encoding="utf-8")
     for relative, content in (files or {}).items():
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -1071,6 +1073,40 @@ class KeyTable(unittest.TestCase):
         text = (inject.green_bindings(INSTALLED).replace("| **How a test claims its rule** |", "| **How a case names its rule** |")
                 .replace("| **Rule discovery** |", "| **Case discovery** |"))
         self.assertEqual(audit(repo(text))["check:key-table-shape"]["state"], "clear")
+
+
+class DescriptionRules(unittest.TestCase):
+    """The repository's own description rules: named, there, linked, then read. See 2026-11-23-the-rules-in-the-repository."""
+
+    UNLINKED = "# The loop\n\n```sh\npython3 trees.py new <name>\n```\n"
+
+    @rule("the-description-rules-are-the-repositorys-own")
+    def test_no_row_is_open(self):
+        text = inject.green_bindings(INSTALLED)
+        row = next(line for line in text.splitlines() if line.startswith("| **Pull request description rules** |"))
+        line = audit(repo(text.replace(row + "\n", "")))["check:pr-body-rules"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("templates/pull-request.md", line["evidence"])
+
+    @rule("the-description-rules-are-the-repositorys-own")
+    def test_a_named_file_that_is_not_there_is_open(self):
+        root = repo()
+        (root / "specs" / "setup" / "pull-requests.md").unlink()
+        line = audit(root)["check:pr-body-rules"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("not there", line["evidence"])
+
+    @rule("the-description-rules-are-the-repositorys-own")
+    def test_a_file_the_context_file_never_links_is_open(self):
+        line = audit(repo(files={"CLAUDE.md": self.UNLINKED}))["check:pr-body-rules"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("does not link", line["evidence"])
+
+    @rule("the-description-rules-are-the-repositorys-own")
+    def test_rules_that_are_there_are_put_to_a_reading(self):
+        line = audit(repo())["check:pr-body-rules"]
+        self.assertEqual(line["state"], "unanswered", line["evidence"])
+        self.assertIn("method/repository.md", line["evidence"])
 
 
 class MainGreen(unittest.TestCase):

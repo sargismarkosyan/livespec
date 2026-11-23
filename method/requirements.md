@@ -83,6 +83,7 @@ does not name — held to the same states, required by nothing.
 | id | kind | since | severity | retired | aliases | meaning | revised |
 |---|---|---|---|---|---|---|---|
 | `check:key-table-shape` | mechanical | 3.8.0 | record | — | | every row of the template's key table is in the bindings, by its name or its graded-case form, the pull request template and the section a release publishes among them | 3.14.0 |
+| `check:pr-body-rules` | judgment | next | wiring | — | | the file the bindings name holds how a pull request description is written in this repository, the context file links it, and it says how each part of the plugin's description guideline is met here as that guideline now stands | — |
 | `check:ledger-shape` | mechanical | 1.6.0 | record | — | | the three tables and the stamp line are in the shape the template gives them, the gate and wiring rows each with the version it was reconciled at | 1.37.0 |
 | `check:stamp-present` | mechanical | 0.21.0 | record | — | | the ledger carries the version it was reconciled against | — |
 | `check:stamp-derived` | mechanical | 1.37.0 | record | — | | the stamp line reads the oldest version a gate or wiring row was reconciled at | — |
