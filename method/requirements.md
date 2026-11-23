@@ -57,7 +57,7 @@ says `revised:` in `## Ids`; one that only rewords says `reworded:`.
 | `gate:context-file-shape` | gate | 1.9.0 | wiring | — | | the context file missing, or without its loop, its commands, or its pointer to the bindings, fails | — |
 | `gate:skipped-test-claims-nothing` | gate | 1.12.0 | wiring | — | | a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails | — |
 | `gate:fewer-ran-than-exist` | gate | 1.12.0 | wiring | — | | the runner reporting fewer rule-bound tests than the tree holds fails | — |
-| `gate:change-number-unique` | gate | 1.23.0 | wiring | next → superseded-by a change spec named by its day and slug, which version control keeps unique | | two change specs sharing a number fail, whatever their slugs; a gap does not | — |
+| `gate:change-number-unique` | gate | 1.23.0 | wiring | 3.15.0 → superseded-by a change spec named by its day and slug, which version control keeps unique | | two change specs sharing a number fail, whatever their slugs; a gap does not | — |
 | `gate:feature-to-feature` | gate | 1.28.0 | wiring | — | | a feature using a feature that does not exist, or carrying @uses on a rule, fails | — |
 | `gate:workflow-budget` | gate | 1.33.0 | wiring | — | | a count a workflow walk makes past the budget the policy file sets fails; a time carries no budget | — |
 | `gate:workflow-regression-answered` | gate | 1.35.0 | wiring | — | | a walk past its allowance whose workflow the pull request's Performance section does not name fails | — |

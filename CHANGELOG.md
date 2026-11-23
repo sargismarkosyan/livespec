@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.15.0 — 2026-11-23
+
+**A change spec is named by its day, not a number.** New change specs are `specs/changes/YYYY-MM-DD-<slug>.md`, dated the day they are written, with branch `spec-YYYY-MM-DD-<slug>` and commit `spec YYYY-MM-DD-<slug>: <title>`. Parallel workstreams no longer need to know each other's next number, and the refining skills stop reading open pull requests and claims to choose one. Specs already numbered keep their names. `gate:change-number-unique` retires, so the first audit after upgrading reports its ledger row as *retired — drop the row*. `doctor` reads dated changes beside numbered ones, including on the two-change clock.
+
 ## 3.14.0 — 2026-11-23
 
 The bindings now record where a repository's pull request template is and which section of a body its release publishes, or that there is neither. Updating asks a repository that has not recorded them, so the pull request guideline from 1.31.0 reaches it.
