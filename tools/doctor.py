@@ -145,6 +145,7 @@ GATES = [
     ("gate:feature-to-feature", "wiring", "", "a feature using a feature that does not exist, or carrying @uses on a rule, fails"),
     ("gate:workflow-budget", "wiring", "", "a count a workflow walk makes past the budget the policy file sets fails; a time carries no budget"),
     ("gate:workflow-regression-answered", "wiring", "", "a walk past its allowance whose workflow the pull request's Performance section does not name fails"),
+    ("gate:pr-body-shape", "wiring", "", "a pull request description out of the repository's template — a heading or checkbox missing, renamed or out of order, or a heading added its rules do not allow — or naming an issue, pull request or incident by a bare number or address fails"),
     ("gate:verified-to-fire", "wiring", "both gates verified to fire", "every gate is broken on purpose and seen to fire"),
 ]
 

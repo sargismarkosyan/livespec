@@ -20,6 +20,8 @@ like rather than two that drift.
 from __future__ import annotations
 
 import re
+import sys
+from pathlib import Path
 from typing import Callable, Iterable
 
 # Ordered most significant first, which is also the order a mistake is worst in.
@@ -497,6 +499,23 @@ def reads_moved(base: Callable[[str], str | None], head: Callable[[str], str | N
     """The checks whose plugin text moved between `base` and `head`, each read through `path -> text`."""
     return [check for check, sources in READ_BY.items()
             if any(_section(base(path), heading) != _section(head(path), heading) for path, heading in sources)]
+
+
+def check_body_shape(body: str | None) -> int:
+    """The script's part of this repository's description rules: livespec's own
+    `tools/prbody.py`, the copy every adopter takes, with no template here. Returns
+    the author's word count, or refuses with each failure and what it means.
+    See 2026-11-23-the-description-gate."""
+    tools = str(Path(__file__).resolve().parents[2] / "tools")
+    if tools not in sys.path:
+        sys.path.insert(0, tools)
+    import prbody  # noqa: E402
+
+    failures, words = prbody.check(body or "")
+    if failures:
+        raise ReleaseInputError("the description: " + "; ".join(
+            f"{failure} — {prbody.MEANS[failure.split(':', 1)[0]]}" for failure in failures))
+    return words
 
 
 def check_ids_section(body: str | None, base_text: str, head_text: str, read_moved: Iterable[str] = ()) -> dict[str, list[str]]:

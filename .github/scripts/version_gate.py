@@ -47,6 +47,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from releaselib import (  # noqa: E402
     IDS_FILE,
     ReleaseInputError,
+    check_body_shape,
     check_ids_section,
     reads_moved,
     extract_entry,
@@ -94,11 +95,11 @@ moving = moves_spec(changed)
 surface = moves_audit_surface(changed)
 running = touches_the_run(changed)
 
-if not shipping and not moving and not surface and not running:
+request = pull_request()
+if request is None and not shipping and not moving and not surface and not running:
     print(f"✔ release inputs: nothing that ships, moves the spec, moves the audit surface or touches the tests changed against {BASE}")
     raise SystemExit(0)
 
-request = pull_request()
 if request is None:
     # Local run, or a push build. There is no pull request to read, and inventing
     # a verdict from its absence would make this command mean two different
@@ -115,6 +116,14 @@ body = request.get("body")
 labels = [label.get("name", "") for label in request.get("labels", [])]
 problems: list[str] = []
 increment = entry = gherkin = run_block = None
+
+# Every body, whatever changed: the script's part of the description rules,
+# specs/setup/pull-requests.md. See 2026-11-23-the-description-gate.
+words = None
+try:
+    words = check_body_shape(body)
+except ReleaseInputError as error:
+    problems.append(str(error))
 
 # The two questions are asked separately because they have different triggers. A
 # spec usually moves without anything shipping, and a wording fix in a skill
@@ -202,4 +211,5 @@ if surface:
     )
 if running:
     said.append(f"{len(run_block.splitlines())} line(s) of run for {len(running)} file(s) touching the tests or what runs them")
+said.append(f"the description: {words} words of the author's own, unfolded — about a hundred is the aim")
 print(f"✔ release inputs: {'; '.join(said)}")

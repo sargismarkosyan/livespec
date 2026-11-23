@@ -289,6 +289,19 @@ to. Two ledger rows: the ceiling, and the shape.
 | no fenced block | The commands are missing. |
 | no link to the bindings that resolves | The pointer every command depends on is missing or points at nothing. |
 
+### The description a pull request carries
+
+The repository's description rules
+([repository.md](repository.md#and-the-point-before-the-evidence)) are partly a
+reading and partly a script's. The script's part runs on every pull request
+event, an edited description included; the length is reported, never failed.
+
+| Failure | What it means |
+|---|---|
+| a template heading or checkbox missing, renamed or out of order | The template is the repository's shape for every description. Fill it in its order, and put what it has no field for above its first heading as plain lines. |
+| a heading added beside the template's | A second shape for the reviewer to read. Put the text under the template's own field, or above its first heading. |
+| an issue, pull request or incident named by a bare number or address | The reader has to open it to learn what it is. A link with its title; its id and title in words where it has no address. A closing line is exempt. |
+
 ### And every part that only grows
 
 The bindings' **Ceilings** row names each part that only grows and its size
