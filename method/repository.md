@@ -19,7 +19,7 @@ specs/
   features/<area>/
     spec.md              area-level prose
     *.feature            Gherkin, the enforced contract
-  changes/NNNN-*.md      one numbered change spec per version
+  changes/YYYY-MM-DD-*.md one dated change spec per version
   setup/README.md        this repository's bindings — commands, thresholds, paths
   README.md              how the spec layers fit together
 
@@ -45,9 +45,9 @@ docs/feedback/           images attached to open issues, deleted when they close
 `main` is protected. Work happens on a branch and arrives by pull request:
 
 ```sh
-git switch -c spec-0004-<slug>
+git switch -c spec-2026-03-14-<slug>
 # ... commits ...
-git push -u origin spec-0004-<slug>
+git push -u origin spec-2026-03-14-<slug>
 gh pr create --fill
 ```
 
@@ -151,14 +151,15 @@ session's id as the harness gives it, or *not exposed*, never an id made up.
   that drops the work, which takes the marker off and says why. A tracker that
   does not answer is said: an unread claim is not an absent one.
 
-**A number nobody else holds.** A change spec is numbered one past the highest
-anywhere in flight — the main branch, the change specs in open pull requests,
-and the branches the open claims name — because a tree's own checkout sees only
-the first. The claim reserves the number. **Gaps stay gaps**: a closed pull
-request's number is never reused. If two collide anyway, the one not yet merged
-is renumbered — its file, its heading, every link to it. An application's own
-numbered files, such as migrations, collide the same way, and Strict and a
-pipeline that runs them catch it.
+**A name nobody else needs to know.** A change spec is named by the day it is
+written and its slug, so no tree reads what the others hold — a next number is
+the same in every tree cut from one main branch. The day is never moved to the
+merge, because the name is cited before the change lands: the branch, the
+commit, the pull request. Specs numbered before keep their numbers. If two trees
+take the same day and slug, version control reports the files in conflict, and
+the one not yet merged takes another slug — its file, its heading, every link
+to it. An application's own numbered files, such as migrations, still collide
+by number, and Strict and a pipeline that runs them catch it.
 
 Nothing caps how many trees run at once; the list of trees is where the number
 is read.
@@ -306,7 +307,7 @@ template whose first line is a heading it reads zero and means nothing.
 One change spec, one commit:
 
 ```
-spec 0005: <the spec's title>
+spec 2026-03-14-<slug>: <the spec's title>
 
 <body: what changed and, more usefully, why this shape rather than the
 alternatives — the reasoning that will not survive in the diff>
@@ -315,7 +316,7 @@ Closes #12
 ```
 
 - Spec commits use the same prefix and land **before** their implementation.
-- Setup and tooling commits have no spec number; describe them plainly.
+- Setup and tooling commits have no change spec; describe them plainly.
 - **Never commit a state that fails verification.** Every commit is a picture
   candidate, and finding out locally is cheaper than on the pull request.
 

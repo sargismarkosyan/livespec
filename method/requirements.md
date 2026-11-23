@@ -57,7 +57,7 @@ says `revised:` in `## Ids`; one that only rewords says `reworded:`.
 | `gate:context-file-shape` | gate | 1.9.0 | wiring | — | | the context file missing, or without its loop, its commands, or its pointer to the bindings, fails | — |
 | `gate:skipped-test-claims-nothing` | gate | 1.12.0 | wiring | — | | a rule-bound test marked skipped, focused or expected to fail claims no rule, and fails | — |
 | `gate:fewer-ran-than-exist` | gate | 1.12.0 | wiring | — | | the runner reporting fewer rule-bound tests than the tree holds fails | — |
-| `gate:change-number-unique` | gate | 1.23.0 | wiring | — | | two change specs sharing a number fail, whatever their slugs; a gap does not | — |
+| `gate:change-number-unique` | gate | 1.23.0 | wiring | next → superseded-by a change spec named by its day and slug, which version control keeps unique | | two change specs sharing a number fail, whatever their slugs; a gap does not | — |
 | `gate:feature-to-feature` | gate | 1.28.0 | wiring | — | | a feature using a feature that does not exist, or carrying @uses on a rule, fails | — |
 | `gate:workflow-budget` | gate | 1.33.0 | wiring | — | | a count a workflow walk makes past the budget the policy file sets fails; a time carries no budget | — |
 | `gate:workflow-regression-answered` | gate | 1.35.0 | wiring | — | | a walk past its allowance whose workflow the pull request's Performance section does not name fails | — |
@@ -135,7 +135,7 @@ does not name — held to the same states, required by nothing.
 | `check:deferred-clock` | mechanical | 0.21.0 | wiring | — | | no row is deferred across two changes | — |
 | `check:hook-no-row` | mechanical | 0.26.0 | record | — | | a local hook has no row in either table | — |
 | `check:sorted-by-severity` | mechanical | 0.21.0 | record | — | | what is open is reported dangerous first | — |
-| `check:loop-followed` | mechanical | 3.2.0 | record | — | | every change merged since the last audit has a change spec whose `spec NNNN:` commit came first and whose header says what became of its sketch, or takes the light path with an issue | — |
+| `check:loop-followed` | mechanical | 3.2.0 | record | — | | every change merged since the last audit has a change spec whose `spec <change>:` commit came first and whose header says what became of its sketch, or takes the light path with an issue | — |
 | `check:record-only` | mechanical | 0.21.0 | record | — | | the audit's corrections touched the record and nothing else | — |
 | `check:last-line-command` | mechanical | 1.3.0 | record | — | | where wiring is left, the last line is the command that starts the sitting, with the rows after it | — |
 | `check:no-line-when-clear` | mechanical | 1.3.0 | record | — | | where nothing is left for the sitting, no such line | — |

@@ -1,4 +1,4 @@
-# Spec NNNN: <short title>
+# Spec YYYY-MM-DD: <short title>
 
 - **Status:** proposed | approved | shipped
 - **Issue:** #NN (or "none — direct request")

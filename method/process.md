@@ -26,7 +26,7 @@ commit must therefore leave the product in a state worth looking at.
    one with its evidence. It does not fix.
 3. **The agent writes the spec** with [`refine-spec`](../skills/refine-spec/SKILL.md):
    the job behind the request, checked against the persona and the workflows,
-   as Gherkin rules tagged `@planned` and a numbered change spec. It does not
+   as Gherkin rules tagged `@planned` and a dated change spec. It does not
    implement.
 4. **The person approves** the spec, holding the spec and the sketch drawn
    from it, or asks for changes.
@@ -63,7 +63,7 @@ somebody holding only the request can tell whether they got it; the person
   together, however small.
 - **Spec before code.** No implementation without an approved change spec, and
   no change spec without `refine-spec`. A request is not a spec.
-- **Specs commit before their implementation.** `spec 0004: <title>` lands
+- **Specs commit before their implementation.** `spec 2026-03-14-<slug>: <title>` lands
   first; the implementation follows in its own commit.
 - **A change to who the product is for, or what they do, is confirmed on its
   own.** An edit to the personas or the workflows rides inside a spec about
@@ -138,7 +138,7 @@ organisation that owns the code, not for the person using it
 ([spec 0016 in the reference repository](https://github.com/sargismarkosyan/todo-change/blob/main/specs/changes/0016-somebody-elses-frame.md)).
 Its whole requirement is that **nothing a person can see moves**. It still owes:
 
-- **a numbered change spec** whose *Who this is for* says *not the persona*, out
+- **a change spec** whose *Who this is for* says *not the persona*, out
   loud, and argues for whoever it is for;
 - **an acceptance check proportional to the risk** — here, a walkthrough of
   every workflow, because "it looks fine" and "it is fine" look the same;

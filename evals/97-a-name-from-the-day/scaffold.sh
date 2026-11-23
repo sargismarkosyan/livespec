@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# The fixture for 83: fieldnote, main ending at spec 0006. Open pull request !15 adds 0007, and issue 14's claim names
-# spec-0008-dawn-chorus. Issue 12 is free. The case grades the new change spec being numbered 0009, with the
-# numbers stepped past said and where each was held. See specs/changes/0078.
+# The fixture for 97: fieldnote, main ending at spec 0006. Open pull request !15 adds 0007, and issue 14's claim names
+# spec-0008-dawn-chorus. Issue 12 is free. The case grades the new change spec being named by the day it is
+# written and its slug, with no number taken. See specs/changes/2026-11-23-a-date-not-a-number.md.
 set -euo pipefail
 
 mkdir -p specs/personas specs/workflows specs/features/log specs/changes specs/setup scripts src tests
@@ -25,7 +25,6 @@ cat > specs/setup/README.md <<'EOF'
 | **Tracker** | the club's own tracker, reached with `python3 scripts/tracker.py` — `show`, `list`, `prs`, `comment`, `label` |
 | **Claiming an issue** | label `in-progress`: `python3 scripts/tracker.py label <n> --add in-progress` puts it on and `--remove in-progress` takes it off; `python3 scripts/tracker.py list --label in-progress` lists the claimed |
 | **Trees** | `.worktrees/`, ignored; `git worktree add .worktrees/<branch> -b <branch>` |
-| **Change specs** | `specs/changes/NNNN-<slug>.md`, numbered one past the highest |
 
 ## Boundaries
 

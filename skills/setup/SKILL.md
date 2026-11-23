@@ -774,8 +774,8 @@ The temptation is to spec what is already built. Do not.
   about to touch it. Forty backfilled change specs are forty documents nobody
   checked against the code, and the gate cannot tell an accurate one from a
   guess.
-- **The spec layer starts at today.** The first change spec is numbered `0001`
-  and describes the next change, not the history.
+- **The spec layer starts at today.** The first change spec is dated the day it is
+  written and describes the next change, not the history.
 - **Existing tests do not have to claim a rule.** They are unit tests as far as
   this process is concerned until a rule exists that they answer to. Say this in
   the bindings, or someone will spend a week retrofitting decorators.
@@ -1206,7 +1206,7 @@ root>/tools/doctor.py --reshape`, the plugin root being two directories up from
 this skill file, prints them in that shape, ids filled from the aliases,
 unmatched rows marked — and apply what it printed with the person in the room.
 Rows you cannot date honestly say **predates the ledger** rather than getting an
-invented change number.
+invented change.
 
 ## What this skill refuses
 

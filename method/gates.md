@@ -41,7 +41,6 @@ test  →  rule     every behaviour test must name the rule it exists for
 | a rule-bound test marked skipped, focused or expected to fail | It claims nothing; the rule it names is untested. What counts as a marker is the runner's, and a binding. |
 | fewer rule-bound tests ran than the tree holds | The runner did not see what the gate sees — a harness that stopped early, a file the discovery pattern missed, a class it does not collect. Whatever the summary line says, the build fails. More is not a failure. |
 | a rule crossing a boundary the bindings have no row for | A `@crosses:` names a boundary nobody declared. Add the row, or name one that exists. |
-| two change specs sharing a number | Two trees each took *the next* number. Renumber the one that has not merged — its file, heading and links. A gap is not a fault. |
 
 | Warning | What it means |
 |---|---|

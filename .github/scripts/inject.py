@@ -246,7 +246,6 @@ def _green_bindings(version: str) -> str:
             "| `gate:crossing-names-a-boundary` | a rule crossing a boundary the bindings have no row for | automated | `python3 gate.py` |",
             "| `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | automated | `python3 gate.py` |",
             "| `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | automated | `python3 gate.py test` |",
-            "| `gate:change-number-unique` | two change specs sharing a number | automated | `python3 gate.py` |",
             "| `gate:feature-to-feature` | a feature using a feature that does not exist | automated | `python3 gate.py` |",
             "| `gate:workflow-budget` | a count a workflow walk makes past its budget | not applicable | its walks cannot be repeated on every change |",
             "| `gate:workflow-regression-answered` | a walk past its allowance the pull request does not answer | not applicable | its walks cannot be repeated on every change |",
@@ -961,11 +960,6 @@ FAULTS = [
     ("a crossing rule with a single example", TRACE,
      lambda r: edit(r, "specs/features/core/core.feature", "@rule:one\n", "@rule:one @crosses:store\n"),
      "warns", "boundary misbehaving"),
-    # Two change specs never share a number. The fixture holds 0001-first; a
-    # second 0001 under another slug is the collision. See specs/changes/0078.
-    ("two change specs sharing a number", TRACE,
-     lambda r: write(r, "specs/changes/0001-second.md", "# Spec 0001: the second\n"),
-     "fails", "share the number"),
     # A feature names what it uses. The fixture holds one feature, `core`; a
     # @uses naming any other id is the reference left behind by a rename, and
     # one on a Rule: is in the wrong place. See specs/changes/0083.

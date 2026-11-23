@@ -16,7 +16,7 @@ modern alternative to calling a function.
 | [journeys/](journeys/README.md) | The arc of adopting it, and the seams | [`refine`](../skills/refine/SKILL.md) |
 | [workflows/](workflows/README.md) | The bounded attempts somebody makes with it | [`refine`](../skills/refine/SKILL.md) |
 | [features/](features/) | Gherkin — the enforced contract. The live rules, each claimed by an eval case | [`refine-spec`](../skills/refine-spec/SKILL.md) |
-| [changes/](changes/) | One numbered change spec per version | [`refine-spec`](../skills/refine-spec/SKILL.md) |
+| [changes/](changes/) | One dated change spec per version — numbered up to `0116` | [`refine-spec`](../skills/refine-spec/SKILL.md) |
 | [setup/README.md](setup/README.md) | The bindings — every command, threshold and path that is this repository's rather than the method's | already written |
 
 **`features/` arrived in [`0008`](changes/0008-the-gate-gets-something-to-hold.md),

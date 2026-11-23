@@ -59,7 +59,33 @@ LEDGER_STATES = ("automated", "not applicable", "unobserved", "deferred")
 BOUNDARY_STATES = ("real", "fake", "recorded", "mocked", "unreachable")
 STAMP = re.compile(r"Reconciled against livespec\W{0,4}(\d+\.\d+\.\d+)\**[^\n]{0,60}?\bon\W{0,4}(\d{4}-\d{2}-\d{2})")
 ENTRY = re.compile(r"^## (\d+\.\d+\.\d+) — (\d{4}-\d{2}-\d{2})$")
-CHANGE = re.compile(r"^(\d{4})-")
+# A change spec is numbered (0078-<slug>) or, since 2026-11-23-a-date-not-a-number, dated by the
+# day it was written (2026-11-23-<slug>). A change is ("n", 78) or ("d", "2026-11-23").
+DATED = r"\d{4}-\d{2}-\d{2}"
+CHANGE = re.compile(rf"^(?:({DATED})-[a-z0-9]|(\d{{4}})-)")
+
+
+def change_of(name: str) -> tuple[str, object] | None:
+    """The change a spec file's name is: its day, or its number."""
+    m = CHANGE.match(name)
+    if not m:
+        return None
+    return ("d", m.group(1)) if m.group(1) else ("n", int(m.group(2)))
+
+
+def shown(change: tuple[str, object]) -> str:
+    return change[1] if change[0] == "d" else f"{change[1]:04d}"
+
+
+def changes_after(changes: list[tuple[str, object]], cited: tuple[str, object]) -> int:
+    """How many changes came after the cited one. After a number: every higher number, counting gaps
+    as numbers always did, and every dated spec. After a day: every spec from a later day, so one
+    written the same day is never counted."""
+    dated = [c[1] for c in changes if c[0] == "d"]
+    if cited[0] == "d":
+        return sum(1 for day in dated if day > cited[1])
+    numbers = [c[1] for c in changes if c[0] == "n"]
+    return max(max(numbers, default=cited[1]) - cited[1], 0) + len(dated)
 PROSE_PHRASES = ("not built yet", "not written yet", "not wired yet", "uninterviewed", "to do", "we should", "for now")
 NO_CODE = re.compile(r"\bno (?:application |app |source )?code\b|\bno app\b|\bnothing to (?:measure|cover)\b")
 SOURCE = (".py", ".js", ".mjs", ".ts", ".tsx", ".jsx", ".go", ".rs", ".rb", ".java", ".kt", ".swift", ".php", ".ex", ".cs", ".c", ".cpp", ".vue", ".svelte")
@@ -184,7 +210,7 @@ CHECKS = [
     ("check:deferred-clock", "mechanical", "wiring", "no row is deferred across two changes"),
     ("check:hook-no-row", "mechanical", "record", "a local hook has no row in either table"),
     ("check:sorted-by-severity", "mechanical", "record", "what is open is reported dangerous first"),
-    ("check:loop-followed", "mechanical", "record", "every change merged since the last audit has a change spec whose `spec NNNN:` commit came first and whose header says what became of its sketch, or takes the light path with an issue"),
+    ("check:loop-followed", "mechanical", "record", "every change merged since the last audit has a change spec whose `spec <change>:` commit came first and whose header says what became of its sketch, or takes the light path with an issue"),
     ("check:record-only", "mechanical", "record", "the audit's corrections touched the record and nothing else"),
     ("check:last-line-command", "mechanical", "record", "where wiring is left, the last line is the command that starts the sitting, with the rows after it"),
     ("check:no-line-when-clear", "mechanical", "record", "where nothing is left for the sitting, no such line"),
@@ -456,7 +482,8 @@ def context(root: Path, bindings_path: Path, git_reads: bool = True) -> dict:
     except json.JSONDecodeError:
         installed = ""
     changes = sorted(
-        int(m.group(1)) for p in (root / "specs" / "changes").glob("*.md") if (m := CHANGE.match(p.name))
+        (c for p in (root / "specs" / "changes").glob("*.md") if (c := change_of(p.name))),
+        key=lambda c: (c[0] == "d", c[1]),
     ) if (root / "specs" / "changes").exists() else []
     skills = sorted(p.name for p in (PLUGIN / "skills").iterdir() if (p / "SKILL.md").exists()) if (PLUGIN / "skills").exists() else []
     return {
@@ -468,6 +495,7 @@ def context(root: Path, bindings_path: Path, git_reads: bool = True) -> dict:
         "entries": changelog_entries(read(PLUGIN / "CHANGELOG.md")),
         "ids": id_rows(read(PLUGIN / "method" / "requirements.md") or ""),
         "skills": skills,
+        "changes": changes,
         "latest_change": changes[-1] if changes else None,
         "context_name": context_name,
         "claude_md": (read(root / context_name) or "") if context_name else "",
@@ -728,27 +756,33 @@ def clock(ctx: dict, rows: list[dict], word: str) -> tuple[str, str]:
     if not rows:
         return "clear" if word == "deferred" else "n/a", f"no row reads {word}"
     if ctx["latest_change"] is None:
-        return "open", f"{len(rows)} {word} row(s) and no numbered change specs to count against"
+        return "open", f"{len(rows)} {word} row(s) and no change specs to count against"
     problems: list[str] = []
     for row in rows:
-        number = change_number(row)
-        if number is None:
+        cited = change_cited(row)
+        if cited is None:
             problems.append(f"{row['id'] or row['label']} is {word} and names no change")
             continue
-        passed = ctx["latest_change"] - number
+        passed = changes_after(ctx["changes"], cited)
         if passed >= TWO_CHANGE_CLOCK:
-            problems.append(f"{row['id'] or row['label']} {word} since {number:04d}, latest change {ctx['latest_change']:04d} — {passed} changes, past the clock")
+            problems.append(f"{row['id'] or row['label']} {word} since {shown(cited)}, latest change {shown(ctx['latest_change'])} — {passed} changes, past the clock")
     if problems:
         return "open", "; ".join(problems)
-    return "clear", f"{len(rows)} {word} row(s), none past the two-change clock (latest change {ctx['latest_change']:04d})"
+    return "clear", f"{len(rows)} {word} row(s), none past the two-change clock (latest change {shown(ctx['latest_change'])})"
 
 
-def change_number(row: dict) -> int | None:
-    """The change a row has been on the clock since: its since cell, then `since NNNN`, then a zero-padded number."""
-    if re.fullmatch(r"\d{4}", row.get("since_cell", "")):
-        return int(row["since_cell"])
+def change_cited(row: dict) -> tuple[str, object] | None:
+    """The change a row has been on the clock since: its since cell, then `since <change>`, then a
+    zero-padded number. A change is a day (2026-11-23, with or without its slug) or a number."""
+    cell = row.get("since_cell", "").strip("`[] ")
+    if (m := re.match(rf"({DATED})\b", cell)):
+        return ("d", m.group(1))
+    if re.fullmatch(r"\d{4}", cell):
+        return ("n", int(cell))
+    if (m := re.search(rf"since\s+\[?`?({DATED})\b", row["text"])):
+        return ("d", m.group(1))
     match = re.search(r"since\s+\[?`?(\d{4})", row["text"]) or re.search(r"\b(0\d{3})\b", row["text"])
-    return int(match.group(1)) if match else None
+    return ("n", int(match.group(1))) if match else None
 
 
 READ_BACK = re.compile(r"read back[^|\n]{0,80}?(\d{4}-\d{2}-\d{2})", re.I)
@@ -1039,7 +1073,7 @@ def c_hook_no_row(ctx: dict) -> tuple[str, str]:
     return "clear", "no row in any table is a hook"
 
 
-SPEC_COMMIT = re.compile(r"^spec \d{4}\b", re.I)
+SPEC_COMMIT = re.compile(rf"^spec (?:{DATED}-[a-z0-9]|\d{{4}}\b)", re.I)
 ISSUE_REF = re.compile(r"#\d+|/issues/\d+|\b[A-Z][A-Z0-9]+-\d+\b")
 PR_REF = re.compile(r"^Merge pull request #\d+.*$|\(#\d+\)\s*$|^Merged? (?:PR|branch) .*$", re.M)
 
@@ -1087,7 +1121,7 @@ def c_loop_followed(ctx: dict) -> tuple[str, str]:
             early = [c for c in branch[: first if first is not None else len(branch)]
                      if any(not f.startswith("specs/") for f in git(root, "show", "--name-only", "--format=", c).splitlines())]
             if first is None:
-                findings.append(f"{name}: no `spec NNNN:` commit")
+                findings.append(f"{name}: no `spec <change>:` commit")
             elif early:
                 findings.append(f"{name}: implementation committed before its spec")
     if findings:
@@ -1456,7 +1490,7 @@ def reshape(ctx: dict) -> str:
         out.append(f"| `{row_id}` | {row['label']} | {row['state'] or '<state>'} | {row['evidence']} | {row['reconciled'] or cell} |")
     out.append("\n### The boundaries\n\n| id | boundary | state | since | evidence |\n|---|---|---|---|---|")
     for row in ctx["bounds"]:
-        since = re.search(r"\b(\d{4})\b", row["text"])
+        since = re.search(rf"\b({DATED}-[a-z0-9][a-z0-9-]*|\d{{4}})\b", row["text"])
         slug = re.sub(r"[^a-z0-9]+", "-", row["label"].lower()).strip("-") or "name"
         out.append(f"| `{row['id'] or 'boundary:' + slug}` | {row['label']} | {row['state'] or '<state>'} | {since.group(1) if since else '<change>'} | {row['evidence']} |")
     return "\n".join(out) + "\n"
