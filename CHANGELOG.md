@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.17.0 — 2026-11-23
+
+A new gate, `gate:pr-body-shape`: `tools/prbody.py`, which `setup` copies in and runs on every pull request event, fails a description that leaves its template's shape or names an issue by a bare number or address, and reports its length. An upgrade asks each repository to wire it.
+
 ## 3.16.0 — 2026-11-23
 
 A repository using livespec now keeps its own pull request description rules, in a file `setup` writes from the new `templates/pull-request.md` for its template, closing line, tracker and commands, linked from its context file. The audit's new `check:pr-body-rules` reports a repository without them, and asks for the file again whenever the guideline changes, so an update brings the change to every repository. The guideline also says where a template with no field for the point puts it.
