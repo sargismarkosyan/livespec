@@ -2,6 +2,7 @@
 
 - **Status:** approved — by the maintainer in advance, 2026-11-22, on the research deck that proposed it: decision 1, "a real regression with no line in the PR body fails the build"
 - **Issue:** [#187](https://github.com/sargismarkosyan/livespec/issues/187)
+- **Sketch:** not drawn — approval given in advance, on the research deck the status line names
 - **Third of three**, on top of [`0089`](0089-a-workflow-walk-reports-its-cost.md) and [`0090`](0090-measure-what-you-control.md). This one closes the issue.
 
 ## Who this is for

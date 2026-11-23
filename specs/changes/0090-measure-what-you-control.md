@@ -2,6 +2,7 @@
 
 - **Status:** approved — by the maintainer in advance, 2026-11-22, on the research deck that proposed it ("I like the plan … Approved. Carry on.")
 - **Issue:** [#187](https://github.com/sargismarkosyan/livespec/issues/187)
+- **Sketch:** not drawn — approval given in advance, on the research deck the status line names
 - **Second of three**, on top of [`0089`](0089-a-workflow-walk-reports-its-cost.md). `0091` makes a regression past its allowance need a line in the pull request.
 
 ## Who this is for
