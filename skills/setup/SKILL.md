@@ -620,6 +620,17 @@ platform's command that lists the pipeline's runs on the main branch, newest
 first, run once here to see it answers. Nothing runs there: *not applicable,
 decided*, with why.
 
+**Then how a pull request description is written here — the *Pull request
+template* and *Pull request description rules* rows.** Read the template the
+platform fills a new pull request with, and whether a release publishes a
+section of a body; neither is asked. Then write the rules file from
+[`templates/pull-request.md`](../../templates/pull-request.md), every blank
+filled for this repository: the template's fields and where the rest goes, the
+closing line the platform registers, how the tracker's items are linked, what
+the pipeline and the rows above make a body carry, and the commands that show
+the diff and read the body back. Not every agent here loads this plugin; this
+file is what they all read.
+
 **Every fact in it is about this repository.** If a sentence could survive being
 moved to another repo, it belongs in this plugin instead, and putting it here is
 how the two copies start to disagree.
@@ -735,6 +746,10 @@ Then the remedy follows the finding, per
   the first section lists as the thing to name before overwriting. The file on
   disk stays as it was until the answer comes; a no leaves it, with the
   line-level fixes made and the rest reported.
+
+**Its step that opens a pull request links the description rules** section 5
+wrote — the one place an agent that never loads this plugin finds them. The
+audit reports the rules open while it does not.
 
 **Its block of commands carries the tree command** — `new`, at least — so an
 agent starting a change in any harness reaches for it rather than making a
@@ -860,7 +875,9 @@ whether the required check ran and what it said, and whether the report arrived
 on the pull request. Where the change touched a test — the sitting's own rarely
 does — the body carries the run under the command as the bindings name it, per
 [`repository.md`](../../method/repository.md#and-the-run-it-rests-on), and the
-report prints the pipeline's own beside it. A check that **refuses** it is the wiring working — say
+report prints the pipeline's own beside it. **Its description is written to
+the rules section 5 wrote**, the first one they hold, and read back once the
+pull request is open. A check that **refuses** it is the wiring working — say
 which of the two happened in as many words, because a red tick nobody explains
 reads as an install that broke something.
 

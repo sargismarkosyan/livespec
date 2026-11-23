@@ -52,6 +52,11 @@ def grader_for(rule: str) -> str:
     held to a grader that can fail (0066)."""
     return GRADER.replace("weight: 1\n", f"weight: 1\nrule: {rule}\n")
 
+# The repository's own description rules, linked from the context file. See
+# 2026-11-23-the-rules-in-the-repository.
+RULES_LINE = "A pull request's description follows [specs/setup/pull-requests.md](specs/setup/pull-requests.md).\n"
+
+
 def context_file(steps: int = 3) -> str:
     """A CLAUDE.md in the shape the gate reads — a numbered loop, a fenced block
     of commands, a link to the bindings. `steps` is the length of its loop. The
@@ -62,6 +67,7 @@ def context_file(steps: int = 3) -> str:
         "## The loop\n\n" + loop
         + "\n## Commands\n\n```sh\npython3 gate.py\npython3 trees.py new <name>   # a tree for the next change\n```\n\n"
         "The bindings are [specs/setup/README.md](specs/setup/README.md).\n"
+        + RULES_LINE
     )
 
 
@@ -72,6 +78,7 @@ ROW_CEILINGS = "| **Ceilings** | `specs/` 1,000 lines · `tests/` 1,000 lines, s
 
 FIXTURE: dict[str, str] = {
     "CLAUDE.md": CONTEXT_FILE,
+    "specs/setup/pull-requests.md": "# How a pull request description is written here\n",
     ".claude/settings.json": '{"enabledPlugins": {"livespec@livespec": true}}\n',
     # The key table the audit holds the bindings to, two rows of the real one. See specs/changes/0104.
     "templates/bindings.md": "# Bindings\n\n| | |\n|---|---|\n| **Verification** | <command> |\n| **Before the push** | <the local hook, if any> |\n",
@@ -291,6 +298,7 @@ def _green_bindings(version: str) -> str:
         "| **Pull-request report** | `report.py`, posted by CI |\n"
         "| **Audit record** | `specs/setup/audit.md` |\n"
         "| **Pull request template** | none, decided; the release copies `## Changelog` |\n"
+        "| **Pull request description rules** | `specs/setup/pull-requests.md` |\n"
         "| **What a contributor owes a release** | a label and a changelog section |\n\n"
         "## Gate wiring\n\n"
         f"**Reconciled against livespec {version} on 2026-01-01.**\n\n"
@@ -522,6 +530,13 @@ TABLE_R_TYPED = _RH + _R.format(m="a live rule no test or case claims fails", r=
 BODY_IDS_REVISED = GOOD_BODY + "\n## Ids\n\nrevised: gate:rule-to-test\n"
 BODY_IDS_REWORDED = GOOD_BODY + "\n## Ids\n\nreworded: gate:rule-to-test\n"
 
+# A check revised because what it reads moved, its meaning untouched. See
+# 2026-11-23-the-rules-in-the-repository.
+_P = "| `check:pr-body-rules` | judgment | 0.0.0 | wiring | — | | the rules file says how the guideline is met here | {r} |\n"
+TABLE_P_BASE = _RH + _P.format(r="—")
+TABLE_P_REVISED = _RH + _P.format(r="next")
+BODY_IDS_P_REVISED = GOOD_BODY + "\n## Ids\n\nrevised: check:pr-body-rules\n"
+
 # (name, what to try, a phrase the refusal must contain)
 RELEASE_FAULTS = [
     ("shipping change with no release label",
@@ -577,6 +592,8 @@ RELEASE_FAULTS = [
      lambda: check_ids_section(BODY_IDS_REWORDED, TABLE_R_BASE, TABLE_R_REVISED), "now reads next"),
     ("a revised cell typed as a version",
      lambda: check_ids_section(BODY_IDS_REVISED, TABLE_R_BASE, TABLE_R_TYPED), "typed revised version"),
+    ("the description guideline moved and ## Ids does not revise its check",
+     lambda: check_ids_section(BODY_IDS_UNCHANGED, TABLE_P_BASE, TABLE_P_BASE, ["check:pr-body-rules"]), "does not revise it"),
     ("a bullet list that retires what the table added",
      lambda: check_ids_section(BODY_IDS_BULLET_RETIRES, TABLE_BASE, TABLE_ADDED), "was added and `## Ids` does not name it"),
     # The run a claim of green rests on: the body quotes the verification
@@ -805,6 +822,8 @@ def release_control() -> None:
     assert "| 0.9.0 |" in stamp_ids(TABLE_R_REVISED, "0.9.0"), "the release did not stamp a revised cell"
     assert check_ids_section(BODY_IDS_REVISED, TABLE_R_BASE, TABLE_R_REVISED)["meaning"] == ["gate:rule-to-test"], "a declared revision was refused"
     assert check_ids_section(BODY_IDS_REWORDED, TABLE_R_BASE, TABLE_R_REWORDED)["meaning"] == ["gate:rule-to-test"], "a declared rewording was refused"
+    assert check_ids_section(BODY_IDS_P_REVISED, TABLE_P_BASE, TABLE_P_REVISED, ["check:pr-body-rules"])["now_next"] == ["check:pr-body-rules"], \
+        "a revision driven by what the check reads was refused"
     assert check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"]
     assert check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_BASE)["added"] == []
     assert check_ids_section(BODY_IDS_BULLETS, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"], "a bullet list is refused"

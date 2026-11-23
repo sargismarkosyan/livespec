@@ -48,6 +48,7 @@ from releaselib import (  # noqa: E402
     IDS_FILE,
     ReleaseInputError,
     check_ids_section,
+    reads_moved,
     extract_entry,
     extract_gherkin,
     extract_run,
@@ -154,7 +155,8 @@ if owes_ids(changed):
     try:
         # A base forked before 0088 has the table in gates.md.
         base = shown(fork, IDS_FILE) or shown(fork, "method/gates.md")
-        ids = check_ids_section(body, base, (ROOT / IDS_FILE).read_text())
+        moved = reads_moved(lambda path: shown(fork, path), lambda path: (ROOT / path).read_text() if (ROOT / path).is_file() else None)
+        ids = check_ids_section(body, base, (ROOT / IDS_FILE).read_text(), moved)
     except ReleaseInputError as error:
         problems.append(str(error))
 

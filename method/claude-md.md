@@ -31,10 +31,10 @@ goes there *for*. It is a map, not a summary, and most of the file's value.
 
 **6. The loop, numbered** — eight steps at most, one line each, here rather than
 a link away. **The approval step says what the person is holding**: the spec and
-the sketch drawn from it. **The step that opens the pull request reads back what
-it will close**, with the bindings' command, and fixes a closing line the
-platform did not register before handing it back
-([repository.md](repository.md#closing-an-issue)).
+the sketch drawn from it. **The step that opens the pull request links the
+description rules the bindings name, and reads back what it will close**, with
+the bindings' command, and fixes a closing line the platform did not register
+before handing it back ([repository.md](repository.md#closing-an-issue)).
 
 **7. The rules most often broken here — a subset, linking the full set.** Spec
 before code; one change per version; feedback never fixed on the spot; never

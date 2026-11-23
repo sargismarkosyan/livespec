@@ -223,13 +223,21 @@ which is what review is for.
 the person deciding, who did not ask for the change, and any agent reviewing or
 testing that reads it as the author's intent.
 
+**The repository holds these rules for itself.** Not every agent that opens a
+pull request loads this plugin, so each repository keeps them in the file its
+bindings name, written from [the template](../templates/pull-request.md) for its
+own template, closing line, tracker and commands, and linked from the context
+file's step that opens a pull request. When this section changes, the next audit
+asks for that file again.
+
 **The repository's template wins** — the one the bindings name, else the one the
 platform fills a new pull request with. The body fills it: every heading and
-checkbox, in its order, nothing renamed, replaced or added beside it; folded
-evidence with no field of its own closes the testing section. With no template:
-the point, with no heading; the links line; the sections the repository's rules
-require; then decisions, testing and risk, each only when it has something to
-say; then the folded evidence.
+checkbox, in its order, nothing renamed, replaced or added beside it. What it
+has no field for goes above its first heading as plain lines — the point, the
+links line, a line each for a decision or risk — and the folded evidence after
+its last field. With no template: the point, with no heading; the links line;
+the sections the repository's rules require; then decisions, testing and risk,
+each only when it has something to say; then the folded evidence.
 
 **A checkbox is a claim**: ticked only when true now. One that waits on an open
 question or on an approval the platform does not enforce stays unticked and says

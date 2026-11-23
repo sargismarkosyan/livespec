@@ -1,7 +1,7 @@
 @feature:wiring-the-description-rules @workflow:adopt-the-process
 Feature: The repository holds how its pull request descriptions are written
 
-  @rule:the-description-rules-are-the-repositorys-own @planned
+  @rule:the-description-rules-are-the-repositorys-own
   Rule: The bindings name the file holding how a pull request description is written in this repository, the file is there, and the context file links it; where all three hold, the file is read against the plugin's guideline as it now stands
 
     Example: a repository set up before the rules had a file
