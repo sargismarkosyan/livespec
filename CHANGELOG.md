@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.16.0 — 2026-11-23
+
+A repository using livespec now keeps its own pull request description rules, in a file `setup` writes from the new `templates/pull-request.md` for its template, closing line, tracker and commands, linked from its context file. The audit's new `check:pr-body-rules` reports a repository without them, and asks for the file again whenever the guideline changes, so an update brings the change to every repository. The guideline also says where a template with no field for the point puts it.
+
 ## 3.15.0 — 2026-11-23
 
 **A change spec is named by its day, not a number.** New change specs are `specs/changes/YYYY-MM-DD-<slug>.md`, dated the day they are written, with branch `spec-YYYY-MM-DD-<slug>` and commit `spec YYYY-MM-DD-<slug>: <title>`. Parallel workstreams no longer need to know each other's next number, and the refining skills stop reading open pull requests and claims to choose one. Specs already numbered keep their names. `gate:change-number-unique` retires, so the first audit after upgrading reports its ledger row as *retired — drop the row*. `doctor` reads dated changes beside numbered ones, including on the two-change clock.
