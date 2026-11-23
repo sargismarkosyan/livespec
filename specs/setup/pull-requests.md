@@ -77,6 +77,3 @@ every body here would repeat.
    can yet is an open question.
 2. **Check it against the final diff:** `git diff origin/main...HEAD`.
 3. **Read it back:** `gh pr view <n> --json body`, and count the words.
-4. **The gate holds the rest:** `version_gate.py` runs `tools/prbody.py`'s check
-   on every body and again on each edit. Here, with no template, it fails a bare
-   reference and reports the length.

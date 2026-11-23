@@ -358,22 +358,6 @@ base. The walks are the repository's; the comparison ships with this plugin.
    take an hour — reads *not applicable* with that reason; one with no
    walkthrough yet reads *deferred* until the first lands.
 
-### Then wire the description gate
-
-[`gates.md`](../../method/gates.md#the-description-a-pull-request-carries) asks
-a script to hold the part of section 5's description rules a script can decide.
-
-1. **Copy it in.** `<plugin root>/tools/prbody.py` goes beside the gates, with
-   `# livespec prbody <version installed>` as its first line. CI runs that copy.
-2. **Run it on every pull request event, an edited description included**, with
-   `--template` the *Pull request template* row names and an `--allow` for each
-   heading the rules file adds. Read the description from the platform's API:
-   a pipeline variable carrying it can be unset, or stale after an edit. Where
-   the platform starts nothing on an edit — GitLab does not — the rules file
-   says the job is re-run after one, and the row says so.
-3. **Break it once**: a description naming an issue by a bare number, watched
-   failing, named in the `gate:pr-body-shape` row.
-
 ### Then offer to run it before the push
 
 One command that a person can run locally is the precondition for the thing

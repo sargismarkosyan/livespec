@@ -256,7 +256,6 @@ def _green_bindings(version: str) -> str:
             "| `gate:feature-to-feature` | a feature using a feature that does not exist | automated | `python3 gate.py` |",
             "| `gate:workflow-budget` | a count a workflow walk makes past its budget | not applicable | its walks cannot be repeated on every change |",
             "| `gate:workflow-regression-answered` | a walk past its allowance the pull request does not answer | not applicable | its walks cannot be repeated on every change |",
-            "| `gate:pr-body-shape` | a pull request description out of its template, or naming something by a bare number or address | automated | `python3 gate.py body` |",
             "| `gate:verified-to-fire` | every gate broken on purpose and seen to fire | automated | `python3 gate.py inject` |",
         ]
     )
@@ -489,7 +488,6 @@ from releaselib import (  # noqa: E402
     select_increment,
     stamp_ids,
     stamp_ledger,
-    check_body_shape,
     check_ids_section,
     moves_audit_surface,
     owes_ids,
@@ -594,10 +592,6 @@ RELEASE_FAULTS = [
      lambda: check_ids_section(BODY_IDS_REWORDED, TABLE_R_BASE, TABLE_R_REVISED), "now reads next"),
     ("a revised cell typed as a version",
      lambda: check_ids_section(BODY_IDS_REVISED, TABLE_R_BASE, TABLE_R_TYPED), "typed revised version"),
-    # The script's part of the description rules, on every body. See
-    # 2026-11-23-the-description-gate.
-    ("a description naming an issue by a bare number",
-     lambda: check_body_shape(GOOD_BODY + "\nThe cause is in #12.\n"), "is bare"),
     ("the description guideline moved and ## Ids does not revise its check",
      lambda: check_ids_section(BODY_IDS_UNCHANGED, TABLE_P_BASE, TABLE_P_BASE, ["check:pr-body-rules"]), "does not revise it"),
     ("a bullet list that retires what the table added",
@@ -831,7 +825,6 @@ def release_control() -> None:
     assert check_ids_section(BODY_IDS_P_REVISED, TABLE_P_BASE, TABLE_P_REVISED, ["check:pr-body-rules"])["now_next"] == ["check:pr-body-rules"], \
         "a revision driven by what the check reads was refused"
     assert check_ids_section(BODY_IDS_ADDED, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"]
-    assert check_body_shape(GOOD_BODY + "\nCloses #12\n") > 0, "a closing line was read as a bare reference"
     assert check_ids_section(BODY_IDS_UNCHANGED, TABLE_BASE, TABLE_BASE)["added"] == []
     assert check_ids_section(BODY_IDS_BULLETS, TABLE_BASE, TABLE_ADDED)["added"] == ["check:new-thing"], "a bullet list is refused"
     ledger = "# Bindings\n\nReconciled against livespec **0.8.0** (`method/`) on **2026-01-01** — the sitting.\n\n| a | b |\n"

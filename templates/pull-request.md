@@ -12,8 +12,10 @@ that opens a pull request.
 <the template the platform fills a new pull request with, by its path — or
 *none*. Each heading and checkbox in its order, with what fills it here.>
 
-The body fills it: every heading and checkbox, in its order, nothing renamed,
-replaced or added beside it. <Where what it has no field for goes: above its
+The body starts from the template's file: the platform fills a new pull
+request with it only in its own form, never one opened from <the command line
+or API used here>. It fills it: every heading and checkbox, in its order,
+nothing renamed, replaced or added beside it. <Where what it has no field for goes: above its
 first heading as plain lines — the point, the links line, a line each for a
 decision, a risk or an open question — and the folded evidence after its last
 field. With no template: the point, the links line, the sections below, then
@@ -70,6 +72,3 @@ anything every body here would repeat.
    claim the diff does not bear out and adding a behaviour change it shows.
 3. **Read it back** once published — <the command that shows the body as the
    platform has it> — and count the words.
-4. **The gate holds the rest**: <the job that runs livespec's `prbody.py` on it,
-   and how it is re-run after the description is edited>. It fails a template
-   field missing or added and a bare reference, and reports the length.

@@ -35,7 +35,7 @@ The part of a description a script can decide is decided by one: the template's 
 
 | Rule id | Feature file | New or changed |
 |---|---|---|
-| `a-description-out-of-its-template-fails` | [`wiring/the-description-gate.feature`](../features/wiring/the-description-gate.feature) | new |
+| `a-description-out-of-its-template-fails` | [`wiring/the-description-gate.feature`](https://github.com/sargismarkosyan/livespec/blob/12ed602/specs/features/wiring/the-description-gate.feature) | new |
 | `a-bare-reference-fails` | the same | new |
 | `the-length-is-reported-never-failed` | the same | new |
 
