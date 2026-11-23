@@ -362,22 +362,34 @@ def moves_audit_surface(paths: Iterable[str]) -> list[str]:
     return [path for path in paths if path.startswith(AUDIT_SURFACE)]
 
 
+def owes_ids(paths: Iterable[str]) -> list[str]:
+    """The subset of `paths` that owes an `## Ids` section: everything that ships.
+
+    The audit surface is where an id can move, but a change anywhere in what
+    ships can ask something of a consuming repository, and an update brings a
+    repository only what an id carries. 0086 changed how every body is written,
+    touched nothing on the surface, and no update ever asked about it (#247).
+    """
+    return ships(paths)
+
+
 def extract_ids(body: str | None) -> dict:
     """What the `## Ids` section of a pull request says the list did.
 
-    `unchanged` on its own, or lines reading `added: a, b` and `retired: c`
-    (`+ a` and `- c` are read the same way). The section is owed by a change
-    that moves the audit surface, and it is read against the table's actual
-    diff — a person saying *unchanged* next to a row that moved is what this
-    exists to catch.
+    `unchanged` and why the change asks nothing of a consuming repository's
+    files — on its line or below it — or lines reading `added: a, b` and
+    `retired: c` (`+ a` and `- c` are read the same way). The section is owed by
+    a change that ships, and it is read against the table's actual diff — a
+    person saying *unchanged* next to a row that moved is what this exists to
+    catch, and a bare *unchanged* is a question nobody asked.
     """
     text = (body or "").replace("\r\n", "\n")
     match = IDS_SECTION.search(text)
     if not match:
         raise ReleaseInputError(
-            "this change moves the audit surface and the body carries no `## Ids` section. "
-            "Say `unchanged`, or list the ids added and retired — the list an audit is held "
-            "to moves only where somebody said so."
+            "this change ships and the body carries no `## Ids` section. An update brings a "
+            "consuming repository only what an id carries: list the ids added, retired or "
+            "revised, or say `unchanged` and why this asks nothing of a repository's files."
         )
     section = text[match.end():].split("\n## ", 1)[0]
     added: list[str] = []
@@ -385,9 +397,14 @@ def extract_ids(body: str | None) -> dict:
     revised: list[str] = []
     reworded: list[str] = []
     unchanged = False
+    reason = ""
+    # The reason is on the `unchanged` line or in the paragraph under it; what
+    # follows a blank line — a folded block, say — is not one.
+    in_reason = False
     for raw in section.splitlines():
         line = raw.strip()
         if not line:
+            in_reason = False
             continue
         lowered = line.lower()
         # A markdown bullet in front of `added:` or `retired:` is a bullet, not a
@@ -397,8 +414,10 @@ def extract_ids(body: str | None) -> dict:
             lowered = line.lower()
         ids = [token.strip("`,;") for token in re.findall(r"`?(?:gate|wiring|check):[a-z0-9-]+`?", line)]
         ids = [token.strip("`") for token in ids]
-        if re.fullmatch(r"\*{0,2}unchanged\*{0,2}\.?", lowered):
-            unchanged = True
+        bare = re.match(r"\*{0,2}unchanged\*{0,2}[.:,;]?\s*(?:[\u2014\u2013-]\s*)?", lowered)
+        if bare and not ids:
+            unchanged = in_reason = True
+            reason += line[bare.end():].strip()
         elif lowered.startswith("revised"):
             revised += ids
         elif lowered.startswith("reworded"):
@@ -411,6 +430,14 @@ def extract_ids(body: str | None) -> dict:
             raise ReleaseInputError(
                 f"`## Ids` lists {', '.join(ids)} without saying whether they were added or retired"
             )
+        elif in_reason:
+            reason += line
+    if unchanged and not reason:
+        raise ReleaseInputError(
+            "`## Ids` says unchanged and not why. This ships to every repository that updates: say "
+            "what it asks of their files — `unchanged — <why nothing there has to move>` — or name "
+            "the id that carries it, so the next update asks."
+        )
     if unchanged and (added or retired or revised or reworded):
         raise ReleaseInputError("`## Ids` says unchanged and lists ids; it is one or the other")
     if not unchanged and not (added or retired or revised or reworded):

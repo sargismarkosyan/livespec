@@ -181,14 +181,15 @@ and it is the things a machine cannot work out:
    and its Examples, or a link to the `.feature` pinned at a commit SHA rather
    than at the branch. Only when the change touches a `.feature`; a layer README
    is prose about the specs and does not count.
-4. **An `## Ids` section, if you moved the audit surface** — `skills/setup/`,
-   `tools/doctor.py`, `templates/bindings.md` or `method/requirements.md`. It says
-   `unchanged`, or lists the ids added, retired, revised or reworded, and the gate holds it to
-   the id table's actual diff. A new row in that table reads `since: next`; a
-   retirement reads `retired: next → superseded-by …`. The release writes the
-   version into both, in the same commit as `plugin.json` and `CHANGELOG.md`
-   — the id list is the third file the release owns, and nobody types a
-   version in any of the three.
+4. **An `## Ids` section, if anything ships** — an update brings a consuming
+   repository only what an id carries. It lists the ids added, retired, revised
+   or reworded, or says `unchanged` and why the change asks nothing of a
+   repository's files: a new key row, a rule that reads a fact the bindings do
+   not record, is an id's to carry. The gate holds it to the id table's actual
+   diff. A new row in that table reads `since: next`; a retirement reads
+   `retired: next → superseded-by …`. The release writes the version into both,
+   in the same commit as `plugin.json` and `CHANGELOG.md` — the id list is the
+   third file the release owns, and nobody types a version in any of the three.
 
 The first two are owed by a change that **ships** — `skills/`, `method/`,
 `templates/`, `tools/`, `.claude-plugin/`. The third is owed by a change that
