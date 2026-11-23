@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.18.0 — 2026-11-23
+
+The description gate is retired: drop its ledger row. A description opened from the command line starts from the template's file.
+
 ## 3.17.0 — 2026-11-23
 
 A new gate, `gate:pr-body-shape`: `tools/prbody.py`, which `setup` copies in and runs on every pull request event, fails a description that leaves its template's shape or names an issue by a bare number or address, and reports its length. An upgrade asks each repository to wire it.
