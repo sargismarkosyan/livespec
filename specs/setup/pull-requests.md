@@ -61,7 +61,10 @@ short:
 
 About a hundred words of the author's own, unfolded; one line more per decision,
 open question or rollout step. Headings, link titles and the folded blocks are
-not counted. Words are cut, never a name or fact the maintainer needs.
+not counted; everything else above them is, the `**Reviewed:**` quote and the
+`## Changelog` entry included. So the approval is quoted in a few words and the
+entry is one or two sentences. The gate prints the count. Words are cut, never
+a name or fact the maintainer needs.
 
 ## Left out
 
