@@ -1,7 +1,7 @@
 @feature:refining-a-name-from-the-day @workflow:adopt-the-process
 Feature: A change spec is named by the day it is written and its slug
 
-  @rule:a-change-spec-is-named-by-its-day-and-slug @planned
+  @rule:a-change-spec-is-named-by-its-day-and-slug
   Rule: A refining skill names a new change spec by the date it is written and its slug, reads nothing in flight to choose it, and leaves the numbered specs before it as they are
 
     Example: two trees start the same morning

@@ -84,7 +84,6 @@ reads `—`. The stamp line above reads the oldest of them.
 | `gate:boundary-recorded-age` | a recorded row past its age | | | <version> |
 | `gate:boundaries-table` | rule-bound tests present and no boundaries table | | | <version> |
 | `gate:crossing-names-a-boundary` | a rule tagged `@crosses:` a boundary the bindings have no row for | | | <version> |
-| `gate:change-number-unique` | two change specs sharing a number | | | <version> |
 | `gate:feature-to-feature` | a feature using a feature that does not exist | | | <version> |
 | `gate:workflow-budget` | a count a workflow walk makes past its budget | | | <version> |
 | `gate:workflow-regression-answered` | a walk past its allowance the pull request does not answer | | | <version> |
@@ -114,7 +113,7 @@ leaves uncovered in the same breath.
 
 | id | boundary | state | since | evidence |
 |---|---|---|---|---|
-| `boundary:<name>` | <what it is> | <state> | <change number> | <what reaches it from here, what keeps it honest, what it leaves uncovered> |
+| `boundary:<name>` | <what it is> | <state> | <change spec> | <what reaches it from here, what keeps it honest, what it leaves uncovered> |
 
 ### Workarounds
 

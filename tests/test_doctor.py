@@ -1161,3 +1161,54 @@ class TheLoop(unittest.TestCase):
     @rule("the-loop-is-read-from-the-history")
     def test_no_previous_audit_is_not_applicable(self):
         self.assertEqual(audit(repo())["check:loop-followed"]["state"], "n/a")
+
+
+class DatedChanges(unittest.TestCase):
+    """A change spec named by its day and slug is read as a change, beside the numbered ones before
+    it. See specs/changes/2026-11-23-a-date-not-a-number.md."""
+
+    DATED = "# Spec 2026-11-23: the thing\n\n- **Status:** approved\n- **Sketch:** not drawn — approval given in advance\n"
+
+    @rule("a-change-spec-is-named-by-its-day-and-slug")
+    def test_a_dated_spec_commit_before_its_build_is_clear(self):
+        root = repo()
+        inject.as_git_history(root, [
+            ("spec 2026-11-23-the-thing: the thing", {"specs/changes/2026-11-23-the-thing.md": self.DATED}),
+            ("2026-11-23-the-thing: the thing", {"src/app.js": "// built\n"}),
+        ], True)
+        line = audit(root)["check:loop-followed"]
+        self.assertEqual(line["state"], "clear", line["evidence"])
+
+    @rule("a-change-spec-is-named-by-its-day-and-slug")
+    def test_a_dated_spec_is_a_day_and_never_the_number_of_its_year(self):
+        self.assertEqual(doctor.change_of("2026-11-23-a-quieter-log.md"), ("d", "2026-11-23"))
+        self.assertEqual(doctor.change_of("0078-a-number-nobody-else-holds.md"), ("n", 78))
+        self.assertIsNone(doctor.change_of("README.md"))
+
+    @rule("a-change-spec-is-named-by-its-day-and-slug")
+    def test_the_clock_counts_later_days_and_never_the_same_one(self):
+        changes = [("n", 1), ("n", 2), ("d", "2026-11-20"), ("d", "2026-11-20"), ("d", "2026-11-21")]
+        self.assertEqual(doctor.changes_after(changes, ("n", 1)), 4)
+        self.assertEqual(doctor.changes_after(changes, ("d", "2026-11-20")), 1)
+        self.assertEqual(doctor.changes_after(changes, ("d", "2026-11-21")), 0)
+
+    @rule("a-change-spec-is-named-by-its-day-and-slug")
+    def test_a_row_mocked_since_a_dated_change_goes_past_the_clock(self):
+        dated = "| `boundary:clock` | the clock | mocked | 2026-11-20-a-fake-clock | a fake clock nothing checks; cover: none |"
+        root = repo(inject.green_bindings(INSTALLED).replace(inject.ROW_CLOCK, dated), {
+            "specs/changes/2026-11-20-a-fake-clock.md": "# Spec 2026-11-20\n",
+            "specs/changes/2026-11-21-a-quieter-log.md": "# Spec 2026-11-21\n",
+        })
+        self.assertEqual(audit(root)["check:mocked-clock"]["state"], "clear")
+        (root / "specs" / "changes" / "2026-11-22-one-place.md").write_text("# Spec 2026-11-22\n", encoding="utf-8")
+        line = audit(root)["check:mocked-clock"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("since 2026-11-20, latest change 2026-11-22 — 2 changes", line["evidence"])
+
+    @rule("a-change-spec-is-named-by-its-day-and-slug")
+    def test_a_ledger_still_carrying_the_number_gate_is_told_to_drop_it(self):
+        row = "| `gate:change-number-unique` | two change specs sharing a number | automated | `python3 gate.py` | 3.13.0 |"
+        green = inject.green_bindings(INSTALLED)
+        anchor = next(l for l in green.splitlines() if l.startswith("| `gate:feature-to-feature`"))
+        line = audit(repo(green.replace(anchor, row + "\n" + anchor)))["check:row-per-gate"]
+        self.assertIn("gate:change-number-unique is retired", line["evidence"])

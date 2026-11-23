@@ -228,9 +228,9 @@ build.
 
 > <the user's own words, verbatim — do not clean them up>
 
-**App version:** <spec number at HEAD, e.g. 0001>
+**App version:** <latest change spec at HEAD, e.g. 2026-03-14-<slug>>
 **Reproducible:** yes / no / partly / unverified at HEAD — <what would settle it>
-**Reproduced on:** <sha or spec number you actually ran it against>
+**Reproduced on:** <sha or change spec you actually ran it against>
 
 ## Screenshot
 
@@ -256,7 +256,7 @@ pasted underneath. See *Reproduce it* above.>
 ## Technical findings
 
 - **Where:** `src/<file>:42` — `<function>`
-- **Introduced by:** spec 0001
+- **Introduced by:** spec 2026-03-14-<slug>
 - **Spec conformance:** violates spec / matches spec (the spec is wrong) / unspecced
 - **Stored state:** `<storage key>` = `<value at time of report>`
 - **Suspected cause:** <hypothesis, with confidence>

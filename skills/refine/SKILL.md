@@ -282,16 +282,14 @@ The file from its template — [`persona.md`](../../templates/persona.md),
 [`workflow.feature`](../../templates/workflow.feature) or
 [`journey.md`](../../templates/journey.md) — and the layer's README; feature
 retagging the gate needs lands in the same commit, nothing else in the feature
-specs moves. One journey per change. Then a numbered change spec at
-`specs/changes/NNNN-<slug>.md` from [`templates/change.md`](../../templates/change.md),
-one past the highest in flight, per
-[`repository.md`](../../method/repository.md#several-changes-at-once) — say the
-numbers stepped past and where each was held, and say so when the open pull
-requests could not be read. For a persona, *Who this is for* is, for once,
+specs moves. One journey per change. Then a change spec at
+`specs/changes/YYYY-MM-DD-<slug>.md` from [`templates/change.md`](../../templates/change.md),
+dated the day it is written, per
+[`repository.md`](../../method/repository.md#several-changes-at-once). For a persona, *Who this is for* is, for once,
 literally the subject.
 
 Run the traceability gate — green, warnings read rather than skimmed — and
-commit the spec on its own: `spec NNNN: <title>`.
+commit the spec on its own: `spec YYYY-MM-DD-<slug>: <title>`.
 
 **The reading came first, and this does not replace it.** If it has not been
 played back in a paragraph and corrected, step 2 has not happened and the

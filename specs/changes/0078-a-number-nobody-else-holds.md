@@ -117,8 +117,8 @@ so before the second one merges, naming both files.
 
 | Rule id | Feature file | New or changed |
 |---|---|---|
-| `a-change-number-is-taken-past-everything-in-flight` | [`features/refining/a-number-nobody-else-holds.feature`](../features/refining/a-number-nobody-else-holds.feature) | new |
-| `two-change-specs-never-share-a-number` | [`features/wiring/one-number-one-change.feature`](../features/wiring/one-number-one-change.feature) | new |
+| `a-change-number-is-taken-past-everything-in-flight` | [`features/refining/a-number-nobody-else-holds.feature`](https://github.com/sargismarkosyan/livespec/blob/4dbba82/specs/features/refining/a-number-nobody-else-holds.feature) | new |
+| `two-change-specs-never-share-a-number` | [`features/wiring/one-number-one-change.feature`](https://github.com/sargismarkosyan/livespec/blob/4dbba82/specs/features/wiring/one-number-one-change.feature) | new |
 
 ## What we are not doing
 

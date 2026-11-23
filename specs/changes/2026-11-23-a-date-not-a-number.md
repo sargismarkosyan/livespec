@@ -1,6 +1,6 @@
 # Spec 2026-11-23: a date, not a number
 
-- **Status:** proposed
+- **Status:** approved — by the maintainer, 2026-11-23
 - **Issue:** none — direct request
 - **Sketch:** not drawn — the before and after are one filename each, and the ledger below is a list the prose carries
 

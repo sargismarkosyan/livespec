@@ -200,12 +200,10 @@ The step must be small enough to be one screenshot's worth of change.
   it. The build fails a `@uses` naming no feature, so a rename cannot strand
   the citation.
 
-**The change spec** at `specs/changes/NNNN-<slug>.md`, from
-[`templates/change.md`](../../templates/change.md), numbered one past the
-highest in flight, per
-[`repository.md`](../../method/repository.md#several-changes-at-once) — say the
-numbers stepped past and where each was held, and say so when the open pull
-requests could not be read. The template carries placeholders where the repo
+**The change spec** at `specs/changes/YYYY-MM-DD-<slug>.md`, from
+[`templates/change.md`](../../templates/change.md), dated the day it is written,
+per [`repository.md`](../../method/repository.md#several-changes-at-once) —
+nothing in flight is read to name it, and specs numbered before keep their names. The template carries placeholders where the repo
 differs — the persona by name, the always-promise most at risk, the storage
 contract. Fill them from the repo you are standing in; a spec that ships with an
 angle bracket in it was not written, it was pasted. Fill in *Who this is for*,
@@ -227,7 +225,7 @@ It must stay green — new `@planned` rules are exempt from needing tests, so a
 failure here means a real mistake: a duplicate id, a rule with no example, or a
 `@planned` tag you forgot.
 
-Then commit the spec on its own — `spec 0004: <title>`, specs commit separately
+Then commit the spec on its own — `spec YYYY-MM-DD-<slug>: <title>`, specs commit separately
 from implementations.
 
 ### Hand back a link, not a summary
@@ -237,7 +235,7 @@ paths: Claude Code turns `path:line` into a link, so give the change spec first
 and every feature file touched beneath it.
 
 ```
-specs/changes/0005-<slug>.md:1
+specs/changes/2026-03-14-<slug>.md:1
 specs/features/<area>/<file>.feature:12
 ```
 

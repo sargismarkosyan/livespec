@@ -1,5 +1,5 @@
 ---
-tags: [skill:refine-spec, rule:a-change-number-is-taken-past-everything-in-flight]
+tags: [skill:refine-spec, rule:a-change-spec-is-named-by-its-day-and-slug]
 max_turns: 60
 timeout_seconds: 1500
 allowed_tools: [Skill, Read, Glob, Grep, Write, Edit, Bash]
