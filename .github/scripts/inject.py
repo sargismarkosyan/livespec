@@ -291,6 +291,7 @@ def _green_bindings(version: str) -> str:
         "| **Spec-bound coverage** | not applicable — no coverage here |\n"
         "| **Pull-request report** | `report.py`, posted by CI |\n"
         "| **Audit record** | `specs/setup/audit.md` |\n"
+        "| **Pull request template** | none, decided; the release copies `## Changelog` |\n"
         "| **What a contributor owes a release** | a label and a changelog section |\n\n"
         "## Gate wiring\n\n"
         f"**Reconciled against livespec {version} on 2026-01-01.**\n\n"
