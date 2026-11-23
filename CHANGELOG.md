@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.14.0 — 2026-11-23
+
+The bindings now record where a repository's pull request template is and which section of a body its release publishes, or that there is neither. Updating asks a repository that has not recorded them, so the pull request guideline from 1.31.0 reaches it.
+
 ## 3.13.0 — 2026-11-22
 
 When a gate fails, it now says why. Each rule a gate enforces is written once in `method/gates.md`, as a row with the failure and what it means, and `setup` wires gates to print that row (where, the reason, the fix) whenever it fires. `method/gates.md` is rewritten around those tables and is 40% shorter.
