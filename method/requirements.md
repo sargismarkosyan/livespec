@@ -61,6 +61,7 @@ says `revised:` in `## Ids`; one that only rewords says `reworded:`.
 | `gate:feature-to-feature` | gate | 1.28.0 | wiring | — | | a feature using a feature that does not exist, or carrying @uses on a rule, fails | — |
 | `gate:workflow-budget` | gate | 1.33.0 | wiring | — | | a count a workflow walk makes past the budget the policy file sets fails; a time carries no budget | — |
 | `gate:workflow-regression-answered` | gate | 1.35.0 | wiring | — | | a walk past its allowance whose workflow the pull request's Performance section does not name fails | — |
+| `gate:pr-body-shape` | gate | next | wiring | — | | a pull request description out of the repository's template — a heading or checkbox missing, renamed or out of order, or a heading added its rules do not allow — or naming an issue, pull request or incident by a bare number or address fails | — |
 | `gate:crossing-names-a-boundary` | gate | 1.14.0 | boundary | — | | a rule tagged as crossing a boundary the bindings declare no row for fails | — |
 | `gate:verified-to-fire` | gate | 0.6.0 | wiring | — | both gates verified to fire | every gate is broken on purpose and seen to fire | — |
 
@@ -83,7 +84,7 @@ does not name — held to the same states, required by nothing.
 | id | kind | since | severity | retired | aliases | meaning | revised |
 |---|---|---|---|---|---|---|---|
 | `check:key-table-shape` | mechanical | 3.8.0 | record | — | | every row of the template's key table is in the bindings, by its name or its graded-case form, the pull request template and the section a release publishes among them | 3.14.0 |
-| `check:pr-body-rules` | judgment | 3.16.0 | wiring | — | | the file the bindings name holds how a pull request description is written in this repository, the context file links it, and it says how each part of the plugin's description guideline is met here as that guideline now stands | — |
+| `check:pr-body-rules` | judgment | 3.16.0 | wiring | — | | the file the bindings name holds how a pull request description is written in this repository, the context file links it, and it says how each part of the plugin's description guideline is met here as that guideline now stands | next |
 | `check:ledger-shape` | mechanical | 1.6.0 | record | — | | the three tables and the stamp line are in the shape the template gives them, the gate and wiring rows each with the version it was reconciled at | 1.37.0 |
 | `check:stamp-present` | mechanical | 0.21.0 | record | — | | the ledger carries the version it was reconciled against | — |
 | `check:stamp-derived` | mechanical | 1.37.0 | record | — | | the stamp line reads the oldest version a gate or wiring row was reconciled at | — |

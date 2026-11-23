@@ -70,3 +70,6 @@ anything every body here would repeat.
    claim the diff does not bear out and adding a behaviour change it shows.
 3. **Read it back** once published — <the command that shows the body as the
    platform has it> — and count the words.
+4. **The gate holds the rest**: <the job that runs livespec's `prbody.py` on it,
+   and how it is re-run after the description is edited>. It fails a template
+   field missing or added and a bare reference, and reports the length.
