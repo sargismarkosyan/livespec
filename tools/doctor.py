@@ -131,7 +131,7 @@ WIRING = [
 
 # (id, kind, severity, meaning) — kind is mechanical or judgment.
 CHECKS = [
-    ("check:key-table-shape", "mechanical", "record", "every row of the template's key table is in the bindings, by its name or its graded-case form"),
+    ("check:key-table-shape", "mechanical", "record", "every row of the template's key table is in the bindings, by its name or its graded-case form, the pull request template and the section a release publishes among them"),
     ("check:ledger-shape", "mechanical", "record", "the three tables and the stamp line are in the shape the template gives them, the gate and wiring rows each with the version it was reconciled at"),
     ("check:stamp-present", "mechanical", "record", "the ledger carries the version it was reconciled against"),
     ("check:stamp-derived", "mechanical", "record", "the stamp line reads the oldest version a gate or wiring row was reconciled at"),

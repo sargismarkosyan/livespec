@@ -25,7 +25,7 @@ A repository's bindings say where its pull request template is and which section
 ## What changes
 
 1. **[The template](../../templates/bindings.md)** gains the key row ***Pull request template***: the template the platform fills a new pull request with, or *none*; and the section a release copies from a body, or *none*.
-2. **`check:key-table-shape`** reads `revised: next` in [`requirements.md`](../../method/requirements.md). Its meaning does not change; what it holds a repository to does, so a repository answers it again.
+2. **`check:key-table-shape`** reads `revised: next` in [`requirements.md`](../../method/requirements.md), its meaning naming the new row: what it holds a repository to has changed, so a repository answers it again.
 3. **[`repository.md`](../../method/repository.md#and-the-point-before-the-evidence)**: the two rules read the template and the published section from the bindings.
 4. **This repository's bindings** gain the row: no template, and `## Changelog`.
 
