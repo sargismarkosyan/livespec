@@ -45,6 +45,11 @@ Feature: What a gate wiring ledger is allowed to claim
       When the wiring is audited
       Then the row is reported open by name, for the sitting
 
+    Example: a repository set up before the template asked about its pull request bodies
+      Given bindings that do not say where the pull request template is or which section the release publishes
+      When the wiring is audited
+      Then *Pull request template* is reported open, for the sitting to write
+
     Example: a graded-case repository names its rows for cases
       Given bindings naming how a case names its rule and where cases live instead of the test-shaped rows
       When the wiring is audited
