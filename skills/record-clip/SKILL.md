@@ -96,8 +96,10 @@ it is in.
 - **Recorded on the branch, before the pull request is opened**, and embedded in
   the body by a raw URL pinned to the commit. A branch URL rots when the branch
   is deleted on merge.
-- **The body around it is written for whoever reviews it**, per
-  [`repository.md`](../../method/repository.md#and-the-point-before-the-evidence).
+- **The body around it is written for whoever reviews it**, per the description
+  rules the bindings name — the guideline in
+  [`repository.md`](../../method/repository.md#and-the-point-before-the-evidence)
+  where the repository has none yet.
   The repository's template filled, never replaced. The problem first — who
   is affected, what goes wrong, how it is known — then what changes, then what
   to look at; about a hundred words of your own. The picture inline under

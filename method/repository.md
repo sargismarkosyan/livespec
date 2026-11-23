@@ -231,13 +231,15 @@ file's step that opens a pull request. When this section changes, the next audit
 asks for that file again.
 
 **The repository's template wins** — the one the bindings name, else the one the
-platform fills a new pull request with. The body fills it: every heading and
-checkbox, in its order, nothing renamed, replaced or added beside it. What it
-has no field for goes above its first heading as plain lines — the point, the
-links line, a line each for a decision or risk — and the folded evidence after
-its last field. With no template: the point, with no heading; the links line;
-the sections the repository's rules require; then decisions, testing and risk,
-each only when it has something to say; then the folded evidence.
+platform fills a new pull request with. A body opened from the command line or
+an API starts from the template's file, which the platform fills only in its own
+form. The body fills it: every heading and checkbox, in its order, nothing
+renamed, replaced or added beside it. What it has no field for goes above its
+first heading as plain lines — the point, the links line, a line each for a
+decision or risk — and the folded evidence after its last field. With no
+template: the point, with no heading; the links line; the sections the
+repository's rules require; then decisions, testing and risk, each only when it
+has something to say; then the folded evidence.
 
 **A checkbox is a claim**: ticked only when true now. One that waits on an open
 question or on an approval the platform does not enforce stays unticked and says

@@ -94,7 +94,6 @@ reads `—`. The stamp line above reads the oldest of them.
 | `gate:context-file-shape` | the context file missing, or without its loop, its commands, or its pointer to the bindings | | | <version> |
 | `gate:skipped-test-claims-nothing` | a rule-bound test marked skipped, focused or expected to fail claims no rule | | | <version> |
 | `gate:fewer-ran-than-exist` | the runner reporting fewer rule-bound tests than the tree holds | | | <version> |
-| `gate:pr-body-shape` | a pull request description out of its template, or naming something by a bare number or address | | | <version> |
 | `gate:verified-to-fire` | every gate broken on purpose and seen to fire | | | <version> |
 
 ### The wiring that must never gate
