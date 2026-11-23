@@ -15,6 +15,11 @@ Feature: What a pull request body says, in the repository's own shape and no lon
       Then the point, the links line and a line each for a decision or risk sit above that heading, with no heading of their own
       And the checklist is the last field, followed only by the folded evidence
 
+    Example: a merge request opened from the command line
+      Given a template the platform fills only in its own form
+      When an agent opens the merge request with the command line
+      Then the body starts from the template's file, and every heading and checkbox in it is there
+
     Example: a box that depends on an open question
       Given a checkbox "Safe to deploy directly to production" and an open question about the deploy window
       When the body is written
