@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.18.3 — 2026-11-24
+
+The audit's loop check now counts an issue named at the end of a merged branch's commit subjects, as `fix the pipeline (#12)`, and one named in the merge commit's body, as GitLab's `Closes #12`.
+
 ## 3.18.2 — 2026-11-24
 
 `setup` wires the pull-request report to read the description from the platform's API, and says how it is re-run after an edit on a platform that does not re-run it, such as GitLab.
