@@ -1077,7 +1077,10 @@ def c_hook_no_row(ctx: dict) -> tuple[str, str]:
 
 SPEC_COMMIT = re.compile(rf"^spec (?:{DATED}-[a-z0-9]|\d{{4}}\b)", re.I)
 ISSUE_REF = re.compile(r"#\d+|/issues/\d+|\b[A-Z][A-Z0-9]+-\d+\b")
-PR_REF = re.compile(r"^Merge pull request #\d+.*$|\(#\d+\)\s*$|^Merged? (?:PR|branch) .*$", re.M)
+# The numbers a forge writes: its merge line, and the "(#N)" it ends a squashed change's subject with.
+# A merged branch's own commits are their author's, so their "(#N)" names an issue (see 2026-11-24).
+MERGE_LINE = re.compile(r"^Merge pull request #\d+.*$|^Merged? (?:PR|branch) .*$", re.M)
+SQUASH_REF = re.compile(r"\(#\d+\)\s*$", re.M)
 
 
 def changes_since_audit(ctx: dict) -> tuple[str, list[str]] | None:
@@ -1111,7 +1114,11 @@ def c_loop_followed(ctx: dict) -> tuple[str, str]:
         specs = [f for f in git(root, "diff", "--name-only", "--diff-filter=A", parents[0], change).splitlines()
                  if f.startswith("specs/changes/") and CHANGE.match(f.rsplit("/", 1)[-1])]
         if not specs:
-            said = PR_REF.sub("", "\n".join(git(root, "log", "-1", "--format=%B", c) for c in branch))
+            if len(parents) > 1:
+                said = "\n".join(git(root, "log", "-1", "--format=%B", c) for c in [*branch, change])
+            else:
+                said = SQUASH_REF.sub("", git(root, "log", "-1", "--format=%B", change))
+            said = MERGE_LINE.sub("", said)
             if not ISSUE_REF.search(said):
                 findings.append(f"{name}: no change spec, and no issue for the light path")
             continue
