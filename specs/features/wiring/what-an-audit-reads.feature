@@ -87,6 +87,17 @@ Feature: What an audit reads, and which version of the method it reads against
       When the wiring is audited
       Then nothing is reported about it
 
+    Example: a branch commit names its issue at the end of its subject
+      Given a change merged since the last audit whose commits end their subjects with the issue, as "fix the pipeline (#12)"
+      When the wiring is audited
+      Then nothing is reported about it
+      But a squashed change whose only number is the one its forge put at the end of its subject is still reported
+
+    Example: the merge names the issue
+      Given a change merged since the last audit whose commits name no issue, merged by a commit whose body says "Closes #12"
+      When the wiring is audited
+      Then nothing is reported about it
+
     Example: the code was committed before its spec
       Given a change merged since the last audit whose first commit touches code and whose spec commit follows it
       When the wiring is audited

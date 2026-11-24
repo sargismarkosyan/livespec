@@ -1184,6 +1184,22 @@ class TheLoop(unittest.TestCase):
         self.assertEqual(self.loop([("fix the pipeline, #12", {"ci.yml": "on: push\n"})])["state"], "clear")
 
     @rule("the-loop-is-read-from-the-history")
+    def test_a_branch_commit_ending_with_its_issue_is_the_light_path(self):
+        self.assertEqual(self.loop([("fix the pipeline (#12)", {"ci.yml": "on: push\n"})])["state"], "clear")
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_a_squashed_change_ending_with_its_pull_request_names_no_issue(self):
+        line = self.loop([("fix the thing", {"src/app.js": "// fixed\n"})], merge=False)
+        self.assertEqual(line["state"], "open", line["evidence"])
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_the_merge_body_names_the_issue(self):
+        root = repo()
+        inject.as_git_history(root, [("fix the pipeline", {"ci.yml": "on: push\n"})], True,
+                              merge_message="Merge branch 'change' into 'main'\n\nFix the pipeline\n\nCloses #12\n\nSee merge request o/r!9")
+        self.assertEqual(audit(root)["check:loop-followed"]["state"], "clear")
+
+    @rule("the-loop-is-read-from-the-history")
     def test_the_spec_first_with_its_sketch_line_is_clear(self):
         line = self.loop([("spec 0002: the thing", {"specs/changes/0002-the-thing.md": SPEC}), ("0002: the thing", {"src/app.js": "// built\n"})])
         self.assertEqual(line["state"], "clear", line["evidence"])
