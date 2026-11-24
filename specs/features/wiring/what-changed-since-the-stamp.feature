@@ -37,9 +37,10 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       Then the row is listed to be proven again, not to be wired
 
     Example: an id retired while its row stayed
-      Given a row for an id the list has since retired
+      Given a row for an id the list has since retired, naming the command that ran it here
       When the plan is asked for
-      Then the row is listed to be dropped
+      Then the row is listed to be dropped, with that command and what replaced it
+      And the item says the command, its fault and the prose describing it go in the same commit
 
   @rule:a-range-with-nothing-in-it-is-said-not-computed
   Rule: A stamp at the plugin installed, a stamp ahead of it, and a changelog that cannot be reached are each said in a line

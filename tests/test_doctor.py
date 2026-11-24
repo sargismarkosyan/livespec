@@ -305,7 +305,7 @@ class ThePlan(unittest.TestCase):
     @rule("the-plan-is-read-from-the-list")
     def test_the_plan_lists_what_the_list_asks_of_the_rows(self):
         root = Path(tempfile.mkdtemp(prefix="plan-"))
-        row = lambda i, at: {"id": i, "label": i, "reconciled": at}
+        row = lambda i, at: {"id": i, "label": i, "reconciled": at, "evidence": "`npm run trace --changes` — numbers"}
         ctx = {
             "root": root, "keys": {}, "stamp": "1.0.0",
             "gates": [row("gate:level", "1.1.0"), row("gate:behind", "1.0.0"), row("gate:old", "1.0.0")],
@@ -321,7 +321,9 @@ class ThePlan(unittest.TestCase):
         items = doctor.plan(ctx)
         self.assertTrue(any(i.startswith("wire    gate:behind") for i in items))
         self.assertTrue(any(i.startswith("wire    gate:new") and "no row" in i for i in items))
-        self.assertTrue(any(i.startswith("retire  gate:old") for i in items))
+        retire = next(i for i in items if i.startswith("retire  gate:old"))
+        for said in ("drop the row", "npm run trace --changes", "its fault and the prose", "gate:new"):
+            self.assertIn(said, retire)
         self.assertTrue(any(i.startswith("reprove wiring:moved") for i in items))
         self.assertFalse(any("gate:level" in i for i in items), "a row already level was listed")
         shutil.rmtree(root)
