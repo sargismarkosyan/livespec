@@ -77,6 +77,17 @@ if not suite:
     # there is.
     fail("evals/", "holds no cases; this gate will not report green on a measurement of nothing")
 
+# A case's number names it in prose, in specs and on the board's history; two
+# cases holding one number are two things one name points at. See #261.
+numbered: dict[str, list[str]] = {}
+for case in suite:
+    number = case["name"].split("-", 1)[0]
+    if number.isdigit():
+        numbered.setdefault(number, []).append(case["name"])
+for number, names in sorted(numbered.items()):
+    if len(names) > 1:
+        fail("evals/", f"{' and '.join(names)} share the number {number}; renumber the newer past the highest")
+
 for case in suite:
     where = f"evals/{case['name']}"
     if not case["graders"]:
