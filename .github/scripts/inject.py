@@ -652,6 +652,17 @@ def tiers_control() -> None:
             quiet = tiers.measure_route(negative, 1, SESSION_MODEL, True, stop)
             assert quiet["hits"] == 1 and quiet["fired"] == ["none"], f"nothing firing was not read as none: {quiet}"
             del os.environ["LIVESPEC_STUB_SKILL"]
+            # an errored turn is refused, never scored as none (#264)
+            os.environ["LIVESPEC_STUB_ROUTE_ERROR"] = "1"
+            napping, tiers.time.sleep = tiers.time.sleep, lambda _seconds: None
+            try:
+                tiers.measure_route(negative, 1, SESSION_MODEL, True, stop)
+                raise AssertionError("an errored routing turn was scored, not refused")
+            except RuntimeError as refused:
+                assert "OAuth session expired" in str(refused), f"the refusal does not say why: {refused}"
+            finally:
+                tiers.time.sleep = napping
+                del os.environ["LIVESPEC_STUB_ROUTE_ERROR"]
             turn = next(json.loads(l) for l in log.read_text().splitlines() if "Skill" in l)
             for flag, value in (("--plugin-dir", str(REPO)), ("--tools", "Skill"), ("--model", SESSION_MODEL),
                                 ("--max-turns", "1")):
@@ -1352,6 +1363,11 @@ if "--tools" in args and args[args.index("--tools") + 1] == "Skill":
     sys.stdin.read()
     skill = os.environ.get("LIVESPEC_STUB_SKILL", "livespec:refine-spec")
     print(json.dumps({"type": "system", "subtype": "init", "model": args[args.index("--model") + 1]}))
+    if os.environ.get("LIVESPEC_STUB_ROUTE_ERROR"):
+        # a logged-out CLI: an errored result and no turn at all (#264)
+        print(json.dumps({"type": "result", "subtype": "success", "is_error": True,
+                          "result": "OAuth session expired", "total_cost_usd": 0}))
+        sys.exit(1)
     if skill:
         print(json.dumps({"type": "assistant", "message": {"content": [
             {"type": "tool_use", "name": "Skill", "input": {"skill": skill}}]}}))
