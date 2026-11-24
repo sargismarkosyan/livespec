@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.18.1 — 2026-11-24
+
+When a release retires a gate, the upgrade's item now names the command that ran it in your repository and what replaced it: remove the command, its fault and the prose about it with the row.
+
 ## 3.18.0 — 2026-11-23
 
 The description gate is retired: drop its ledger row. A description opened from the command line starts from the template's file.
