@@ -433,8 +433,8 @@ keeps the diary from lying.
 | `sowing-a-batch` | seeds go in, the batch goes in the diary before the label is written |
 | `checking-the-bed` | a walk round the plot, and the diary made to match what is up, out or gone |
 EOF
-sed -i 's/@workflow:keeping-the-diary/@workflow:sowing-a-batch/' specs/features/diary/batches.feature
-sed -i 's/@workflow:keeping-the-diary/@workflow:checking-the-bed/' specs/features/diary/states.feature
+sed 's/@workflow:keeping-the-diary/@workflow:sowing-a-batch/' specs/features/diary/batches.feature > batches.tmp && mv batches.tmp specs/features/diary/batches.feature
+sed 's/@workflow:keeping-the-diary/@workflow:checking-the-bed/' specs/features/diary/states.feature > states.tmp && mv states.tmp specs/features/diary/states.feature
 cat > specs/changes/0003-two-attempts-not-one.md <<'EOF'
 # Spec 0003: two attempts, not one
 
