@@ -515,6 +515,7 @@ numbers, which is [`0022`](../changes/0022-nobody-types-the-record.md).
 | a scaffold_script that names no file | fails | ✔ |
 | a scaffolded case whose documented invocation never lays the fixture down | fails | ✔ |
 | a gated tool a case asks for is never granted | fails | ✔ |
+| two cases sharing a number | fails | ✔ |
 | a case with no row in the table | fails | ✔ |
 | a row for a case nobody has | fails | ✔ |
 | the runner losing its refusal of an unapproved run | fails | ✔ |

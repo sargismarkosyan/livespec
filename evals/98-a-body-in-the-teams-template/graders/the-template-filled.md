@@ -1,7 +1,7 @@
 ---
 rule: the-repository-template-is-filled-not-replaced
 type: command
-command: 'python3 "$LIVESPEC_ROOT/evals/95-a-body-in-the-teams-template/check_body.py"'
+command: 'python3 "$LIVESPEC_ROOT/evals/98-a-body-in-the-teams-template/check_body.py"'
 weight: 1
 ---
 `pr-body.md` fills tidewatch's template: its eight headings, in their order,
