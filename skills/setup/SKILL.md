@@ -307,7 +307,11 @@ a job after the gates with `continue-on-error: true` that posts a comment on
 the pull request with the token the workflow already has. On GitLab CI it is a
 job with `allow_failure: true` that posts a merge-request note through the API
 with the job token. On anything else it is that platform's equivalent, and the
-bindings' `wiring:pr-report` row names which. Where the repository's pull
+bindings' `wiring:pr-report` row names which. **It reads the description from
+the platform's API**, never from a pipeline variable: GitLab leaves
+`CI_MERGE_REQUEST_DESCRIPTION` unset in some pipelines. Where an edited
+description starts no pipeline, as on GitLab, the report reads the body as it
+was when it ran, and the row says how it is re-run. Where the repository's pull
 requests cannot carry a comment at all, the hand-back says the report is not
 wired and why; what it must never do is read as though it were.
 
