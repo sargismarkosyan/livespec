@@ -1,6 +1,6 @@
 # Spec 2026-11-24: the repository's own skills
 
-- **Status:** proposed
+- **Status:** approved, by the maintainer, 2026-11-24 ("approved")
 - **Issue:** [#251 check:skill-names calls a repository's own Pi skill (/skill:<name>) 'no such skill'](https://github.com/sargismarkosyan/livespec/issues/251)
 - **Sketch:** not drawn — one function reads two more folders; nothing the prose cannot carry
 

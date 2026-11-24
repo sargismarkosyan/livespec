@@ -497,6 +497,7 @@ def context(root: Path, bindings_path: Path, git_reads: bool = True) -> dict:
         "entries": changelog_entries(read(PLUGIN / "CHANGELOG.md")),
         "ids": id_rows(read(PLUGIN / "method" / "requirements.md") or ""),
         "skills": skills,
+        "own_skills": own_skills(root),
         "changes": changes,
         "latest_change": changes[-1] if changes else None,
         "context_name": context_name,
@@ -955,20 +956,35 @@ def instructs_by(ctx: dict) -> list[tuple[str, int, str, str]]:
     return hits
 
 
+def own_skills(root: Path) -> set[str]:
+    """The skills a repository keeps for itself where Pi loads them: every SKILL.md under .agents/skills/ or
+    .pi/skills/, at any depth, by its frontmatter name or else its folder's. See specs/changes/2026-11-24."""
+    names: set[str] = set()
+    for folder in (root / ".agents" / "skills", root / ".pi" / "skills"):
+        for path in folder.rglob("SKILL.md") if folder.is_dir() else ():
+            head = re.match(r"---\n(.*?)\n---", read(path) or "", re.S)
+            name = re.search(r"^name:\s*['\"]?([a-z0-9][a-z0-9-]*)", head.group(1), re.M) if head else None
+            names.add(name.group(1) if name else path.parent.name)
+    return names
+
+
 def c_skill_names(ctx: dict) -> tuple[str, str]:
+    # Under Pi every skill is typed /skill:<name>, so that form reaches the repository's own skills too.
+    def known(form: str, word: str) -> bool:
+        return word in ctx["skills"] or (form == "/skill:" and word in ctx.get("own_skills", ()))
     stale = [
         f"{file}:{line} {form}{word} — now {form}{FORMER_SKILLS[word]}"
         for file, line, form, word in instructs_by(ctx)
-        if word in FORMER_SKILLS and word not in ctx["skills"]
+        if word in FORMER_SKILLS and not known(form, word)
     ]
     unknown = [
         f"{file}:{line} {form}{word}"
         for file, line, form, word in instructs_by(ctx)
-        if word not in ctx["skills"] and word not in FORMER_SKILLS
+        if not known(form, word) and word not in FORMER_SKILLS
     ]
     if stale or unknown:
         return "open", "; ".join(stale + [u + " — no such skill" for u in unknown])
-    named = sorted({word for _, _, _, word in instructs_by(ctx) if word in ctx["skills"]})
+    named = sorted({word for _, _, form, word in instructs_by(ctx) if known(form, word)})
     return "clear", f"{len(named)} skill(s) instructed by, all exist: {', '.join(named)}" if named else "the record instructs by no skill name"
 
 

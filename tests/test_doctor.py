@@ -817,6 +817,38 @@ class TheHost(unittest.TestCase):
         self.assertEqual(unknown["state"], "open")
         self.assertIn("/skill:nonesuch — no such skill", unknown["evidence"])
 
+    @rule("an-instruction-in-either-hosts-form-is-read")
+    def test_the_repositorys_own_skill_in_pis_form_exists(self):
+        skill = "---\nname: triage-feedback\ndescription: files feedback\n---\n# Triage feedback\n"
+        line = audit(repo(files={
+            "CLAUDE.md": "# loop\n\nFile it with `/skill:triage-feedback`.\n",
+            ".agents/skills/triage-feedback/SKILL.md": skill,
+        }))["check:skill-names"]
+        self.assertEqual(line["state"], "clear", line["evidence"])
+        self.assertIn("triage-feedback", line["evidence"])
+        nested = audit(repo(files={
+            "CLAUDE.md": "# loop\n\nRun `/skill:kb-add`.\n",
+            ".pi/skills/kb/add/SKILL.md": "---\nname: kb-add\n---\n",
+        }))["check:skill-names"]
+        self.assertEqual(nested["state"], "clear", nested["evidence"])
+
+    @rule("an-instruction-in-either-hosts-form-is-read")
+    def test_the_repositorys_own_skill_is_not_livespecs(self):
+        line = audit(repo(files={
+            "CLAUDE.md": "# loop\n\nFile it with `/livespec:triage-feedback`.\n",
+            ".agents/skills/triage-feedback/SKILL.md": "---\nname: triage-feedback\n---\n",
+        }))["check:skill-names"]
+        self.assertEqual(line["state"], "open")
+        self.assertIn("/livespec:triage-feedback — no such skill", line["evidence"])
+
+    @rule("an-instruction-in-either-hosts-form-is-read")
+    def test_an_old_name_the_repository_keeps_for_itself_is_not_stale_in_pis_form(self):
+        files = {".agents/skills/feedback/SKILL.md": "# feedback, no frontmatter\n"}
+        pi = audit(repo(files={**files, "CLAUDE.md": "# loop\n\nUse `/skill:feedback`.\n"}))["check:skill-names"]
+        self.assertEqual(pi["state"], "clear", pi["evidence"])
+        claude = audit(repo(files={**files, "CLAUDE.md": "# loop\n\nUse `/livespec:feedback`.\n"}))["check:skill-names"]
+        self.assertIn("now /livespec:todo", claude["evidence"])
+
     def _wiring_left(self) -> str:
         text = inject.green_bindings(INSTALLED)
         text = "\n".join(line for line in text.splitlines() if "gate:structure" not in line) + "\n"
