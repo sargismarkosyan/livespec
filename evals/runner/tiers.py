@@ -223,9 +223,12 @@ def skill_body(skill: str) -> str:
 
 # --- route ------------------------------------------------------------------
 
-def _fired(stdout: str) -> tuple[str, float, str]:
-    """(skill fired or "", cost, limit text) from a stream-json routing turn."""
-    fired, cost, limit = "", 0.0, ""
+def _fired(stdout: str) -> tuple[str, float, str, str]:
+    """(skill fired or "", cost, limit text, error text) from a stream-json routing turn.
+
+    An errored result — a logged-out CLI ends its turn with one — is no answer:
+    read as "fired none" it would score a should-not-fire case right. See #264."""
+    fired, cost, limit, error = "", 0.0, "", ""
     for line in stdout.splitlines():
         try:
             event = json.loads(line)
@@ -239,7 +242,9 @@ def _fired(stdout: str) -> tuple[str, float, str]:
         elif event.get("type") == "result":
             cost = float(event.get("total_cost_usd") or cost)
             limit = limit or limit_text(event)
-    return fired, cost, limit
+            if event.get("is_error") and event.get("subtype") != "error_max_turns":
+                error = str(event.get("result") or event.get("subtype") or "an errored result")
+    return fired, cost, limit, error
 
 
 def route_once(case: dict, model: str, scaffold: bool) -> tuple[str, float]:
@@ -256,14 +261,15 @@ def route_once(case: dict, model: str, scaffold: bool) -> tuple[str, float]:
                 time.sleep(5)
             proc = subprocess.run(command, input=prompt_of(case), capture_output=True, text=True,
                                   cwd=workspace, timeout=300)
-            fired, cost, limit = _fired(proc.stdout)
+            fired, cost, limit, error = _fired(proc.stdout)
             if limit:
                 raise Limit(limit)
             # A turn that fired and then hit its one-turn ceiling exits non-zero
-            # and is exactly the answer; a turn with no result at all is not.
-            if '"type":"result"' in proc.stdout.replace(" ", "") or fired:
+            # and is exactly the answer; a turn with no result at all is not, and
+            # neither is one whose result is an error.
+            if fired or ('"type":"result"' in proc.stdout.replace(" ", "") and not error):
                 return fired, cost
-            last = " / ".join((proc.stderr or "").strip().splitlines()[-2:]) or f"exit {proc.returncode}"
+            last = error or " / ".join((proc.stderr or "").strip().splitlines()[-2:]) or f"exit {proc.returncode}"
         raise RuntimeError(f"the routing turn produced nothing after 3 attempts: {last}")
     finally:
         shutil.rmtree(workspace, ignore_errors=True)
