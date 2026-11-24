@@ -1177,7 +1177,7 @@ never started again; the tool refuses a second.
    verification command, write the item's outcome and its evidence — the fault's
    output, the run, the read-back — on its line in the ledger, and commit both
    together, green. Outcomes: *wired*, *reproven*, *built*, *deferred*,
-   *decided*, *retired* (the row dropped in that commit), *failed*. **A gate
+   *decided*, *retired* (the row dropped in that commit, with what it named here: its command, its fault and the prose describing it), *failed*. **A gate
    that refuses the tree as it stands is not committed**: its row reads
    *deferred*, naming the findings, and the hand-back offers `todo` to file
    them. A deferral already past the clock is wired or written off, never

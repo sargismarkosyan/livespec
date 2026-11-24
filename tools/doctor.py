@@ -1550,7 +1550,13 @@ def planned(ctx: dict) -> list[dict[str, str]]:
             continue
         if retired not in ("", "—", "-"):
             if i in rows:
-                add(i, "retire", "retired", retired.split(" ")[0], "drop the row")
+                # The row named something here: drop it with the row, or the repository keeps
+                # running and describing a gate nobody asks for. See 2026-11-23-a-retired-gate-leaves-nothing.
+                named = commands_in(rows[i].get("evidence") or rows[i].get("text") or "")
+                replaced = retired.split("→", 1)[1].strip() if "→" in retired else ""
+                add(i, "retire", "retired", retired.split(" ")[0],
+                    "drop the row, and in the same commit what it named here" + (f" ({', '.join(named[:2])})" if named else "")
+                    + ": its command, its fault and the prose describing it" + (f" — {replaced}" if replaced else ""))
             continue
         row = rows.get(i)
         at = ((row or {}).get("reconciled") or ctx["stamp"] or "").strip("`* ")
