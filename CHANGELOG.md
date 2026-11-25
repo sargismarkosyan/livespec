@@ -12,6 +12,10 @@ label. Editing this file in a feature branch fights that job; the place to write
 a version's entry is the pull request description, which is what this repository
 ships as a version's deliverable anyway.
 
+## 3.18.4 — 2026-11-25
+
+The audit's `check:skill-names` no longer calls a repository's own Pi skill "no such skill": `/skill:<name>` is clear when the skill is in the repository's `.agents/skills/` or `.pi/skills/`. `/livespec:<name>` still means livespec's skills only.
+
 ## 3.18.3 — 2026-11-24
 
 The audit's loop check now counts an issue named at the end of a merged branch's commit subjects, as `fix the pipeline (#12)`, and one named in the merge commit's body, as GitLab's `Closes #12`.
