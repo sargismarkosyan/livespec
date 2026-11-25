@@ -2,7 +2,7 @@
 Feature: The audit reads a repository the same under either host
 
   @rule:an-instruction-in-either-hosts-form-is-read
-  Rule: The audit reads /skill:<name> as an instruction exactly as it reads /livespec:<name> — a skill that exists is clear, and a name that moved is reported with the name it now has, in the form it was written in
+  Rule: The audit reads /skill:<name> as an instruction exactly as it reads /livespec:<name> — a skill that exists is clear, and a name that moved is reported with the name it now has, in the form it was written in. Under Pi every skill is typed /skill:<name>, so for that form a skill the repository keeps in its own skill folders exists too
 
     Example: a record written for Pi
       Given a consuming repository whose context file says to type /skill:refine-spec
@@ -15,6 +15,19 @@ Feature: The audit reads a repository the same under either host
       When the wiring is audited
       Then it is reported as a name this plugin no longer has
       And /skill:todo is offered in its place
+
+    Example: a skill the repository keeps for itself
+      Given a consuming repository whose context file says to type /skill:triage-feedback
+      And triage-feedback is a skill in its own .agents/skills/
+      When the wiring is audited
+      Then the instruction is read as naming a skill that exists
+      And nothing is reported about it
+
+    Example: the repository's own skill under livespec's name
+      Given a consuming repository whose context file says to type /livespec:triage-feedback
+      And triage-feedback is a skill in its own .agents/skills/
+      When the wiring is audited
+      Then it is reported as no such skill, because livespec has none by that name
 
   @rule:the-sitting-is-named-as-the-host-types-it
   Rule: Where the audit leaves wiring for the sitting, the command it ends on is the one the host it runs under takes — /skill:setup under Pi, and /livespec:setup under Claude Code as before
