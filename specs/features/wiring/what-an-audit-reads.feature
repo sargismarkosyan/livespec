@@ -98,6 +98,12 @@ Feature: What an audit reads, and which version of the method it reads against
       When the wiring is audited
       Then nothing is reported about it
 
+    Example: a release commit is not a change
+      Given a commit on the main line since the last audit whose only change is the version a manifest carries, as a release bot's "v0.0.14"
+      When the wiring is audited
+      Then nothing is reported about it
+      But a commit that changes anything beside that version is still read for its loop
+
     Example: the code was committed before its spec
       Given a change merged since the last audit whose first commit touches code and whose spec commit follows it
       When the wiring is audited

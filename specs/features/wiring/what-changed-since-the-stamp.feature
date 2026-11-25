@@ -131,12 +131,17 @@ Feature: What an audit reads for between the ledger's stamp and the plugin insta
       Then the check is not listed
 
   @rule:finalize-raises-what-was-answered
-  Rule: Finalizing reads the record the last report wrote of that very commit, sends back to pending any answered row a row-level line still finds, raises each row left answered and never lowers one, records a check as answered only where its line reads clear or n/a, appends the sitting, and closes the transaction only when nothing is pending
+  Rule: Finalizing reads the record the last report wrote of that very commit, sends back to pending any answered row a row-level line still finds, raises each row left answered and each row no item names and never lowers one, records a check as answered only where its line reads clear or n/a, appends the sitting, and closes the transaction only when nothing is pending
 
     Example: everything answered
       Given a transaction whose gate was wired with its evidence and whose new check reads clear in the record
       When it is finalized
       Then the gate's row is raised to the release, the check is recorded as answered, and the transaction is closed
+
+    Example: a release that asked nothing of the ledger
+      Given a transaction the plan opened with no items, because the releases in its range asked nothing of any row
+      When it is finalized
+      Then every row is raised to the release, so the stamp reads level with the plugin installed, and the transaction is closed
 
     Example: the record still finds the row
       Given a gate marked wired whose row a row-level line of the record still reports open

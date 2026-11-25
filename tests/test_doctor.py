@@ -410,6 +410,19 @@ class TheTransaction(unittest.TestCase):
         self.assertIn("gate:structure@since:1.1.0", ledger["sittings"][0][3])
 
     @rule("finalize-raises-what-was-answered")
+    def test_a_release_that_asked_nothing_raises_every_row_and_closes(self):
+        ids = [{"id": "gate:structure", "since": "0.9.0", "revised": "—", "retired": "—"}]
+        root, ctx = self.sitting(ids)
+        self.assertEqual(doctor.open_transaction(ctx)[0], 0)
+        self.assertEqual(doctor.parse_ledger((root / "specs" / "setup" / "upgrade.md").read_text())["items"], [])
+        self.record(root, ctx, [("check:row-per-gate", "clear", "every gate has a row")])
+        code, said = doctor.finalize(self.ctx(root, ids))
+        self.assertEqual(code, 0, said)
+        bindings = (root / "specs" / "setup" / "README.md").read_text()
+        self.assertRegex(bindings, r"\| `gate:structure` \|[^\n]*\| 1\.1\.0 \|")
+        self.assertEqual(doctor.parse_ledger((root / "specs" / "setup" / "upgrade.md").read_text())["state"], "closed")
+
+    @rule("finalize-raises-what-was-answered")
     def test_finalize_refuses_a_record_of_another_commit_and_an_answer_without_evidence(self):
         root, ctx = self.sitting(self.IDS)
         doctor.open_transaction(ctx)
@@ -1252,6 +1265,15 @@ class TheLoop(unittest.TestCase):
     def test_a_squashed_change_is_not_read_for_order(self):
         line = self.loop([("the thing", {"src/app.js": "// built\n"}), ("spec 0002", {"specs/changes/0002-the-thing.md": SPEC})], merge=False)
         self.assertEqual(line["state"], "clear", line["evidence"])
+
+    @rule("the-loop-is-read-from-the-history")
+    def test_a_release_commit_that_moves_only_a_version_is_not_a_change(self):
+        root = repo(files={"package.json": '{\n  "name": "app",\n  "version": "0.0.1"\n}\n'})
+        inject.as_git_history(root, [("v0.0.2", {"package.json": '{\n  "name": "app",\n  "version": "0.0.2"\n}\n'})], merge=False)
+        self.assertEqual(audit(root)["check:loop-followed"]["state"], "clear")
+        root = repo(files={"package.json": '{\n  "name": "app",\n  "version": "0.0.1"\n}\n'})
+        inject.as_git_history(root, [("v0.0.2", {"package.json": '{\n  "name": "app2",\n  "version": "0.0.2"\n}\n'})], merge=False)
+        self.assertEqual(audit(root)["check:loop-followed"]["state"], "open")
 
     @rule("the-loop-is-read-from-the-history")
     def test_no_previous_audit_is_not_applicable(self):
