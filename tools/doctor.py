@@ -1097,6 +1097,15 @@ ISSUE_REF = re.compile(r"#\d+|/issues/\d+|\b[A-Z][A-Z0-9]+-\d+\b")
 # A merged branch's own commits are their author's, so their "(#N)" names an issue (see 2026-11-24).
 MERGE_LINE = re.compile(r"^Merge pull request #\d+.*$|^Merged? (?:PR|branch) .*$", re.M)
 SQUASH_REF = re.compile(r"\(#\d+\)\s*$", re.M)
+# A release commit's whole diff: the version a manifest carries, and nothing else. See 2026-11-25.
+VERSION_LINE = re.compile(r"""^[+-]\s*(?:"version"\s*:\s*"[^"]*",?|version\s*=\s*"[^"]*"|<version>[^<]*</version>)\s*$""")
+
+
+def moves_only_a_version(root: Path, parent: str, change: str) -> bool:
+    """A commit whose every changed line is a manifest's version — a release bot's bump, not a change."""
+    diff = [line for line in git(root, "diff", "-U0", "--no-color", parent, change).splitlines()
+            if line[:1] in "+-" and not line.startswith(("+++", "---"))]
+    return bool(diff) and all(VERSION_LINE.match(line) for line in diff)
 
 
 def changes_since_audit(ctx: dict) -> tuple[str, list[str]] | None:
@@ -1122,7 +1131,7 @@ def c_loop_followed(ctx: dict) -> tuple[str, str]:
     findings = []
     for change in changes:
         parents = git(root, "rev-list", "--parents", "-n", "1", change).split()[1:]
-        if not parents:
+        if not parents or (len(parents) == 1 and moves_only_a_version(root, parents[0], change)):
             continue
         branch = git(root, "rev-list", "--reverse", f"{parents[0]}..{parents[1]}").split() if len(parents) > 1 else [change]
         title = git(root, "log", "-1", "--format=%s", change).strip()
@@ -1683,8 +1692,9 @@ def open_transaction(ctx: dict) -> tuple[int, str]:
 
 def finalize(ctx: dict) -> tuple[int, str]:
     """Close what the sitting answered, against the record the report just wrote: veto an answered row
-    a row-level line still finds, raise the rows left answered, answer each check read clear or n/a,
-    append the sitting, and close the transaction when nothing is pending. Never lowers a cell. See 0105."""
+    a row-level line still finds, raise the rows left answered and every row no item names — the range
+    asked nothing of it — answer each check read clear or n/a, append the sitting, and close the
+    transaction when nothing is pending. Never lowers a cell. See 0105, 2026-11-25."""
     path = ledger_path(ctx)
     ledger = parse_ledger(read(path) or "")
     if ledger["state"] != "open":
@@ -1726,9 +1736,13 @@ def finalize(ctx: dict) -> tuple[int, str]:
                 ledger["answers"][item_id] = ledger["to"]
             elif item["outcome"] != "retired":
                 raise_ids.add(item_id)
+    named = {i["key"].split("@", 1)[0] for i in ledger["items"]}
+    listed = {i["id"] for i in ctx["ids"] if i.get("retired", "—") in ("—", "")}
+    raise_ids |= {row["id"] for row in ctx["gates"] + ctx["wiring"] if row["id"] in listed - named}
     level = {row["id"] for row in ctx["gates"] + ctx["wiring"] if row["id"] and not later(to, (row["reconciled"] or "0.0.0").strip("`* "))}
+    raise_ids -= level
     if raise_ids:
-        text, _ = adopt(ctx["text"], to, date.today().isoformat(), raise_ids - level)
+        text, _ = adopt(ctx["text"], to, date.today().isoformat(), raise_ids)
         ctx["bindings_path"].write_text(text, encoding="utf-8")
     pending = [i["key"] for i in ledger["items"] if i["kind"] != "host" and (i["outcome"] not in ANSWERED or i["finalized"] == "held")]
     ledger["sittings"].append([str(len(ledger["sittings"]) + 1), date.today().isoformat(), f"{ledger['from']} → {ledger['to']}", ", ".join(pending) or "—"])
